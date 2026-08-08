@@ -1,0 +1,29 @@
+import 'package:flutter/material.dart';
+import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
+import 'package:ideal_mobile/i18n/localization.dart';
+import 'package:ideal_mobile/presentation/delete_account/widgets/warning_notes.dart';
+import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
+
+class DeleteAccountWarnings extends StatelessWidget {
+  const DeleteAccountWarnings({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: .start,
+      children: [
+        const SizedBox(height: 24),
+        Text(
+          context.localization.delete_warning_title,
+          style: AppTextStyles.p1Medium.copyWith(
+            color: context.currentTheme.textNeutralPrimary,
+          ),
+        ),
+        const SizedBox(height: 24),
+        WarningNotes(text: context.localization.delete_warning_products_chats),
+        const SizedBox(height: 24),
+        WarningNotes(text: context.localization.delete_warning_account_info),
+      ],
+    );
+  }
+}

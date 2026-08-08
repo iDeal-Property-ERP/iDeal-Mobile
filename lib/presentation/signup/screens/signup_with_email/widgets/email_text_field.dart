@@ -1,0 +1,127 @@
+import 'package:clarity_flutter/clarity_flutter.dart';
+import 'package:debounce_throttle/debounce_throttle.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
+import 'package:ideal_mobile/constants/integration_test_keys.dart';
+import 'package:ideal_mobile/i18n/localization.dart';
+import 'package:ideal_mobile/presentation/signup/bloc/signup_bloc.dart';
+import 'package:ideal_mobile/presentation/signup/bloc/signup_event.dart';
+import 'package:ideal_mobile/utils/extensions/primitive_types_extensions.dart';
+import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
+import 'package:ideal_mobile/widgets/styling/app_radius.dart';
+
+class EmailTextField extends StatefulWidget {
+  const EmailTextField({super.key});
+
+  @override
+  State<EmailTextField> createState() => _EmailTextFieldState();
+}
+
+class _EmailTextFieldState extends State<EmailTextField> {
+  final TextEditingController _emailController = TextEditingController();
+  final Debouncer<String> _debouncer = Debouncer<String>(
+    const Duration(milliseconds: 300),
+    initialValue: '',
+  );
+
+  @override
+  void initState() {
+    super.initState();
+
+    _emailController.text = context.read<SignupBloc>().state.email;
+
+    _emailController.addListener(() {
+      _debouncer.value = _emailController.text;
+    });
+
+    _debouncer.values.listen((email) {
+      final previousErrorMessage = context
+          .read<SignupBloc>()
+          .state
+          .emailErrorMessage;
+
+      if (previousErrorMessage.haveContent()) {
+        context.read<SignupBloc>().add(SignupEmailErrorEvent(errorMessage: ''));
+      }
+
+      context.read<SignupBloc>().add(SignupEmailChangeEvent(email: email));
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final String? emailErrorMessage = context.select<SignupBloc, String?>(
+      (bloc) => bloc.state.emailErrorMessage,
+    );
+
+    return Column(
+      crossAxisAlignment: .start,
+      children: [
+        Text(
+          context.localization.email,
+          style: AppTextStyles.p3Medium.copyWith(
+            color: context.currentTheme.textNeutralPrimary,
+          ),
+        ),
+        const SizedBox(height: 6),
+        ClarityMask(
+          child: TextField(
+            key: keys.signupPage.signupEmailTextField,
+            controller: _emailController,
+            style: AppTextStyles.p3Medium.copyWith(
+              color: context.currentTheme.textNeutralPrimary,
+            ),
+            decoration: InputDecoration(
+              hintText: context.localization.email_hint,
+              hintStyle: AppTextStyles.p3Medium.copyWith(
+                color: context.currentTheme.textNeutralDisable,
+              ),
+              filled: true,
+              fillColor: context.currentTheme.bgSurfaceBase2,
+              errorText: emailErrorMessage.isNullOrEmpty()
+                  ? null
+                  : emailErrorMessage,
+              errorStyle: AppTextStyles.p3Regular.copyWith(
+                color: context.currentTheme.textErrorSecondary,
+              ),
+              border: buildOutlineInputBorder(),
+              enabledBorder: buildOutlineInputBorder(),
+              focusedBorder: buildOutlineInputBorder(hasFocus: true),
+              errorBorder: buildOutlineInputBorder(isErrorBorder: true),
+              focusedErrorBorder: buildOutlineInputBorder(
+                hasFocus: true,
+                isErrorBorder: true,
+              ),
+            ),
+            textInputAction: .next,
+            keyboardType: TextInputType.emailAddress,
+          ),
+        ),
+      ],
+    );
+  }
+
+  OutlineInputBorder buildOutlineInputBorder({
+    bool? hasFocus,
+    bool? isErrorBorder,
+  }) {
+    return OutlineInputBorder(
+      borderRadius: BorderRadius.circular(AppRadius.input),
+      borderSide: BorderSide(
+        color: isErrorBorder ?? false
+            ? context.currentTheme.strokeErrorDefault
+            : hasFocus ?? false
+            ? context.currentTheme.strokeBrandHover
+            : context.currentTheme.strokeNeutralLight200,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _debouncer.cancel();
+    super.dispose();
+  }
+}

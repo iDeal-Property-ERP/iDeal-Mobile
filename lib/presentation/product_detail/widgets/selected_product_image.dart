@@ -1,0 +1,66 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:ideal_mobile/gen/assets.gen.dart';
+import 'package:ideal_mobile/presentation/product_detail/bloc/product_detail_bloc.dart';
+import 'package:ideal_mobile/presentation/product_detail/bloc/product_detail_event.dart';
+import 'package:ideal_mobile/presentation/product_detail/domain/entities/product_detail.dart';
+import 'package:ideal_mobile/utils/app_environment.dart';
+import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
+import 'package:ideal_mobile/widgets/styling/app_colors.dart';
+
+class SelectedProductImage extends StatelessWidget {
+  final ProductDetail productDetail;
+
+  const SelectedProductImage({super.key, required this.productDetail});
+
+  @override
+  Widget build(BuildContext context) {
+    final int selectedImageIndex = context.select<ProductDetailBloc, int>(
+      (bloc) => bloc.state.selectedImageIndex,
+    );
+    final allImages = [productDetail.image, ...productDetail.productImages];
+    final imageUrl = allImages[selectedImageIndex];
+    final isFromTestEnvironment = AppEnvironment.isTestEnvironment;
+
+    return Column(
+      crossAxisAlignment: .start,
+      children: [
+        GestureDetector(
+          onTap: () {
+            context.read<ProductDetailBloc>().add(
+              ProductImageSelectedEvent(selectedIndex: selectedImageIndex),
+            );
+          },
+          child: Container(
+            height: 300,
+            width: double.infinity,
+            margin: const EdgeInsets.symmetric(vertical: 20),
+            child: isFromTestEnvironment
+                ? Image.asset(Assets.test.images.testImage.path, fit: .cover)
+                : CachedNetworkImage(
+                    imageUrl: imageUrl,
+                    fit: .cover,
+                    placeholder: (context, url) => Shimmer.fromColors(
+                      baseColor: context.currentTheme.bgNeutralLight100,
+                      highlightColor: context.currentTheme.bgNeutralLight100
+                          .withOpacity(0.6),
+                      child: ColoredBox(
+                        color: context.currentTheme.bgNeutralLight100,
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => ColoredBox(
+                      color: context.currentTheme.bgNeutralLight100,
+                      child: const Icon(
+                        Icons.error_outline,
+                        color: AppColors.redError500,
+                      ),
+                    ),
+                  ),
+          ),
+        ),
+      ],
+    );
+  }
+}

@@ -1,0 +1,139 @@
+import 'dart:io';
+
+import 'package:auto_route/auto_route.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:ideal_mobile/constants/integration_test_keys.dart';
+import 'package:ideal_mobile/gen/assets.gen.dart';
+import 'package:ideal_mobile/i18n/localization.dart';
+import 'package:ideal_mobile/presentation/login/bloc/login_bloc.dart';
+import 'package:ideal_mobile/presentation/login/bloc/login_events.dart';
+import 'package:ideal_mobile/presentation/login/enum/enum_login_type.dart';
+import 'package:ideal_mobile/presentation/login/screens/login_with_phone_number/login_with_phone_number_screen.dart';
+import 'package:ideal_mobile/routes.gr.dart';
+import 'package:ideal_mobile/utils/extensions/build_context_ext.dart';
+import 'package:ideal_mobile/utils/internet_connectivity_helper.dart';
+import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
+import 'package:ideal_mobile/widgets/app_button/app_button.dart';
+import 'package:ideal_mobile/widgets/app_button/enums/app_button_size_enum.dart';
+import 'package:ideal_mobile/widgets/app_button/enums/app_button_style_enum.dart';
+
+class MoreLoginOptionsButton extends StatelessWidget {
+  const MoreLoginOptionsButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isSignup = context.select<LoginBloc, bool>(
+      (bloc) => bloc.state.isSignup,
+    );
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: LoginWithPhoneNumberScreen.kHorizontalPadding,
+      ),
+      child: Column(
+        mainAxisSize: .min,
+        children: [
+          AppButton(
+            key: isSignup
+                ? keys.signupPage.signupWithEmailButton
+                : keys.signInPage.continueWithEmailButton,
+            label: context.localization.continue_with_email,
+            foregroundColor: context.currentTheme.textNeutralPrimary,
+            shouldSetFullWidth: true,
+            style: AppButtonStyle.outline,
+            leftIcon: TablerIcons.mail,
+            size: AppButtonSize.extraLarge,
+            backgroundColor: context.currentTheme.bgSurfaceBase2,
+            onPressed: () {
+              FocusManager.instance.primaryFocus?.unfocus();
+              if (isSignup) {
+                context.pushRoute(SignupWithEmailPasswordRoute());
+              } else {
+                context.read<LoginBloc>().add(
+                  SelectLoginSignupTypeEvent(LoginType.EMAIL),
+                );
+
+                context.pushRoute(
+                  LoginWithEmailPasswordRoute(
+                    loginBloc: context.read<LoginBloc>(),
+                  ),
+                );
+              }
+            },
+          ),
+          const SizedBox(height: 16),
+          AppButton(
+            key: keys.signInPage.continueWithGoogleButton,
+            label: context.localization.continue_with_google,
+            foregroundColor: context.currentTheme.textNeutralPrimary,
+            shouldSetFullWidth: true,
+            style: AppButtonStyle.outline,
+            leftIconPath: Assets.icons.google.path,
+            size: AppButtonSize.extraLarge,
+            backgroundColor: context.currentTheme.bgSurfaceBase2,
+            onPressed: () {
+              FocusManager.instance.primaryFocus?.unfocus();
+              final isConnected =
+                  InternetConnectivityHelper().onConnectivityChange.value;
+
+              if (!isConnected && context.mounted) {
+                context.showSnackBar(
+                  context.localization.no_internet_connection,
+                );
+                return;
+              }
+              context.read<LoginBloc>().add(
+                SelectLoginSignupTypeEvent(LoginType.GOOGLE),
+              );
+              context.read<LoginBloc>().add(LoginWithGoogleEvent());
+            },
+          ),
+          if (Platform.isIOS) ...[
+            const SizedBox(height: 16),
+            AppButton(
+              label: context.localization.continue_with_apple,
+              foregroundColor: context.currentTheme.textNeutralPrimary,
+              shouldSetFullWidth: true,
+              style: AppButtonStyle.outline,
+              leftIconPath: Assets.icons.apple,
+              size: AppButtonSize.extraLarge,
+              onPressed: () {
+                FocusManager.instance.primaryFocus?.unfocus();
+                final isConnected =
+                    InternetConnectivityHelper().onConnectivityChange.value;
+
+                if (!isConnected && context.mounted) {
+                  context.showSnackBar(
+                    context.localization.no_internet_connection,
+                  );
+                  return;
+                }
+                context.read<LoginBloc>().add(
+                  SelectLoginSignupTypeEvent(LoginType.APPLE),
+                );
+                context.read<LoginBloc>().add(LoginWithAppleEvent());
+              },
+            ),
+          ],
+          const SizedBox(height: 16),
+          AppButton(
+            label: isSignup
+                ? context.localization.login
+                : context.localization.sign_up,
+            shouldSetFullWidth: true,
+            foregroundColor: context.currentTheme.textNeutralPrimary,
+            style: AppButtonStyle.outline,
+            size: AppButtonSize.extraLarge,
+            backgroundColor: context.currentTheme.bgSurfaceBase2,
+            onPressed: () {
+              context.read<LoginBloc>().add(
+                EnableSignupModeEvent(isSignup: !isSignup),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}

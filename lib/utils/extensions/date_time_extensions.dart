@@ -1,0 +1,89 @@
+import 'package:flutter/foundation.dart';
+import 'package:intl/intl.dart';
+import 'package:ideal_mobile/constants/constants.dart';
+import 'package:ideal_mobile/i18n/app_localizations.dart';
+import 'package:ideal_mobile/utils/app_environment.dart';
+
+extension DateTimeExtensions on DateTime {
+  String format({String pattern = kDefaultDateFormat}) {
+    try {
+      return DateFormat(pattern).format(this);
+    } catch (_) {
+      return '';
+    }
+  }
+
+  bool isFuture([DateTime? currentDateTime]) {
+    return isAfter(currentDateTime ?? DateTime.now());
+  }
+
+  bool isPast([DateTime? currentDateTime]) {
+    return isBefore(currentDateTime ?? DateTime.now());
+  }
+
+  bool isSameDay(DateTime other) =>
+      year == other.year && month == other.month && day == other.day;
+
+  bool isInRange(DateTime start, DateTime end) =>
+      isAfter(start) && isBefore(end);
+
+  /// Returns how long ago this date was, e.g. "2 hrs ago",
+  /// "Yesterday", "Last month".
+  ///
+  /// Pass [now] in tests to control what "current time" means
+  /// so results are predictable.
+  /// In production, leave it empty — it uses the real current
+  /// time automatically.
+  String timeAgo(AppLocalizations localization, {DateTime? now}) {
+    try {
+      final Duration difference = (now ?? getCurrentDateTime()).difference(
+        this,
+      );
+
+      if (difference.inDays >= 365) {
+        final years = (difference.inDays / 365).floor();
+        return years == 1
+            ? localization.lastYear
+            : localization.yearsAgo(years);
+      } else if (difference.inDays >= 30) {
+        final months = (difference.inDays / 30).floor();
+        return months == 1
+            ? localization.lastMonth
+            : localization.monthsAgo(months);
+      } else if (difference.inDays > 1) {
+        return localization.daysAgo(difference.inDays);
+      } else if (difference.inDays == 1) {
+        return localization.yesterday;
+      } else if (difference.inHours > 1) {
+        return localization.hoursAgo(difference.inHours);
+      } else if (difference.inHours == 1) {
+        return localization.oneHourAgo;
+      } else if (difference.inMinutes > 1) {
+        return localization.minutesAgo(difference.inMinutes);
+      } else if (difference.inMinutes == 1) {
+        return localization.oneMinuteAgo;
+      } else {
+        return localization.justNow;
+      }
+    } catch (error) {
+      debugPrint('Error parsing time ago: $error');
+      return '';
+    }
+  }
+
+  String to12HourFormat({String pattern = kDefaultTimeFormat12Hour}) {
+    try {
+      return DateFormat(pattern).format(toLocal());
+    } catch (_) {
+      return '';
+    }
+  }
+}
+
+DateTime getCurrentDateTime() {
+  final bool isTest = AppEnvironment.isTestEnvironment;
+  if (isTest) {
+    return DateTime(2025, 4, 11, 8, 30, 20);
+  }
+  return DateTime.now();
+}

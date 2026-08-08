@@ -1,0 +1,83 @@
+import 'dart:math';
+
+import 'package:auto_route/auto_route.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
+import 'package:ideal_mobile/gen/assets.gen.dart';
+import 'package:ideal_mobile/i18n/localization.dart';
+import 'package:ideal_mobile/presentation/login/bloc/login_bloc.dart';
+import 'package:ideal_mobile/presentation/login/bloc/login_events.dart';
+import 'package:ideal_mobile/presentation/login/screens/check_your_email/widgets/continue_login_button.dart';
+import 'package:ideal_mobile/presentation/login/screens/login_with_phone_number/login_with_phone_number_screen.dart';
+import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
+
+@RoutePage()
+class CheckYourEmailScreen extends StatelessWidget {
+  const CheckYourEmailScreen({super.key, required this.loginBloc});
+
+  final LoginBloc loginBloc;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(backgroundColor: context.currentTheme.bgSurfaceBase),
+      body: BlocProvider<LoginBloc>.value(
+        value: loginBloc,
+        child: const CheckYourEmailScreenBody(),
+      ),
+    );
+  }
+}
+
+class CheckYourEmailScreenBody extends StatelessWidget {
+  const CheckYourEmailScreenBody({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final String email = context.select<LoginBloc, String>(
+      (bloc) => bloc.state.emailPasswordLoginState?.email ?? '',
+    );
+    return PopScope(
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) {
+          context.read<LoginBloc>().add(ResetEmailStateEvent());
+        }
+      },
+      child: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.only(
+            left: LoginWithPhoneNumberScreen.kHorizontalPadding,
+            right: LoginWithPhoneNumberScreen.kHorizontalPadding,
+            bottom: max(20, MediaQuery.of(context).padding.bottom),
+          ),
+          child: Column(
+            mainAxisAlignment: .center,
+            children: [
+              SvgPicture.asset(Assets.icons.emailNotification),
+              const SizedBox(height: 18),
+              Text(
+                context.localization.check_your_email,
+                style: AppTextStyles.h2Bold.copyWith(
+                  color: context.currentTheme.textNeutralPrimary,
+                ),
+                textAlign: .center,
+              ),
+              const SizedBox(height: 18),
+              Text(
+                context.localization.link_send_info(email),
+                style: AppTextStyles.p2Medium.copyWith(
+                  color: context.currentTheme.textNeutralSecondary,
+                ),
+                textAlign: .center,
+              ),
+              const SizedBox(height: 25),
+              const ContinueLoginButton(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

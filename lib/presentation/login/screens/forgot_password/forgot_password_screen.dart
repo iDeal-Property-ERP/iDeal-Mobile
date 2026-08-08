@@ -1,0 +1,76 @@
+import 'package:auto_route/auto_route.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
+import 'package:ideal_mobile/i18n/localization.dart';
+import 'package:ideal_mobile/presentation/login/bloc/login_bloc.dart';
+import 'package:ideal_mobile/presentation/login/bloc/login_state.dart';
+import 'package:ideal_mobile/presentation/login/screens/forgot_password/widgets/email_text_field.dart';
+import 'package:ideal_mobile/presentation/login/screens/forgot_password/widgets/send_reset_link_button.dart';
+import 'package:ideal_mobile/presentation/login/screens/login_with_phone_number/login_with_phone_number_screen.dart';
+import 'package:ideal_mobile/presentation/login/widgets/login_app_bar.dart';
+import 'package:ideal_mobile/routes.gr.dart';
+import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
+
+@RoutePage()
+class ForgotPasswordScreen extends StatelessWidget {
+  const ForgotPasswordScreen({super.key, required this.loginBloc});
+
+  final LoginBloc loginBloc;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: Scaffold(
+        appBar: const LoginAppBar(removeLeading: false),
+        body: SafeArea(
+          child: BlocProvider<LoginBloc>.value(
+            value: loginBloc,
+            child: BlocListener<LoginBloc, LoginState>(
+              listener: (context, state) {
+                if (state is ResetPasswordLinkSentState) {
+                  context.router.replace(
+                    CheckYourEmailRoute(loginBloc: loginBloc),
+                  );
+                }
+              },
+              child: const ForgotPasswordScreenBody(),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ForgotPasswordScreenBody extends StatelessWidget {
+  const ForgotPasswordScreenBody({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: LoginWithPhoneNumberScreen.kHorizontalPadding,
+      ),
+      child: Column(
+        crossAxisAlignment: .start,
+        children: [
+          const SizedBox(height: 16),
+          Center(
+            child: Text(
+              context.localization.forgot_password,
+              style: AppTextStyles.h2Bold.copyWith(
+                color: context.currentTheme.textNeutralPrimary,
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          const EmailTextField(),
+          const SizedBox(height: 24),
+          const SendResetLinkButton(),
+        ],
+      ),
+    );
+  }
+}

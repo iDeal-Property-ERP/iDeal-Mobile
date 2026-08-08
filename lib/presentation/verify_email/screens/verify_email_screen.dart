@@ -1,0 +1,197 @@
+import 'dart:async';
+import 'dart:math';
+
+import 'package:auto_route/auto_route.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_fgbg/flutter_fgbg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
+import 'package:ideal_mobile/core/services/injection_container.dart';
+import 'package:ideal_mobile/gen/assets.gen.dart';
+import 'package:ideal_mobile/i18n/app_localizations.dart';
+import 'package:ideal_mobile/i18n/localization.dart';
+import 'package:ideal_mobile/presentation/login/screens/login_with_phone_number/login_with_phone_number_screen.dart';
+import 'package:ideal_mobile/presentation/login/widgets/login_app_bar.dart';
+import 'package:ideal_mobile/presentation/signup/enum/user_details_input_status.dart';
+import 'package:ideal_mobile/presentation/verify_email/bloc/verify_email_bloc.dart';
+import 'package:ideal_mobile/presentation/verify_email/bloc/verify_email_event.dart';
+import 'package:ideal_mobile/presentation/verify_email/bloc/verify_email_state.dart';
+import 'package:ideal_mobile/presentation/verify_email/screens/widgets/entered_wrong_email.dart';
+import 'package:ideal_mobile/presentation/verify_email/screens/widgets/resend_verification_mail_button.dart';
+import 'package:ideal_mobile/routes.gr.dart';
+import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
+
+@RoutePage()
+class VerifyEmailScreen extends StatefulWidget {
+  const VerifyEmailScreen({
+    super.key,
+    required this.email,
+    this.isSignUp = false,
+  });
+
+  final bool isSignUp;
+
+  final String email;
+
+  static const kResendVerificationEmailMaxSeconds = 30;
+
+  @override
+  State<VerifyEmailScreen> createState() => _VerifyEmailScreenState();
+}
+
+class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
+  late final AppLocalizations appLocalizations = context.localization;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: const LoginAppBar(),
+      body: BlocProvider(
+        create: (context) => VerifyEmailBloc(localizations: appLocalizations)
+          ..add(InitialEvent(email: widget.email, isSignUp: widget.isSignUp)),
+        child: _VerifyEmailScreenBody(
+          email: widget.email,
+          isSignUp: widget.isSignUp,
+        ),
+      ),
+    );
+  }
+}
+
+class _VerifyEmailScreenBody extends StatefulWidget {
+  const _VerifyEmailScreenBody({required this.email, required this.isSignUp});
+
+  final bool isSignUp;
+  final String email;
+
+  @override
+  State<_VerifyEmailScreenBody> createState() => _VerifyEmailScreenBodyState();
+}
+
+class _VerifyEmailScreenBodyState extends State<_VerifyEmailScreenBody> {
+  Timer? _verificationListenTimer, _resendVerificationMailTimer;
+  late final FirebaseAuth _firebaseAuth = sl<FirebaseAuth>();
+
+  bool _isEmailVerified() => _firebaseAuth.currentUser?.emailVerified ?? false;
+
+  @override
+  void initState() {
+    super.initState();
+    _startTimerForVerificationListen();
+    _startTimerForResendVerificationEmail();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<VerifyEmailBloc, VerifyEmailState>(
+      listener: (context, state) async {
+        if (state is RestartVerificationMailResendTimerState) {
+          _startTimerForResendVerificationEmail();
+        } else if (state is VerificationCodeFailedToSendState) {
+          _resendVerificationMailTimer?.cancel();
+          context.read<VerifyEmailBloc>().add(
+            const ResendVerificationEmailTimeLeftEvent(resendTimeLeft: 0),
+          );
+        } else if (state is NavigateToHomeState) {
+          await context.router.replace(const HomeRoute());
+        }
+      },
+      child: FGBGNotifier(
+        onEvent: (FGBGType type) {
+          if (type == FGBGType.foreground) {
+            checkIfEmailVerified(context);
+          } else {
+            _verificationListenTimer?.cancel();
+          }
+        },
+        child: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: LoginWithPhoneNumberScreen.kHorizontalPadding,
+              right: LoginWithPhoneNumberScreen.kHorizontalPadding,
+              bottom: max(20, MediaQuery.of(context).padding.bottom),
+            ),
+            child: Column(
+              mainAxisAlignment: .center,
+              children: [
+                SvgPicture.asset(Assets.icons.emailNotification),
+                const SizedBox(height: 18),
+                Text(
+                  context.localization.verify_your_email,
+                  style: AppTextStyles.h2Bold.copyWith(
+                    color: context.currentTheme.textNeutralPrimary,
+                  ),
+                  textAlign: .center,
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  context.localization.link_verify_info(widget.email),
+                  style: AppTextStyles.p2Medium.copyWith(
+                    color: context.currentTheme.textNeutralSecondary,
+                  ),
+                  textAlign: .center,
+                ),
+                const SizedBox(height: 25),
+                const ResendVerificationMailButton(),
+                const SizedBox(height: 16),
+                const EnteredWrongEmail(),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void checkIfEmailVerified(BuildContext context) async {
+    _verificationListenTimer?.cancel();
+    await _firebaseAuth.currentUser?.reload();
+    if (_isEmailVerified()) {
+      context.read<VerifyEmailBloc>().add(
+        const ChangeUserDetailsInputStatusEvent(
+          status: UserDetailsInputStatus.inProgress,
+        ),
+      );
+      if (widget.isSignUp) {
+        await context.read<VerifyEmailBloc>().storeLoginDetailsInPrefs(
+          _firebaseAuth.currentUser,
+        );
+        context.read<VerifyEmailBloc>().add(NavigateToHomeEvent());
+      }
+    } else {
+      _startTimerForVerificationListen();
+    }
+  }
+
+  void _startTimerForVerificationListen() {
+    _verificationListenTimer = Timer.periodic(const Duration(seconds: 5), (
+      timer,
+    ) {
+      checkIfEmailVerified(context);
+    });
+  }
+
+  void _startTimerForResendVerificationEmail() {
+    if (!mounted) return;
+    _resendVerificationMailTimer = Timer.periodic(const Duration(seconds: 1), (
+      timer,
+    ) {
+      final timeLeft =
+          VerifyEmailScreen.kResendVerificationEmailMaxSeconds - timer.tick;
+      if (timeLeft >= 0) {
+        context.read<VerifyEmailBloc>().add(
+          ResendVerificationEmailTimeLeftEvent(resendTimeLeft: timeLeft),
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _verificationListenTimer?.cancel();
+    _resendVerificationMailTimer?.cancel();
+    super.dispose();
+  }
+}
