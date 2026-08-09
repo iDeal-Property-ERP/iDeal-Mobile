@@ -33,6 +33,7 @@ import 'package:ideal_mobile/presentation/listings/data/repositories/listings_re
 import 'package:ideal_mobile/presentation/listings/domain/repositories/listings_repository.dart';
 import 'package:ideal_mobile/presentation/listings/domain/usecases/get_listing_filter_options.dart';
 import 'package:ideal_mobile/presentation/listings/domain/usecases/get_listings.dart';
+import 'package:ideal_mobile/presentation/listing_detail/listing_detail_injection.dart';
 import 'package:ideal_mobile/presentation/login/data/datasources/auth_remote_data_source.dart';
 import 'package:ideal_mobile/presentation/login/data/repositories/auth_repository_impl.dart';
 import 'package:ideal_mobile/presentation/login/domain/repositories/auth_repository.dart';
@@ -226,6 +227,7 @@ Future<void> configureDependencies({
     ..registerLazySingleton(() => DeleteChatUserDocument(sl<ChatRepository>()));
 
   registerNotificationsDependencies(sl);
+  registerListingDetailDependencies(sl);
 }
 
 void _registerDioInterceptor(Dio dio) {

@@ -2944,6 +2944,132 @@ abstract class AppLocalizations {
   /// **'Any'**
   String get listings_any;
 
+  /// No description provided for @listing_detail_keys.
+  ///
+  /// In en, this message translates to:
+  /// **'======== LISTING DETAIL KEYS ========'**
+  String get listing_detail_keys;
+
+  /// The number of reviews for a listing detail page.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0 {No reviews} =1 {1 review} other {{count} reviews}}'**
+  String listing_detail_reviews_count(int count);
+
+  /// No description provided for @listing_detail_verified.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified'**
+  String get listing_detail_verified;
+
+  /// No description provided for @listing_detail_trust_heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified & contract-backed by iDeal'**
+  String get listing_detail_trust_heading;
+
+  /// No description provided for @listing_detail_about.
+  ///
+  /// In en, this message translates to:
+  /// **'About this home'**
+  String get listing_detail_about;
+
+  /// No description provided for @listing_detail_amenities.
+  ///
+  /// In en, this message translates to:
+  /// **'What this place offers'**
+  String get listing_detail_amenities;
+
+  /// No description provided for @listing_detail_neighborhood.
+  ///
+  /// In en, this message translates to:
+  /// **'Neighborhood'**
+  String get listing_detail_neighborhood;
+
+  /// No description provided for @listing_detail_read_more.
+  ///
+  /// In en, this message translates to:
+  /// **'Read more'**
+  String get listing_detail_read_more;
+
+  /// No description provided for @listing_detail_show_less.
+  ///
+  /// In en, this message translates to:
+  /// **'Show less'**
+  String get listing_detail_show_less;
+
+  /// No description provided for @listing_detail_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get listing_detail_message;
+
+  /// No description provided for @listing_detail_call.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get listing_detail_call;
+
+  /// No description provided for @listing_detail_share.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get listing_detail_share;
+
+  /// The current photo number and total photo count.
+  ///
+  /// In en, this message translates to:
+  /// **'{current} / {total}'**
+  String listing_detail_photo_counter(int current, int total);
+
+  /// The number of additional listing photos.
+  ///
+  /// In en, this message translates to:
+  /// **'+{count}'**
+  String listing_detail_more_photos(int count);
+
+  /// No description provided for @listing_detail_no_obligation.
+  ///
+  /// In en, this message translates to:
+  /// **'No obligation to rent'**
+  String get listing_detail_no_obligation;
+
+  /// The deposit amount for a listing.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit: {amount}'**
+  String listing_detail_deposit(String amount);
+
+  /// The minimum rental duration for a listing.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum stay: {count} months'**
+  String listing_detail_minimum_stay(int count);
+
+  /// No description provided for @listing_detail_error_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load this home'**
+  String get listing_detail_error_title;
+
+  /// No description provided for @listing_detail_error_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get listing_detail_error_subtitle;
+
+  /// No description provided for @listing_detail_not_found.
+  ///
+  /// In en, this message translates to:
+  /// **'This home is no longer available.'**
+  String get listing_detail_not_found;
+
+  /// No description provided for @listing_detail_retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get listing_detail_retry;
+
   /// No description provided for @empty_views_keys.
   ///
   /// In en, this message translates to:

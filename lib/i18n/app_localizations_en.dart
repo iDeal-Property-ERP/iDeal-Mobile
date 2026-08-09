@@ -1564,6 +1564,88 @@ class AppLocalizationsEn extends AppLocalizations {
   String get listings_any => 'Any';
 
   @override
+  String get listing_detail_keys => '======== LISTING DETAIL KEYS ========';
+
+  @override
+  String listing_detail_reviews_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reviews',
+      one: '1 review',
+      zero: 'No reviews',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get listing_detail_verified => 'Verified';
+
+  @override
+  String get listing_detail_trust_heading =>
+      'Verified & contract-backed by iDeal';
+
+  @override
+  String get listing_detail_about => 'About this home';
+
+  @override
+  String get listing_detail_amenities => 'What this place offers';
+
+  @override
+  String get listing_detail_neighborhood => 'Neighborhood';
+
+  @override
+  String get listing_detail_read_more => 'Read more';
+
+  @override
+  String get listing_detail_show_less => 'Show less';
+
+  @override
+  String get listing_detail_message => 'Message';
+
+  @override
+  String get listing_detail_call => 'Call';
+
+  @override
+  String get listing_detail_share => 'Share';
+
+  @override
+  String listing_detail_photo_counter(int current, int total) {
+    return '$current / $total';
+  }
+
+  @override
+  String listing_detail_more_photos(int count) {
+    return '+$count';
+  }
+
+  @override
+  String get listing_detail_no_obligation => 'No obligation to rent';
+
+  @override
+  String listing_detail_deposit(String amount) {
+    return 'Deposit: $amount';
+  }
+
+  @override
+  String listing_detail_minimum_stay(int count) {
+    return 'Minimum stay: $count months';
+  }
+
+  @override
+  String get listing_detail_error_title => 'Couldn\'t load this home';
+
+  @override
+  String get listing_detail_error_subtitle =>
+      'Check your connection and try again.';
+
+  @override
+  String get listing_detail_not_found => 'This home is no longer available.';
+
+  @override
+  String get listing_detail_retry => 'Retry';
+
+  @override
   String get empty_views_keys =>
       '================ EMPTY VIEWS KEYS ================';
 

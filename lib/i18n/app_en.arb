@@ -627,6 +627,77 @@
   "listings_anywhere": "Anywhere",
   "listings_any": "Any",
 
+  "listing_detail_keys": "======== LISTING DETAIL KEYS ========",
+  "listing_detail_reviews_count": "{count, plural, =0 {No reviews} =1 {1 review} other {{count} reviews}}",
+  "@listing_detail_reviews_count": {
+    "description": "The number of reviews for a listing detail page.",
+    "placeholders": {
+      "count": {
+        "example": "48",
+        "type": "int"
+      }
+    }
+  },
+  "listing_detail_verified": "Verified",
+  "listing_detail_trust_heading": "Verified & contract-backed by iDeal",
+  "listing_detail_about": "About this home",
+  "listing_detail_amenities": "What this place offers",
+  "listing_detail_neighborhood": "Neighborhood",
+  "listing_detail_read_more": "Read more",
+  "listing_detail_show_less": "Show less",
+  "listing_detail_message": "Message",
+  "listing_detail_call": "Call",
+  "listing_detail_share": "Share",
+  "listing_detail_photo_counter": "{current} / {total}",
+  "@listing_detail_photo_counter": {
+    "description": "The current photo number and total photo count.",
+    "placeholders": {
+      "current": {
+        "example": "1",
+        "type": "int"
+      },
+      "total": {
+        "example": "13",
+        "type": "int"
+      }
+    }
+  },
+  "listing_detail_more_photos": "+{count}",
+  "@listing_detail_more_photos": {
+    "description": "The number of additional listing photos.",
+    "placeholders": {
+      "count": {
+        "example": "10",
+        "type": "int"
+      }
+    }
+  },
+  "listing_detail_no_obligation": "No obligation to rent",
+  "listing_detail_deposit": "Deposit: {amount}",
+  "@listing_detail_deposit": {
+    "description": "The deposit amount for a listing.",
+    "placeholders": {
+      "amount": {
+        "example": "$520",
+        "type": "String"
+      }
+    }
+  },
+  "listing_detail_minimum_stay": "Minimum stay: {count} months",
+  "@listing_detail_minimum_stay": {
+    "description": "The minimum rental duration for a listing.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "listing_detail_error_title": "Couldn't load this home",
+  "listing_detail_error_subtitle": "Check your connection and try again.",
+  "listing_detail_not_found": "This home is no longer available.",
+  "listing_detail_retry": "Retry",
+
   "empty_views_keys": "================ EMPTY VIEWS KEYS ================",
   "empty_views": "Empty Views",
   "empty_states": "Empty States",

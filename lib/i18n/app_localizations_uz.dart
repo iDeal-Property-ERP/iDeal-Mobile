@@ -1589,6 +1589,88 @@ class AppLocalizationsUz extends AppLocalizations {
   String get listings_any => 'Har qanday';
 
   @override
+  String get listing_detail_keys => '======== LISTING DETAIL KEYS ========';
+
+  @override
+  String listing_detail_reviews_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ta sharh',
+      one: '1 ta sharh',
+      zero: 'Sharhlar yo‘q',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get listing_detail_verified => 'Tekshirilgan';
+
+  @override
+  String get listing_detail_trust_heading =>
+      'iDeal tomonidan tekshirilgan va shartnoma bilan kafolatlangan';
+
+  @override
+  String get listing_detail_about => 'Bu uy haqida';
+
+  @override
+  String get listing_detail_amenities => 'Bu joyda nimalar bor';
+
+  @override
+  String get listing_detail_neighborhood => 'Atrof';
+
+  @override
+  String get listing_detail_read_more => 'Batafsil';
+
+  @override
+  String get listing_detail_show_less => 'Kamroq ko‘rsatish';
+
+  @override
+  String get listing_detail_message => 'Xabar yuborish';
+
+  @override
+  String get listing_detail_call => 'Qo‘ng‘iroq qilish';
+
+  @override
+  String get listing_detail_share => 'Ulashish';
+
+  @override
+  String listing_detail_photo_counter(int current, int total) {
+    return '$current / $total';
+  }
+
+  @override
+  String listing_detail_more_photos(int count) {
+    return '+$count';
+  }
+
+  @override
+  String get listing_detail_no_obligation => 'Ijaraga olish majburiyati yo‘q';
+
+  @override
+  String listing_detail_deposit(String amount) {
+    return 'Depozit: $amount';
+  }
+
+  @override
+  String listing_detail_minimum_stay(int count) {
+    return 'Minimal ijara muddati: $count oy';
+  }
+
+  @override
+  String get listing_detail_error_title => 'Bu uyni yuklab bo‘lmadi';
+
+  @override
+  String get listing_detail_error_subtitle =>
+      'Aloqani tekshiring va qayta urinib ko‘ring.';
+
+  @override
+  String get listing_detail_not_found => 'Bu uy endi mavjud emas.';
+
+  @override
+  String get listing_detail_retry => 'Qayta urinish';
+
+  @override
   String get empty_views_keys =>
       '================ Bo‘sh ko‘rinishlar kalitlari ================';
 

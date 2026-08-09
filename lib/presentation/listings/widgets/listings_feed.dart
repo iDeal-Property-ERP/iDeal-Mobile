@@ -1,10 +1,13 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ideal_mobile/constants/integration_test_keys.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_bloc.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_event.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_card.dart'
     as domain;
 import 'package:ideal_mobile/presentation/listings/widgets/listing_card.dart';
+import 'package:ideal_mobile/routes.gr.dart';
 import 'package:ideal_mobile/utils/responsive.dart';
 
 /// Extra height reserved by a card's information block after its image.
@@ -58,8 +61,12 @@ class ListingsFeedSliver extends StatelessWidget {
             delegate: SliverChildBuilderDelegate((context, index) {
               final listing = selection.items[index];
               return ListingCardTile(
+                key: keys.homePage.listingCardKey(listing.id),
                 listing: listing,
                 isFavorite: selection.favoriteIds.contains(listing.id),
+                onTap: () => context.router.push(
+                  ListingDetailRoute(listingId: listing.id),
+                ),
                 onFavoriteToggle: () {
                   context.read<ListingsBloc>().add(
                     ToggleFavoriteEvent(listing.id),

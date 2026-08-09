@@ -524,6 +524,77 @@
   "listings_anywhere": "Везде",
   "listings_any": "Любой",
 
+  "listing_detail_keys": "======== LISTING DETAIL KEYS ========",
+  "listing_detail_reviews_count": "{count, plural, =0 {Нет отзывов} one {1 отзыв} few {{count} отзыва} many {{count} отзывов} other {{count} отзыва}}",
+  "@listing_detail_reviews_count": {
+    "description": "Количество отзывов на странице объекта.",
+    "placeholders": {
+      "count": {
+        "example": "48",
+        "type": "int"
+      }
+    }
+  },
+  "listing_detail_verified": "Проверено",
+  "listing_detail_trust_heading": "Проверено iDeal и подкреплено договором",
+  "listing_detail_about": "Об этом объекте",
+  "listing_detail_amenities": "Что есть в этом жилье",
+  "listing_detail_neighborhood": "Район",
+  "listing_detail_read_more": "Читать далее",
+  "listing_detail_show_less": "Свернуть",
+  "listing_detail_message": "Написать",
+  "listing_detail_call": "Позвонить",
+  "listing_detail_share": "Поделиться",
+  "listing_detail_photo_counter": "{current} / {total}",
+  "@listing_detail_photo_counter": {
+    "description": "Номер текущей фотографии и общее количество фотографий.",
+    "placeholders": {
+      "current": {
+        "example": "1",
+        "type": "int"
+      },
+      "total": {
+        "example": "13",
+        "type": "int"
+      }
+    }
+  },
+  "listing_detail_more_photos": "+{count}",
+  "@listing_detail_more_photos": {
+    "description": "Количество дополнительных фотографий объекта.",
+    "placeholders": {
+      "count": {
+        "example": "10",
+        "type": "int"
+      }
+    }
+  },
+  "listing_detail_no_obligation": "Без обязательства арендовать",
+  "listing_detail_deposit": "Депозит: {amount}",
+  "@listing_detail_deposit": {
+    "description": "Сумма депозита за объект.",
+    "placeholders": {
+      "amount": {
+        "example": "$520",
+        "type": "String"
+      }
+    }
+  },
+  "listing_detail_minimum_stay": "Минимальный срок: {count} мес.",
+  "@listing_detail_minimum_stay": {
+    "description": "Минимальный срок аренды объекта.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "listing_detail_error_title": "Не удалось загрузить объект",
+  "listing_detail_error_subtitle": "Проверьте соединение и повторите попытку.",
+  "listing_detail_not_found": "Этот объект больше недоступен.",
+  "listing_detail_retry": "Повторить",
+
   "empty_views_keys": "================ Ключи пустых представлений ================",
   "empty_views": "Пустые представления",
   "empty_states": "Пустые состояния",

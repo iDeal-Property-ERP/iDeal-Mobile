@@ -524,6 +524,77 @@
   "listings_anywhere": "Hamma joyda",
   "listings_any": "Har qanday",
 
+  "listing_detail_keys": "======== LISTING DETAIL KEYS ========",
+  "listing_detail_reviews_count": "{count, plural, =0 {Sharhlar yo‘q} =1 {1 ta sharh} other {{count} ta sharh}}",
+  "@listing_detail_reviews_count": {
+    "description": "E'lon tafsilotlari sahifasidagi sharhlar soni.",
+    "placeholders": {
+      "count": {
+        "example": "48",
+        "type": "int"
+      }
+    }
+  },
+  "listing_detail_verified": "Tekshirilgan",
+  "listing_detail_trust_heading": "iDeal tomonidan tekshirilgan va shartnoma bilan kafolatlangan",
+  "listing_detail_about": "Bu uy haqida",
+  "listing_detail_amenities": "Bu joyda nimalar bor",
+  "listing_detail_neighborhood": "Atrof",
+  "listing_detail_read_more": "Batafsil",
+  "listing_detail_show_less": "Kamroq ko‘rsatish",
+  "listing_detail_message": "Xabar yuborish",
+  "listing_detail_call": "Qo‘ng‘iroq qilish",
+  "listing_detail_share": "Ulashish",
+  "listing_detail_photo_counter": "{current} / {total}",
+  "@listing_detail_photo_counter": {
+    "description": "Joriy surat raqami va jami suratlar soni.",
+    "placeholders": {
+      "current": {
+        "example": "1",
+        "type": "int"
+      },
+      "total": {
+        "example": "13",
+        "type": "int"
+      }
+    }
+  },
+  "listing_detail_more_photos": "+{count}",
+  "@listing_detail_more_photos": {
+    "description": "E'lonning qo‘shimcha suratlari soni.",
+    "placeholders": {
+      "count": {
+        "example": "10",
+        "type": "int"
+      }
+    }
+  },
+  "listing_detail_no_obligation": "Ijaraga olish majburiyati yo‘q",
+  "listing_detail_deposit": "Depozit: {amount}",
+  "@listing_detail_deposit": {
+    "description": "E'lon uchun depozit miqdori.",
+    "placeholders": {
+      "amount": {
+        "example": "$520",
+        "type": "String"
+      }
+    }
+  },
+  "listing_detail_minimum_stay": "Minimal ijara muddati: {count} oy",
+  "@listing_detail_minimum_stay": {
+    "description": "E'lon uchun minimal ijara muddati.",
+    "placeholders": {
+      "count": {
+        "example": "3",
+        "type": "int"
+      }
+    }
+  },
+  "listing_detail_error_title": "Bu uyni yuklab bo‘lmadi",
+  "listing_detail_error_subtitle": "Aloqani tekshiring va qayta urinib ko‘ring.",
+  "listing_detail_not_found": "Bu uy endi mavjud emas.",
+  "listing_detail_retry": "Qayta urinish",
+
   "empty_views_keys": "================ Bo‘sh ko‘rinishlar kalitlari ================",
   "empty_views": "Bo'sh ko'rinishlar",
   "empty_states": "Bo'sh davlatlar",

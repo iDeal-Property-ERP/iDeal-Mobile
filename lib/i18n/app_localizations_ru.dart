@@ -1592,6 +1592,90 @@ class AppLocalizationsRu extends AppLocalizations {
   String get listings_any => 'Любой';
 
   @override
+  String get listing_detail_keys => '======== LISTING DETAIL KEYS ========';
+
+  @override
+  String listing_detail_reviews_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count отзыва',
+      many: '$count отзывов',
+      few: '$count отзыва',
+      one: '1 отзыв',
+      zero: 'Нет отзывов',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get listing_detail_verified => 'Проверено';
+
+  @override
+  String get listing_detail_trust_heading =>
+      'Проверено iDeal и подкреплено договором';
+
+  @override
+  String get listing_detail_about => 'Об этом объекте';
+
+  @override
+  String get listing_detail_amenities => 'Что есть в этом жилье';
+
+  @override
+  String get listing_detail_neighborhood => 'Район';
+
+  @override
+  String get listing_detail_read_more => 'Читать далее';
+
+  @override
+  String get listing_detail_show_less => 'Свернуть';
+
+  @override
+  String get listing_detail_message => 'Написать';
+
+  @override
+  String get listing_detail_call => 'Позвонить';
+
+  @override
+  String get listing_detail_share => 'Поделиться';
+
+  @override
+  String listing_detail_photo_counter(int current, int total) {
+    return '$current / $total';
+  }
+
+  @override
+  String listing_detail_more_photos(int count) {
+    return '+$count';
+  }
+
+  @override
+  String get listing_detail_no_obligation => 'Без обязательства арендовать';
+
+  @override
+  String listing_detail_deposit(String amount) {
+    return 'Депозит: $amount';
+  }
+
+  @override
+  String listing_detail_minimum_stay(int count) {
+    return 'Минимальный срок: $count мес.';
+  }
+
+  @override
+  String get listing_detail_error_title => 'Не удалось загрузить объект';
+
+  @override
+  String get listing_detail_error_subtitle =>
+      'Проверьте соединение и повторите попытку.';
+
+  @override
+  String get listing_detail_not_found => 'Этот объект больше недоступен.';
+
+  @override
+  String get listing_detail_retry => 'Повторить';
+
+  @override
   String get empty_views_keys =>
       '================ Ключи пустых представлений ================';
 

@@ -25,12 +25,23 @@ class SignupPageKeys {
 class HomePageKeys {
   final productCardKey = const Key('productCardKey');
   final listingsFeedKey = const Key('listingsFeedKey');
+
+  /// Per-listing so sibling tiles in the feed never share a key. Integration
+  /// tests can target one card by id, or match the `listingCard_` prefix.
+  Key listingCardKey(int listingId) => ValueKey('listingCard_$listingId');
+}
+
+class ListingDetailPageKeys {
+  final screen = const Key('listingDetailScreen');
+  final hero = const Key('listingDetailHero');
+  final messageButton = const Key('listingDetailMessageButton');
 }
 
 class Keys {
   final signInPage = LoginPageKeys();
   final signupPage = SignupPageKeys();
   final homePage = HomePageKeys();
+  final listingDetail = ListingDetailPageKeys();
 }
 
 final keys = Keys();

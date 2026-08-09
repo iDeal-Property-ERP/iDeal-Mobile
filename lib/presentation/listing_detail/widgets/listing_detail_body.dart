@@ -1,0 +1,172 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
+import 'package:ideal_mobile/constants/integration_test_keys.dart';
+import 'package:ideal_mobile/i18n/localization.dart';
+import 'package:ideal_mobile/presentation/listing_detail/bloc/listing_detail_bloc.dart';
+import 'package:ideal_mobile/presentation/listing_detail/bloc/listing_detail_event.dart';
+import 'package:ideal_mobile/presentation/listing_detail/domain/entities/listing_detail.dart';
+import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_about.dart';
+import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_amenities.dart';
+import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_bottom_bar.dart';
+import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_error.dart';
+import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_hero.dart';
+import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_neighborhood.dart';
+import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_not_found.dart';
+import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_shimmer.dart';
+import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_spec_chips.dart';
+import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_thumb_strip.dart';
+import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_title_block.dart';
+import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_trust_card.dart';
+import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
+
+class ListingDetailBody extends StatelessWidget {
+  const ListingDetailBody({super.key, this.listingId});
+
+  final int? listingId;
+
+  @override
+  Widget build(BuildContext context) {
+    final isLoading = context.select<ListingDetailBloc, bool>(
+      (bloc) => bloc.state.isLoading,
+    );
+    final errorMessage = context.select<ListingDetailBloc, String?>(
+      (bloc) => bloc.state.errorMessage,
+    );
+    final detail = context.select<ListingDetailBloc, ListingDetail?>(
+      (bloc) => bloc.state.detail,
+    );
+
+    if (isLoading) {
+      return Scaffold(
+        key: keys.listingDetail.screen,
+        backgroundColor: context.currentTheme.bgSurfaceBase,
+        body: const SafeArea(child: ListingDetailShimmer()),
+      );
+    }
+
+    if (errorMessage != null) {
+      return Scaffold(
+        key: keys.listingDetail.screen,
+        backgroundColor: context.currentTheme.bgSurfaceBase,
+        body: SafeArea(
+          child: ListingDetailError(
+            message: errorMessage,
+            onRetry: () => _retry(context, detail),
+          ),
+        ),
+      );
+    }
+
+    if (detail == null) {
+      return Scaffold(
+        key: keys.listingDetail.screen,
+        backgroundColor: context.currentTheme.bgSurfaceBase,
+        body: const SafeArea(child: ListingDetailNotFound()),
+      );
+    }
+
+    return Scaffold(
+      key: keys.listingDetail.screen,
+      backgroundColor: context.currentTheme.bgSurfaceBase,
+      body: Column(
+        children: [
+          Expanded(child: _buildScrollContent(context, detail)),
+          ListingDetailBottomBar(detail: detail),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildScrollContent(BuildContext context, ListingDetail detail) {
+    final sections = <Widget>[
+      ListingDetailTitleBlock(detail: detail),
+      const SizedBox(height: 14),
+      ListingDetailSpecChips(detail: detail),
+    ];
+
+    if (detail.verificationChecklist.isNotEmpty) {
+      sections.add(const SizedBox(height: 14));
+      sections.add(ListingDetailTrustCard(detail: detail));
+    }
+
+    if (detail.description?.trim().isNotEmpty ?? false) {
+      sections.add(const SizedBox(height: 14));
+      sections.add(ListingDetailAbout(description: detail.description!));
+    }
+
+    if (detail.amenities.isNotEmpty) {
+      sections.add(const SizedBox(height: 14));
+      sections.add(ListingDetailAmenities(amenities: detail.amenities));
+    }
+
+    if (detail.district?.trim().isNotEmpty ?? false) {
+      sections.add(const SizedBox(height: 14));
+      sections.add(ListingDetailNeighborhood(district: detail.district));
+    }
+
+    sections.add(const SizedBox(height: 14));
+    sections.add(_buildFootnote(context, detail));
+
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(child: ListingDetailHero(detail: detail)),
+        SliverToBoxAdapter(child: ListingDetailThumbStrip(detail: detail)),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: sections,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFootnote(BuildContext context, ListingDetail detail) {
+    final segments = <String>[
+      context.localization.listing_detail_no_obligation,
+    ];
+
+    if (detail.depositAmount != null) {
+      segments.add(
+        context.localization.listing_detail_deposit(
+          _formatAmount(detail.depositAmount!, detail.currency),
+        ),
+      );
+    }
+
+    if (detail.minimumStay != null) {
+      segments.add(
+        context.localization.listing_detail_minimum_stay(detail.minimumStay!),
+      );
+    }
+
+    return Text(
+      segments.join(' · '),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      textAlign: TextAlign.left,
+      style: AppTextStyles.p4Regular.copyWith(
+        color: context.currentTheme.textNeutralSecondary,
+      ),
+    );
+  }
+
+  void _retry(BuildContext context, ListingDetail? detail) {
+    final id = listingId ?? detail?.id;
+    if (id == null) return;
+
+    context.read<ListingDetailBloc>().add(RetryListingDetailEvent(id));
+  }
+
+  String _formatAmount(double amount, String currency) {
+    final value = amount == amount.roundToDouble()
+        ? amount.toInt().toString()
+        : amount.toString();
+
+    return currency == 'USD' ? '\$$value' : '$value $currency';
+  }
+}
