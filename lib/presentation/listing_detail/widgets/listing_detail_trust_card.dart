@@ -13,7 +13,9 @@ class ListingDetailTrustCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final checklist = detail.verificationChecklist;
-    if (checklist.isEmpty) return const SizedBox.shrink();
+    if (!detail.verificationIsVerified || checklist.isEmpty) {
+      return const SizedBox.shrink();
+    }
 
     return Container(
       padding: const EdgeInsets.all(12),

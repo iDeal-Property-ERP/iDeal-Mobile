@@ -58,6 +58,7 @@ class _ListingDetailHeroState extends State<ListingDetailHero> {
   @override
   Widget build(BuildContext context) {
     final photos = widget.detail.photos;
+    final topControlOffset = MediaQuery.paddingOf(context).top + 12;
 
     return SizedBox(
       key: keys.listingDetail.hero,
@@ -79,7 +80,7 @@ class _ListingDetailHeroState extends State<ListingDetailHero> {
             },
           ),
           Positioned(
-            top: 12,
+            top: topControlOffset,
             left: 16,
             child: _HeroCircleButton(
               icon: TablerIcons.arrow_left,
@@ -88,7 +89,7 @@ class _ListingDetailHeroState extends State<ListingDetailHero> {
             ),
           ),
           Positioned(
-            top: 12,
+            top: topControlOffset,
             right: 16,
             child: Row(
               children: [

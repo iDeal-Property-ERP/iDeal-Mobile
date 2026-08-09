@@ -1,14 +1,15 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:ideal_mobile/presentation/listing_detail/bloc/listing_detail_bloc.dart';
 import 'package:ideal_mobile/presentation/listing_detail/bloc/listing_detail_event.dart';
 import 'package:ideal_mobile/presentation/listing_detail/bloc/listing_detail_state.dart';
 import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_amenities.dart';
 import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_body.dart';
+import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_map.dart';
 import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_not_found.dart';
 import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_shimmer.dart';
 import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_trust_card.dart';
+import 'package:mocktail/mocktail.dart';
 
 import '../../test_helpers.dart';
 import 'listing_detail_test_helpers.dart';
@@ -71,6 +72,46 @@ void main() {
         expect(find.text('Furnished'), findsOneWidget);
       },
     );
+
+    testWidgets('location section renders only when both coordinates exist', (
+      tester,
+    ) async {
+      final withCoordinates = mockListingDetailBloc(
+        ListingDetailState.test(detail: buildListingDetail()),
+      );
+      await tester.runWidgetTest(
+        child: const ListingDetailBody(listingId: 12),
+        providers: [
+          BlocProvider<ListingDetailBloc>.value(value: withCoordinates),
+        ],
+      );
+      expect(find.byType(ListingDetailMap), findsOneWidget);
+
+      final withoutLongitude = mockListingDetailBloc(
+        ListingDetailState.test(detail: buildListingDetail(mapLon: null)),
+      );
+      await tester.runWidgetTest(
+        child: const ListingDetailBody(listingId: 12),
+        providers: [
+          BlocProvider<ListingDetailBloc>.value(value: withoutLongitude),
+        ],
+      );
+      expect(find.byType(ListingDetailMap), findsNothing);
+    });
+
+    testWidgets('trust card requires a verified listing', (tester) async {
+      final detail = buildListingDetail(verificationIsVerified: false);
+      final bloc = mockListingDetailBloc(
+        ListingDetailState.test(detail: detail),
+      );
+
+      await tester.runWidgetTest(
+        child: const ListingDetailBody(listingId: 12),
+        providers: [BlocProvider<ListingDetailBloc>.value(value: bloc)],
+      );
+
+      expect(find.byType(ListingDetailTrustCard), findsNothing);
+    });
 
     testWidgets(
       'trust and amenities sections are absent when their data is empty',

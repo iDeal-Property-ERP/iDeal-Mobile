@@ -7,16 +7,21 @@ import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 import 'package:shimmer/shimmer.dart';
 
 class ListingCardImage extends StatelessWidget {
-  const ListingCardImage({super.key, required this.imageUrl});
+  const ListingCardImage({
+    super.key,
+    required this.imageUrl,
+    this.fit = BoxFit.cover,
+  });
 
   final String? imageUrl;
+  final BoxFit fit;
 
   @override
   Widget build(BuildContext context) {
     final hasImage = imageUrl?.trim().isNotEmpty ?? false;
 
     if (AppEnvironment.isTestEnvironment) {
-      return Image.asset(Assets.test.images.testImage.path, fit: BoxFit.cover);
+      return Image.asset(Assets.test.images.testImage.path, fit: fit);
     }
 
     if (!hasImage) {
@@ -34,10 +39,12 @@ class ListingCardImage extends StatelessWidget {
 
     return CachedNetworkImage(
       imageUrl: imageUrl!,
-      fit: BoxFit.cover,
+      fit: fit,
       placeholder: (context, url) => Shimmer.fromColors(
         baseColor: context.currentTheme.bgNeutralLight100,
-        highlightColor: context.currentTheme.bgNeutralLight100.withOpacity(0.6),
+        highlightColor: context.currentTheme.bgNeutralLight100.withValues(
+          alpha: 0.6,
+        ),
         child: ColoredBox(color: context.currentTheme.bgNeutralLight100),
       ),
       errorWidget: (context, url, error) => ColoredBox(

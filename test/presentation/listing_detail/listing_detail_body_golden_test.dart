@@ -69,7 +69,7 @@ void main() {
           children: [
             ListingDetailAbout(description: detail.description!),
             ListingDetailAmenities(amenities: detail.amenities),
-            ListingDetailNeighborhood(district: detail.district),
+            ListingDetailNeighborhood(district: detail.district, onTap: () {}),
           ],
         );
 

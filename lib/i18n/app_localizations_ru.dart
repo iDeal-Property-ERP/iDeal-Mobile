@@ -1625,6 +1625,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get listing_detail_neighborhood => 'Район';
 
   @override
+  String get listing_detail_location => 'Расположение';
+
+  @override
+  String get listing_detail_map_open => 'Открыть карту';
+
+  @override
+  String get listing_detail_map_unavailable => 'Карта недоступна';
+
+  @override
   String get listing_detail_read_more => 'Читать далее';
 
   @override

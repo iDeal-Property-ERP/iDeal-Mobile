@@ -23,6 +23,9 @@ ListingDetail buildListingDetail({
   String? district = 'Yunusobod',
   double? price = 520,
   double score = 9.2,
+  double? mapLat = 41.36,
+  double? mapLon = 69.28,
+  bool verificationIsVerified = true,
 }) {
   return ListingDetail(
     id: 12,
@@ -43,8 +46,8 @@ ListingDetail buildListingDetail({
     isFeatured: false,
     score: score,
     reviewCount: 48,
-    mapLat: 41.36,
-    mapLon: 69.28,
+    mapLat: mapLat,
+    mapLon: mapLon,
     description: description,
     depositAmount: 520,
     minimumStay: 3,
@@ -69,7 +72,7 @@ ListingDetail buildListingDetail({
           ListingAmenity(slug: 'parking', name: 'Parking', icon: 'parking'),
           ListingAmenity(slug: 'elevator', name: 'Elevator', icon: 'elevator'),
         ],
-    verificationIsVerified: true,
+    verificationIsVerified: verificationIsVerified,
     verificationChecklist:
         verificationChecklist ??
         const [

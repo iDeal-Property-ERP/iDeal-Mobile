@@ -2986,6 +2986,24 @@ abstract class AppLocalizations {
   /// **'Neighborhood'**
   String get listing_detail_neighborhood;
 
+  /// No description provided for @listing_detail_location.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get listing_detail_location;
+
+  /// No description provided for @listing_detail_map_open.
+  ///
+  /// In en, this message translates to:
+  /// **'Open map'**
+  String get listing_detail_map_open;
+
+  /// No description provided for @listing_detail_map_unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Map unavailable'**
+  String get listing_detail_map_unavailable;
+
   /// No description provided for @listing_detail_read_more.
   ///
   /// In en, this message translates to:

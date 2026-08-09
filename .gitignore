@@ -57,6 +57,7 @@ test/**/failures/**/*.*
 .env
 .env.*
 !.env.example
+ios/Flutter/GoogleMaps.xcconfig
 
 # Local IDE and tooling state
 .run/

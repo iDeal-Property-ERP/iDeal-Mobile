@@ -11,6 +11,7 @@ import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_
 import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_bottom_bar.dart';
 import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_error.dart';
 import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_hero.dart';
+import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_map.dart';
 import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_neighborhood.dart';
 import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_not_found.dart';
 import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_shimmer.dart';
@@ -18,6 +19,7 @@ import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_
 import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_thumb_strip.dart';
 import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_title_block.dart';
 import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_trust_card.dart';
+import 'package:ideal_mobile/presentation/map/listing_map_screen.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 
 class ListingDetailBody extends StatelessWidget {
@@ -85,7 +87,8 @@ class ListingDetailBody extends StatelessWidget {
       ListingDetailSpecChips(detail: detail),
     ];
 
-    if (detail.verificationChecklist.isNotEmpty) {
+    if (detail.verificationIsVerified &&
+        detail.verificationChecklist.isNotEmpty) {
       sections.add(const SizedBox(height: 14));
       sections.add(ListingDetailTrustCard(detail: detail));
     }
@@ -100,9 +103,26 @@ class ListingDetailBody extends StatelessWidget {
       sections.add(ListingDetailAmenities(amenities: detail.amenities));
     }
 
+    final hasCoordinates = detail.mapLat != null && detail.mapLon != null;
+
     if (detail.district?.trim().isNotEmpty ?? false) {
       sections.add(const SizedBox(height: 14));
-      sections.add(ListingDetailNeighborhood(district: detail.district));
+      sections.add(
+        ListingDetailNeighborhood(
+          district: detail.district,
+          onTap: hasCoordinates ? () => _openMap(context, detail) : null,
+        ),
+      );
+    }
+
+    if (hasCoordinates) {
+      sections.add(const SizedBox(height: 14));
+      sections.add(
+        ListingDetailMap(
+          detail: detail,
+          onTap: () => _openMap(context, detail),
+        ),
+      );
     }
 
     sections.add(const SizedBox(height: 14));
@@ -160,6 +180,12 @@ class ListingDetailBody extends StatelessWidget {
     if (id == null) return;
 
     context.read<ListingDetailBloc>().add(RetryListingDetailEvent(id));
+  }
+
+  void _openMap(BuildContext context, ListingDetail detail) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => ListingMapScreen(detail: detail)),
+    );
   }
 
   String _formatAmount(double amount, String currency) {

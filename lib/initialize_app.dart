@@ -17,6 +17,7 @@ import 'package:ideal_mobile/firebase_options_prod.dart' as prod;
 import 'package:ideal_mobile/firebase_options_stage.dart' as stage;
 import 'package:ideal_mobile/services/ai/gemini_service.dart';
 import 'package:ideal_mobile/services/firebase_auth_services.dart';
+import 'package:ideal_mobile/services/mapkit_service.dart';
 import 'package:ideal_mobile/services/notification_service.dart';
 import 'package:ideal_mobile/services/performance_monitoring_service.dart';
 import 'package:ideal_mobile/services/remote_config_service.dart';
@@ -68,6 +69,8 @@ Future<void> initializeApp({
   await SystemChrome.setPreferredOrientations([.portraitUp, .portraitDown]);
 
   await dotenv.load();
+
+  await MapkitService.instance.initialize();
 
   await configureDependencies(
     firebaseAuth: firebaseAuth,

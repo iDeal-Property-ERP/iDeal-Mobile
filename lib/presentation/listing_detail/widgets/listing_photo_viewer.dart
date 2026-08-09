@@ -1,10 +1,16 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
+import 'package:ideal_mobile/gen/assets.gen.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
 import 'package:ideal_mobile/presentation/listing_detail/domain/entities/listing_detail.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/listing_card_image.dart';
+import 'package:ideal_mobile/utils/app_environment.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
+import 'package:photo_view/photo_view.dart';
+import 'package:photo_view/photo_view_gallery.dart';
+import 'package:shimmer/shimmer.dart';
 
 class ListingPhotoViewer extends StatefulWidget {
   const ListingPhotoViewer({
@@ -22,6 +28,8 @@ class ListingPhotoViewer extends StatefulWidget {
 
 class _ListingPhotoViewerState extends State<ListingPhotoViewer> {
   late final PageController _pageController;
+  late final List<PhotoViewController> _photoControllers;
+  late final List<PhotoViewScaleStateController> _scaleStateControllers;
   late int _currentIndex;
 
   @override
@@ -29,11 +37,25 @@ class _ListingPhotoViewerState extends State<ListingPhotoViewer> {
     super.initState();
     _currentIndex = _safeIndex(widget.initialIndex, widget.photos.length);
     _pageController = PageController(initialPage: _currentIndex);
+    _photoControllers = List.generate(
+      widget.photos.length,
+      (_) => PhotoViewController(),
+    );
+    _scaleStateControllers = List.generate(
+      widget.photos.length,
+      (_) => PhotoViewScaleStateController(),
+    );
   }
 
   @override
   void dispose() {
     _pageController.dispose();
+    for (final controller in _photoControllers) {
+      controller.dispose();
+    }
+    for (final controller in _scaleStateControllers) {
+      controller.dispose();
+    }
     super.dispose();
   }
 
@@ -48,21 +70,37 @@ class _ListingPhotoViewerState extends State<ListingPhotoViewer> {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            PageView.builder(
-              controller: _pageController,
-              itemCount: photos.isEmpty ? 1 : photos.length,
-              onPageChanged: (index) => setState(() => _currentIndex = index),
-              itemBuilder: (context, index) {
-                final imageUrl = photos.isEmpty ? null : photos[index].imageUrl;
-                return InteractiveViewer(
-                  minScale: 1,
-                  maxScale: 4,
-                  boundaryMargin: const EdgeInsets.all(32),
-                  child: SizedBox.expand(
-                    child: ListingCardImage(imageUrl: imageUrl),
-                  ),
-                );
-              },
+            LayoutBuilder(
+              builder: (context, constraints) => PhotoViewGallery.builder(
+                pageController: _pageController,
+                itemCount: photos.isEmpty ? 1 : photos.length,
+                backgroundDecoration: const BoxDecoration(color: Colors.black),
+                loadingBuilder: _buildLoadingImage,
+                onPageChanged: _handlePageChanged,
+                builder: (context, index) {
+                  if (photos.isEmpty) {
+                    return PhotoViewGalleryPageOptions.customChild(
+                      child: const SizedBox.expand(
+                        child: ListingCardImage(
+                          imageUrl: null,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
+                      childSize: constraints.biggest,
+                    );
+                  }
+
+                  return PhotoViewGalleryPageOptions(
+                    imageProvider: _imageProvider(photos[index].imageUrl),
+                    errorBuilder: _buildErrorImage,
+                    initialScale: PhotoViewComputedScale.contained,
+                    minScale: PhotoViewComputedScale.contained,
+                    maxScale: PhotoViewComputedScale.contained * 4,
+                    controller: _photoControllers[index],
+                    scaleStateController: _scaleStateControllers[index],
+                  );
+                },
+              ),
             ),
             Positioned(
               top: 12,
@@ -161,6 +199,53 @@ class _ListingPhotoViewerState extends State<ListingPhotoViewer> {
     if (index >= length) return length - 1;
     return index;
   }
+
+  void _handlePageChanged(int index) {
+    final previousIndex = _currentIndex;
+    setState(() => _currentIndex = index);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _resetScale(previousIndex);
+      _resetScale(index);
+    });
+  }
+
+  void _resetScale(int index) {
+    if (index < 0 || index >= _scaleStateControllers.length) return;
+    _photoControllers[index].reset();
+    _scaleStateControllers[index].reset();
+  }
+
+  ImageProvider _imageProvider(String imageUrl) {
+    if (AppEnvironment.isTestEnvironment) {
+      return AssetImage(Assets.test.images.testImage.path);
+    }
+    return CachedNetworkImageProvider(imageUrl);
+  }
+
+  Widget _buildLoadingImage(BuildContext context, ImageChunkEvent? event) {
+    return Shimmer.fromColors(
+      baseColor: context.currentTheme.bgNeutralLight100,
+      highlightColor: context.currentTheme.bgNeutralLight100.withValues(
+        alpha: 0.6,
+      ),
+      child: ColoredBox(color: context.currentTheme.bgNeutralLight100),
+    );
+  }
+
+  Widget _buildErrorImage(
+    BuildContext context,
+    Object error,
+    StackTrace? stackTrace,
+  ) {
+    return ColoredBox(
+      color: context.currentTheme.bgNeutralLight100,
+      child: Icon(
+        Icons.error_outline,
+        color: context.currentTheme.bgErrorHover,
+      ),
+    );
+  }
 }
 
 class _ViewerCircleButton extends StatelessWidget {
@@ -218,10 +303,11 @@ class _ViewerThumbStrip extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           scrollDirection: Axis.horizontal,
           itemCount: photos.length,
-          separatorBuilder: (_, __) => const SizedBox(width: 8),
+          separatorBuilder: (_, _) => const SizedBox(width: 8),
           itemBuilder: (context, index) {
             final selected = index == selectedIndex;
             return GestureDetector(
+              key: Key('listing_photo_viewer_thumbnail_$index'),
               onTap: () => onSelected(index),
               child: Container(
                 width: 64,
