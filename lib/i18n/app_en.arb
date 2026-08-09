@@ -529,6 +529,95 @@
   "ai_chat_error_network": "No internet connection. Please check your network and try again.",
   "ai_chat_error_generic": "Something went wrong. Please try again.",
 
+  "listings_keys": "======== LISTINGS KEYS ========",
+  "listings_per_month": "/mo",
+  "listings_rooms_count": "{count} rooms",
+  "@listings_rooms_count": {
+    "description": "The number of rooms in a listing.",
+    "placeholders": {
+      "count": {
+        "example": "2",
+        "type": "num"
+      }
+    }
+  },
+  "listings_area_sqm": "{area} m²",
+  "@listings_area_sqm": {
+    "description": "The area of a listing in square metres.",
+    "placeholders": {
+      "area": {
+        "example": "68",
+        "type": "num"
+      }
+    }
+  },
+  "listings_floor_only": "Floor {floor}",
+  "@listings_floor_only": {
+    "description": "The floor number of a listing when the building's total floors are unknown.",
+    "placeholders": {
+      "floor": {
+        "example": "4",
+        "type": "num"
+      }
+    }
+  },
+  "listings_floor_of": "Floor {floor} of {total}",
+  "@listings_floor_of": {
+    "description": "The floor number and total floors of a listing.",
+    "placeholders": {
+      "floor": {
+        "example": "4",
+        "type": "num"
+      },
+      "total": {
+        "example": "9",
+        "type": "num"
+      }
+    }
+  },
+  "listings_save": "Save",
+  "listings_verified": "Verified",
+  "listings_tariff_standard": "Standard",
+  "listings_tariff_comfort": "Comfort",
+  "listings_tariff_premium": "Premium",
+  "listings_furnishing_furnished": "Furnished",
+  "listings_furnishing_semi_furnished": "Semi-furnished",
+  "listings_furnishing_unfurnished": "Unfurnished",
+  "listings_all_filters": "All filters",
+  "listings_apply": "Apply",
+  "listings_clear_all": "Clear all",
+  "listings_clear_filters": "Clear filters",
+  "listings_filter_district": "District",
+  "listings_filter_price": "Price range",
+  "listings_filter_rooms": "Rooms",
+  "listings_filter_furnishing": "Furnishing",
+  "listings_filter_tariff": "Tariff",
+  "listings_range_min": "Min",
+  "listings_range_max": "Max",
+  "listings_chip_verified": "Verified only",
+  "listings_chip_furnished": "Furnished",
+  "listings_chip_comfort": "Comfort",
+  "listings_chip_premium": "Premium",
+  "listings_search_placeholder": "Search rentals",
+  "listings_view_map": "Map",
+  "listings_result_count": "{count} verified homes",
+  "@listings_result_count": {
+    "description": "The number of verified homes in the search results.",
+    "placeholders": {
+      "count": {
+        "example": "12",
+        "type": "num"
+      }
+    }
+  },
+  "listings_empty_title": "No homes match these filters",
+  "listings_empty_subtitle": "Try widening your search or clearing some filters.",
+  "listings_error_title": "Couldn't load homes",
+  "listings_error_subtitle": "Check your connection and try again.",
+  "listings_retry": "Retry",
+  "listings_anywhere": "Anywhere",
+  "listings_any": "Any",
+
   "empty_views_keys": "================ EMPTY VIEWS KEYS ================",
   "empty_views": "Empty Views",
   "empty_states": "Empty States",

@@ -28,6 +28,11 @@ import 'package:ideal_mobile/presentation/home/data/datasources/product_remote_d
 import 'package:ideal_mobile/presentation/home/data/repositories/product_repository_impl.dart';
 import 'package:ideal_mobile/presentation/home/domain/repositories/product_repository.dart';
 import 'package:ideal_mobile/presentation/home/domain/usecases/get_products.dart';
+import 'package:ideal_mobile/presentation/listings/data/datasources/listings_remote_data_source.dart';
+import 'package:ideal_mobile/presentation/listings/data/repositories/listings_repository_impl.dart';
+import 'package:ideal_mobile/presentation/listings/domain/repositories/listings_repository.dart';
+import 'package:ideal_mobile/presentation/listings/domain/usecases/get_listing_filter_options.dart';
+import 'package:ideal_mobile/presentation/listings/domain/usecases/get_listings.dart';
 import 'package:ideal_mobile/presentation/login/data/datasources/auth_remote_data_source.dart';
 import 'package:ideal_mobile/presentation/login/data/repositories/auth_repository_impl.dart';
 import 'package:ideal_mobile/presentation/login/domain/repositories/auth_repository.dart';
@@ -51,6 +56,7 @@ import 'package:ideal_mobile/presentation/profile/domain/usecases/update_profile
 import 'package:ideal_mobile/routes.gr.dart';
 import 'package:ideal_mobile/services/ai/gemini_service.dart';
 import 'package:ideal_mobile/services/dynamic_icon_service.dart';
+import 'package:ideal_mobile/services/favorites_service.dart';
 import 'package:ideal_mobile/services/firebase_auth_services.dart';
 import 'package:ideal_mobile/services/firestore_service.dart';
 import 'package:ideal_mobile/services/in_app_review_service.dart';
@@ -131,6 +137,7 @@ Future<void> configureDependencies({
     ..registerLazySingleton(() => UpdateProfile(sl<ProfileRepository>()))
     ..registerLazySingleton(() => UpdateProfileAvatar(sl<ProfileRepository>()))
     ..registerLazySingleton(() => RemoveProfileAvatar(sl<ProfileRepository>()))
+    // Still consumed by my_orders, which is unrelated to the home feed.
     ..registerLazySingleton(() => GetProducts(sl()))
     ..registerLazySingleton<ProductRepository>(
       () => ProductRepositoryImpl(sl()),
@@ -138,6 +145,17 @@ Future<void> configureDependencies({
     ..registerLazySingleton<ProductRemoteDatasource>(
       () => ProductRemoteDataSrcImpl(sl()),
     )
+    ..registerLazySingleton<ListingsRepository>(
+      () => ListingsRepositoryImpl(sl<ListingsRemoteDataSource>()),
+    )
+    ..registerLazySingleton<ListingsRemoteDataSource>(
+      () => ListingsRemoteDataSourceImpl(sl<Dio>(), sl<CacheManager>()),
+    )
+    ..registerLazySingleton(() => GetListings(sl<ListingsRepository>()))
+    ..registerLazySingleton(
+      () => GetListingFilterOptions(sl<ListingsRepository>()),
+    )
+    ..registerLazySingleton<FavoritesService>(FavoritesService.new)
     ..registerLazySingleton(() => GetProductDetail(sl()))
     ..registerLazySingleton<ProductDetailRepository>(
       () => ProductDetailRepositoryImpl(sl()),

@@ -350,6 +350,9 @@ class DarkAppColors implements ThemeColorPalette {
   @override
   Color get bgSurfaceBase => AppColors.bgSurfaceBaseDark;
 
+  @override
+  Color get bgSurfaceSheet => AppColors.bgSurfaceSheetDark;
+
   // Gradient Overlay Colors
   @override
   Color get gradientOverlayTransparent => AppColors.black.withOpacity(0.0);

@@ -1408,6 +1408,134 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ai_chat_error_generic => 'Something went wrong. Please try again.';
 
   @override
+  String get listings_keys => '======== LISTINGS KEYS ========';
+
+  @override
+  String get listings_per_month => '/mo';
+
+  @override
+  String listings_rooms_count(num count) {
+    return '$count rooms';
+  }
+
+  @override
+  String listings_area_sqm(num area) {
+    return '$area m²';
+  }
+
+  @override
+  String listings_floor_only(num floor) {
+    return 'Floor $floor';
+  }
+
+  @override
+  String listings_floor_of(num floor, num total) {
+    return 'Floor $floor of $total';
+  }
+
+  @override
+  String get listings_save => 'Save';
+
+  @override
+  String get listings_verified => 'Verified';
+
+  @override
+  String get listings_tariff_standard => 'Standard';
+
+  @override
+  String get listings_tariff_comfort => 'Comfort';
+
+  @override
+  String get listings_tariff_premium => 'Premium';
+
+  @override
+  String get listings_furnishing_furnished => 'Furnished';
+
+  @override
+  String get listings_furnishing_semi_furnished => 'Semi-furnished';
+
+  @override
+  String get listings_furnishing_unfurnished => 'Unfurnished';
+
+  @override
+  String get listings_all_filters => 'All filters';
+
+  @override
+  String get listings_apply => 'Apply';
+
+  @override
+  String get listings_clear_all => 'Clear all';
+
+  @override
+  String get listings_clear_filters => 'Clear filters';
+
+  @override
+  String get listings_filter_district => 'District';
+
+  @override
+  String get listings_filter_price => 'Price range';
+
+  @override
+  String get listings_filter_rooms => 'Rooms';
+
+  @override
+  String get listings_filter_furnishing => 'Furnishing';
+
+  @override
+  String get listings_filter_tariff => 'Tariff';
+
+  @override
+  String get listings_range_min => 'Min';
+
+  @override
+  String get listings_range_max => 'Max';
+
+  @override
+  String get listings_chip_verified => 'Verified only';
+
+  @override
+  String get listings_chip_furnished => 'Furnished';
+
+  @override
+  String get listings_chip_comfort => 'Comfort';
+
+  @override
+  String get listings_chip_premium => 'Premium';
+
+  @override
+  String get listings_search_placeholder => 'Search rentals';
+
+  @override
+  String get listings_view_map => 'Map';
+
+  @override
+  String listings_result_count(num count) {
+    return '$count verified homes';
+  }
+
+  @override
+  String get listings_empty_title => 'No homes match these filters';
+
+  @override
+  String get listings_empty_subtitle =>
+      'Try widening your search or clearing some filters.';
+
+  @override
+  String get listings_error_title => 'Couldn\'t load homes';
+
+  @override
+  String get listings_error_subtitle => 'Check your connection and try again.';
+
+  @override
+  String get listings_retry => 'Retry';
+
+  @override
+  String get listings_anywhere => 'Anywhere';
+
+  @override
+  String get listings_any => 'Any';
+
+  @override
   String get empty_views_keys =>
       '================ EMPTY VIEWS KEYS ================';
 

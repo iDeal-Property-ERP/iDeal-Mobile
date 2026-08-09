@@ -1435,6 +1435,134 @@ class AppLocalizationsRu extends AppLocalizations {
       'Что-то пошло не так. Пожалуйста, попробуйте еще раз.';
 
   @override
+  String get listings_keys => '======== LISTINGS KEYS ========';
+
+  @override
+  String get listings_per_month => '/мес';
+
+  @override
+  String listings_rooms_count(num count) {
+    return '$count комн.';
+  }
+
+  @override
+  String listings_area_sqm(num area) {
+    return '$area м²';
+  }
+
+  @override
+  String listings_floor_only(num floor) {
+    return 'Этаж $floor';
+  }
+
+  @override
+  String listings_floor_of(num floor, num total) {
+    return 'Этаж $floor из $total';
+  }
+
+  @override
+  String get listings_save => 'Сохранить';
+
+  @override
+  String get listings_verified => 'Проверено';
+
+  @override
+  String get listings_tariff_standard => 'Стандарт';
+
+  @override
+  String get listings_tariff_comfort => 'Комфорт';
+
+  @override
+  String get listings_tariff_premium => 'Премиум';
+
+  @override
+  String get listings_furnishing_furnished => 'С мебелью';
+
+  @override
+  String get listings_furnishing_semi_furnished => 'Частично';
+
+  @override
+  String get listings_furnishing_unfurnished => 'Без мебели';
+
+  @override
+  String get listings_all_filters => 'Все фильтры';
+
+  @override
+  String get listings_apply => 'Применить';
+
+  @override
+  String get listings_clear_all => 'Сбросить всё';
+
+  @override
+  String get listings_clear_filters => 'Сбросить фильтры';
+
+  @override
+  String get listings_filter_district => 'Район';
+
+  @override
+  String get listings_filter_price => 'Диапазон цен';
+
+  @override
+  String get listings_filter_rooms => 'Комнаты';
+
+  @override
+  String get listings_filter_furnishing => 'Мебель';
+
+  @override
+  String get listings_filter_tariff => 'Тариф';
+
+  @override
+  String get listings_range_min => 'Мин';
+
+  @override
+  String get listings_range_max => 'Макс';
+
+  @override
+  String get listings_chip_verified => 'Только проверенные';
+
+  @override
+  String get listings_chip_furnished => 'С мебелью';
+
+  @override
+  String get listings_chip_comfort => 'Комфорт';
+
+  @override
+  String get listings_chip_premium => 'Премиум';
+
+  @override
+  String get listings_search_placeholder => 'Поиск аренды';
+
+  @override
+  String get listings_view_map => 'Карта';
+
+  @override
+  String listings_result_count(num count) {
+    return '$count проверенных объектов';
+  }
+
+  @override
+  String get listings_empty_title => 'Нет объектов по этим фильтрам';
+
+  @override
+  String get listings_empty_subtitle =>
+      'Попробуйте расширить поиск или сбросить фильтры.';
+
+  @override
+  String get listings_error_title => 'Не удалось загрузить';
+
+  @override
+  String get listings_error_subtitle => 'Проверьте соединение и повторите.';
+
+  @override
+  String get listings_retry => 'Повторить';
+
+  @override
+  String get listings_anywhere => 'Везде';
+
+  @override
+  String get listings_any => 'Любой';
+
+  @override
   String get empty_views_keys =>
       '================ Ключи пустых представлений ================';
 

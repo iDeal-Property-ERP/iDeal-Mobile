@@ -11,10 +11,12 @@ import 'package:ideal_mobile/core/services/injection_container.dart';
 import 'package:ideal_mobile/presentation/home/bloc/home_bloc.dart';
 import 'package:ideal_mobile/presentation/home/bloc/home_event.dart';
 import 'package:ideal_mobile/presentation/home/bloc/home_state.dart';
-import 'package:ideal_mobile/presentation/home/data/dummy_product_data.dart';
 import 'package:ideal_mobile/presentation/home/domain/entities/product.dart';
 import 'package:ideal_mobile/presentation/home/domain/usecases/get_products.dart';
 import 'package:ideal_mobile/presentation/home/home_screen.dart';
+import 'package:ideal_mobile/presentation/listings/bloc/listings_bloc.dart';
+import 'package:ideal_mobile/presentation/listings/bloc/listings_event.dart';
+import 'package:ideal_mobile/presentation/listings/bloc/listings_state.dart';
 import 'package:ideal_mobile/presentation/product_detail/domain/usecases/get_product_detail.dart';
 import 'package:ideal_mobile/services/performance_monitoring_service.dart';
 import 'package:ideal_mobile/widgets/styling/app_theme_data.dart';
@@ -24,6 +26,9 @@ import '../../flutter_test_config.dart';
 import '../../test_helpers.dart';
 
 class MockHomeBloc extends MockBloc<HomeEvent, HomeState> implements HomeBloc {}
+
+class MockListingsBloc extends MockBloc<ListingsEvent, ListingsState>
+    implements ListingsBloc {}
 
 class MockGetProducts extends Mock implements GetProducts {}
 
@@ -66,10 +71,15 @@ void main() {
       //arrange
       final homeBloc = MockHomeBloc();
       when(() => homeBloc.state).thenReturn(HomeState.test());
+      final listingsBloc = MockListingsBloc();
+      when(() => listingsBloc.state).thenReturn(ListingsState.test());
 
       //act
       await tester.runWidgetTest(
-        providers: [BlocProvider<HomeBloc>.value(value: homeBloc)],
+        providers: [
+          BlocProvider<HomeBloc>.value(value: homeBloc),
+          BlocProvider<ListingsBloc>.value(value: listingsBloc),
+        ],
         child: const HomeScreenWrapper(),
       );
 
@@ -86,12 +96,9 @@ void main() {
         builder: () {
           //arrange
           final homeBloc = MockHomeBloc();
-          when(() => homeBloc.state).thenReturn(
-            HomeState.test(
-              topProducts: dummyProductData,
-              filteredProducts: dummyProductData,
-            ),
-          );
+          when(() => homeBloc.state).thenReturn(HomeState.test());
+          final listingsBloc = MockListingsBloc();
+          when(() => listingsBloc.state).thenReturn(ListingsState.test());
 
           // act, assert
           return GoldenTestGroup(
@@ -100,12 +107,18 @@ void main() {
             children: [
               createTestScenario(
                 name: 'home_screen Light Theme',
-                providers: [BlocProvider<HomeBloc>.value(value: homeBloc)],
+                providers: [
+                  BlocProvider<HomeBloc>.value(value: homeBloc),
+                  BlocProvider<ListingsBloc>.value(value: listingsBloc),
+                ],
                 child: const HomeScreenWrapper(),
               ),
               createTestScenario(
                 name: 'home_screen Dark Theme',
-                providers: [BlocProvider<HomeBloc>.value(value: homeBloc)],
+                providers: [
+                  BlocProvider<HomeBloc>.value(value: homeBloc),
+                  BlocProvider<ListingsBloc>.value(value: listingsBloc),
+                ],
                 child: const HomeScreenWrapper(),
                 theme: AppThemeEnum.DarkTheme,
               ),

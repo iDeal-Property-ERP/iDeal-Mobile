@@ -129,6 +129,8 @@ abstract class ThemeColorPalette {
 
   Color get bgSurfaceBase;
 
+  Color get bgSurfaceSheet;
+
   // Background Colors - Shades
   Color get bgShadesWhite;
 

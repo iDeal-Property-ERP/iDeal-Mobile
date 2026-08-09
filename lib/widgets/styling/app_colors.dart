@@ -154,5 +154,8 @@ class AppColors {
   static const Color bgSurfaceBase = Color(0xFFFFFFFF);
   static const Color bgSurfaceBaseDark = Color(0xFF000000);
 
+  static const Color bgSurfaceSheet = Color(0xFFFFFFFF);
+  static const Color bgSurfaceSheetDark = Color(0xFF0E1013);
+
   static const Color bgIndigoDefault = Color(0xFF4F46E5);
 }

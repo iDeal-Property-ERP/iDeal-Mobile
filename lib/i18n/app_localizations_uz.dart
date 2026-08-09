@@ -1433,6 +1433,134 @@ class AppLocalizationsUz extends AppLocalizations {
       'Nimadir xato ketdi. Iltimos, qayta urinib koʻring.';
 
   @override
+  String get listings_keys => '======== LISTINGS KEYS ========';
+
+  @override
+  String get listings_per_month => '/oy';
+
+  @override
+  String listings_rooms_count(num count) {
+    return '$count xona';
+  }
+
+  @override
+  String listings_area_sqm(num area) {
+    return '$area m²';
+  }
+
+  @override
+  String listings_floor_only(num floor) {
+    return '$floor-qavat';
+  }
+
+  @override
+  String listings_floor_of(num floor, num total) {
+    return '$total dan $floor-qavat';
+  }
+
+  @override
+  String get listings_save => 'Saqlash';
+
+  @override
+  String get listings_verified => 'Tekshirilgan';
+
+  @override
+  String get listings_tariff_standard => 'Standart';
+
+  @override
+  String get listings_tariff_comfort => 'Komfort';
+
+  @override
+  String get listings_tariff_premium => 'Premium';
+
+  @override
+  String get listings_furnishing_furnished => 'Jihozlangan';
+
+  @override
+  String get listings_furnishing_semi_furnished => 'Qisman';
+
+  @override
+  String get listings_furnishing_unfurnished => 'Jihozlanmagan';
+
+  @override
+  String get listings_all_filters => 'Barcha filtrlar';
+
+  @override
+  String get listings_apply => 'Qo\'llash';
+
+  @override
+  String get listings_clear_all => 'Hammasini tozalash';
+
+  @override
+  String get listings_clear_filters => 'Filtrlarni tozalash';
+
+  @override
+  String get listings_filter_district => 'Tuman';
+
+  @override
+  String get listings_filter_price => 'Narx oralig\'i';
+
+  @override
+  String get listings_filter_rooms => 'Xonalar';
+
+  @override
+  String get listings_filter_furnishing => 'Jihoz';
+
+  @override
+  String get listings_filter_tariff => 'Tarif';
+
+  @override
+  String get listings_range_min => 'Min';
+
+  @override
+  String get listings_range_max => 'Maks';
+
+  @override
+  String get listings_chip_verified => 'Faqat tekshirilgan';
+
+  @override
+  String get listings_chip_furnished => 'Jihozlangan';
+
+  @override
+  String get listings_chip_comfort => 'Komfort';
+
+  @override
+  String get listings_chip_premium => 'Premium';
+
+  @override
+  String get listings_search_placeholder => 'Ijara qidirish';
+
+  @override
+  String get listings_view_map => 'Xarita';
+
+  @override
+  String listings_result_count(num count) {
+    return '$count ta tekshirilgan uy';
+  }
+
+  @override
+  String get listings_empty_title => 'Bu filtrlarga mos uy yo\'q';
+
+  @override
+  String get listings_empty_subtitle =>
+      'Qidiruvni kengaytiring yoki filtrlarni tozalang.';
+
+  @override
+  String get listings_error_title => 'Uylarni yuklab bo\'lmadi';
+
+  @override
+  String get listings_error_subtitle => 'Aloqani tekshiring va qayta urining.';
+
+  @override
+  String get listings_retry => 'Qayta urinish';
+
+  @override
+  String get listings_anywhere => 'Hamma joyda';
+
+  @override
+  String get listings_any => 'Har qanday';
+
+  @override
   String get empty_views_keys =>
       '================ Bo‘sh ko‘rinishlar kalitlari ================';
 

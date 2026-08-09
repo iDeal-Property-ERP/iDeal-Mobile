@@ -8,6 +8,7 @@ import 'package:ideal_mobile/presentation/ai_chat/widgets/ai_chat_bottom_sheet.d
 import 'package:ideal_mobile/presentation/checkout/data/cart_sample_data.dart';
 import 'package:ideal_mobile/presentation/home/bloc/home_bloc.dart';
 import 'package:ideal_mobile/presentation/home/bloc/home_event.dart';
+import 'package:ideal_mobile/presentation/home/data/dummy_product_data.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 
 class AiChatFab extends StatefulWidget {
@@ -22,7 +23,9 @@ class _AiChatFabState extends State<AiChatFab> {
 
   void _openChat() {
     final homeBloc = context.read<HomeBloc>();
-    final products = homeBloc.state.topProducts;
+    // The home feed now serves rent listings, so HomeBloc no longer carries
+    // products. The AI chat's product catalogue falls back to the sample data.
+    final products = dummyProductData;
 
     _aiChatBloc ??= AiChatBloc(
       geminiService: sl(),

@@ -2656,6 +2656,240 @@ abstract class AppLocalizations {
   /// **'Something went wrong. Please try again.'**
   String get ai_chat_error_generic;
 
+  /// No description provided for @listings_keys.
+  ///
+  /// In en, this message translates to:
+  /// **'======== LISTINGS KEYS ========'**
+  String get listings_keys;
+
+  /// No description provided for @listings_per_month.
+  ///
+  /// In en, this message translates to:
+  /// **'/mo'**
+  String get listings_per_month;
+
+  /// The number of rooms in a listing.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} rooms'**
+  String listings_rooms_count(num count);
+
+  /// The area of a listing in square metres.
+  ///
+  /// In en, this message translates to:
+  /// **'{area} m²'**
+  String listings_area_sqm(num area);
+
+  /// The floor number of a listing when the building's total floors are unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Floor {floor}'**
+  String listings_floor_only(num floor);
+
+  /// The floor number and total floors of a listing.
+  ///
+  /// In en, this message translates to:
+  /// **'Floor {floor} of {total}'**
+  String listings_floor_of(num floor, num total);
+
+  /// No description provided for @listings_save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get listings_save;
+
+  /// No description provided for @listings_verified.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified'**
+  String get listings_verified;
+
+  /// No description provided for @listings_tariff_standard.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard'**
+  String get listings_tariff_standard;
+
+  /// No description provided for @listings_tariff_comfort.
+  ///
+  /// In en, this message translates to:
+  /// **'Comfort'**
+  String get listings_tariff_comfort;
+
+  /// No description provided for @listings_tariff_premium.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium'**
+  String get listings_tariff_premium;
+
+  /// No description provided for @listings_furnishing_furnished.
+  ///
+  /// In en, this message translates to:
+  /// **'Furnished'**
+  String get listings_furnishing_furnished;
+
+  /// No description provided for @listings_furnishing_semi_furnished.
+  ///
+  /// In en, this message translates to:
+  /// **'Semi-furnished'**
+  String get listings_furnishing_semi_furnished;
+
+  /// No description provided for @listings_furnishing_unfurnished.
+  ///
+  /// In en, this message translates to:
+  /// **'Unfurnished'**
+  String get listings_furnishing_unfurnished;
+
+  /// No description provided for @listings_all_filters.
+  ///
+  /// In en, this message translates to:
+  /// **'All filters'**
+  String get listings_all_filters;
+
+  /// No description provided for @listings_apply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get listings_apply;
+
+  /// No description provided for @listings_clear_all.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all'**
+  String get listings_clear_all;
+
+  /// No description provided for @listings_clear_filters.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear filters'**
+  String get listings_clear_filters;
+
+  /// No description provided for @listings_filter_district.
+  ///
+  /// In en, this message translates to:
+  /// **'District'**
+  String get listings_filter_district;
+
+  /// No description provided for @listings_filter_price.
+  ///
+  /// In en, this message translates to:
+  /// **'Price range'**
+  String get listings_filter_price;
+
+  /// No description provided for @listings_filter_rooms.
+  ///
+  /// In en, this message translates to:
+  /// **'Rooms'**
+  String get listings_filter_rooms;
+
+  /// No description provided for @listings_filter_furnishing.
+  ///
+  /// In en, this message translates to:
+  /// **'Furnishing'**
+  String get listings_filter_furnishing;
+
+  /// No description provided for @listings_filter_tariff.
+  ///
+  /// In en, this message translates to:
+  /// **'Tariff'**
+  String get listings_filter_tariff;
+
+  /// No description provided for @listings_range_min.
+  ///
+  /// In en, this message translates to:
+  /// **'Min'**
+  String get listings_range_min;
+
+  /// No description provided for @listings_range_max.
+  ///
+  /// In en, this message translates to:
+  /// **'Max'**
+  String get listings_range_max;
+
+  /// No description provided for @listings_chip_verified.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified only'**
+  String get listings_chip_verified;
+
+  /// No description provided for @listings_chip_furnished.
+  ///
+  /// In en, this message translates to:
+  /// **'Furnished'**
+  String get listings_chip_furnished;
+
+  /// No description provided for @listings_chip_comfort.
+  ///
+  /// In en, this message translates to:
+  /// **'Comfort'**
+  String get listings_chip_comfort;
+
+  /// No description provided for @listings_chip_premium.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium'**
+  String get listings_chip_premium;
+
+  /// No description provided for @listings_search_placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Search rentals'**
+  String get listings_search_placeholder;
+
+  /// No description provided for @listings_view_map.
+  ///
+  /// In en, this message translates to:
+  /// **'Map'**
+  String get listings_view_map;
+
+  /// The number of verified homes in the search results.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} verified homes'**
+  String listings_result_count(num count);
+
+  /// No description provided for @listings_empty_title.
+  ///
+  /// In en, this message translates to:
+  /// **'No homes match these filters'**
+  String get listings_empty_title;
+
+  /// No description provided for @listings_empty_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Try widening your search or clearing some filters.'**
+  String get listings_empty_subtitle;
+
+  /// No description provided for @listings_error_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load homes'**
+  String get listings_error_title;
+
+  /// No description provided for @listings_error_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get listings_error_subtitle;
+
+  /// No description provided for @listings_retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get listings_retry;
+
+  /// No description provided for @listings_anywhere.
+  ///
+  /// In en, this message translates to:
+  /// **'Anywhere'**
+  String get listings_anywhere;
+
+  /// No description provided for @listings_any.
+  ///
+  /// In en, this message translates to:
+  /// **'Any'**
+  String get listings_any;
+
   /// No description provided for @empty_views_keys.
   ///
   /// In en, this message translates to:

@@ -425,6 +425,96 @@
   "ai_chat_error_timeout": "Javob juda uzoq davom etdi. Iltimos, qayta urinib koʻring.",
   "ai_chat_error_network": "Internet aloqasi yo'q. Iltimos, tarmoqingizni tekshiring va qaytadan urining.",
   "ai_chat_error_generic": "Nimadir xato ketdi. Iltimos, qayta urinib koʻring.",
+
+  "listings_keys": "======== LISTINGS KEYS ========",
+  "listings_per_month": "/oy",
+  "listings_rooms_count": "{count} xona",
+  "@listings_rooms_count": {
+    "description": "E'londagi xonalar soni.",
+    "placeholders": {
+      "count": {
+        "example": "2",
+        "type": "num"
+      }
+    }
+  },
+  "listings_area_sqm": "{area} m²",
+  "@listings_area_sqm": {
+    "description": "E'lon maydoni kvadrat metrda.",
+    "placeholders": {
+      "area": {
+        "example": "68",
+        "type": "num"
+      }
+    }
+  },
+  "listings_floor_only": "{floor}-qavat",
+  "@listings_floor_only": {
+    "description": "The floor number of a listing when the building's total floors are unknown.",
+    "placeholders": {
+      "floor": {
+        "example": "4",
+        "type": "num"
+      }
+    }
+  },
+  "listings_floor_of": "{total} dan {floor}-qavat",
+  "@listings_floor_of": {
+    "description": "E'lonning qavati va jami qavatlari.",
+    "placeholders": {
+      "floor": {
+        "example": "4",
+        "type": "num"
+      },
+      "total": {
+        "example": "9",
+        "type": "num"
+      }
+    }
+  },
+  "listings_save": "Saqlash",
+  "listings_verified": "Tekshirilgan",
+  "listings_tariff_standard": "Standart",
+  "listings_tariff_comfort": "Komfort",
+  "listings_tariff_premium": "Premium",
+  "listings_furnishing_furnished": "Jihozlangan",
+  "listings_furnishing_semi_furnished": "Qisman",
+  "listings_furnishing_unfurnished": "Jihozlanmagan",
+  "listings_all_filters": "Barcha filtrlar",
+  "listings_apply": "Qo'llash",
+  "listings_clear_all": "Hammasini tozalash",
+  "listings_clear_filters": "Filtrlarni tozalash",
+  "listings_filter_district": "Tuman",
+  "listings_filter_price": "Narx oralig'i",
+  "listings_filter_rooms": "Xonalar",
+  "listings_filter_furnishing": "Jihoz",
+  "listings_filter_tariff": "Tarif",
+  "listings_range_min": "Min",
+  "listings_range_max": "Maks",
+  "listings_chip_verified": "Faqat tekshirilgan",
+  "listings_chip_furnished": "Jihozlangan",
+  "listings_chip_comfort": "Komfort",
+  "listings_chip_premium": "Premium",
+  "listings_search_placeholder": "Ijara qidirish",
+  "listings_view_map": "Xarita",
+  "listings_result_count": "{count} ta tekshirilgan uy",
+  "@listings_result_count": {
+    "description": "Qidiruvdagi tekshirilgan uylar soni.",
+    "placeholders": {
+      "count": {
+        "example": "12",
+        "type": "num"
+      }
+    }
+  },
+  "listings_empty_title": "Bu filtrlarga mos uy yo'q",
+  "listings_empty_subtitle": "Qidiruvni kengaytiring yoki filtrlarni tozalang.",
+  "listings_error_title": "Uylarni yuklab bo'lmadi",
+  "listings_error_subtitle": "Aloqani tekshiring va qayta urining.",
+  "listings_retry": "Qayta urinish",
+  "listings_anywhere": "Hamma joyda",
+  "listings_any": "Har qanday",
+
   "empty_views_keys": "================ Bo‘sh ko‘rinishlar kalitlari ================",
   "empty_views": "Bo'sh ko'rinishlar",
   "empty_states": "Bo'sh davlatlar",

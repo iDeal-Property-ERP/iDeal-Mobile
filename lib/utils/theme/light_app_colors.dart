@@ -346,6 +346,9 @@ class LightAppColors implements ThemeColorPalette {
   @override
   Color get bgSurfaceBase => AppColors.bgSurfaceBase;
 
+  @override
+  Color get bgSurfaceSheet => AppColors.bgSurfaceSheet;
+
   // Gradient Overlay Colors
   @override
   Color get gradientOverlayTransparent => AppColors.white.withOpacity(0.0);

@@ -1,0 +1,68 @@
+import 'package:equatable/equatable.dart';
+import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filters.dart';
+
+abstract class ListingsEvent extends Equatable {
+  const ListingsEvent();
+}
+
+class LoadListingsEvent extends ListingsEvent {
+  const LoadListingsEvent();
+
+  @override
+  List<Object> get props => [];
+}
+
+class LoadMoreListingsEvent extends ListingsEvent {
+  const LoadMoreListingsEvent();
+
+  @override
+  List<Object> get props => [];
+}
+
+class SearchListingsEvent extends ListingsEvent {
+  const SearchListingsEvent(this.query);
+
+  final String query;
+
+  @override
+  List<Object> get props => [query];
+}
+
+class ApplyListingFiltersEvent extends ListingsEvent {
+  const ApplyListingFiltersEvent(this.filters);
+
+  final ListingFilters filters;
+
+  @override
+  List<Object> get props => [filters];
+}
+
+class ClearListingFiltersEvent extends ListingsEvent {
+  const ClearListingFiltersEvent();
+
+  @override
+  List<Object> get props => [];
+}
+
+class LoadFilterOptionsEvent extends ListingsEvent {
+  const LoadFilterOptionsEvent();
+
+  @override
+  List<Object> get props => [];
+}
+
+class ToggleFavoriteEvent extends ListingsEvent {
+  const ToggleFavoriteEvent(this.listingId);
+
+  final int listingId;
+
+  @override
+  List<Object> get props => [listingId];
+}
+
+class LoadFavoritesEvent extends ListingsEvent {
+  const LoadFavoritesEvent();
+
+  @override
+  List<Object> get props => [];
+}

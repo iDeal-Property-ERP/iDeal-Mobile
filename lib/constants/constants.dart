@@ -97,6 +97,7 @@ const String paymentMethodAxis = 'Axis Bank **** **** **** 8395';
 
 // Performance Monitoring Traces
 const String kTraceApiGetProducts = 'api_get_products';
+const String kTraceApiGetListings = 'api_get_listings';
 const String kTraceLoginEmailPassword = 'login_email_password';
 const String kTraceLoginGoogle = 'login_google';
 const String kTraceLoginApple = 'login_apple';

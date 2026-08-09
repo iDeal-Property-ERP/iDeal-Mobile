@@ -425,6 +425,96 @@
   "ai_chat_error_timeout": "Ответ занял слишком много времени. Пожалуйста, попробуйте еще раз.",
   "ai_chat_error_network": "Нет подключения к Интернету. Пожалуйста, проверьте свою сеть и повторите попытку.",
   "ai_chat_error_generic": "Что-то пошло не так. Пожалуйста, попробуйте еще раз.",
+
+  "listings_keys": "======== LISTINGS KEYS ========",
+  "listings_per_month": "/мес",
+  "listings_rooms_count": "{count} комн.",
+  "@listings_rooms_count": {
+    "description": "Количество комнат в объявлении.",
+    "placeholders": {
+      "count": {
+        "example": "2",
+        "type": "num"
+      }
+    }
+  },
+  "listings_area_sqm": "{area} м²",
+  "@listings_area_sqm": {
+    "description": "Площадь объекта в квадратных метрах.",
+    "placeholders": {
+      "area": {
+        "example": "68",
+        "type": "num"
+      }
+    }
+  },
+  "listings_floor_only": "Этаж {floor}",
+  "@listings_floor_only": {
+    "description": "The floor number of a listing when the building's total floors are unknown.",
+    "placeholders": {
+      "floor": {
+        "example": "4",
+        "type": "num"
+      }
+    }
+  },
+  "listings_floor_of": "Этаж {floor} из {total}",
+  "@listings_floor_of": {
+    "description": "Этаж и общее количество этажей объекта.",
+    "placeholders": {
+      "floor": {
+        "example": "4",
+        "type": "num"
+      },
+      "total": {
+        "example": "9",
+        "type": "num"
+      }
+    }
+  },
+  "listings_save": "Сохранить",
+  "listings_verified": "Проверено",
+  "listings_tariff_standard": "Стандарт",
+  "listings_tariff_comfort": "Комфорт",
+  "listings_tariff_premium": "Премиум",
+  "listings_furnishing_furnished": "С мебелью",
+  "listings_furnishing_semi_furnished": "Частично",
+  "listings_furnishing_unfurnished": "Без мебели",
+  "listings_all_filters": "Все фильтры",
+  "listings_apply": "Применить",
+  "listings_clear_all": "Сбросить всё",
+  "listings_clear_filters": "Сбросить фильтры",
+  "listings_filter_district": "Район",
+  "listings_filter_price": "Диапазон цен",
+  "listings_filter_rooms": "Комнаты",
+  "listings_filter_furnishing": "Мебель",
+  "listings_filter_tariff": "Тариф",
+  "listings_range_min": "Мин",
+  "listings_range_max": "Макс",
+  "listings_chip_verified": "Только проверенные",
+  "listings_chip_furnished": "С мебелью",
+  "listings_chip_comfort": "Комфорт",
+  "listings_chip_premium": "Премиум",
+  "listings_search_placeholder": "Поиск аренды",
+  "listings_view_map": "Карта",
+  "listings_result_count": "{count} проверенных объектов",
+  "@listings_result_count": {
+    "description": "Количество проверенных объектов в результатах поиска.",
+    "placeholders": {
+      "count": {
+        "example": "12",
+        "type": "num"
+      }
+    }
+  },
+  "listings_empty_title": "Нет объектов по этим фильтрам",
+  "listings_empty_subtitle": "Попробуйте расширить поиск или сбросить фильтры.",
+  "listings_error_title": "Не удалось загрузить",
+  "listings_error_subtitle": "Проверьте соединение и повторите.",
+  "listings_retry": "Повторить",
+  "listings_anywhere": "Везде",
+  "listings_any": "Любой",
+
   "empty_views_keys": "================ Ключи пустых представлений ================",
   "empty_views": "Пустые представления",
   "empty_states": "Пустые состояния",

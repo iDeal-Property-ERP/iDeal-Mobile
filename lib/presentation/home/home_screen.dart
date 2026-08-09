@@ -9,6 +9,8 @@ import 'package:ideal_mobile/presentation/home/bloc/home_bloc.dart';
 import 'package:ideal_mobile/presentation/home/bloc/home_event.dart';
 import 'package:ideal_mobile/presentation/home/widgets/bottom_nav_bar.dart';
 import 'package:ideal_mobile/presentation/home/widgets/home_screen_body.dart';
+import 'package:ideal_mobile/presentation/listings/bloc/listings_bloc.dart';
+import 'package:ideal_mobile/presentation/listings/bloc/listings_event.dart';
 import 'package:ideal_mobile/presentation/my_orders/my_orders_screen.dart';
 import 'package:ideal_mobile/presentation/profile/profile_screen.dart';
 import 'package:ideal_mobile/services/in_app_review_service.dart';
@@ -20,9 +22,16 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<HomeBloc>(
-      create: (_) =>
-          HomeBloc(getProducts: sl())..add(const GetTopProductDataEvent()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<HomeBloc>(create: (_) => HomeBloc()),
+        BlocProvider<ListingsBloc>(
+          create: (_) => ListingsBloc()
+            ..add(const LoadFavoritesEvent())
+            ..add(const LoadFilterOptionsEvent())
+            ..add(const LoadListingsEvent()),
+        ),
+      ],
       child: const HomeScreenWrapper(),
     );
   }

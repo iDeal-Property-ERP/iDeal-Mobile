@@ -24,6 +24,7 @@ class SignupPageKeys {
 
 class HomePageKeys {
   final productCardKey = const Key('productCardKey');
+  final listingsFeedKey = const Key('listingsFeedKey');
 }
 
 class Keys {
