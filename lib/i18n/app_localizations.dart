@@ -1516,17 +1516,71 @@ abstract class AppLocalizations {
   /// **'================ NOTIFICATIONS KEYS ================'**
   String get notifications_keys;
 
-  /// No description provided for @notifications_delete_successfully.
-  ///
-  /// In en, this message translates to:
-  /// **'Notification Delete Successfully'**
-  String get notifications_delete_successfully;
-
   /// No description provided for @empty_notifications_title.
   ///
   /// In en, this message translates to:
   /// **'No Notifications Yet'**
   String get empty_notifications_title;
+
+  /// No description provided for @notifications_mark_all_read.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark all read'**
+  String get notifications_mark_all_read;
+
+  /// No description provided for @notifications_push_enabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Push notifications'**
+  String get notifications_push_enabled;
+
+  /// No description provided for @notifications_push_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive alerts about your iDeal activity.'**
+  String get notifications_push_description;
+
+  /// No description provided for @notifications_payments.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments'**
+  String get notifications_payments;
+
+  /// No description provided for @notifications_bookings.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings'**
+  String get notifications_bookings;
+
+  /// No description provided for @notifications_maintenance.
+  ///
+  /// In en, this message translates to:
+  /// **'Maintenance'**
+  String get notifications_maintenance;
+
+  /// No description provided for @notifications_leases.
+  ///
+  /// In en, this message translates to:
+  /// **'Leases'**
+  String get notifications_leases;
+
+  /// No description provided for @notifications_general.
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get notifications_general;
+
+  /// No description provided for @notifications_permission_denied.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are disabled in your device settings.'**
+  String get notifications_permission_denied;
+
+  /// No description provided for @notifications_open_settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open settings'**
+  String get notifications_open_settings;
 
   /// No description provided for @settings_keys.
   ///

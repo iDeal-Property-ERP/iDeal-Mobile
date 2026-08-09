@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 import 'package:ideal_mobile/widgets/shimmer/shimmer_text.dart';
+import 'package:shimmer/shimmer.dart';
 
 class NotificationShimmerCard extends StatelessWidget {
   const NotificationShimmerCard({super.key, required this.showAnimation});

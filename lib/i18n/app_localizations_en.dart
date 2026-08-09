@@ -784,11 +784,39 @@ class AppLocalizationsEn extends AppLocalizations {
       '================ NOTIFICATIONS KEYS ================';
 
   @override
-  String get notifications_delete_successfully =>
-      'Notification Delete Successfully';
+  String get empty_notifications_title => 'No Notifications Yet';
 
   @override
-  String get empty_notifications_title => 'No Notifications Yet';
+  String get notifications_mark_all_read => 'Mark all read';
+
+  @override
+  String get notifications_push_enabled => 'Push notifications';
+
+  @override
+  String get notifications_push_description =>
+      'Receive alerts about your iDeal activity.';
+
+  @override
+  String get notifications_payments => 'Payments';
+
+  @override
+  String get notifications_bookings => 'Bookings';
+
+  @override
+  String get notifications_maintenance => 'Maintenance';
+
+  @override
+  String get notifications_leases => 'Leases';
+
+  @override
+  String get notifications_general => 'General';
+
+  @override
+  String get notifications_permission_denied =>
+      'Notifications are disabled in your device settings.';
+
+  @override
+  String get notifications_open_settings => 'Open settings';
 
   @override
   String get settings_keys => '================ SETTINGS KEYS ================';

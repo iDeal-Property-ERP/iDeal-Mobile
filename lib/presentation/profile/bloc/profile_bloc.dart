@@ -14,6 +14,7 @@ import 'package:ideal_mobile/presentation/profile/domain/usecases/remove_profile
 import 'package:ideal_mobile/presentation/profile/domain/usecases/update_profile.dart';
 import 'package:ideal_mobile/presentation/profile/domain/usecases/update_profile_avatar.dart';
 import 'package:ideal_mobile/services/firebase_auth_services.dart';
+import 'package:ideal_mobile/services/notification_service.dart';
 import 'package:ideal_mobile/services/performance_monitoring_service.dart';
 import 'package:ideal_mobile/services/secure_storage_service.dart';
 import 'package:ideal_mobile/shared_pref/prefs.dart';
@@ -148,6 +149,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   void _onSignOutEvent(SignOutEvent event, Emitter<ProfileState> emit) async {
     try {
+      await NotificationService.instance.unregisterDevice();
       await Prefs.clear();
       if (sl.isRegistered<SecureStorageService>()) {
         await sl<SecureStorageService>().clearAuthTokens();

@@ -1,11 +1,9 @@
 import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ideal_mobile/i18n/localization.dart';
 import 'package:ideal_mobile/presentation/notifications/bloc/notification_bloc.dart';
 import 'package:ideal_mobile/presentation/notifications/bloc/notification_event.dart';
 import 'package:ideal_mobile/presentation/notifications/bloc/notification_state.dart';
-import 'package:ideal_mobile/presentation/notifications/model/notification_model.dart';
 import 'package:ideal_mobile/presentation/notifications/widgets/empty_notifications_view.dart';
 import 'package:ideal_mobile/presentation/notifications/widgets/notification_app_bar.dart';
 import 'package:ideal_mobile/presentation/notifications/widgets/notification_list.dart';
@@ -14,16 +12,34 @@ import 'package:ideal_mobile/utils/extensions/build_context_ext.dart';
 
 @RoutePage()
 class NotificationsScreen extends StatelessWidget {
-  const NotificationsScreen({super.key});
+  const NotificationsScreen({this.bloc, super.key});
+
+  final NotificationBloc? bloc;
 
   @override
   Widget build(BuildContext context) {
+    final suppliedBloc = bloc;
+    if (suppliedBloc != null) {
+      return BlocProvider.value(
+        value: suppliedBloc,
+        child: const _NotificationsScaffold(),
+      );
+    }
     return BlocProvider(
-      create: (context) => NotificationBloc()..add(GetNotificationDataEvent()),
-      child: const Scaffold(
-        appBar: NotificationAppBar(),
-        body: NotificationScreenBody(),
-      ),
+      create: (_) => NotificationBloc()..add(const LoadNotificationsEvent()),
+      child: const _NotificationsScaffold(),
+    );
+  }
+}
+
+class _NotificationsScaffold extends StatelessWidget {
+  const _NotificationsScaffold();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      appBar: NotificationAppBar(),
+      body: NotificationScreenBody(),
     );
   }
 }
@@ -33,34 +49,22 @@ class NotificationScreenBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = context.select<NotificationBloc, bool>(
-      (bloc) => bloc.state.isLoading,
-    );
-
-    final notificationList = context
-        .select<NotificationBloc, List<NotificationModel>>(
-          (NotificationBloc bloc) => bloc.state.notificationList,
-        );
-
-    return Builder(
-      builder: (context) {
-        return BlocListener<NotificationBloc, NotificationState>(
-          listener: (context, state) {
-            if (state is NotificationDeletedState) {
-              context.showSnackBar(
-                context.localization.notifications_delete_successfully,
-              );
-            } else if (state is NotificationErrorState) {
-              context.showSnackBar(state.message);
-            }
-          },
-          child: isLoading
-              ? const NotificationLoadigShimmerList()
-              : notificationList.isNotEmpty
-              ? const NotificationList()
-              : const EmptyNotificationsView(),
-        );
+    return BlocListener<NotificationBloc, NotificationState>(
+      listenWhen: (previous, current) =>
+          previous.errorMessage != current.errorMessage,
+      listener: (context, state) {
+        final message = state.errorMessage;
+        if (message != null) context.showSnackBar(message);
       },
+      child: BlocBuilder<NotificationBloc, NotificationState>(
+        builder: (context, state) {
+          if (state.isLoading && state.items.isEmpty) {
+            return const NotificationLoadigShimmerList();
+          }
+          if (state.items.isEmpty) return const EmptyNotificationsView();
+          return const NotificationList();
+        },
+      ),
     );
   }
 }

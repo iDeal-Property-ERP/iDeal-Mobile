@@ -54,6 +54,7 @@ class AppRouter extends RootStackRouter {
 
       // Notifications
       NotificationsRoute.page,
+      NotificationSettingsRoute.page,
 
       OrderDetailRoute.page,
 

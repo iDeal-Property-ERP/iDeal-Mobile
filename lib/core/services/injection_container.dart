@@ -38,6 +38,7 @@ import 'package:ideal_mobile/presentation/login/data/repositories/auth_repositor
 import 'package:ideal_mobile/presentation/login/domain/repositories/auth_repository.dart';
 import 'package:ideal_mobile/presentation/login/domain/usecases/request_otp.dart';
 import 'package:ideal_mobile/presentation/login/domain/usecases/verify_otp.dart';
+import 'package:ideal_mobile/presentation/notifications/notifications_injection.dart';
 import 'package:ideal_mobile/presentation/product_detail/data/datasources/ai_product_description_remote_data_source.dart';
 import 'package:ideal_mobile/presentation/product_detail/data/datasources/product_detail_remote_data_source.dart';
 import 'package:ideal_mobile/presentation/product_detail/data/repositories/ai_product_description_repository_impl.dart';
@@ -61,6 +62,7 @@ import 'package:ideal_mobile/services/firebase_auth_services.dart';
 import 'package:ideal_mobile/services/firestore_service.dart';
 import 'package:ideal_mobile/services/in_app_review_service.dart';
 import 'package:ideal_mobile/services/local_auth_services.dart';
+import 'package:ideal_mobile/services/notification_service.dart';
 import 'package:ideal_mobile/services/performance_monitoring_service.dart';
 import 'package:ideal_mobile/services/remote_config_service.dart';
 import 'package:ideal_mobile/services/secure_storage_service.dart';
@@ -222,6 +224,8 @@ Future<void> configureDependencies({
     ..registerLazySingleton(() => SendChatMessage(sl<ChatRepository>()))
     ..registerLazySingleton(() => CreateChatUserDocument(sl<ChatRepository>()))
     ..registerLazySingleton(() => DeleteChatUserDocument(sl<ChatRepository>()));
+
+  registerNotificationsDependencies(sl);
 }
 
 void _registerDioInterceptor(Dio dio) {
@@ -301,6 +305,7 @@ InterceptorsWrapper get _sslPinningErrorInterceptor {
 InterceptorsWrapper _authErrorInterceptor() => InterceptorsWrapper(
   onError: (DioException dioError, ErrorInterceptorHandler handler) async {
     final statusCode = dioError.response?.statusCode ?? 0;
+    final failedAccessToken = _bearerAccessToken(dioError.requestOptions);
 
     debugPrint('[AuthErrorInterceptor] status: $statusCode');
 
@@ -309,14 +314,27 @@ InterceptorsWrapper _authErrorInterceptor() => InterceptorsWrapper(
           '/mobile/auth/otp/request/',
         ) ||
         dioError.requestOptions.uri.path.endsWith('/mobile/auth/otp/verify/');
+    final skipsForcedLogout =
+        dioError.requestOptions.extra['skip_forced_logout'] == true;
     final shouldLogout =
         !_isForceLoggingOutUser &&
         !isOtpEndpoint &&
+        !skipsForcedLogout &&
+        failedAccessToken != null &&
         (statusCode == 401 || statusCode == 403);
 
     if (shouldLogout) {
+      final accessToken = failedAccessToken;
       _isForceLoggingOutUser = true;
       try {
+        if (!await _isCurrentBackendSession(accessToken)) return;
+
+        await NotificationService.instance.unregisterDevice();
+
+        // A fresh OTP login may finish while the cleanup request above is in
+        // flight. Never clear credentials that replaced the failed token.
+        if (!await _isCurrentBackendSession(accessToken)) return;
+
         await Prefs.clear();
         if (sl.isRegistered<SecureStorageService>()) {
           await sl<SecureStorageService>().clearAuthTokens();
@@ -340,6 +358,27 @@ InterceptorsWrapper _authErrorInterceptor() => InterceptorsWrapper(
     handler.next(dioError);
   },
 );
+
+String? _bearerAccessToken(RequestOptions requestOptions) {
+  for (final entry in requestOptions.headers.entries) {
+    if (entry.key.toLowerCase() != 'authorization' || entry.value is! String) {
+      continue;
+    }
+
+    final match = RegExp(
+      r'^Bearer\s+(.+)$',
+      caseSensitive: false,
+    ).firstMatch(entry.value.trim());
+    final token = match?.group(1)?.trim();
+    return token == null || token.isEmpty ? null : token;
+  }
+  return null;
+}
+
+Future<bool> _isCurrentBackendSession(String accessToken) async {
+  if (!sl.isRegistered<SecureStorageService>()) return false;
+  return await sl<SecureStorageService>().getAccessToken() == accessToken;
+}
 
 String _getCertHash() {
   final certificateHash = AppConfig.getDioCertHash();

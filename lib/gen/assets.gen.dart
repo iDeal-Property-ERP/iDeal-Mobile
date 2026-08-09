@@ -85,12 +85,12 @@ class $AssetsIconsGen {
   /// File path: assets/icons/google.png
   AssetGenImage get google => const AssetGenImage('assets/icons/google.png');
 
+  /// File path: assets/icons/lock.svg
+  String get lock => 'assets/icons/lock.svg';
+
   /// File path: assets/icons/login_logo.png
   AssetGenImage get loginLogo =>
       const AssetGenImage('assets/icons/login_logo.png');
-
-  /// File path: assets/icons/lock.svg
-  String get lock => 'assets/icons/lock.svg';
 
   /// File path: assets/icons/mdi_tick.svg
   String get mdiTick => 'assets/icons/mdi_tick.svg';
@@ -148,8 +148,8 @@ class $AssetsIconsGen {
     emptyWishlist,
     forceUpdate,
     google,
-    loginLogo,
     lock,
+    loginLogo,
     mdiTick,
     noChats,
     noInternetConnection,

@@ -799,11 +799,39 @@ class AppLocalizationsUz extends AppLocalizations {
       '================ Bildirishnomalar kalitlari ================';
 
   @override
-  String get notifications_delete_successfully =>
-      'Bildirishnoma muvaffaqiyatli oʻchirildi';
+  String get empty_notifications_title => 'Hali hech qanday bildirishnomalar';
 
   @override
-  String get empty_notifications_title => 'Hali hech qanday bildirishnomalar';
+  String get notifications_mark_all_read => 'Barchasini o‘qilgan deb belgilash';
+
+  @override
+  String get notifications_push_enabled => 'Push bildirishnomalari';
+
+  @override
+  String get notifications_push_description =>
+      'iDeal faoliyatingiz haqidagi bildirishnomalarni oling.';
+
+  @override
+  String get notifications_payments => 'To‘lovlar';
+
+  @override
+  String get notifications_bookings => 'Bronlar';
+
+  @override
+  String get notifications_maintenance => 'Ta’mirlash';
+
+  @override
+  String get notifications_leases => 'Ijaralar';
+
+  @override
+  String get notifications_general => 'Umumiy';
+
+  @override
+  String get notifications_permission_denied =>
+      'Qurilma sozlamalarida bildirishnomalar o‘chirilgan.';
+
+  @override
+  String get notifications_open_settings => 'Sozlamalarni ochish';
 
   @override
   String get settings_keys =>

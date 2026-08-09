@@ -800,10 +800,39 @@ class AppLocalizationsRu extends AppLocalizations {
       '================ Ключи уведомлений ================';
 
   @override
-  String get notifications_delete_successfully => 'Уведомление успешно удалено';
+  String get empty_notifications_title => 'Уведомлений пока нет';
 
   @override
-  String get empty_notifications_title => 'Уведомлений пока нет';
+  String get notifications_mark_all_read => 'Отметить все прочитанными';
+
+  @override
+  String get notifications_push_enabled => 'Push-уведомления';
+
+  @override
+  String get notifications_push_description =>
+      'Получайте уведомления об активности в iDeal.';
+
+  @override
+  String get notifications_payments => 'Платежи';
+
+  @override
+  String get notifications_bookings => 'Бронирования';
+
+  @override
+  String get notifications_maintenance => 'Обслуживание';
+
+  @override
+  String get notifications_leases => 'Аренда';
+
+  @override
+  String get notifications_general => 'Общие';
+
+  @override
+  String get notifications_permission_denied =>
+      'Уведомления отключены в настройках устройства.';
+
+  @override
+  String get notifications_open_settings => 'Открыть настройки';
 
   @override
   String get settings_keys =>

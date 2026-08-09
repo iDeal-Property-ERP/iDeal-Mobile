@@ -1,69 +1,56 @@
 import 'package:equatable/equatable.dart';
-import 'package:ideal_mobile/presentation/notifications/data/notification_data_list.dart';
-import 'package:ideal_mobile/presentation/notifications/model/notification_model.dart';
+import 'package:ideal_mobile/presentation/notifications/domain/entities/app_notification.dart';
 
-class NotificationState with EquatableMixin {
-  final bool isLoading;
-  final List<NotificationModel> notificationList;
-  final String message;
-
-  NotificationState({
-    required this.isLoading,
-    required this.notificationList,
-    this.message = '',
+class NotificationState extends Equatable {
+  const NotificationState({
+    this.items = const [],
+    this.page = 1,
+    this.numPages = 0,
+    this.isLoading = false,
+    this.isLoadingMore = false,
+    this.hasReachedMax = false,
+    this.errorMessage,
   });
 
-  NotificationState.initial()
-    : isLoading = false,
-      notificationList = [],
-      message = '';
-
-  NotificationState.test()
-    : notificationList = dummyNotifications,
-      isLoading = false,
-      message = '';
-
-  NotificationState.copy(NotificationState state)
-    : this(
-        isLoading: state.isLoading,
-        notificationList: state.notificationList,
-        message: state.message,
-      );
+  final List<AppNotification> items;
+  final int page;
+  final int numPages;
+  final bool isLoading;
+  final bool isLoadingMore;
+  final bool hasReachedMax;
+  final String? errorMessage;
 
   NotificationState copyWith({
+    List<AppNotification>? items,
+    int? page,
+    int? numPages,
     bool? isLoading,
-    List<NotificationModel>? notificationList,
-    String? message,
+    bool? isLoadingMore,
+    bool? hasReachedMax,
+    String? errorMessage,
+    bool clearErrorMessage = false,
   }) {
     return NotificationState(
+      items: items ?? this.items,
+      page: page ?? this.page,
+      numPages: numPages ?? this.numPages,
       isLoading: isLoading ?? this.isLoading,
-      notificationList: notificationList ?? this.notificationList,
-      message: message ?? this.message,
+      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
+      hasReachedMax: hasReachedMax ?? this.hasReachedMax,
+      errorMessage: clearErrorMessage
+          ? null
+          : errorMessage ?? this.errorMessage,
     );
   }
 
   @override
-  List<Object?> get props => [isLoading, notificationList, message];
-}
-
-class NotificationInitializeState extends NotificationState {
-  NotificationInitializeState() : super.initial();
-}
-
-class NotificationDataLoadedState extends NotificationState {
-  NotificationDataLoadedState(
-    NotificationState state, {
-    required List<NotificationModel> notificationList,
-  }) : super.copy(
-         state.copyWith(notificationList: notificationList, isLoading: false),
-       );
-}
-
-class NotificationDeletedState extends NotificationDataLoadedState {
-  NotificationDeletedState(super.state, {required super.notificationList});
-}
-
-class NotificationErrorState extends NotificationState {
-  NotificationErrorState(NotificationState state, {required String message})
-    : super.copy(state.copyWith(message: message, isLoading: false));
+  List<Object?> get props => [
+    items,
+    page,
+    numPages,
+    isLoading,
+    isLoadingMore,
+    hasReachedMax,
+    errorMessage,
+  ];
 }

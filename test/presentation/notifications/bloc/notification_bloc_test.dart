@@ -1,151 +1,84 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ideal_mobile/presentation/notifications/bloc/notification_bloc.dart';
 import 'package:ideal_mobile/presentation/notifications/bloc/notification_event.dart';
 import 'package:ideal_mobile/presentation/notifications/bloc/notification_state.dart';
-import 'package:ideal_mobile/presentation/notifications/model/notification_model.dart';
+import 'package:ideal_mobile/presentation/notifications/domain/entities/app_notification.dart';
+import 'package:ideal_mobile/presentation/notifications/domain/entities/notification_kind.dart';
+import 'package:ideal_mobile/presentation/notifications/domain/entities/notifications_page.dart';
+import 'package:ideal_mobile/presentation/notifications/domain/usecases/get_notifications.dart';
+import 'package:ideal_mobile/presentation/notifications/domain/usecases/mark_all_notifications_read.dart';
+import 'package:ideal_mobile/presentation/notifications/domain/usecases/mark_notification_read.dart';
+import 'package:mocktail/mocktail.dart';
+
+class MockGetNotifications extends Mock implements GetNotifications {}
+
+class MockMarkNotificationRead extends Mock implements MarkNotificationRead {}
+
+class MockMarkAllNotificationsRead extends Mock
+    implements MarkAllNotificationsRead {}
 
 void main() {
-  late NotificationBloc bloc;
+  late MockGetNotifications getNotifications;
+  late MockMarkNotificationRead markRead;
+  late MockMarkAllNotificationsRead markAllRead;
+
+  setUpAll(() {
+    registerFallbackValue(const GetNotificationsParams(page: 1));
+  });
 
   setUp(() {
-    bloc = NotificationBloc();
+    getNotifications = MockGetNotifications();
+    markRead = MockMarkNotificationRead();
+    markAllRead = MockMarkAllNotificationsRead();
   });
 
-  tearDown(() {
-    bloc.close();
-  });
+  NotificationBloc buildBloc() => NotificationBloc(
+    getNotifications: getNotifications,
+    markNotificationRead: markRead,
+    markAllNotificationsRead: markAllRead,
+  );
 
-  final tNotifications = [
-    NotificationModel(
-      id: '1',
-      insertedOn: DateTime(2024, 1, 15),
-      title: 'Test Notification 1',
-      message: 'Message 1',
-      isSeen: false,
-    ),
-    NotificationModel(
-      id: '2',
-      insertedOn: DateTime(2024, 1, 16),
-      title: 'Test Notification 2',
-      message: 'Message 2',
-      isSeen: true,
-    ),
-    NotificationModel(
-      id: '3',
-      insertedOn: DateTime(2024, 1, 17),
-      title: 'Test Notification 3',
-      message: 'Message 3',
-      isSeen: false,
-    ),
-  ];
-
-  group('NotificationBloc', () {
-    test('initial state should be NotificationInitializeState', () {
-      expect(bloc.state, isA<NotificationInitializeState>());
-      expect(bloc.state.isLoading, isFalse);
-      expect(bloc.state.notificationList, isEmpty);
-    });
-
-    group('InitializeNotificationEvent', () {
-      blocTest<NotificationBloc, NotificationState>(
-        'should emit NotificationInitializeState',
-        build: () => bloc,
-        act: (bloc) => bloc.add(InitializeNotificationEvent()),
-        expect: () => [isA<NotificationInitializeState>()],
-      );
-    });
-
-    group('NotificationLoadingEvent', () {
-      blocTest<NotificationBloc, NotificationState>(
-        'should set isLoading to true',
-        build: () => bloc,
-        act: (bloc) => bloc.add(NotificationLoadingEvent(isLoading: true)),
-        expect: () => [
-          isA<NotificationState>().having(
-            (s) => s.isLoading,
-            'isLoading',
-            true,
+  blocTest<NotificationBloc, NotificationState>(
+    'loads the first page and records pagination state',
+    build: () {
+      when(() => getNotifications(any())).thenAnswer(
+        (_) async => Right(
+          NotificationsPage(
+            items: [_notification(1)],
+            count: 2,
+            numPages: 2,
+            perPage: 20,
+            pageNumber: 1,
           ),
-        ],
-      );
-
-      blocTest<NotificationBloc, NotificationState>(
-        'should set isLoading to false',
-        build: () => bloc,
-        act: (bloc) => bloc.add(NotificationLoadingEvent(isLoading: false)),
-        expect: () => [
-          isA<NotificationState>().having(
-            (s) => s.isLoading,
-            'isLoading',
-            false,
-          ),
-        ],
-      );
-    });
-
-    group('DeleteNotificationEvent', () {
-      blocTest<NotificationBloc, NotificationState>(
-        'should remove notification by id',
-        build: () => bloc,
-        seed: () => NotificationState(
-          isLoading: false,
-          notificationList: tNotifications,
         ),
-        act: (bloc) => bloc.add(DeleteNotificationEvent(notificationId: '2')),
-        expect: () => [
-          isA<NotificationDeletedState>().having(
-            (s) => s.notificationList.length,
-            'list length',
-            2,
-          ),
-        ],
       );
-
-      blocTest<NotificationBloc, NotificationState>(
-        'should not remove anything if id not found',
-        build: () => bloc,
-        seed: () => NotificationState(
-          isLoading: false,
-          notificationList: tNotifications,
-        ),
-        act: (bloc) => bloc.add(DeleteNotificationEvent(notificationId: '999')),
-        expect: () => [
-          isA<NotificationDeletedState>().having(
-            (s) => s.notificationList.length,
-            'list length',
-            3,
-          ),
-        ],
-      );
-    });
-
-    group('NotificationErrorEvent', () {
-      blocTest<NotificationBloc, NotificationState>(
-        'should emit NotificationErrorState with message',
-        build: () => bloc,
-        act: (bloc) =>
-            bloc.add(NotificationErrorEvent(msg: 'Something failed')),
-        expect: () => [
-          isA<NotificationErrorState>().having(
-            (s) => s.message,
-            'message',
-            'Something failed',
-          ),
-        ],
-      );
-    });
-
-    group('GetNotificationDataEvent', () {
-      blocTest<NotificationBloc, NotificationState>(
-        'should emit loading state first',
-        build: () => bloc,
-        act: (bloc) => bloc.add(GetNotificationDataEvent()),
-        wait: const Duration(seconds: 2),
-        verify: (bloc) {
-          expect(bloc.state.notificationList, isNotEmpty);
-        },
-      );
-    });
-  });
+      return buildBloc();
+    },
+    act: (bloc) => bloc.add(const LoadNotificationsEvent()),
+    expect: () => [
+      isA<NotificationState>().having(
+        (state) => state.isLoading,
+        'loading',
+        true,
+      ),
+      isA<NotificationState>()
+          .having((state) => state.items.length, 'items', 1)
+          .having((state) => state.hasReachedMax, 'has more pages', false),
+    ],
+  );
 }
+
+AppNotification _notification(int id) => AppNotification(
+  id: id,
+  kind: NotificationKind.general,
+  category: NotificationCategory.general,
+  title: 'Notice',
+  body: null,
+  relatedObjectType: null,
+  relatedObjectId: null,
+  isRead: false,
+  readAt: null,
+  createdAt: DateTime(2026),
+);

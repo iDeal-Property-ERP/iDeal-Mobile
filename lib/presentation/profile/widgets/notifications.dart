@@ -33,7 +33,7 @@ class Notifications extends StatelessWidget {
         TablerIcons.chevron_right,
         color: context.currentTheme.iconNeutralDefault,
       ),
-      onTap: () => context.pushRoute(const NotificationsRoute()),
+      onTap: () => context.pushRoute(NotificationsRoute()),
     );
   }
 }

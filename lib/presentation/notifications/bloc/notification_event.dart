@@ -1,40 +1,42 @@
 import 'package:equatable/equatable.dart';
 
-abstract class NotificationEvent with EquatableMixin {}
-
-class NotificationLoadingEvent extends NotificationEvent {
-  final bool isLoading;
-
-  NotificationLoadingEvent({required this.isLoading});
-
-  @override
-  List<Object?> get props => [isLoading];
+sealed class NotificationEvent extends Equatable {
+  const NotificationEvent();
 }
 
-class InitializeNotificationEvent extends NotificationEvent {
+class LoadNotificationsEvent extends NotificationEvent {
+  const LoadNotificationsEvent();
+
   @override
-  List<Object?> get props => [];
+  List<Object> get props => [];
 }
 
-class GetNotificationDataEvent extends NotificationEvent {
+class RefreshNotificationsEvent extends NotificationEvent {
+  const RefreshNotificationsEvent();
+
   @override
-  List<Object?> get props => [];
+  List<Object> get props => [];
 }
 
-class DeleteNotificationEvent extends NotificationEvent {
-  final String notificationId;
-
-  DeleteNotificationEvent({required this.notificationId});
+class LoadMoreNotificationsEvent extends NotificationEvent {
+  const LoadMoreNotificationsEvent();
 
   @override
-  List<Object?> get props => [];
+  List<Object> get props => [];
 }
 
-class NotificationErrorEvent extends NotificationEvent {
-  final String msg;
+class MarkNotificationReadEvent extends NotificationEvent {
+  const MarkNotificationReadEvent(this.id);
 
-  NotificationErrorEvent({required this.msg});
+  final int id;
 
   @override
-  List<Object?> get props => [msg];
+  List<Object> get props => [id];
+}
+
+class MarkAllNotificationsReadEvent extends NotificationEvent {
+  const MarkAllNotificationsReadEvent();
+
+  @override
+  List<Object> get props => [];
 }

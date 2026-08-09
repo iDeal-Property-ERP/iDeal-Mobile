@@ -5,12 +5,10 @@ import 'package:clarity_flutter/clarity_flutter.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:ideal_mobile/constants/constants.dart';
 import 'package:ideal_mobile/core/clarity_analytics/clarity_route_observer.dart';
 import 'package:ideal_mobile/core/services/injection_container.dart';
 import 'package:ideal_mobile/i18n/app_localizations.dart';
@@ -62,7 +60,7 @@ class MainApp extends StatefulWidget {
   State<MainApp> createState() => _MainAppState();
 }
 
-class _MainAppState extends State<MainApp> {
+class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
   final AppRouter appRouter = AppRouter();
   final InternetConnectivityHelper _connectivityHelper =
       InternetConnectivityHelper();
@@ -74,6 +72,7 @@ class _MainAppState extends State<MainApp> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     unawaited(LocaleService.load());
     _connectivityHelper.onConnectivityChange.addListener(
       handleConnectivityStatusChange,
@@ -99,40 +98,26 @@ class _MainAppState extends State<MainApp> {
     _notificationSubscription = NotificationService.instance.onNotificationTap
         .listen(_handleNotificationTap);
 
-    _authSubscription = FirebaseAuth.instance.authStateChanges().listen((user) {
-      if (user != null) {
-        unawaited(_initializeNotifications());
-      } else {
-        unawaited(_cleanupNotifications());
-      }
+    _authSubscription = FirebaseAuth.instance.authStateChanges().listen((_) {
+      // Firebase's session is independent from the backend JWT used by the
+      // phone OTP flow. A Firebase signed-out state must not unregister a
+      // backend device or clear the current backend session.
+      unawaited(_initializeNotificationsForBackendSession());
     });
     unawaited(_initializeNotificationsForBackendSession());
   }
 
   Future<void> _initializeNotifications() async {
     await NotificationService.instance.initialize();
-
-    final initialPayload =
-        NotificationService.instance.initialNotificationPayload;
-    if (initialPayload != null) {
-      _handleNotificationTap(initialPayload);
-    }
-  }
-
-  Future<void> _cleanupNotifications() async {
-    if (await _hasBackendSession()) return;
-
-    try {
-      await FirebaseMessaging.instance.deleteToken();
-      debugPrint('FCM token deleted on logout');
-    } catch (e) {
-      debugPrint('Failed to delete FCM token: $e');
-    }
   }
 
   Future<void> _initializeNotificationsForBackendSession() async {
-    if (await _hasBackendSession()) {
-      await _initializeNotifications();
+    try {
+      if (await _hasBackendSession()) {
+        await _initializeNotifications();
+      }
+    } catch (error) {
+      debugPrint('Failed to initialize notifications: $error');
     }
   }
 
@@ -142,9 +127,6 @@ class _MainAppState extends State<MainApp> {
     return accessToken != null && accessToken.trim().isNotEmpty;
   }
 
-  /// Handles notification taps and navigates based on payload type.
-  /// To customize for your app:
-  /// Add notification types to constants.dart (e.g., kOrder, kChat)
   void _handleNotificationTap(Map<String, dynamic> payload) {
     debugPrint('Notification tapped with payload: $payload');
     final context = rootNavigatorKey.currentContext;
@@ -153,30 +135,85 @@ class _MainAppState extends State<MainApp> {
       return;
     }
 
-    final notificationType = payload['type'] as String?;
-    final productId = payload['product_id'] as String?;
+    final notificationType = _stringPayloadValue(payload['type']);
+    final relatedObjectType = _stringPayloadValue(
+      payload['related_object_type'],
+    );
+    final relatedObjectId = _stringPayloadValue(payload['related_object_id']);
 
-    // Customize this switch for your notification types
     switch (notificationType) {
-      case kProduct:
-        if (productId != null && productId.trim().isNotEmpty) {
-          debugPrint('Navigating to product details: $productId');
-          context.pushRoute(ProductDetailRoute(productId: productId.trim()));
-        } else {
-          debugPrint('Product ID missing, navigating to home');
-          context.pushRoute(const HomeRoute());
+      case 'service_order_status':
+        if (relatedObjectType == 'order' && relatedObjectId != null) {
+          debugPrint('Navigating to order details: $relatedObjectId');
+          context.pushRoute(OrderDetailRoute(productId: relatedObjectId));
+          return;
         }
-      case kHome:
+        // TODO: Add a dedicated service-order detail route.
+        _pushNotificationsRoute(context);
+        return;
+      case 'payment_due':
+      case 'payment_paid':
+        // TODO: Add an invoice/payment detail route.
+        _pushNotificationsRoute(context);
+        return;
+      case 'payout_paid':
+        // TODO: Add a payout detail route for owner notifications.
+        _pushNotificationsRoute(context);
+        return;
+      case 'booking_status':
+        // TODO: Add a booking detail route.
+        _pushNotificationsRoute(context);
+        return;
+      case 'service_request_status':
+        // TODO: Add a service-request detail route.
+        _pushNotificationsRoute(context);
+        return;
+      case 'lease_renewal':
+        // TODO: Add a lease detail route.
+        _pushNotificationsRoute(context);
+        return;
+      case 'owner_onboarding':
+        // TODO: Add an owner-onboarding route.
+        _pushNotificationsRoute(context);
+        return;
+      case 'general':
       default:
-        debugPrint('Navigating to home');
-        context.pushRoute(const HomeRoute());
+        _pushNotificationsRoute(context);
+        return;
+    }
+  }
+
+  String? _stringPayloadValue(dynamic value) {
+    if (value is! String) return null;
+    final result = value.trim();
+    return result.isEmpty ? null : result;
+  }
+
+  void _pushNotificationsRoute(BuildContext context) {
+    context.pushRoute(NotificationsRoute());
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      unawaited(_initializeNotificationsForBackendSession());
     }
   }
 
   @override
   void dispose() {
-    _notificationSubscription?.cancel();
-    _authSubscription?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+
+    final notificationSubscription = _notificationSubscription;
+    if (notificationSubscription != null) {
+      unawaited(notificationSubscription.cancel());
+    }
+
+    final authSubscription = _authSubscription;
+    if (authSubscription != null) {
+      unawaited(authSubscription.cancel());
+    }
+
     NotificationService.instance.dispose();
     super.dispose();
   }
