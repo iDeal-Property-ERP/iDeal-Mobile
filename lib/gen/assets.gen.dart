@@ -58,9 +58,6 @@ class $AssetsIconsGen {
   AssetGenImage get companyLogoLt =>
       const AssetGenImage('assets/icons/company_logo_lt.png');
 
-  /// File path: assets/icons/coupon.svg
-  String get coupon => 'assets/icons/coupon.svg';
-
   /// File path: assets/icons/delivery_parcel.svg
   String get deliveryParcel => 'assets/icons/delivery_parcel.svg';
 
@@ -70,14 +67,8 @@ class $AssetsIconsGen {
   /// File path: assets/icons/email_notification.svg
   String get emailNotification => 'assets/icons/email_notification.svg';
 
-  /// File path: assets/icons/empty_cart.svg
-  String get emptyCart => 'assets/icons/empty_cart.svg';
-
   /// File path: assets/icons/empty_saved_cards.svg
   String get emptySavedCards => 'assets/icons/empty_saved_cards.svg';
-
-  /// File path: assets/icons/empty_wishlist.svg
-  String get emptyWishlist => 'assets/icons/empty_wishlist.svg';
 
   /// File path: assets/icons/force_update.svg
   String get forceUpdate => 'assets/icons/force_update.svg';
@@ -103,9 +94,6 @@ class $AssetsIconsGen {
 
   /// File path: assets/icons/no_notifications.svg
   String get noNotifications => 'assets/icons/no_notifications.svg';
-
-  /// File path: assets/icons/no_product_detail_found.svg
-  String get noProductDetailFound => 'assets/icons/no_product_detail_found.svg';
 
   /// File path: assets/icons/pro_icon.png
   AssetGenImage get proIcon => const AssetGenImage('assets/icons/pro_icon.png');
@@ -139,13 +127,10 @@ class $AssetsIconsGen {
     close,
     companyLogoDt,
     companyLogoLt,
-    coupon,
     deliveryParcel,
     email,
     emailNotification,
-    emptyCart,
     emptySavedCards,
-    emptyWishlist,
     forceUpdate,
     google,
     lock,
@@ -154,7 +139,6 @@ class $AssetsIconsGen {
     noChats,
     noInternetConnection,
     noNotifications,
-    noProductDetailFound,
     proIcon,
     searchOutline,
     send,
@@ -169,14 +153,6 @@ class $AssetsIconsGen {
 class $AssetsImagesGen {
   const $AssetsImagesGen();
 
-  /// File path: assets/images/cart_item_1.png
-  AssetGenImage get cartItem1 =>
-      const AssetGenImage('assets/images/cart_item_1.png');
-
-  /// File path: assets/images/cart_item_2.png
-  AssetGenImage get cartItem2 =>
-      const AssetGenImage('assets/images/cart_item_2.png');
-
   /// File path: assets/images/demo_user.jpeg
   AssetGenImage get demoUser =>
       const AssetGenImage('assets/images/demo_user.jpeg');
@@ -189,13 +165,7 @@ class $AssetsImagesGen {
   AssetGenImage get success => const AssetGenImage('assets/images/success.png');
 
   /// List of all assets
-  List<AssetGenImage> get values => [
-    cartItem1,
-    cartItem2,
-    demoUser,
-    mastercard,
-    success,
-  ];
+  List<AssetGenImage> get values => [demoUser, mastercard, success];
 }
 
 class $AssetsTestGen {

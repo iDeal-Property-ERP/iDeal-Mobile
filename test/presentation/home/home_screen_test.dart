@@ -8,16 +8,23 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:ideal_mobile/core/services/injection_container.dart';
+import 'package:ideal_mobile/presentation/chat/bloc/chat_badge_cubit.dart';
+import 'package:ideal_mobile/presentation/chat/bloc/chats_bloc.dart';
+import 'package:ideal_mobile/presentation/chat/bloc/chats_event.dart';
+import 'package:ideal_mobile/presentation/chat/bloc/chats_state.dart';
 import 'package:ideal_mobile/presentation/home/bloc/home_bloc.dart';
 import 'package:ideal_mobile/presentation/home/bloc/home_event.dart';
 import 'package:ideal_mobile/presentation/home/bloc/home_state.dart';
-import 'package:ideal_mobile/presentation/home/domain/entities/product.dart';
-import 'package:ideal_mobile/presentation/home/domain/usecases/get_products.dart';
 import 'package:ideal_mobile/presentation/home/home_screen.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_bloc.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_event.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_state.dart';
-import 'package:ideal_mobile/presentation/product_detail/domain/usecases/get_product_detail.dart';
+import 'package:ideal_mobile/presentation/notifications/bloc/notification_badge_cubit.dart';
+import 'package:ideal_mobile/presentation/profile/data/models/mobile_user_profile.dart';
+import 'package:ideal_mobile/presentation/profile/domain/usecases/get_profile.dart';
+import 'package:ideal_mobile/presentation/profile/domain/usecases/remove_profile_avatar.dart';
+import 'package:ideal_mobile/presentation/profile/domain/usecases/update_profile.dart';
+import 'package:ideal_mobile/presentation/profile/domain/usecases/update_profile_avatar.dart';
 import 'package:ideal_mobile/services/performance_monitoring_service.dart';
 import 'package:ideal_mobile/widgets/styling/app_theme_data.dart';
 
@@ -30,9 +37,32 @@ class MockHomeBloc extends MockBloc<HomeEvent, HomeState> implements HomeBloc {}
 class MockListingsBloc extends MockBloc<ListingsEvent, ListingsState>
     implements ListingsBloc {}
 
-class MockGetProducts extends Mock implements GetProducts {}
+class MockChatsBloc extends MockBloc<ChatsEvent, ChatsState>
+    implements ChatsBloc {}
 
-class MockGetProductDetail extends Mock implements GetProductDetail {}
+class MockChatBadgeCubit extends MockCubit<int> implements ChatBadgeCubit {}
+
+class MockNotificationBadgeCubit extends MockCubit<int>
+    implements NotificationBadgeCubit {}
+
+class MockGetProfile extends Mock implements GetProfile {}
+
+class MockUpdateProfile extends Mock implements UpdateProfile {}
+
+class MockUpdateProfileAvatar extends Mock implements UpdateProfileAvatar {}
+
+class MockRemoveProfileAvatar extends Mock implements RemoveProfileAvatar {}
+
+const _testProfile = MobileUserProfile(
+  id: 1,
+  firstName: 'Test',
+  lastName: 'User',
+  patronymic: null,
+  email: 'test@example.com',
+  phone: '+998901234567',
+  nationality: null,
+  avatarUrl: null,
+);
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -45,14 +75,18 @@ void main() {
       () => PerformanceMonitoringService(performance: mockFirebasePerformance),
     );
 
-    final mockGetProducts = MockGetProducts();
-    final mockGetProductDetail = MockGetProductDetail();
-    when(
-      () => mockGetProducts(),
-    ).thenAnswer((_) async => const Right(<Product>[]));
-    sl.registerLazySingleton<GetProducts>(() => mockGetProducts);
-    sl.registerLazySingleton<GetProductDetail>(() => mockGetProductDetail);
-
+    final notificationBadgeCubit = MockNotificationBadgeCubit();
+    when(() => notificationBadgeCubit.state).thenReturn(0);
+    if (sl.isRegistered<NotificationBadgeCubit>()) {
+      sl.unregister<NotificationBadgeCubit>();
+    }
+    sl.registerSingleton<NotificationBadgeCubit>(notificationBadgeCubit);
+    final getProfile = MockGetProfile();
+    when(() => getProfile()).thenAnswer((_) async => const Right(_testProfile));
+    sl.registerLazySingleton<GetProfile>(() => getProfile);
+    sl.registerLazySingleton<UpdateProfile>(MockUpdateProfile.new);
+    sl.registerLazySingleton<UpdateProfileAvatar>(MockUpdateProfileAvatar.new);
+    sl.registerLazySingleton<RemoveProfileAvatar>(MockRemoveProfileAvatar.new);
     setupFirebaseCoreMocks();
     await Firebase.initializeApp(
       name: 'tenantIdTest',
@@ -73,6 +107,10 @@ void main() {
       when(() => homeBloc.state).thenReturn(HomeState.test());
       final listingsBloc = MockListingsBloc();
       when(() => listingsBloc.state).thenReturn(ListingsState.test());
+      final chatsBloc = MockChatsBloc();
+      when(() => chatsBloc.state).thenReturn(const ChatsState.initial());
+      final chatBadgeCubit = MockChatBadgeCubit();
+      when(() => chatBadgeCubit.state).thenReturn(0);
 
       //act
       await tester.runWidgetTest(
@@ -80,11 +118,18 @@ void main() {
           BlocProvider<HomeBloc>.value(value: homeBloc),
           BlocProvider<ListingsBloc>.value(value: listingsBloc),
         ],
-        child: const HomeScreenWrapper(),
+        child: HomeScreenWrapper(
+          chatsBloc: chatsBloc,
+          chatBadgeCubit: chatBadgeCubit,
+        ),
       );
 
       // assert
       expect(find.byType(HomeScreenWrapper), findsOneWidget);
+      final nav = tester.widget<BottomNavigationBar>(
+        find.byType(BottomNavigationBar),
+      );
+      expect(nav.items, hasLength(3));
     });
 
     // Golden test cases
@@ -99,6 +144,10 @@ void main() {
           when(() => homeBloc.state).thenReturn(HomeState.test());
           final listingsBloc = MockListingsBloc();
           when(() => listingsBloc.state).thenReturn(ListingsState.test());
+          final chatsBloc = MockChatsBloc();
+          when(() => chatsBloc.state).thenReturn(const ChatsState.initial());
+          final chatBadgeCubit = MockChatBadgeCubit();
+          when(() => chatBadgeCubit.state).thenReturn(0);
 
           // act, assert
           return GoldenTestGroup(
@@ -111,7 +160,10 @@ void main() {
                   BlocProvider<HomeBloc>.value(value: homeBloc),
                   BlocProvider<ListingsBloc>.value(value: listingsBloc),
                 ],
-                child: const HomeScreenWrapper(),
+                child: HomeScreenWrapper(
+                  chatsBloc: chatsBloc,
+                  chatBadgeCubit: chatBadgeCubit,
+                ),
               ),
               createTestScenario(
                 name: 'home_screen Dark Theme',
@@ -119,7 +171,10 @@ void main() {
                   BlocProvider<HomeBloc>.value(value: homeBloc),
                   BlocProvider<ListingsBloc>.value(value: listingsBloc),
                 ],
-                child: const HomeScreenWrapper(),
+                child: HomeScreenWrapper(
+                  chatsBloc: chatsBloc,
+                  chatBadgeCubit: chatBadgeCubit,
+                ),
                 theme: AppThemeEnum.DarkTheme,
               ),
             ],

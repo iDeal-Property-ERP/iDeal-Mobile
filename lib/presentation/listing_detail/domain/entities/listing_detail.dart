@@ -76,6 +76,8 @@ class ListingDetail extends Equatable {
     required this.amenities,
     required this.verificationIsVerified,
     required this.verificationChecklist,
+    required this.canMessage,
+    required this.contactPhone,
   });
 
   final int id;
@@ -108,6 +110,8 @@ class ListingDetail extends Equatable {
   final List<ListingAmenity> amenities;
   final bool verificationIsVerified;
   final List<VerificationItem> verificationChecklist;
+  final bool canMessage;
+  final String? contactPhone;
 
   String? get coverImageUrl => photos.isEmpty ? null : photos.first.imageUrl;
 
@@ -143,5 +147,7 @@ class ListingDetail extends Equatable {
     amenities,
     verificationIsVerified,
     verificationChecklist,
+    canMessage,
+    contactPhone,
   ];
 }

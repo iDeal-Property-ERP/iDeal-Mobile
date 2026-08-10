@@ -33,6 +33,8 @@ class ListingDetailModel extends ListingDetail {
     required super.amenities,
     required super.verificationIsVerified,
     required super.verificationChecklist,
+    required super.canMessage,
+    required super.contactPhone,
   });
 
   factory ListingDetailModel.fromJson(DataMap json) {
@@ -74,6 +76,8 @@ class ListingDetailModel extends ListingDetail {
           ? false
           : _requiredBool(verification, 'is_verified'),
       verificationChecklist: _verificationChecklist(verification?['checklist']),
+      canMessage: json['can_message'] == true,
+      contactPhone: _contactPhone(json['contact_phone']),
     );
   }
 
@@ -112,6 +116,8 @@ class ListingDetailModel extends ListingDetail {
           .map(_verificationItemToJson)
           .toList(growable: false),
     },
+    'can_message': canMessage,
+    'contact_phone': contactPhone,
   };
 }
 
@@ -218,6 +224,12 @@ String _requiredString(DataMap json, String key) {
 String? _nullableString(dynamic value) {
   if (value == null) return null;
   return value is String ? value : value.toString();
+}
+
+String? _contactPhone(dynamic value) {
+  if (value is! String) return null;
+  final phone = value.trim();
+  return phone.isEmpty ? null : phone;
 }
 
 int _requiredInt(DataMap json, String key) {

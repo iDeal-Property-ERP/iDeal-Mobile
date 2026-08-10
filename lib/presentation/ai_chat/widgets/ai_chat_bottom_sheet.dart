@@ -9,17 +9,13 @@ import 'package:ideal_mobile/presentation/ai_chat/bloc/ai_chat_event.dart';
 import 'package:ideal_mobile/presentation/ai_chat/bloc/ai_chat_state.dart';
 import 'package:ideal_mobile/presentation/ai_chat/widgets/ai_chat_input_field.dart';
 import 'package:ideal_mobile/presentation/ai_chat/widgets/ai_chat_message_bubble.dart';
-import 'package:ideal_mobile/presentation/home/domain/entities/product.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 import 'package:ideal_mobile/widgets/styling/app_colors.dart';
 
 void showAiChatBottomSheet(
   BuildContext context, {
   required AiChatBloc existingBloc,
-  required VoidCallback onCartTap,
 }) {
-  final products = existingBloc.products;
-
   showModalBottomSheet<void>(
     context: context,
     backgroundColor: AppColors.transparent,
@@ -34,10 +30,7 @@ void showAiChatBottomSheet(
           constraints: BoxConstraints(maxHeight: screenHeight - keyboardHeight),
           child: BlocProvider<AiChatBloc>.value(
             value: existingBloc,
-            child: _AiChatSheetContent(
-              products: products,
-              onCartTap: onCartTap,
-            ),
+            child: const _AiChatSheetContent(),
           ),
         ),
       );
@@ -46,10 +39,7 @@ void showAiChatBottomSheet(
 }
 
 class _AiChatSheetContent extends StatelessWidget {
-  const _AiChatSheetContent({required this.products, required this.onCartTap});
-
-  final List<Product> products;
-  final VoidCallback onCartTap;
+  const _AiChatSheetContent();
 
   @override
   Widget build(BuildContext context) {
@@ -74,12 +64,7 @@ class _AiChatSheetContent extends StatelessWidget {
               height: 1,
               color: context.currentTheme.strokeNeutralLight100,
             ),
-            Expanded(
-              child: _AiChatMessageList(
-                products: products,
-                onCartTap: onCartTap,
-              ),
-            ),
+            Expanded(child: const _AiChatMessageList()),
             const SizedBox(height: 4),
             _buildSuggestionRow(context),
             const SizedBox(height: 12),
@@ -173,9 +158,9 @@ class _AiChatSheetContent extends StatelessWidget {
 
   Widget _buildSuggestionRow(BuildContext context) {
     final suggestions = [
-      context.localization.ai_chat_suggestion_cart,
-      context.localization.ai_chat_suggestion_deals,
-      context.localization.ai_chat_suggestion_coupon,
+      context.localization.ai_chat_suggestion_listings,
+      context.localization.ai_chat_suggestion_renting,
+      context.localization.ai_chat_suggestion_support,
     ];
 
     return BlocBuilder<AiChatBloc, AiChatState>(
@@ -236,10 +221,7 @@ class _AiChatSheetContent extends StatelessWidget {
 }
 
 class _AiChatMessageList extends StatefulWidget {
-  const _AiChatMessageList({required this.products, required this.onCartTap});
-
-  final List<Product> products;
-  final VoidCallback onCartTap;
+  const _AiChatMessageList();
 
   @override
   State<_AiChatMessageList> createState() => _AiChatMessageListState();
@@ -276,11 +258,7 @@ class _AiChatMessageListState extends State<_AiChatMessageList> {
               state.messages.length + (state.errorMessage != null ? 1 : 0),
           itemBuilder: (context, index) {
             if (index < state.messages.length) {
-              return AiChatMessageBubble(
-                message: state.messages[index],
-                products: widget.products,
-                onCartTap: widget.onCartTap,
-              );
+              return AiChatMessageBubble(message: state.messages[index]);
             }
             return _buildErrorBanner(context, state.errorMessage!);
           },

@@ -39,15 +39,6 @@ class RemoveProfileAvatarEvent extends ProfileEvent {
   List<Object> get props => [];
 }
 
-class UpdateSubscriptionStatusEvent extends ProfileEvent {
-  final bool isSubscribed;
-
-  const UpdateSubscriptionStatusEvent({required this.isSubscribed});
-
-  @override
-  List<Object> get props => [isSubscribed];
-}
-
 class SignOutEvent extends ProfileEvent {
   const SignOutEvent();
 

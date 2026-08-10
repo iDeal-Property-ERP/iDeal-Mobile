@@ -13,7 +13,6 @@ import 'package:ideal_mobile/presentation/profile/widgets/settings.dart';
 import 'package:ideal_mobile/presentation/profile/widgets/sign_out.dart';
 import 'package:ideal_mobile/presentation/profile/widgets/support_section.dart';
 import 'package:ideal_mobile/routes.gr.dart';
-import 'package:ideal_mobile/services/subscription_service.dart';
 import 'package:ideal_mobile/utils/extensions/build_context_ext.dart';
 import 'package:ideal_mobile/utils/extensions/primitive_types_extensions.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
@@ -24,13 +23,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<ProfileBloc>(
-      create: (context) => ProfileBloc()
-        ..add(const LoadProfileEvent())
-        ..add(
-          UpdateSubscriptionStatusEvent(
-            isSubscribed: SubscriptionService().isUserSubscribed.value,
-          ),
-        ),
+      create: (context) => ProfileBloc()..add(const LoadProfileEvent()),
       child: const ProfileScreenBody(),
     );
   }

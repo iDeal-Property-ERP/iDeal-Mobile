@@ -48,6 +48,8 @@ void main() {
         {'key': 'ownership', 'label': 'Official ownership check'},
       ],
     },
+    'can_message': true,
+    'contact_phone': '  +998 90 123 45 67  ',
   };
 
   test('parses a full listing detail fixture', () {
@@ -72,7 +74,11 @@ void main() {
     expect(model.verificationIsVerified, isTrue);
     expect(model.verificationChecklist.single.key, 'ownership');
     expect(model.priceIncludes, ['wifi', 'cleaning']);
+    expect(model.canMessage, isTrue);
+    expect(model.contactPhone, '+998 90 123 45 67');
     expect(model.toJson()['response_time'], 'Usually responds within 1 hour');
+    expect(model.toJson()['can_message'], isTrue);
+    expect(model.toJson()['contact_phone'], '+998 90 123 45 67');
     expect(model.toJson()['photos'], isA<List<dynamic>>());
   });
 
@@ -108,6 +114,33 @@ void main() {
     expect(model.verificationIsVerified, isFalse);
     expect(model.verificationChecklist, isEmpty);
     expect(model.createdAt, isA<DateTime>());
+    expect(model.canMessage, isTrue);
+    expect(model.contactPhone, '+998 90 123 45 67');
+  });
+
+  test('missing chat fields use safe defaults', () {
+    final missingChatFields = {...json}
+      ..remove('can_message')
+      ..remove('contact_phone');
+
+    final model = ListingDetailModel.fromJson(missingChatFields);
+
+    expect(model.canMessage, isFalse);
+    expect(model.contactPhone, isNull);
+  });
+
+  test('empty and null contact phones become null', () {
+    final emptyPhone = ListingDetailModel.fromJson({
+      ...json,
+      'contact_phone': '   ',
+    });
+    final nullPhone = ListingDetailModel.fromJson({
+      ...json,
+      'contact_phone': null,
+    });
+
+    expect(emptyPhone.contactPhone, isNull);
+    expect(nullPhone.contactPhone, isNull);
   });
 
   test('throws FormatException for a malformed required field', () {

@@ -1,46 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
-import 'package:ideal_mobile/i18n/localization.dart';
 import 'package:ideal_mobile/presentation/ai_chat/model/ai_chat_message.dart';
-import 'package:ideal_mobile/presentation/ai_chat/widgets/ai_chat_product_card.dart';
-import 'package:ideal_mobile/presentation/home/domain/entities/product.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 
 class AiChatMessageBubble extends StatelessWidget {
-  const AiChatMessageBubble({
-    super.key,
-    required this.message,
-    required this.products,
-    required this.onCartTap,
-  });
+  const AiChatMessageBubble({super.key, required this.message});
 
   final AiChatMessage message;
-  final List<Product> products;
-  final VoidCallback onCartTap;
-
-  static final RegExp _productMarkerRegex = RegExp(r'\[PRODUCT:([^\]]+)\]');
-  static final RegExp _cartMarkerRegex = RegExp(r'\[CART\]');
-  static final RegExp _allMarkersRegex = RegExp(r'\[PRODUCT:[^\]]+\]|\[CART\]');
 
   String _formatTimestamp(DateTime dt) {
     final hour = dt.hour % 12 == 0 ? 12 : dt.hour % 12;
     final minute = dt.minute.toString().padLeft(2, '0');
     final period = dt.hour < 12 ? 'AM' : 'PM';
     return '$hour:$minute $period';
-  }
-
-  List<Product> _extractProducts(String content) {
-    final matches = _productMarkerRegex.allMatches(content);
-    final result = <Product>[];
-    final seenIds = <String>{};
-    for (final match in matches) {
-      final id = match.group(1);
-      if (id == null || !seenIds.add(id)) continue;
-      final product = products.where((p) => p.id == id).firstOrNull;
-      if (product != null) result.add(product);
-    }
-    return result;
   }
 
   @override
@@ -167,11 +140,7 @@ class AiChatMessageBubble extends StatelessWidget {
   }
 
   Widget _buildAssistantContent(BuildContext context) {
-    final textOnly = _normalizeSpacing(
-      message.content.replaceAll(_allMarkersRegex, '').trim(),
-    );
-    final referencedProducts = _extractProducts(message.content);
-    final hasCartMarker = _cartMarkerRegex.hasMatch(message.content);
+    final textOnly = _normalizeSpacing(message.content.trim());
 
     return Column(
       crossAxisAlignment: .start,
@@ -184,43 +153,7 @@ class AiChatMessageBubble extends StatelessWidget {
               color: context.currentTheme.textNeutralPrimary,
             ),
           ),
-        for (final product in referencedProducts)
-          AiChatProductCard(product: product),
-        if (hasCartMarker) _buildCartButton(context),
       ],
-    );
-  }
-
-  Widget _buildCartButton(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 8),
-      child: GestureDetector(
-        onTap: onCartTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-            color: context.currentTheme.bgBrandDefault,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Row(
-            mainAxisSize: .min,
-            children: [
-              Icon(
-                TablerIcons.shopping_cart,
-                size: 16,
-                color: context.currentTheme.textNeutralLight,
-              ),
-              const SizedBox(width: 6),
-              Text(
-                context.localization.ai_chat_view_cart,
-                style: AppTextStyles.p4SemiBold.copyWith(
-                  color: context.currentTheme.textNeutralLight,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 

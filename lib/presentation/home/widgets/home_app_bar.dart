@@ -39,12 +39,6 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: const _NotificationBell(),
         ),
         AppButton.icon(
-          iconData: TablerIcons.message,
-          iconOrTextColorOverride: context.currentTheme.iconNeutralDefault,
-          size: AppButtonSize.extraLarge,
-          onPressed: () => context.pushRoute(const ChatRoute()),
-        ),
-        AppButton.icon(
           iconData: TablerIcons.info_circle,
           iconOrTextColorOverride: context.currentTheme.iconNeutralDefault,
           size: AppButtonSize.extraLarge,

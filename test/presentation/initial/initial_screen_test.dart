@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ideal_mobile/core/deep_link/app_deep_link_manager.dart';
 import 'package:ideal_mobile/core/services/injection_container.dart';
 import 'package:ideal_mobile/gen/assets.gen.dart';
 import 'package:ideal_mobile/initialize_app.dart';
@@ -87,7 +86,6 @@ void main() {
       );
 
       await sl.reset();
-      sl.registerSingleton<AppDeepLinkManager>(AppDeepLinkManager());
 
       router = MockStackRouter();
       when(() => router.replace(any())).thenAnswer((_) async => null);

@@ -49,6 +49,7 @@ void main() {
     final result = await dataSource.getSettings();
 
     expect(result.pushEnabled, isTrue);
+    expect(result.messagesEnabled, isTrue);
     verify(() => cacheManager.noCacheOptions()).called(1);
   });
 
@@ -81,5 +82,6 @@ Map<String, dynamic> _settingsJson() => {
   'bookings_enabled': true,
   'maintenance_enabled': true,
   'leases_enabled': true,
+  'messages_enabled': true,
   'general_enabled': true,
 };

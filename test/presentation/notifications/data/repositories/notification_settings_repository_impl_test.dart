@@ -22,6 +22,7 @@ void main() {
     bookingsEnabled: false,
     maintenanceEnabled: true,
     leasesEnabled: false,
+    messagesEnabled: true,
     generalEnabled: true,
   );
   const update = NotificationSettingsUpdate(pushEnabled: false);

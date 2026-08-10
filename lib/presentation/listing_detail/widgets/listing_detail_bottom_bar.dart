@@ -1,18 +1,31 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
 import 'package:ideal_mobile/constants/integration_test_keys.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
+import 'package:ideal_mobile/presentation/chat/bloc/open_conversation_cubit.dart';
 import 'package:ideal_mobile/presentation/listing_detail/domain/entities/listing_detail.dart';
+import 'package:ideal_mobile/routes.gr.dart';
+import 'package:ideal_mobile/services/guest_access_service.dart';
+import 'package:ideal_mobile/utils/extensions/build_context_ext.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 import 'package:ideal_mobile/widgets/app_button/app_button.dart';
 import 'package:ideal_mobile/widgets/app_button/enums/app_button_size_enum.dart';
+import 'package:ideal_mobile/widgets/app_button/enums/app_button_state_enum.dart';
 import 'package:ideal_mobile/widgets/app_button/enums/app_button_style_enum.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ListingDetailBottomBar extends StatelessWidget {
-  const ListingDetailBottomBar({super.key, required this.detail});
+  const ListingDetailBottomBar({
+    super.key,
+    required this.detail,
+    this.openConversationCubit,
+  });
 
   final ListingDetail detail;
+  final OpenConversationCubit? openConversationCubit;
 
   @override
   Widget build(BuildContext context) {
@@ -55,27 +68,17 @@ class ListingDetailBottomBar extends StatelessWidget {
                   Expanded(
                     child: SizedBox(
                       height: 48,
-                      child: Center(
-                        child: AppButton(
-                          key: keys.listingDetail.messageButton,
-                          style: AppButtonStyle.primary,
-                          size: AppButtonSize.large,
-                          label: context.localization.listing_detail_message,
-                          leftIcon: TablerIcons.message,
-                          shouldSetFullWidth: true,
-                          borderRadius: 12,
-                          foregroundColor:
-                              context.currentTheme.textNeutralWhite,
-                          backgroundColor: context.currentTheme.bgBrandDefault,
-                          onPressed: () {
-                            // TODO(listing-detail): wire chat
-                          },
-                        ),
-                      ),
+                      child: Center(child: _messageButton(context)),
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  _CallButton(label: context.localization.listing_detail_call),
+                  if (detail.contactPhone != null) ...[
+                    const SizedBox(width: 12),
+                    _CallButton(
+                      key: keys.listingDetail.callButton,
+                      label: context.localization.listing_detail_call,
+                      phone: detail.contactPhone!,
+                    ),
+                  ],
                 ],
               ),
             ],
@@ -84,12 +87,110 @@ class ListingDetailBottomBar extends StatelessWidget {
       ),
     );
   }
+
+  Future<void> _openConversation(BuildContext context) async {
+    if (!await GuestAccessService.requireAuthentication(context)) return;
+    if (!context.mounted) return;
+
+    await context.read<OpenConversationCubit>().open(detail.id);
+  }
+
+  Widget _messageButton(BuildContext context) {
+    if (!detail.canMessage) {
+      return _buildMessageButton(context, isEnabled: false, isLoading: false);
+    }
+
+    final listener = BlocConsumer<OpenConversationCubit, OpenConversationState>(
+      listener: _listenToConversation,
+      builder: (context, state) {
+        final isLoading = _isLoading(state);
+        return _buildMessageButton(
+          context,
+          isEnabled: !isLoading,
+          isLoading: isLoading,
+        );
+      },
+    );
+
+    final cubit = openConversationCubit;
+    if (cubit != null) {
+      return BlocProvider<OpenConversationCubit>.value(
+        value: cubit,
+        child: listener,
+      );
+    }
+
+    return BlocProvider<OpenConversationCubit>(
+      create: (_) => OpenConversationCubit(),
+      child: listener,
+    );
+  }
+
+  Widget _buildMessageButton(
+    BuildContext context, {
+    required bool isEnabled,
+    required bool isLoading,
+  }) {
+    final canMessage = detail.canMessage;
+    return Semantics(
+      button: true,
+      enabled: isEnabled,
+      label: canMessage
+          ? context.localization.listing_detail_message
+          : context.localization.listing_detail_message_unavailable,
+      child: AppButton(
+        key: keys.listingDetail.messageButton,
+        style: AppButtonStyle.primary,
+        size: AppButtonSize.large,
+        label: context.localization.listing_detail_message,
+        leftIcon: TablerIcons.message,
+        shouldSetFullWidth: true,
+        borderRadius: 12,
+        state: canMessage ? AppButtonState.normal : AppButtonState.disabled,
+        isLoading: isLoading,
+        foregroundColor: canMessage
+            ? context.currentTheme.textNeutralWhite
+            : null,
+        backgroundColor: canMessage
+            ? context.currentTheme.bgBrandDefault
+            : null,
+        onPressed: isEnabled
+            ? () async {
+                await _openConversation(context);
+              }
+            : null,
+      ),
+    );
+  }
+
+  void _listenToConversation(
+    BuildContext context,
+    OpenConversationState state,
+  ) {
+    if (state.status == OpenConversationStatus.success) {
+      final conversationId = state.conversationId;
+      if (conversationId is int && context.mounted) {
+        context.pushRoute(
+          ChatConversationRoute(conversationId: conversationId),
+        );
+      }
+    } else if (state.status == OpenConversationStatus.failure) {
+      final message = state.errorMessage;
+      if (message is String && message.isNotEmpty) {
+        context.showSnackBar(message);
+      }
+    }
+  }
+
+  bool _isLoading(OpenConversationState state) =>
+      state.status == OpenConversationStatus.loading;
 }
 
 class _CallButton extends StatelessWidget {
-  const _CallButton({required this.label});
+  const _CallButton({super.key, required this.label, required this.phone});
 
   final String label;
+  final String phone;
 
   @override
   Widget build(BuildContext context) {
@@ -101,8 +202,15 @@ class _CallButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
-          onTap: () {
-            // TODO(listing-detail): wire chat
+          onTap: () async {
+            final uri = Uri.parse('tel:$phone');
+            if (await canLaunchUrl(uri)) {
+              await launchUrl(uri, mode: LaunchMode.externalApplication);
+            } else {
+              context.showSnackBar(
+                context.localization.opps_something_went_wrong,
+              );
+            }
           },
           child: Container(
             width: 48,

@@ -8,26 +8,13 @@ import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http_certificate_pinning/http_certificate_pinning.dart';
 import 'package:ideal_mobile/constants/constants.dart';
-import 'package:ideal_mobile/core/deep_link/app_deep_link_manager.dart';
 import 'package:ideal_mobile/core/services/app_tour_service.dart';
 import 'package:ideal_mobile/main.dart';
-import 'package:ideal_mobile/presentation/chat/data/datasources/chat_remote_datasource.dart';
-import 'package:ideal_mobile/presentation/chat/data/repositories/chat_repository_impl.dart';
-import 'package:ideal_mobile/presentation/chat/domain/repositories/chat_repository.dart';
-import 'package:ideal_mobile/presentation/chat/domain/usecases/create_chat_user_document.dart';
-import 'package:ideal_mobile/presentation/chat/domain/usecases/delete_chat_user_document.dart';
-import 'package:ideal_mobile/presentation/chat/domain/usecases/send_chat_message.dart';
-import 'package:ideal_mobile/presentation/chat/domain/usecases/watch_chat_messages.dart';
-import 'package:ideal_mobile/presentation/chat/domain/usecases/watch_my_chats.dart';
-import 'package:ideal_mobile/presentation/chat/domain/usecases/watch_other_users.dart';
+import 'package:ideal_mobile/presentation/chat/chat_injection.dart';
 import 'package:ideal_mobile/presentation/feedback/data/datasources/feedback_remote_datasource.dart';
 import 'package:ideal_mobile/presentation/feedback/data/repositories/feedback_repository_impl.dart';
 import 'package:ideal_mobile/presentation/feedback/domain/repositories/feedback_repository.dart';
 import 'package:ideal_mobile/presentation/feedback/domain/usecases/submit_feedback.dart';
-import 'package:ideal_mobile/presentation/home/data/datasources/product_remote_data_source.dart';
-import 'package:ideal_mobile/presentation/home/data/repositories/product_repository_impl.dart';
-import 'package:ideal_mobile/presentation/home/domain/repositories/product_repository.dart';
-import 'package:ideal_mobile/presentation/home/domain/usecases/get_products.dart';
 import 'package:ideal_mobile/presentation/listings/data/datasources/listings_remote_data_source.dart';
 import 'package:ideal_mobile/presentation/listings/data/repositories/listings_repository_impl.dart';
 import 'package:ideal_mobile/presentation/listings/domain/repositories/listings_repository.dart';
@@ -40,14 +27,6 @@ import 'package:ideal_mobile/presentation/login/domain/repositories/auth_reposit
 import 'package:ideal_mobile/presentation/login/domain/usecases/request_otp.dart';
 import 'package:ideal_mobile/presentation/login/domain/usecases/verify_otp.dart';
 import 'package:ideal_mobile/presentation/notifications/notifications_injection.dart';
-import 'package:ideal_mobile/presentation/product_detail/data/datasources/ai_product_description_remote_data_source.dart';
-import 'package:ideal_mobile/presentation/product_detail/data/datasources/product_detail_remote_data_source.dart';
-import 'package:ideal_mobile/presentation/product_detail/data/repositories/ai_product_description_repository_impl.dart';
-import 'package:ideal_mobile/presentation/product_detail/data/repositories/product_detail_repository_impl.dart';
-import 'package:ideal_mobile/presentation/product_detail/domain/repositories/ai_product_description_repository.dart';
-import 'package:ideal_mobile/presentation/product_detail/domain/repositories/product_detail_repository.dart';
-import 'package:ideal_mobile/presentation/product_detail/domain/usecases/generate_ai_product_description.dart';
-import 'package:ideal_mobile/presentation/product_detail/domain/usecases/get_product_detail.dart';
 import 'package:ideal_mobile/presentation/profile/data/datasources/profile_remote_data_source.dart';
 import 'package:ideal_mobile/presentation/profile/data/repositories/profile_repository_impl.dart';
 import 'package:ideal_mobile/presentation/profile/domain/repositories/profile_repository.dart';
@@ -140,14 +119,6 @@ Future<void> configureDependencies({
     ..registerLazySingleton(() => UpdateProfile(sl<ProfileRepository>()))
     ..registerLazySingleton(() => UpdateProfileAvatar(sl<ProfileRepository>()))
     ..registerLazySingleton(() => RemoveProfileAvatar(sl<ProfileRepository>()))
-    // Still consumed by my_orders, which is unrelated to the home feed.
-    ..registerLazySingleton(() => GetProducts(sl()))
-    ..registerLazySingleton<ProductRepository>(
-      () => ProductRepositoryImpl(sl()),
-    )
-    ..registerLazySingleton<ProductRemoteDatasource>(
-      () => ProductRemoteDataSrcImpl(sl()),
-    )
     ..registerLazySingleton<ListingsRepository>(
       () => ListingsRepositoryImpl(sl<ListingsRemoteDataSource>()),
     )
@@ -159,20 +130,6 @@ Future<void> configureDependencies({
       () => GetListingFilterOptions(sl<ListingsRepository>()),
     )
     ..registerLazySingleton<FavoritesService>(FavoritesService.new)
-    ..registerLazySingleton(() => GetProductDetail(sl()))
-    ..registerLazySingleton<ProductDetailRepository>(
-      () => ProductDetailRepositoryImpl(sl()),
-    )
-    ..registerLazySingleton<ProductDetailRemoteDatasource>(
-      () => ProductDetailRemoteDataSrcImpl(sl()),
-    )
-    ..registerLazySingleton(() => GenerateAIProductDescription(sl()))
-    ..registerLazySingleton<AIProductDescriptionRepository>(
-      () => AIProductDescriptionRepositoryImpl(sl()),
-    )
-    ..registerLazySingleton<AIProductDescriptionRemoteDataSource>(
-      () => AIProductDescriptionRemoteDataSourceImpl(sl()),
-    )
     ..registerLazySingleton(() {
       final service = GeminiService();
       service.initialize();
@@ -194,7 +151,6 @@ Future<void> configureDependencies({
     )
     ..registerLazySingleton(() => CurrencyConverterUtil(sl()))
     ..registerLazySingleton<Dio>(() => pinnedDio)
-    ..registerLazySingleton<AppDeepLinkManager>(() => AppDeepLinkManager())
     ..registerLazySingleton<LocalAuthService>(
       () => LocalAuthService(LocalAuthentication()),
     )
@@ -212,21 +168,10 @@ Future<void> configureDependencies({
     )
     ..registerLazySingleton<FeedbackRemoteDatasource>(
       () => FeedbackRemoteDatasourceImpl(sl<FirestoreService>()),
-    )
-    ..registerLazySingleton<ChatRemoteDatasource>(
-      () => ChatRemoteDatasourceImpl(sl<FirebaseFirestore>()),
-    )
-    ..registerLazySingleton<ChatRepository>(
-      () => ChatRepositoryImpl(sl<ChatRemoteDatasource>()),
-    )
-    ..registerLazySingleton(() => WatchOtherUsers(sl<ChatRepository>()))
-    ..registerLazySingleton(() => WatchChatMessages(sl<ChatRepository>()))
-    ..registerLazySingleton(() => WatchMyChats(sl<ChatRepository>()))
-    ..registerLazySingleton(() => SendChatMessage(sl<ChatRepository>()))
-    ..registerLazySingleton(() => CreateChatUserDocument(sl<ChatRepository>()))
-    ..registerLazySingleton(() => DeleteChatUserDocument(sl<ChatRepository>()));
+    );
 
   registerNotificationsDependencies(sl);
+  registerChatDependencies(sl);
   registerListingDetailDependencies(sl);
 }
 

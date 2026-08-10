@@ -475,133 +475,6 @@ class AppLocalizationsUz extends AppLocalizations {
   String get creating_new_account => 'Yangi hisob yaratyapsizmi?';
 
   @override
-  String get shipping_address_keys =>
-      '================ Yetkazib berish manzili kalitlari ================';
-
-  @override
-  String get add_new_address => 'Yangi manzil qo\'shish';
-
-  @override
-  String get add_shipping_details => 'Yetkazib berish tafsilotlarini qo\'shing';
-
-  @override
-  String get address => 'Manzil';
-
-  @override
-  String get city => 'Shahar';
-
-  @override
-  String get country => 'Mamlakat';
-
-  @override
-  String get deliver_to => 'Yetkazib berish manzili';
-
-  @override
-  String get enter_your_address => 'Manzilingizni kiriting';
-
-  @override
-  String get enter_zip_code => 'Pochta indeksini kiriting';
-
-  @override
-  String get select_address => 'Manzilni tanlang';
-
-  @override
-  String get select_city => 'Shaharni tanlang';
-
-  @override
-  String get select_country => 'Mamlakatni tanlang';
-
-  @override
-  String get select_state => 'Davlatni tanlang';
-
-  @override
-  String get set_as_default_address => 'Standart manzil sifatida o\'rnating';
-
-  @override
-  String get shipping_address => 'Yetkazib berish manzili';
-
-  @override
-  String get shipping_details => 'Yetkazib berish tafsilotlari';
-
-  @override
-  String get state => 'Viloyat';
-
-  @override
-  String get use_current_location => 'Joriy joylashuvdan foydalaning';
-
-  @override
-  String get zip_code => 'Pochta indeksi';
-
-  @override
-  String get checkout_keys =>
-      '================ Buyurtma rasmiylashtirish kalitlari ================';
-
-  @override
-  String get cart => 'Arava';
-
-  @override
-  String get cart_and_checkout => 'Savat tafsilotlari';
-
-  @override
-  String get cart_items => 'Savat buyumlari';
-
-  @override
-  String get cash_on_delivery => 'Yetkazib berishda naqd pul';
-
-  @override
-  String get confirm_and_pay => 'Tasdiqlang va to\'lang';
-
-  @override
-  String get delivery_charges => 'Yetkazib berish to\'lovlari';
-
-  @override
-  String get discount => 'Chegirma';
-
-  @override
-  String get expected_delivery_by => 'Kutilayotgan yetkazib berish sanasi';
-
-  @override
-  String get order_review => 'Buyurtmani ko\'rib chiqish';
-
-  @override
-  String get order_summary => 'Buyurtma xulosasi';
-
-  @override
-  String get payment => 'To\'lov';
-
-  @override
-  String get price => 'Narxi';
-
-  @override
-  String price_of_items(int total_product) {
-    String _temp0 = intl.Intl.pluralLogic(
-      total_product,
-      locale: localeName,
-      other: '$total_product ta mahsulot',
-      one: '$total_product ta mahsulot',
-    );
-    return 'Narxi($_temp0)';
-  }
-
-  @override
-  String get select_and_review_order => 'Buyurtmani tanlang va ko‘rib chiqing';
-
-  @override
-  String get select_payment_method => 'To\'lov usulini tanlang';
-
-  @override
-  String get selected_payment_method => 'Tanlangan to\'lov usuli';
-
-  @override
-  String get shipping => 'Yetkazib berish';
-
-  @override
-  String get total_amount => 'Umumiy hisob';
-
-  @override
-  String get your_cart_is_empty => 'Savatingiz boʻsh!';
-
-  @override
   String get coupons_keys =>
       '================ Kuponlar kalitlari ================';
 
@@ -637,9 +510,6 @@ class AppLocalizationsUz extends AppLocalizations {
   String get home => 'Bosh sahifa';
 
   @override
-  String get pro => 'PRO';
-
-  @override
   String get rating => 'Reyting';
 
   @override
@@ -668,20 +538,6 @@ class AppLocalizationsUz extends AppLocalizations {
       'Mikrofonga ruxsat butunlay rad etiladi. Iltimos, sozlamalarga o\'ting va uni yoqing.';
 
   @override
-  String get wishlist_keys =>
-      '================ Istaklar ro‘yxati kalitlari ================';
-
-  @override
-  String get wishlist => 'Istaklar roʻyxati';
-
-  @override
-  String get empty_wishlist_message =>
-      'Siz istaklar ro\'yxatiga hech qanday mahsulotni qo\'shmagansiz. Istaklar ro\'yxatiga qo\'shish uchun mahsulotlarni o\'rganing.';
-
-  @override
-  String get empty_wishlist_title => 'Istaklaringiz roʻyxati boʻsh!';
-
-  @override
   String get chat_keys => '================ Chat kalitlari ================';
 
   @override
@@ -705,16 +561,6 @@ class AppLocalizationsUz extends AppLocalizations {
   String get message_description => 'Tavsif yozing...';
 
   @override
-  String get no_chats => 'Chat yo\'q';
-
-  @override
-  String get no_users_to_chat_with =>
-      'Hozircha suhbatlashish uchun foydalanuvchilar yo‘q';
-
-  @override
-  String get no_users_match_search => 'Mos foydalanuvchilar topilmadi';
-
-  @override
   String get no_messages_yet => 'Hali hech qanday xabar yo\'q';
 
   @override
@@ -722,6 +568,131 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get send_a_new_message => 'Yangi xabar yuboring';
+
+  @override
+  String get chats_keys =>
+      '================ Suhbatlar kalitlari ================';
+
+  @override
+  String get chats => 'Suhbatlar';
+
+  @override
+  String get chats_empty_title => 'Hali suhbatlar yo‘q';
+
+  @override
+  String get chats_empty_subtitle =>
+      'E\'lon haqida bizga yozing, suhbatingiz shu yerda paydo bo‘ladi';
+
+  @override
+  String get chats_archived => 'Arxivlangan suhbatlar';
+
+  @override
+  String get chat_archive => 'Arxivlash';
+
+  @override
+  String get chat_unarchive => 'Arxivdan chiqarish';
+
+  @override
+  String get chat_mute => 'Bildirishnomalarni o‘chirish';
+
+  @override
+  String get chat_unmute => 'Bildirishnomalarni yoqish';
+
+  @override
+  String get chat_delete => 'Suhbatni o‘chirish';
+
+  @override
+  String get chat_report => 'Shikoyat qilish';
+
+  @override
+  String get chat_delete_title => 'Bu suhbat o‘chirilsinmi?';
+
+  @override
+  String get chat_delete_message =>
+      'Bu suhbat ro‘yxatingizdan olib tashlanadi va uni qayta ocholmaysiz.';
+
+  @override
+  String get chat_delete_confirm => 'O‘chirish';
+
+  @override
+  String get chat_cancel => 'Bekor qilish';
+
+  @override
+  String get chat_conversation_keys =>
+      '================ Suhbat ichidagi kalitlar ================';
+
+  @override
+  String get chat_message_hint => 'Xabar';
+
+  @override
+  String get chat_message_too_long =>
+      'Xabarlar 1024 belgigacha bo‘lishi mumkin';
+
+  @override
+  String get chat_send_failed => 'Yuborilmadi. Qayta urinish uchun bosing.';
+
+  @override
+  String get chat_retry => 'Qayta urinish';
+
+  @override
+  String get chat_photo => 'Surat';
+
+  @override
+  String get chat_read_only_blocked =>
+      'Bu suhbatda boshqa xabar yubora olmaysiz.';
+
+  @override
+  String get chat_listing_unavailable => 'Bu e\'lon endi mavjud emas.';
+
+  @override
+  String get chat_attach_photo => 'Surat qo‘shish';
+
+  @override
+  String get chat_attach_camera => 'Kamera';
+
+  @override
+  String get chat_attach_gallery => 'Galereya';
+
+  @override
+  String get chat_image_too_large => 'Rasmlar 5 MB dan kichik bo‘lishi kerak';
+
+  @override
+  String get chat_image_unsupported_format =>
+      'Qo‘llab-quvvatlanmaydigan rasm formati';
+
+  @override
+  String get chat_today => 'Bugun';
+
+  @override
+  String get chat_yesterday => 'Kecha';
+
+  @override
+  String get chat_report_keys =>
+      '================ Suhbat shikoyati kalitlari ================';
+
+  @override
+  String get chat_report_title => 'Bu suhbat haqida shikoyat qilish';
+
+  @override
+  String get chat_report_reason_spam => 'Spam';
+
+  @override
+  String get chat_report_reason_abuse => 'Haqorat';
+
+  @override
+  String get chat_report_reason_scam => 'Firibgarlik';
+
+  @override
+  String get chat_report_reason_other => 'Boshqa';
+
+  @override
+  String get chat_report_note_hint => 'Tafsilotlarni qo‘shing (ixtiyoriy)';
+
+  @override
+  String get chat_report_submit => 'Shikoyatni yuborish';
+
+  @override
+  String get chat_report_submitted => 'Shikoyat yuborildi';
 
   @override
   String get contact_us_keys =>
@@ -812,6 +783,9 @@ class AppLocalizationsUz extends AppLocalizations {
       'iDeal faoliyatingiz haqidagi bildirishnomalarni oling.';
 
   @override
+  String get notifications_messages => 'Xabarlar';
+
+  @override
   String get notifications_payments => 'To‘lovlar';
 
   @override
@@ -866,9 +840,6 @@ class AppLocalizationsUz extends AppLocalizations {
   String get empty_cards_list_message => 'Hozirda karta mavjud emas.';
 
   @override
-  String get empty_cards_list_title => 'Saqlangan karta yo\'q';
-
-  @override
   String get explore_products => 'Mahsulotlarni o\'rganing';
 
   @override
@@ -877,141 +848,6 @@ class AppLocalizationsUz extends AppLocalizations {
   @override
   String get empty_screens_keys =>
       '================ Bo‘sh ekranlar kalitlari ================';
-
-  @override
-  String get empty_cart_message =>
-      'Bu erda bitta element yo\'q. Savatingizga qo\'shish uchun mahsulotlarni o\'rganing.';
-
-  @override
-  String get empty_order_message =>
-      'Bu erda bitta element yo\'q. Savatingizga qo\'shish uchun mahsulotlarni o\'rganing.';
-
-  @override
-  String get empty_order_title => 'Hech qanday buyurtma topilmadi';
-
-  @override
-  String get subscription_keys =>
-      '================ Obunalar kalitlari ================';
-
-  @override
-  String get upgrade_to_pro => 'PRO ga yangilang';
-
-  @override
-  String get cancel_subscription => 'Obunani bekor qilish';
-
-  @override
-  String get manage_subscription => 'Obunani boshqarish';
-
-  @override
-  String get no_subscription_available => 'Obuna rejalari mavjud emas.';
-
-  @override
-  String get failed_to_load_subscriptions =>
-      'Obuna rejalarini yuklab bo‘lmadi.';
-
-  @override
-  String get store_login_required =>
-      'Iltimos, App Store yoki Play Store hisobingizga kiring.';
-
-  @override
-  String get unexpected_error_occurred => 'Kutilmagan xatolik yuz berdi.';
-
-  @override
-  String get user_purchase_cancelled => 'Siz xaridni bekor qildingiz.';
-
-  @override
-  String get restore_subscription => 'Obunani tiklash';
-
-  @override
-  String get restore_success => 'Xaridlaringiz muvaffaqiyatli tiklandi.';
-
-  @override
-  String get no_active_subscriptions =>
-      'Hisobingizda hech qanday faol obuna topilmadi.';
-
-  @override
-  String get restore_error => 'Xaridlarni tiklashda xatolik yuz berdi:';
-
-  @override
-  String get monthly_plan => 'Oylik reja';
-
-  @override
-  String get yearly_plan => 'Yillik reja';
-
-  @override
-  String get monthly_duration => 'oyiga';
-
-  @override
-  String get monthly_renewal => 'Har oy avtomatik yangilanadi';
-
-  @override
-  String get yearly_duration => 'yiliga';
-
-  @override
-  String get yearly_renewal =>
-      'Eng yaxshi qiymat - har yili avtomatik yangilanadi';
-
-  @override
-  String get subscription_renew =>
-      'Obunangiz joriy davr tugashidan kamida 24 soat oldin bekor qilinmasa, avtomatik ravishda yangilanadi';
-
-  @override
-  String get continue_to_payment => 'Toʻlovga oʻtish';
-
-  @override
-  String get unlock_access => 'Toʻliq kirishni ochish';
-
-  @override
-  String get app_name => 'iDeal Pro';
-
-  @override
-  String get plan_description =>
-      '🚀 iDeal-dan cheksiz foydalanish imkoniyatiga ega bo\'ling';
-
-  @override
-  String get processing_your_payment => 'Toʻlovingiz qayta ishlanmoqda';
-
-  @override
-  String get payment_processing_message =>
-      'Iltimos, toʻlovni amalga oshirishimizcha kuting. Bu bir necha soniya vaqt olishi mumkin.';
-
-  @override
-  String get subscription_activated_title => 'Obuna faollashtirildi!';
-
-  @override
-  String get subscription_activated_message =>
-      'Obunangiz endi faol.\nSiz premium xususiyatlarni o\'rganishingiz mumkin.';
-
-  @override
-  String get payment_failed => 'Toʻlov amalga oshmadi!';
-
-  @override
-  String get payment_failed_message => 'Birozdan keyin qayta urinib ko\'ring.';
-
-  @override
-  String get retry_payment => 'Toʻlovni qaytadan urinib koʻring';
-
-  @override
-  String get go_to_home => 'Bosh sahifaga o‘tish';
-
-  @override
-  String get subscription_management_url_unavailable =>
-      'Obuna sozlamalarini yuklay olmadik. Keyinroq qayta urinib ko‘ring.';
-
-  @override
-  String get subscription_invalid_url => 'Obuna URL manzili noto‘g‘ri.';
-
-  @override
-  String get purchase_cancelled => 'Xarid bekor qilindi';
-
-  @override
-  String get already_subscribed => 'Allaqachon obuna boʻlgan';
-
-  @override
-  String get receipt_already_in_use => 'Kvitansiya allaqachon ishlatilmoqda';
-
-  @override
-  String get something_went_wrong => 'Nimadir xato ketdi';
 
   @override
   String get force_update_keys =>
@@ -1096,52 +932,6 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get try_again => 'Qayta urinib ko\'ring';
-
-  @override
-  String get product_detail_keys =>
-      '================ Mahsulot tafsilotlari kalitlari ================';
-
-  @override
-  String get product_information => 'Mahsulot haqida ma\'lumot';
-
-  @override
-  String get add_to_cart => 'Savatchaga qo\'shish';
-
-  @override
-  String get mark_favorite => 'Sevimlini belgilang';
-
-  @override
-  String get inclusive_of_taxes => '(barcha soliqlarni hisobga olgan holda)';
-
-  @override
-  String get product_photos => 'Mahsulot rasmlari';
-
-  @override
-  String get view_product_reviews => 'Mahsulot sharhlarini ko\'rish';
-
-  @override
-  String get no_product_detail_found => 'Mahsulot tafsilotlari topilmadi!';
-
-  @override
-  String get product_details => 'Mahsulot tafsilotlari';
-
-  @override
-  String get ai_powered_description => 'AI quvvatli tavsif';
-
-  @override
-  String get get_ai_description => 'AI tavsifini oling';
-
-  @override
-  String get personalized => 'Shaxsiylashtirilgan';
-
-  @override
-  String get generate_ai_description => 'AI tavsifini yarating';
-
-  @override
-  String get generated_by_ai => 'AI tomonidan yaratilgan';
-
-  @override
-  String get regenerate => 'Qayta tiklash';
 
   @override
   String get reminder_keys =>
@@ -1335,28 +1125,6 @@ class AppLocalizationsUz extends AppLocalizations {
       'Hisob-faktura ulashilmadi. Iltimos, qayta urinib koʻring';
 
   @override
-  String get my_orders_keys =>
-      '================ Buyurtmalarim kalitlari ================';
-
-  @override
-  String get order_id => 'Buyurtma identifikatori: #';
-
-  @override
-  String get accepted => 'Qabul qilingan';
-
-  @override
-  String get order_details => 'Buyurtma tafsilotlari';
-
-  @override
-  String get cancel_order => 'Buyurtmani bekor qilish';
-
-  @override
-  String get tracking_detail => 'Kuzatuv tafsilotlari';
-
-  @override
-  String get no_product_selected => 'Hech qanday mahsulot tanlanmagan';
-
-  @override
   String get feedback_keys =>
       '================ Fikr-mulohaza kalitlari ================';
 
@@ -1425,20 +1193,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get ai_chat_description =>
-      'Mendan mahsulotlar, buyurtmalar yoki boshqa narsalar haqida so\'rang.';
-
-  @override
-  String get ai_chat_suggestion_cart => 'Savatimda nima bor?';
-
-  @override
-  String get ai_chat_suggestion_deals =>
-      '50 dollardan past bo\'lgan mahsulotlarni ko\'rsatish';
-
-  @override
-  String get ai_chat_suggestion_coupon => 'Kuponlar mavjudmi?';
-
-  @override
-  String get ai_chat_view_cart => 'Savatni ko\'rish';
+      'E\'lonlar, ijara yoki ilova bo\'ylab yo\'l topish haqida so\'rang.';
 
   @override
   String get ai_chat_error_no_response =>
@@ -1638,6 +1393,10 @@ class AppLocalizationsUz extends AppLocalizations {
   String get listing_detail_message => 'Xabar yuborish';
 
   @override
+  String get listing_detail_message_unavailable =>
+      'Bu e\'lon uchun xabar yuborish mavjud emas';
+
+  @override
   String get listing_detail_call => 'Qo‘ng‘iroq qilish';
 
   @override
@@ -1694,4 +1453,14 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get utilities => 'Utilitalar';
+
+  @override
+  String get ai_chat_suggestion_listings => 'Kvartira topish';
+
+  @override
+  String get ai_chat_suggestion_renting => 'Ijara qanday ishlaydi?';
+
+  @override
+  String get ai_chat_suggestion_support =>
+      'Qo\'llab-quvvatlash bilan bog\'lanish';
 }

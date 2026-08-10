@@ -26,6 +26,8 @@ ListingDetail buildListingDetail({
   double? mapLat = 41.36,
   double? mapLon = 69.28,
   bool verificationIsVerified = true,
+  bool canMessage = false,
+  String? contactPhone,
 }) {
   return ListingDetail(
     id: 12,
@@ -79,5 +81,7 @@ ListingDetail buildListingDetail({
           VerificationItem(key: 'identity', label: 'Owner identity checked'),
           VerificationItem(key: 'address', label: 'Address confirmed'),
         ],
+    canMessage: canMessage,
+    contactPhone: contactPhone,
   );
 }

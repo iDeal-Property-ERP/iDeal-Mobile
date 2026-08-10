@@ -124,6 +124,8 @@ class _NotificationCardState extends State<NotificationCard>
       return (TablerIcons.tool, Colors.orange.shade700);
     case NotificationCategory.leases:
       return (TablerIcons.file_description, Colors.blue.shade600);
+    case NotificationCategory.messages:
+      return (TablerIcons.message_circle, Colors.purple.shade600);
     case NotificationCategory.general:
       return (TablerIcons.bell, Colors.grey.shade700);
   }

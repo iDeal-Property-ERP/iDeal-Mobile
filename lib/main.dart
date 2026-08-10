@@ -20,7 +20,6 @@ import 'package:ideal_mobile/services/dynamic_icon_service.dart';
 import 'package:ideal_mobile/services/locale_service.dart';
 import 'package:ideal_mobile/services/notification_service.dart';
 import 'package:ideal_mobile/services/secure_storage_service.dart';
-import 'package:ideal_mobile/services/subscription_service.dart';
 import 'package:ideal_mobile/services/theme_service.dart';
 import 'package:ideal_mobile/shared_pref/prefs.dart';
 import 'package:ideal_mobile/utils/app_environment.dart';
@@ -139,15 +138,8 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
     final relatedObjectType = _stringPayloadValue(
       payload['related_object_type'],
     );
-    final relatedObjectId = _stringPayloadValue(payload['related_object_id']);
-
     switch (notificationType) {
       case 'service_order_status':
-        if (relatedObjectType == 'order' && relatedObjectId != null) {
-          debugPrint('Navigating to order details: $relatedObjectId');
-          context.pushRoute(OrderDetailRoute(productId: relatedObjectId));
-          return;
-        }
         // TODO: Add a dedicated service-order detail route.
         _pushNotificationsRoute(context);
         return;
@@ -174,6 +166,14 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         return;
       case 'owner_onboarding':
         // TODO: Add an owner-onboarding route.
+        _pushNotificationsRoute(context);
+        return;
+      case 'chat_message':
+        final id = int.tryParse('${payload['related_object_id'] ?? ''}');
+        if (relatedObjectType == 'chat_conversation' && id != null) {
+          context.pushRoute(ChatConversationRoute(conversationId: id));
+          return;
+        }
         _pushNotificationsRoute(context);
         return;
       case 'general':
@@ -292,11 +292,6 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
                         darkTheme:
                             AppThemesData.themeData[AppThemeEnum.DarkTheme]!,
                         themeMode: state.themeMode,
-                        builder: (context, child) {
-                          final localization = AppLocalizations.of(context)!;
-                          SubscriptionService().setLocalization(localization);
-                          return child!;
-                        },
                       ),
                     );
                   },

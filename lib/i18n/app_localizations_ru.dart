@@ -475,135 +475,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get creating_new_account => 'Создаете новую учетную запись?';
 
   @override
-  String get shipping_address_keys =>
-      '================ Ключи адреса доставки ================';
-
-  @override
-  String get add_new_address => 'Добавить новый адрес';
-
-  @override
-  String get add_shipping_details => 'Добавить детали доставки';
-
-  @override
-  String get address => 'Адрес';
-
-  @override
-  String get city => 'Город';
-
-  @override
-  String get country => 'Страна';
-
-  @override
-  String get deliver_to => 'Доставить в';
-
-  @override
-  String get enter_your_address => 'Введите свой адрес';
-
-  @override
-  String get enter_zip_code => 'Введите почтовый индекс';
-
-  @override
-  String get select_address => 'Выберите адрес';
-
-  @override
-  String get select_city => 'Выберите город';
-
-  @override
-  String get select_country => 'Выберите страну';
-
-  @override
-  String get select_state => 'Выберите штат';
-
-  @override
-  String get set_as_default_address => 'Установить как адрес по умолчанию';
-
-  @override
-  String get shipping_address => 'Адрес доставки';
-
-  @override
-  String get shipping_details => 'Детали доставки';
-
-  @override
-  String get state => 'Регион';
-
-  @override
-  String get use_current_location => 'Использовать текущее местоположение';
-
-  @override
-  String get zip_code => 'Почтовый индекс';
-
-  @override
-  String get checkout_keys =>
-      '================ Ключи оформления заказа ================';
-
-  @override
-  String get cart => 'Корзина';
-
-  @override
-  String get cart_and_checkout => 'Детали корзины';
-
-  @override
-  String get cart_items => 'Товары в корзине';
-
-  @override
-  String get cash_on_delivery => 'Наложенным платежом';
-
-  @override
-  String get confirm_and_pay => 'Подтвердите и оплатите';
-
-  @override
-  String get delivery_charges => 'Стоимость доставки';
-
-  @override
-  String get discount => 'Скидка';
-
-  @override
-  String get expected_delivery_by => 'Ожидаемая дата доставки';
-
-  @override
-  String get order_review => 'Обзор заказа';
-
-  @override
-  String get order_summary => 'Сводка заказа';
-
-  @override
-  String get payment => 'Оплата';
-
-  @override
-  String get price => 'Цена';
-
-  @override
-  String price_of_items(int total_product) {
-    String _temp0 = intl.Intl.pluralLogic(
-      total_product,
-      locale: localeName,
-      other: '$total_product товара',
-      many: '$total_product товаров',
-      few: '$total_product товара',
-      one: '$total_product товар',
-    );
-    return 'Цена($_temp0)';
-  }
-
-  @override
-  String get select_and_review_order => 'Выберите и просмотрите заказ';
-
-  @override
-  String get select_payment_method => 'Выберите способ оплаты';
-
-  @override
-  String get selected_payment_method => 'Выбранный способ оплаты';
-
-  @override
-  String get shipping => 'Доставка';
-
-  @override
-  String get total_amount => 'Общая сумма';
-
-  @override
-  String get your_cart_is_empty => 'Ваша корзина пуста!';
-
-  @override
   String get coupons_keys => '================ Ключи купонов ================';
 
   @override
@@ -640,9 +511,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get home => 'Главная';
 
   @override
-  String get pro => 'PRO';
-
-  @override
   String get rating => 'Рейтинг';
 
   @override
@@ -671,20 +539,6 @@ class AppLocalizationsRu extends AppLocalizations {
       'Разрешение на использование микрофона запрещено навсегда. Пожалуйста, зайдите в настройки и включите его.';
 
   @override
-  String get wishlist_keys =>
-      '================ Ключи списка желаний ================';
-
-  @override
-  String get wishlist => 'Список желаний';
-
-  @override
-  String get empty_wishlist_message =>
-      'Вы не добавили ни одного товара в список желаний. Изучите продукты, которые можно добавить в свой список желаний.';
-
-  @override
-  String get empty_wishlist_title => 'Ваш список желаний пуст!';
-
-  @override
   String get chat_keys => '================ Ключи чата ================';
 
   @override
@@ -708,15 +562,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get message_description => 'Напишите описание...';
 
   @override
-  String get no_chats => 'Нет чатов';
-
-  @override
-  String get no_users_to_chat_with => 'Пока нет пользователей для общения';
-
-  @override
-  String get no_users_match_search => 'Нет подходящих пользователей';
-
-  @override
   String get no_messages_yet => 'Сообщений пока нет';
 
   @override
@@ -724,6 +569,131 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get send_a_new_message => 'Отправить новое сообщение';
+
+  @override
+  String get chats_keys => '================ Ключи чатов ================';
+
+  @override
+  String get chats => 'Чаты';
+
+  @override
+  String get chats_empty_title => 'Чатов пока нет';
+
+  @override
+  String get chats_empty_subtitle =>
+      'Напишите нам по поводу объявления, и ваш диалог появится здесь';
+
+  @override
+  String get chats_archived => 'Архивные чаты';
+
+  @override
+  String get chat_archive => 'Архивировать';
+
+  @override
+  String get chat_unarchive => 'Разархивировать';
+
+  @override
+  String get chat_mute => 'Отключить уведомления';
+
+  @override
+  String get chat_unmute => 'Включить уведомления';
+
+  @override
+  String get chat_delete => 'Удалить чат';
+
+  @override
+  String get chat_report => 'Пожаловаться';
+
+  @override
+  String get chat_delete_title => 'Удалить этот чат?';
+
+  @override
+  String get chat_delete_message =>
+      'Этот чат будет удален из вашего списка, и вы не сможете открыть его снова.';
+
+  @override
+  String get chat_delete_confirm => 'Удалить';
+
+  @override
+  String get chat_cancel => 'Отмена';
+
+  @override
+  String get chat_conversation_keys =>
+      '================ Ключи переписки ================';
+
+  @override
+  String get chat_message_hint => 'Сообщение';
+
+  @override
+  String get chat_message_too_long =>
+      'Сообщения могут содержать не более 1024 символов';
+
+  @override
+  String get chat_send_failed => 'Не отправлено. Нажмите, чтобы повторить.';
+
+  @override
+  String get chat_retry => 'Повторить';
+
+  @override
+  String get chat_photo => 'Фото';
+
+  @override
+  String get chat_read_only_blocked =>
+      'Вы больше не можете отправлять сообщения в этом чате.';
+
+  @override
+  String get chat_listing_unavailable => 'Это объявление больше недоступно.';
+
+  @override
+  String get chat_attach_photo => 'Добавить фото';
+
+  @override
+  String get chat_attach_camera => 'Камера';
+
+  @override
+  String get chat_attach_gallery => 'Галерея';
+
+  @override
+  String get chat_image_too_large =>
+      'Размер изображения не должен превышать 5 МБ';
+
+  @override
+  String get chat_image_unsupported_format =>
+      'Неподдерживаемый формат изображения';
+
+  @override
+  String get chat_today => 'Сегодня';
+
+  @override
+  String get chat_yesterday => 'Вчера';
+
+  @override
+  String get chat_report_keys =>
+      '================ Ключи жалоб на чат ================';
+
+  @override
+  String get chat_report_title => 'Пожаловаться на этот чат';
+
+  @override
+  String get chat_report_reason_spam => 'Спам';
+
+  @override
+  String get chat_report_reason_abuse => 'Оскорбления';
+
+  @override
+  String get chat_report_reason_scam => 'Мошенничество';
+
+  @override
+  String get chat_report_reason_other => 'Другое';
+
+  @override
+  String get chat_report_note_hint => 'Добавьте подробности (необязательно)';
+
+  @override
+  String get chat_report_submit => 'Отправить жалобу';
+
+  @override
+  String get chat_report_submitted => 'Жалоба отправлена';
 
   @override
   String get contact_us_keys =>
@@ -813,6 +783,9 @@ class AppLocalizationsRu extends AppLocalizations {
       'Получайте уведомления об активности в iDeal.';
 
   @override
+  String get notifications_messages => 'Сообщения';
+
+  @override
   String get notifications_payments => 'Платежи';
 
   @override
@@ -867,9 +840,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get empty_cards_list_message => 'На данный момент карты нет.';
 
   @override
-  String get empty_cards_list_title => 'Нет сохраненной карты';
-
-  @override
   String get explore_products => 'Изучите продукты';
 
   @override
@@ -878,141 +848,6 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get empty_screens_keys =>
       '================ Ключи пустых экранов ================';
-
-  @override
-  String get empty_cart_message =>
-      'Здесь нет единого предмета. Изучите продукты, которые можно добавить в корзину.';
-
-  @override
-  String get empty_order_message =>
-      'Здесь нет единого предмета. Изучите продукты, которые можно добавить в корзину.';
-
-  @override
-  String get empty_order_title => 'Заказы не найдены';
-
-  @override
-  String get subscription_keys =>
-      '================ Ключи подписки ================';
-
-  @override
-  String get upgrade_to_pro => 'Обновите до PRO';
-
-  @override
-  String get cancel_subscription => 'Отменить подписку';
-
-  @override
-  String get manage_subscription => 'Управление подпиской';
-
-  @override
-  String get no_subscription_available => 'Нет доступных планов подписки.';
-
-  @override
-  String get failed_to_load_subscriptions =>
-      'Не удалось загрузить планы подписки.';
-
-  @override
-  String get store_login_required =>
-      'Пожалуйста, войдите в свою учетную запись App Store или Play Store.';
-
-  @override
-  String get unexpected_error_occurred => 'Произошла непредвиденная ошибка.';
-
-  @override
-  String get user_purchase_cancelled => 'Вы отменили покупку.';
-
-  @override
-  String get restore_subscription => 'Восстановить подписку';
-
-  @override
-  String get restore_success => 'Ваши покупки успешно восстановлены.';
-
-  @override
-  String get no_active_subscriptions =>
-      'В вашем аккаунте не обнаружено активных подписок.';
-
-  @override
-  String get restore_error => 'Ошибка восстановления покупок:';
-
-  @override
-  String get monthly_plan => 'Ежемесячный план';
-
-  @override
-  String get yearly_plan => 'Годовой план';
-
-  @override
-  String get monthly_duration => 'помесячно';
-
-  @override
-  String get monthly_renewal => 'Автоматическое продление каждый месяц';
-
-  @override
-  String get yearly_duration => 'в год';
-
-  @override
-  String get yearly_renewal =>
-      'Лучшая цена — автоматическое продление ежегодно.';
-
-  @override
-  String get subscription_renew =>
-      'Ваша подписка будет автоматически продлена, если она не будет отменена как минимум за 24 часа до окончания текущего периода.';
-
-  @override
-  String get continue_to_payment => 'Продолжить оплату';
-
-  @override
-  String get unlock_access => 'Разблокируйте полный доступ к';
-
-  @override
-  String get app_name => 'iDeal Pro';
-
-  @override
-  String get plan_description => '🚀 Получите неограниченный доступ к iDeal';
-
-  @override
-  String get processing_your_payment => 'Обработка вашего платежа';
-
-  @override
-  String get payment_processing_message =>
-      'Пожалуйста, подождите, пока мы обрабатываем ваш платеж. Это может занять несколько секунд.';
-
-  @override
-  String get subscription_activated_title => 'Подписка активирована!';
-
-  @override
-  String get subscription_activated_message =>
-      'Ваша подписка активна.\nВы можете изучить премиум-функции.';
-
-  @override
-  String get payment_failed => 'Оплата не прошла!';
-
-  @override
-  String get payment_failed_message =>
-      'Пожалуйста, повторите попытку через некоторое время.';
-
-  @override
-  String get retry_payment => 'Повторить платеж';
-
-  @override
-  String get go_to_home => 'На главную';
-
-  @override
-  String get subscription_management_url_unavailable =>
-      'Нам не удалось загрузить настройки вашей подписки. Пожалуйста, повторите попытку позже.';
-
-  @override
-  String get subscription_invalid_url => 'Неверный URL-адрес подписки.';
-
-  @override
-  String get purchase_cancelled => 'Покупка отменена';
-
-  @override
-  String get already_subscribed => 'Уже подписан';
-
-  @override
-  String get receipt_already_in_use => 'Квитанция уже используется';
-
-  @override
-  String get something_went_wrong => 'Что-то пошло не так';
 
   @override
   String get force_update_keys =>
@@ -1098,53 +933,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get try_again => 'Попробуйте еще раз';
-
-  @override
-  String get product_detail_keys =>
-      '================ Ключи деталей товара ================';
-
-  @override
-  String get product_information => 'Информация о продукте';
-
-  @override
-  String get add_to_cart => 'Добавить в корзину';
-
-  @override
-  String get mark_favorite => 'Отметить фаворитом';
-
-  @override
-  String get inclusive_of_taxes => '(включая все налоги)';
-
-  @override
-  String get product_photos => 'Фотографии продукта';
-
-  @override
-  String get view_product_reviews => 'Посмотреть обзоры продуктов';
-
-  @override
-  String get no_product_detail_found => 'Детали продукта не найдены!';
-
-  @override
-  String get product_details => 'Подробная информация о продукте';
-
-  @override
-  String get ai_powered_description =>
-      'Описание на базе искусственного интеллекта';
-
-  @override
-  String get get_ai_description => 'Получить описание ИИ';
-
-  @override
-  String get personalized => 'Персонализированный';
-
-  @override
-  String get generate_ai_description => 'Создать описание ИИ';
-
-  @override
-  String get generated_by_ai => 'Создано ИИ';
-
-  @override
-  String get regenerate => 'Регенерировать';
 
   @override
   String get reminder_keys =>
@@ -1338,28 +1126,6 @@ class AppLocalizationsRu extends AppLocalizations {
       'Не удалось поделиться счетом. Пожалуйста, попробуйте еще раз';
 
   @override
-  String get my_orders_keys =>
-      '================ Ключи моих заказов ================';
-
-  @override
-  String get order_id => 'Идентификатор заказа: #';
-
-  @override
-  String get accepted => 'Принято';
-
-  @override
-  String get order_details => 'Детали заказа';
-
-  @override
-  String get cancel_order => 'Отменить заказ';
-
-  @override
-  String get tracking_detail => 'Детали отслеживания';
-
-  @override
-  String get no_product_selected => 'Продукт не выбран';
-
-  @override
   String get feedback_keys =>
       '================ Ключи обратной связи ================';
 
@@ -1429,19 +1195,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get ai_chat_description =>
-      'Спрашивайте меня о продуктах, заказах или чем-либо еще.';
-
-  @override
-  String get ai_chat_suggestion_cart => 'Что в моей корзине?';
-
-  @override
-  String get ai_chat_suggestion_deals => 'Показать товары до 50 долларов США';
-
-  @override
-  String get ai_chat_suggestion_coupon => 'Есть ли купоны?';
-
-  @override
-  String get ai_chat_view_cart => 'Посмотреть корзину';
+      'Спросите меня об объявлениях, аренде или навигации в приложении.';
 
   @override
   String get ai_chat_error_no_response =>
@@ -1643,6 +1397,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get listing_detail_message => 'Написать';
 
   @override
+  String get listing_detail_message_unavailable =>
+      'Обмен сообщениями для этого объявления недоступен';
+
+  @override
   String get listing_detail_call => 'Позвонить';
 
   @override
@@ -1699,4 +1457,13 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get utilities => 'Утилиты';
+
+  @override
+  String get ai_chat_suggestion_listings => 'Найти квартиру';
+
+  @override
+  String get ai_chat_suggestion_renting => 'Как работает аренда?';
+
+  @override
+  String get ai_chat_suggestion_support => 'Связаться с поддержкой';
 }

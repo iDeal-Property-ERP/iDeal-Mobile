@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_exit_app/flutter_exit_app.dart';
 import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
-import 'package:ideal_mobile/core/deep_link/app_deep_link_manager.dart';
 import 'package:ideal_mobile/core/services/injection_container.dart';
 import 'package:ideal_mobile/gen/assets.gen.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
@@ -94,8 +93,6 @@ class _InitialScreenState extends State<InitialScreen> {
 
     if (!mounted) return;
 
-    final deepLinkManager = sl<AppDeepLinkManager>();
-
     if (hasBackendAccessToken || hasExistingFirebaseSession) {
       // Authenticate with biometrics if enabled
       // This will exit app if auth fails, or return if succeeds/not enabled
@@ -103,22 +100,7 @@ class _InitialScreenState extends State<InitialScreen> {
 
       if (!mounted) return;
 
-      if (deepLinkManager.hasPendingDeepLink) {
-        final isDeepLinkHandled = await deepLinkManager.handlePendingDeepLink(
-          context,
-        );
-
-        // Case 1: Deep link exists -> try handling it; if invalid,
-        // navigate to Home.
-        if (!isDeepLinkHandled) {
-          await _replace(const HomeRoute());
-        } else {
-          _hasRedirected = true;
-        }
-      } else {
-        // Case 2: No deep link -> navigate directly to Home.
-        await _replace(const HomeRoute());
-      }
+      await _replace(const HomeRoute());
     } else {
       final skippedLogin = await Prefs.getBool(PrefKeys.kSkippedLogin) ?? false;
       await _replace(

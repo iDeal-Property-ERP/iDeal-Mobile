@@ -17,6 +17,7 @@ class NotificationSettingsUpdate extends Equatable {
     this.bookingsEnabled,
     this.maintenanceEnabled,
     this.leasesEnabled,
+    this.messagesEnabled,
     this.generalEnabled,
   });
 
@@ -25,6 +26,7 @@ class NotificationSettingsUpdate extends Equatable {
   final bool? bookingsEnabled;
   final bool? maintenanceEnabled;
   final bool? leasesEnabled;
+  final bool? messagesEnabled;
   final bool? generalEnabled;
 
   Map<String, dynamic> toJson() {
@@ -40,6 +42,9 @@ class NotificationSettingsUpdate extends Equatable {
       json['maintenance_enabled'] = maintenanceEnabled;
     }
     if (leasesEnabled != null) json['leases_enabled'] = leasesEnabled;
+    if (messagesEnabled != null) {
+      json['messages_enabled'] = messagesEnabled;
+    }
     if (generalEnabled != null) json['general_enabled'] = generalEnabled;
     return json;
   }
@@ -51,6 +56,7 @@ class NotificationSettingsUpdate extends Equatable {
     bookingsEnabled,
     maintenanceEnabled,
     leasesEnabled,
+    messagesEnabled,
     generalEnabled,
   ];
 }

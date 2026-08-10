@@ -43,33 +43,19 @@ class AppRouter extends RootStackRouter {
       FeedbackRoute.page,
 
       // Chat
-      ChatRoute.page,
+      ChatsRoute.page,
       ChatConversationRoute.page,
-
-      // Cart & Checkout
-      AddAddressRoute.page,
-      EditAddressRoute.page,
-      AvailableCouponsRoute.page,
-      InvoicePreviewRoute.page,
 
       // Notifications
       NotificationsRoute.page,
       NotificationSettingsRoute.page,
 
-      OrderDetailRoute.page,
-
-      // Product Detail
-      ProductDetailRoute.page,
       ListingDetailRoute.page,
 
       // Empty widget screens
-      WishlistRoute.page,
       ServerErrorRoute.page,
       NoInternetRoute.page,
       UnderMaintenanceRoute.page,
-      MyOrdersRoute.page,
-      EmptyOrdersViewRoute.page,
-      EmptySavedCardRoute.page,
       EmptyViewsRoute.page,
       ReminderRoute.page,
 
@@ -80,9 +66,6 @@ class AppRouter extends RootStackRouter {
       SettingsRoute.page,
       PersonalDetailsRoute.page,
 
-      // Subscription
-      SubscriptionRoute.page,
-      ManageSubscriptionRoute.page,
       //Delete Account
       DeleteAccountRoute.page,
       AccountDeleteSuccessRoute.page,

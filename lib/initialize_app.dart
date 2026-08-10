@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:ideal_mobile/core/deep_link/app_deep_link_manager.dart';
 import 'package:ideal_mobile/core/services/injection_container.dart';
 import 'package:ideal_mobile/firebase_options_dev.dart' as dev;
 import 'package:ideal_mobile/firebase_options_prod.dart' as prod;
@@ -78,7 +77,6 @@ Future<void> initializeApp({
     firebaseAuthService: firebaseAuthService,
     dio: dio,
   );
-  await sl<AppDeepLinkManager>().initializeDeepLink();
   await sl<PerformanceMonitoringService>().initialize();
 
   try {

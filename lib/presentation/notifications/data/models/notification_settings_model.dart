@@ -8,6 +8,7 @@ class NotificationSettingsModel extends NotificationSettings {
     required super.bookingsEnabled,
     required super.maintenanceEnabled,
     required super.leasesEnabled,
+    required super.messagesEnabled,
     required super.generalEnabled,
   });
 
@@ -19,6 +20,7 @@ class NotificationSettingsModel extends NotificationSettings {
       bookingsEnabled: _requiredBool(data, 'bookings_enabled'),
       maintenanceEnabled: _requiredBool(data, 'maintenance_enabled'),
       leasesEnabled: _requiredBool(data, 'leases_enabled'),
+      messagesEnabled: _optionalBool(data, 'messages_enabled', fallback: true),
       generalEnabled: _requiredBool(data, 'general_enabled'),
     );
   }
@@ -29,6 +31,7 @@ class NotificationSettingsModel extends NotificationSettings {
     'bookings_enabled': bookingsEnabled,
     'maintenance_enabled': maintenanceEnabled,
     'leases_enabled': leasesEnabled,
+    'messages_enabled': messagesEnabled,
     'general_enabled': generalEnabled,
   };
 }
@@ -51,4 +54,9 @@ bool _requiredBool(DataMap json, String key) {
     }
   }
   throw FormatException('Invalid $key.');
+}
+
+bool _optionalBool(DataMap json, String key, {required bool fallback}) {
+  if (!json.containsKey(key)) return fallback;
+  return _requiredBool(json, key);
 }

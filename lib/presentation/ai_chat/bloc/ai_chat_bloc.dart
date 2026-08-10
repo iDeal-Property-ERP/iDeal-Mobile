@@ -1,13 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ideal_mobile/constants/constants.dart';
 import 'package:ideal_mobile/i18n/app_localizations.dart';
 import 'package:ideal_mobile/presentation/ai_chat/bloc/ai_chat_event.dart';
 import 'package:ideal_mobile/presentation/ai_chat/bloc/ai_chat_state.dart';
 import 'package:ideal_mobile/presentation/ai_chat/model/ai_chat_message.dart';
-import 'package:ideal_mobile/presentation/checkout/model/product_cart.dart';
-import 'package:ideal_mobile/presentation/home/domain/entities/product.dart';
 import 'package:ideal_mobile/services/ai/gemini_constants.dart';
 import 'package:ideal_mobile/services/ai/gemini_service.dart';
 
@@ -15,24 +12,16 @@ class AiChatBloc extends Bloc<AiChatEvent, AiChatState> {
   AiChatBloc({
     required GeminiService geminiService,
     required AppLocalizations localizations,
-    required List<Product> products,
-    required List<CartModel> cartItems,
   }) : _geminiService = geminiService,
        _localizations = localizations,
-       _products = products,
-       _cartItems = cartItems,
        super(const AiChatState.initial()) {
     _setupEventListeners();
   }
 
   final GeminiService _geminiService;
   final AppLocalizations _localizations;
-  final List<Product> _products;
-  final List<CartModel> _cartItems;
   StreamSubscription<String>? _streamSubscription;
   GeminiChatSession? _chatSession;
-
-  List<Product> get products => _products;
 
   void _setupEventListeners() {
     on<SendMessageEvent>(_onSendMessageEvent);
@@ -214,74 +203,16 @@ class AiChatBloc extends Bloc<AiChatEvent, AiChatState> {
     emit(const AiChatState.initial());
   }
 
-  String _buildProductCatalog() {
-    if (_products.isEmpty) return 'No products available currently.';
-
-    final buffer = StringBuffer();
-    for (final product in _products) {
-      buffer.writeln(
-        '- [id: ${product.id}] ${product.title} '
-        '| \$${product.price.toStringAsFixed(2)} '
-        '| Category: ${product.category} '
-        '| Rating: ${product.rating}/5 (${product.reviews} reviews) '
-        '| In Stock: ${product.availableQuantities} '
-        '| Seller: ${product.seller}',
-      );
-    }
-    return buffer.toString();
-  }
-
-  String _buildCartSummary() {
-    if (_cartItems.isEmpty) return 'Cart is empty.';
-
-    final buffer = StringBuffer();
-    var total = 0.0;
-    for (final item in _cartItems) {
-      final itemTotal = item.product.price * item.quantities;
-      total += itemTotal;
-      buffer.writeln(
-        '- ${item.product.title} x${item.quantities} '
-        '= \$${itemTotal.toStringAsFixed(2)} '
-        '(Delivery: ${item.expectedDeliveryDate})',
-      );
-    }
-    buffer.writeln('Total: \$${total.toStringAsFixed(2)}');
-    return buffer.toString();
-  }
-
   String _buildAppContext() {
     return '''
-=== PRODUCT CATALOG ===
-${_buildProductCatalog()}
-
-=== USER'S CART ===
-${_buildCartSummary()}
-
-=== SHIPPING INFO ===
-- Customer Name: Roz Cooper
-- Shipping Address: 2118 Thornridge Cir. Syracuse, Connecticut 35624
-- Expected Delivery: $expectedDeliveryDate
-
-=== PAYMENT INFO ===
-- Payment Method: $paymentMethodAxis (Online)
-- Discount Applied: \$25.90
-- Delivery Charges: \$10.00
-
-=== COUPONS ===
-- Available Coupons: 1
-- Coupon Code: FREEDELIVERY
-- Coupon Offer: Get 10% off on orders above \$200
-
 === APP FEATURES ===
-- Home: Browse products, search, voice search
-- Search: Find products by name or category
-- Cart: View cart items, adjust quantities, proceed to checkout
-- Checkout Steps: Cart → Shipping → Payment → Order Review
-- Profile: View/edit profile, settings, order history
-- Wishlist: Save favorite products
-- Notifications: Order updates, promotions
-- Settings: Theme (light/dark), change password, biometric auth
+- Home: Browse and filter rental listings
+- Listings: View property photos, amenities, location, and availability
+- Chats: Message iDeal management about a listing
+- Profile: View and edit profile details and settings
+- Notifications: Review account and listing updates
+- Settings: Theme, password, and biometric authentication
 - Contact Us: Submit queries with attachments
-- Feedback: Submit bug reports, suggestions, compliments''';
+- Feedback: Submit bug reports, suggestions, and compliments''';
   }
 }

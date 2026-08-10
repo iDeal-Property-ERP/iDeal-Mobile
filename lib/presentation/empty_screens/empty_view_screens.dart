@@ -38,42 +38,6 @@ class EmptyViewsScreen extends StatelessWidget {
             children: [
               const SizedBox(height: 24.0),
               Text(
-                context.localization.empty_states,
-                style: AppTextStyles.h6SemiBold.copyWith(
-                  color: context.currentTheme.textNeutralPrimary,
-                ),
-              ),
-              const SizedBox(height: 12.0),
-              _buildSection(
-                context,
-                children: [
-                  _buildTile(
-                    context,
-                    icon: TablerIcons.heart,
-                    label: context.localization.wishlist,
-                    onTap: () => context.pushRoute(const WishlistRoute()),
-                    isFirst: true,
-                  ),
-                  const ProfileItemsDivider(),
-                  _buildTile(
-                    context,
-                    icon: TablerIcons.shopping_bag,
-                    label: context.localization.empty_order_title,
-                    onTap: () =>
-                        context.pushRoute(const EmptyOrdersViewRoute()),
-                  ),
-                  const ProfileItemsDivider(),
-                  _buildTile(
-                    context,
-                    icon: TablerIcons.credit_card,
-                    label: context.localization.empty_cards_list_title,
-                    onTap: () => context.pushRoute(const EmptySavedCardRoute()),
-                    isLast: true,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24.0),
-              Text(
                 context.localization.error_states,
                 style: AppTextStyles.h6SemiBold.copyWith(
                   color: context.currentTheme.textNeutralPrimary,

@@ -8,6 +8,7 @@ class NotificationSettings extends Equatable {
     required this.bookingsEnabled,
     required this.maintenanceEnabled,
     required this.leasesEnabled,
+    required this.messagesEnabled,
     required this.generalEnabled,
   });
 
@@ -16,6 +17,7 @@ class NotificationSettings extends Equatable {
   final bool bookingsEnabled;
   final bool maintenanceEnabled;
   final bool leasesEnabled;
+  final bool messagesEnabled;
   final bool generalEnabled;
 
   NotificationSettings copyWith({
@@ -24,6 +26,7 @@ class NotificationSettings extends Equatable {
     bool? bookingsEnabled,
     bool? maintenanceEnabled,
     bool? leasesEnabled,
+    bool? messagesEnabled,
     bool? generalEnabled,
   }) {
     return NotificationSettings(
@@ -32,6 +35,7 @@ class NotificationSettings extends Equatable {
       bookingsEnabled: bookingsEnabled ?? this.bookingsEnabled,
       maintenanceEnabled: maintenanceEnabled ?? this.maintenanceEnabled,
       leasesEnabled: leasesEnabled ?? this.leasesEnabled,
+      messagesEnabled: messagesEnabled ?? this.messagesEnabled,
       generalEnabled: generalEnabled ?? this.generalEnabled,
     );
   }
@@ -46,6 +50,8 @@ class NotificationSettings extends Equatable {
         return maintenanceEnabled;
       case NotificationCategory.leases:
         return leasesEnabled;
+      case NotificationCategory.messages:
+        return messagesEnabled;
       case NotificationCategory.general:
         return generalEnabled;
     }
@@ -58,6 +64,7 @@ class NotificationSettings extends Equatable {
     bookingsEnabled,
     maintenanceEnabled,
     leasesEnabled,
+    messagesEnabled,
     generalEnabled,
   ];
 }

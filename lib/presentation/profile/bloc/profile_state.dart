@@ -5,7 +5,6 @@ import 'package:ideal_mobile/presentation/profile/data/models/mobile_user_profil
 class ProfileState with EquatableMixin {
   const ProfileState({
     required this.profile,
-    required this.isProUser,
     required this.isProfileLoading,
     required this.isProfileUpdating,
     required this.isAvatarUpdating,
@@ -14,7 +13,6 @@ class ProfileState with EquatableMixin {
 
   const ProfileState.initial({
     this.profile,
-    this.isProUser = false,
     this.isProfileLoading = false,
     this.isProfileUpdating = false,
     this.isAvatarUpdating = false,
@@ -22,7 +20,6 @@ class ProfileState with EquatableMixin {
   });
 
   final MobileUserProfile? profile;
-  final bool isProUser;
   final bool isProfileLoading;
   final bool isProfileUpdating;
   final bool isAvatarUpdating;
@@ -33,7 +30,6 @@ class ProfileState with EquatableMixin {
 
   ProfileState copyWith({
     MobileUserProfile? profile,
-    bool? isProUser,
     bool? isProfileLoading,
     bool? isProfileUpdating,
     bool? isAvatarUpdating,
@@ -42,7 +38,6 @@ class ProfileState with EquatableMixin {
   }) {
     return ProfileState(
       profile: profile ?? this.profile,
-      isProUser: isProUser ?? this.isProUser,
       isProfileLoading: isProfileLoading ?? this.isProfileLoading,
       isProfileUpdating: isProfileUpdating ?? this.isProfileUpdating,
       isAvatarUpdating: isAvatarUpdating ?? this.isAvatarUpdating,
@@ -55,7 +50,6 @@ class ProfileState with EquatableMixin {
   @visibleForTesting
   const ProfileState.test({
     this.profile,
-    this.isProUser = false,
     this.isProfileLoading = false,
     this.isProfileUpdating = false,
     this.isAvatarUpdating = false,
@@ -65,7 +59,6 @@ class ProfileState with EquatableMixin {
   @override
   List<Object?> get props => [
     profile,
-    isProUser,
     isProfileLoading,
     isProfileUpdating,
     isAvatarUpdating,

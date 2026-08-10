@@ -76,7 +76,7 @@ void main() {
     framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
     ($) async {
       await initializeApp(firebaseAuth: mockFirebaseAuth, dio: mockDio);
-      await $.pumpWidgetAndSettle(const MainApp());
+      await $.pumpWidgetAndSettle(MainApp(startupFuture: Future.value()));
 
       await $(keys.signInPage.mobileNoTextField).enterText('9999988888');
       await $(keys.signInPage.sendOTPButton).tap();
@@ -118,7 +118,7 @@ void main() {
         mockFirebaseAuth.setMockUser(null);
       });
 
-      await $.pumpWidgetAndSettle(const MainApp());
+      await $.pumpWidgetAndSettle(MainApp(startupFuture: Future.value()));
 
       // Login with email
       final testUser = MockUser(email: 'test@example.com', emailVerified: true);
@@ -230,7 +230,7 @@ void main() {
         googleSignIn: mockGoogleSignIn,
         dio: mockDio,
       );
-      await $.pumpWidgetAndSettle(const MainApp());
+      await $.pumpWidgetAndSettle(MainApp(startupFuture: Future.value()));
 
       // Stub signOut to reset mock state
       when(() => mockFirebaseAuth.signOut()).thenAnswer((_) async {

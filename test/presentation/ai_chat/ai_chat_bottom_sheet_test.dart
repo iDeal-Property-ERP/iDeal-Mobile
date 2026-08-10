@@ -8,7 +8,6 @@ import 'package:ideal_mobile/presentation/ai_chat/bloc/ai_chat_bloc.dart';
 import 'package:ideal_mobile/presentation/ai_chat/bloc/ai_chat_event.dart';
 import 'package:ideal_mobile/presentation/ai_chat/bloc/ai_chat_state.dart';
 import 'package:ideal_mobile/presentation/ai_chat/widgets/ai_chat_bottom_sheet.dart';
-import 'package:ideal_mobile/presentation/home/data/dummy_product_data.dart';
 import 'package:ideal_mobile/widgets/styling/app_theme_data.dart';
 
 import '../../flutter_test_config.dart';
@@ -26,7 +25,6 @@ Future<void> _pumpModalAndSettle(WidgetTester tester) async {
 MockAiChatBloc _buildMockBloc(AiChatState state) {
   final bloc = MockAiChatBloc();
   when(() => bloc.state).thenReturn(state);
-  when(() => bloc.products).thenReturn(dummyProductData);
   return bloc;
 }
 
@@ -45,11 +43,7 @@ class _SheetHarnessState extends State<_SheetHarness> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      showAiChatBottomSheet(
-        context,
-        existingBloc: widget.bloc,
-        onCartTap: () {},
-      );
+      showAiChatBottomSheet(context, existingBloc: widget.bloc);
     });
   }
 

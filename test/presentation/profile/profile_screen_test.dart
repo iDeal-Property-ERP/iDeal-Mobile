@@ -225,9 +225,9 @@ void main() {
       builder: () {
         // arrange
         final proUserProfileBloc = MockProfileBloc();
-        when(() => proUserProfileBloc.state).thenReturn(
-          const ProfileState.test(profile: testProfile, isProUser: true),
-        );
+        when(
+          () => proUserProfileBloc.state,
+        ).thenReturn(const ProfileState.test(profile: testProfile));
 
         final nonProUserProfileBloc = MockProfileBloc();
         when(

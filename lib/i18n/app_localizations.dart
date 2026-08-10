@@ -952,240 +952,6 @@ abstract class AppLocalizations {
   /// **'Creating new account?'**
   String get creating_new_account;
 
-  /// No description provided for @shipping_address_keys.
-  ///
-  /// In en, this message translates to:
-  /// **'================ SHIPPING ADDRESS KEYS ================'**
-  String get shipping_address_keys;
-
-  /// No description provided for @add_new_address.
-  ///
-  /// In en, this message translates to:
-  /// **'Add New Address'**
-  String get add_new_address;
-
-  /// No description provided for @add_shipping_details.
-  ///
-  /// In en, this message translates to:
-  /// **'Add Shipping Details'**
-  String get add_shipping_details;
-
-  /// No description provided for @address.
-  ///
-  /// In en, this message translates to:
-  /// **'Address'**
-  String get address;
-
-  /// No description provided for @city.
-  ///
-  /// In en, this message translates to:
-  /// **'City'**
-  String get city;
-
-  /// No description provided for @country.
-  ///
-  /// In en, this message translates to:
-  /// **'Country'**
-  String get country;
-
-  /// No description provided for @deliver_to.
-  ///
-  /// In en, this message translates to:
-  /// **'Deliver to'**
-  String get deliver_to;
-
-  /// No description provided for @enter_your_address.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter Your Address'**
-  String get enter_your_address;
-
-  /// No description provided for @enter_zip_code.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter Zip Code'**
-  String get enter_zip_code;
-
-  /// No description provided for @select_address.
-  ///
-  /// In en, this message translates to:
-  /// **'Select Address'**
-  String get select_address;
-
-  /// No description provided for @select_city.
-  ///
-  /// In en, this message translates to:
-  /// **'Select City'**
-  String get select_city;
-
-  /// No description provided for @select_country.
-  ///
-  /// In en, this message translates to:
-  /// **'Select Country'**
-  String get select_country;
-
-  /// No description provided for @select_state.
-  ///
-  /// In en, this message translates to:
-  /// **'Select State'**
-  String get select_state;
-
-  /// No description provided for @set_as_default_address.
-  ///
-  /// In en, this message translates to:
-  /// **'Set as Default Address'**
-  String get set_as_default_address;
-
-  /// No description provided for @shipping_address.
-  ///
-  /// In en, this message translates to:
-  /// **'Shipping Address'**
-  String get shipping_address;
-
-  /// No description provided for @shipping_details.
-  ///
-  /// In en, this message translates to:
-  /// **'Shipping Details'**
-  String get shipping_details;
-
-  /// No description provided for @state.
-  ///
-  /// In en, this message translates to:
-  /// **'State'**
-  String get state;
-
-  /// No description provided for @use_current_location.
-  ///
-  /// In en, this message translates to:
-  /// **'Use Current Location'**
-  String get use_current_location;
-
-  /// No description provided for @zip_code.
-  ///
-  /// In en, this message translates to:
-  /// **'Zip Code'**
-  String get zip_code;
-
-  /// No description provided for @checkout_keys.
-  ///
-  /// In en, this message translates to:
-  /// **'================ CHECKOUT KEYS ================'**
-  String get checkout_keys;
-
-  /// No description provided for @cart.
-  ///
-  /// In en, this message translates to:
-  /// **'Cart'**
-  String get cart;
-
-  /// No description provided for @cart_and_checkout.
-  ///
-  /// In en, this message translates to:
-  /// **'Cart Details'**
-  String get cart_and_checkout;
-
-  /// No description provided for @cart_items.
-  ///
-  /// In en, this message translates to:
-  /// **'Cart Items'**
-  String get cart_items;
-
-  /// No description provided for @cash_on_delivery.
-  ///
-  /// In en, this message translates to:
-  /// **'Cash on Delivery'**
-  String get cash_on_delivery;
-
-  /// No description provided for @confirm_and_pay.
-  ///
-  /// In en, this message translates to:
-  /// **'Confirm and Pay'**
-  String get confirm_and_pay;
-
-  /// No description provided for @delivery_charges.
-  ///
-  /// In en, this message translates to:
-  /// **'Delivery Charges'**
-  String get delivery_charges;
-
-  /// No description provided for @discount.
-  ///
-  /// In en, this message translates to:
-  /// **'Discount'**
-  String get discount;
-
-  /// No description provided for @expected_delivery_by.
-  ///
-  /// In en, this message translates to:
-  /// **'Expected Delivery by'**
-  String get expected_delivery_by;
-
-  /// No description provided for @order_review.
-  ///
-  /// In en, this message translates to:
-  /// **'Order Review'**
-  String get order_review;
-
-  /// No description provided for @order_summary.
-  ///
-  /// In en, this message translates to:
-  /// **'Order Summary'**
-  String get order_summary;
-
-  /// No description provided for @payment.
-  ///
-  /// In en, this message translates to:
-  /// **'Payment'**
-  String get payment;
-
-  /// No description provided for @price.
-  ///
-  /// In en, this message translates to:
-  /// **'Price'**
-  String get price;
-
-  /// Total products count with correct plural form
-  ///
-  /// In en, this message translates to:
-  /// **'Price({total_product, plural, =1{{total_product} item} other{{total_product} items}})'**
-  String price_of_items(int total_product);
-
-  /// No description provided for @select_and_review_order.
-  ///
-  /// In en, this message translates to:
-  /// **'Select & Review Order'**
-  String get select_and_review_order;
-
-  /// No description provided for @select_payment_method.
-  ///
-  /// In en, this message translates to:
-  /// **'Select Payment Method'**
-  String get select_payment_method;
-
-  /// No description provided for @selected_payment_method.
-  ///
-  /// In en, this message translates to:
-  /// **'Selected Payment Method'**
-  String get selected_payment_method;
-
-  /// No description provided for @shipping.
-  ///
-  /// In en, this message translates to:
-  /// **'Shipping'**
-  String get shipping;
-
-  /// No description provided for @total_amount.
-  ///
-  /// In en, this message translates to:
-  /// **'Total Amount'**
-  String get total_amount;
-
-  /// No description provided for @your_cart_is_empty.
-  ///
-  /// In en, this message translates to:
-  /// **'Your Cart is Empty !'**
-  String get your_cart_is_empty;
-
   /// No description provided for @coupons_keys.
   ///
   /// In en, this message translates to:
@@ -1233,12 +999,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Home'**
   String get home;
-
-  /// No description provided for @pro.
-  ///
-  /// In en, this message translates to:
-  /// **'PRO'**
-  String get pro;
 
   /// No description provided for @rating.
   ///
@@ -1288,30 +1048,6 @@ abstract class AppLocalizations {
   /// **'Microphone permission is permanently denied. Please go to settings and enable it.'**
   String get microphone_permission_permanently_denied;
 
-  /// No description provided for @wishlist_keys.
-  ///
-  /// In en, this message translates to:
-  /// **'================ WISHLIST KEYS ================'**
-  String get wishlist_keys;
-
-  /// No description provided for @wishlist.
-  ///
-  /// In en, this message translates to:
-  /// **'Wishlist'**
-  String get wishlist;
-
-  /// No description provided for @empty_wishlist_message.
-  ///
-  /// In en, this message translates to:
-  /// **'You have not added any product to your wishlist. Explore products to add in your wishlist.'**
-  String get empty_wishlist_message;
-
-  /// No description provided for @empty_wishlist_title.
-  ///
-  /// In en, this message translates to:
-  /// **'Your Wishlist is empty!'**
-  String get empty_wishlist_title;
-
   /// No description provided for @chat_keys.
   ///
   /// In en, this message translates to:
@@ -1354,24 +1090,6 @@ abstract class AppLocalizations {
   /// **'Write description...'**
   String get message_description;
 
-  /// No description provided for @no_chats.
-  ///
-  /// In en, this message translates to:
-  /// **'No Chats'**
-  String get no_chats;
-
-  /// No description provided for @no_users_to_chat_with.
-  ///
-  /// In en, this message translates to:
-  /// **'No users to chat with yet'**
-  String get no_users_to_chat_with;
-
-  /// No description provided for @no_users_match_search.
-  ///
-  /// In en, this message translates to:
-  /// **'No matching users'**
-  String get no_users_match_search;
-
   /// No description provided for @no_messages_yet.
   ///
   /// In en, this message translates to:
@@ -1389,6 +1107,240 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Send a new message'**
   String get send_a_new_message;
+
+  /// No description provided for @chats_keys.
+  ///
+  /// In en, this message translates to:
+  /// **'================ CHATS KEYS ================'**
+  String get chats_keys;
+
+  /// No description provided for @chats.
+  ///
+  /// In en, this message translates to:
+  /// **'Chats'**
+  String get chats;
+
+  /// No description provided for @chats_empty_title.
+  ///
+  /// In en, this message translates to:
+  /// **'No chats yet'**
+  String get chats_empty_title;
+
+  /// No description provided for @chats_empty_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Message us about a listing and your conversation will appear here'**
+  String get chats_empty_subtitle;
+
+  /// No description provided for @chats_archived.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived chats'**
+  String get chats_archived;
+
+  /// No description provided for @chat_archive.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive'**
+  String get chat_archive;
+
+  /// No description provided for @chat_unarchive.
+  ///
+  /// In en, this message translates to:
+  /// **'Unarchive'**
+  String get chat_unarchive;
+
+  /// No description provided for @chat_mute.
+  ///
+  /// In en, this message translates to:
+  /// **'Mute notifications'**
+  String get chat_mute;
+
+  /// No description provided for @chat_unmute.
+  ///
+  /// In en, this message translates to:
+  /// **'Unmute notifications'**
+  String get chat_unmute;
+
+  /// No description provided for @chat_delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete chat'**
+  String get chat_delete;
+
+  /// No description provided for @chat_report.
+  ///
+  /// In en, this message translates to:
+  /// **'Report'**
+  String get chat_report;
+
+  /// No description provided for @chat_delete_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this chat?'**
+  String get chat_delete_title;
+
+  /// No description provided for @chat_delete_message.
+  ///
+  /// In en, this message translates to:
+  /// **'This chat will be removed from your list and you will not be able to reopen it.'**
+  String get chat_delete_message;
+
+  /// No description provided for @chat_delete_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get chat_delete_confirm;
+
+  /// No description provided for @chat_cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get chat_cancel;
+
+  /// No description provided for @chat_conversation_keys.
+  ///
+  /// In en, this message translates to:
+  /// **'================ CHAT CONVERSATION KEYS ================'**
+  String get chat_conversation_keys;
+
+  /// No description provided for @chat_message_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get chat_message_hint;
+
+  /// No description provided for @chat_message_too_long.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages can be up to 1024 characters'**
+  String get chat_message_too_long;
+
+  /// No description provided for @chat_send_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Not sent. Tap to retry.'**
+  String get chat_send_failed;
+
+  /// No description provided for @chat_retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get chat_retry;
+
+  /// No description provided for @chat_photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo'**
+  String get chat_photo;
+
+  /// No description provided for @chat_read_only_blocked.
+  ///
+  /// In en, this message translates to:
+  /// **'You can no longer send messages in this chat.'**
+  String get chat_read_only_blocked;
+
+  /// No description provided for @chat_listing_unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This listing is no longer available.'**
+  String get chat_listing_unavailable;
+
+  /// No description provided for @chat_attach_photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Add photo'**
+  String get chat_attach_photo;
+
+  /// No description provided for @chat_attach_camera.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera'**
+  String get chat_attach_camera;
+
+  /// No description provided for @chat_attach_gallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery'**
+  String get chat_attach_gallery;
+
+  /// No description provided for @chat_image_too_large.
+  ///
+  /// In en, this message translates to:
+  /// **'Images must be smaller than 5 MB'**
+  String get chat_image_too_large;
+
+  /// No description provided for @chat_image_unsupported_format.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsupported image format'**
+  String get chat_image_unsupported_format;
+
+  /// No description provided for @chat_today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get chat_today;
+
+  /// No description provided for @chat_yesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get chat_yesterday;
+
+  /// No description provided for @chat_report_keys.
+  ///
+  /// In en, this message translates to:
+  /// **'================ CHAT REPORT KEYS ================'**
+  String get chat_report_keys;
+
+  /// No description provided for @chat_report_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Report this chat'**
+  String get chat_report_title;
+
+  /// No description provided for @chat_report_reason_spam.
+  ///
+  /// In en, this message translates to:
+  /// **'Spam'**
+  String get chat_report_reason_spam;
+
+  /// No description provided for @chat_report_reason_abuse.
+  ///
+  /// In en, this message translates to:
+  /// **'Abuse'**
+  String get chat_report_reason_abuse;
+
+  /// No description provided for @chat_report_reason_scam.
+  ///
+  /// In en, this message translates to:
+  /// **'Scam'**
+  String get chat_report_reason_scam;
+
+  /// No description provided for @chat_report_reason_other.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get chat_report_reason_other;
+
+  /// No description provided for @chat_report_note_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add details (optional)'**
+  String get chat_report_note_hint;
+
+  /// No description provided for @chat_report_submit.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit report'**
+  String get chat_report_submit;
+
+  /// No description provided for @chat_report_submitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Report submitted'**
+  String get chat_report_submitted;
 
   /// No description provided for @contact_us_keys.
   ///
@@ -1540,6 +1492,12 @@ abstract class AppLocalizations {
   /// **'Receive alerts about your iDeal activity.'**
   String get notifications_push_description;
 
+  /// No description provided for @notifications_messages.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get notifications_messages;
+
   /// No description provided for @notifications_payments.
   ///
   /// In en, this message translates to:
@@ -1642,12 +1600,6 @@ abstract class AppLocalizations {
   /// **'There is no card available at the moment.'**
   String get empty_cards_list_message;
 
-  /// No description provided for @empty_cards_list_title.
-  ///
-  /// In en, this message translates to:
-  /// **'No Saved Card'**
-  String get empty_cards_list_title;
-
   /// No description provided for @explore_products.
   ///
   /// In en, this message translates to:
@@ -1665,252 +1617,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'================ EMPTY SCREENS KEYS ================'**
   String get empty_screens_keys;
-
-  /// No description provided for @empty_cart_message.
-  ///
-  /// In en, this message translates to:
-  /// **'There is no single item here. Explore products to add in your cart.'**
-  String get empty_cart_message;
-
-  /// No description provided for @empty_order_message.
-  ///
-  /// In en, this message translates to:
-  /// **'There is no single item here. Explore products to add in your cart.'**
-  String get empty_order_message;
-
-  /// No description provided for @empty_order_title.
-  ///
-  /// In en, this message translates to:
-  /// **'No Orders Found'**
-  String get empty_order_title;
-
-  /// No description provided for @subscription_keys.
-  ///
-  /// In en, this message translates to:
-  /// **'================ SUBSCRIPTION KEYS ================'**
-  String get subscription_keys;
-
-  /// No description provided for @upgrade_to_pro.
-  ///
-  /// In en, this message translates to:
-  /// **'Upgrade to PRO'**
-  String get upgrade_to_pro;
-
-  /// No description provided for @cancel_subscription.
-  ///
-  /// In en, this message translates to:
-  /// **'Cancel Subscription'**
-  String get cancel_subscription;
-
-  /// No description provided for @manage_subscription.
-  ///
-  /// In en, this message translates to:
-  /// **'Manage Subscription'**
-  String get manage_subscription;
-
-  /// No description provided for @no_subscription_available.
-  ///
-  /// In en, this message translates to:
-  /// **'No subscription plans available.'**
-  String get no_subscription_available;
-
-  /// No description provided for @failed_to_load_subscriptions.
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to load subscription plans.'**
-  String get failed_to_load_subscriptions;
-
-  /// No description provided for @store_login_required.
-  ///
-  /// In en, this message translates to:
-  /// **'Please log into your App Store or Play Store account.'**
-  String get store_login_required;
-
-  /// No description provided for @unexpected_error_occurred.
-  ///
-  /// In en, this message translates to:
-  /// **'An unexpected error occurred.'**
-  String get unexpected_error_occurred;
-
-  /// No description provided for @user_purchase_cancelled.
-  ///
-  /// In en, this message translates to:
-  /// **'You cancelled the purchase.'**
-  String get user_purchase_cancelled;
-
-  /// No description provided for @restore_subscription.
-  ///
-  /// In en, this message translates to:
-  /// **'Restore Subscription'**
-  String get restore_subscription;
-
-  /// No description provided for @restore_success.
-  ///
-  /// In en, this message translates to:
-  /// **'Your purchases have been restored successfully.'**
-  String get restore_success;
-
-  /// No description provided for @no_active_subscriptions.
-  ///
-  /// In en, this message translates to:
-  /// **'No active subscriptions were found on your account.'**
-  String get no_active_subscriptions;
-
-  /// No description provided for @restore_error.
-  ///
-  /// In en, this message translates to:
-  /// **'Error restoring purchases: '**
-  String get restore_error;
-
-  /// No description provided for @monthly_plan.
-  ///
-  /// In en, this message translates to:
-  /// **'Monthly Plan'**
-  String get monthly_plan;
-
-  /// No description provided for @yearly_plan.
-  ///
-  /// In en, this message translates to:
-  /// **'Yearly Plan'**
-  String get yearly_plan;
-
-  /// No description provided for @monthly_duration.
-  ///
-  /// In en, this message translates to:
-  /// **'per month'**
-  String get monthly_duration;
-
-  /// No description provided for @monthly_renewal.
-  ///
-  /// In en, this message translates to:
-  /// **'Auto-renews every month'**
-  String get monthly_renewal;
-
-  /// No description provided for @yearly_duration.
-  ///
-  /// In en, this message translates to:
-  /// **'per year'**
-  String get yearly_duration;
-
-  /// No description provided for @yearly_renewal.
-  ///
-  /// In en, this message translates to:
-  /// **'Best value – Auto-renews yearly'**
-  String get yearly_renewal;
-
-  /// No description provided for @subscription_renew.
-  ///
-  /// In en, this message translates to:
-  /// **'Your subscription will automatically renew unless canceled at least 24 hours before the end of the current period'**
-  String get subscription_renew;
-
-  /// No description provided for @continue_to_payment.
-  ///
-  /// In en, this message translates to:
-  /// **'Continue to Payment'**
-  String get continue_to_payment;
-
-  /// No description provided for @unlock_access.
-  ///
-  /// In en, this message translates to:
-  /// **'Unlock Full Access to'**
-  String get unlock_access;
-
-  /// No description provided for @app_name.
-  ///
-  /// In en, this message translates to:
-  /// **'iDeal Pro'**
-  String get app_name;
-
-  /// No description provided for @plan_description.
-  ///
-  /// In en, this message translates to:
-  /// **'🚀 Get unlimited access to iDeal'**
-  String get plan_description;
-
-  /// No description provided for @processing_your_payment.
-  ///
-  /// In en, this message translates to:
-  /// **'Processing Your Payment'**
-  String get processing_your_payment;
-
-  /// No description provided for @payment_processing_message.
-  ///
-  /// In en, this message translates to:
-  /// **'Please wait while we process your payment. This may take a few seconds.'**
-  String get payment_processing_message;
-
-  /// No description provided for @subscription_activated_title.
-  ///
-  /// In en, this message translates to:
-  /// **'Subscription Activated!'**
-  String get subscription_activated_title;
-
-  /// No description provided for @subscription_activated_message.
-  ///
-  /// In en, this message translates to:
-  /// **'Your subscription is now active.\nYou can explore the premium features.'**
-  String get subscription_activated_message;
-
-  /// No description provided for @payment_failed.
-  ///
-  /// In en, this message translates to:
-  /// **'Payment failed!'**
-  String get payment_failed;
-
-  /// No description provided for @payment_failed_message.
-  ///
-  /// In en, this message translates to:
-  /// **'Please try again after sometime.'**
-  String get payment_failed_message;
-
-  /// No description provided for @retry_payment.
-  ///
-  /// In en, this message translates to:
-  /// **'Retry Payment'**
-  String get retry_payment;
-
-  /// No description provided for @go_to_home.
-  ///
-  /// In en, this message translates to:
-  /// **'Go to Home'**
-  String get go_to_home;
-
-  /// No description provided for @subscription_management_url_unavailable.
-  ///
-  /// In en, this message translates to:
-  /// **'We couldn’t load your subscription settings. Please try again later.'**
-  String get subscription_management_url_unavailable;
-
-  /// No description provided for @subscription_invalid_url.
-  ///
-  /// In en, this message translates to:
-  /// **'Invalid subscription URL.'**
-  String get subscription_invalid_url;
-
-  /// No description provided for @purchase_cancelled.
-  ///
-  /// In en, this message translates to:
-  /// **'Purchase cancelled'**
-  String get purchase_cancelled;
-
-  /// No description provided for @already_subscribed.
-  ///
-  /// In en, this message translates to:
-  /// **'Already subscribed'**
-  String get already_subscribed;
-
-  /// No description provided for @receipt_already_in_use.
-  ///
-  /// In en, this message translates to:
-  /// **'Receipt already in use'**
-  String get receipt_already_in_use;
-
-  /// No description provided for @something_went_wrong.
-  ///
-  /// In en, this message translates to:
-  /// **'Something went wrong'**
-  String get something_went_wrong;
 
   /// No description provided for @force_update_keys.
   ///
@@ -2055,96 +1761,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Try Again'**
   String get try_again;
-
-  /// No description provided for @product_detail_keys.
-  ///
-  /// In en, this message translates to:
-  /// **'================ Product Detail Keys ================'**
-  String get product_detail_keys;
-
-  /// No description provided for @product_information.
-  ///
-  /// In en, this message translates to:
-  /// **'Product Information'**
-  String get product_information;
-
-  /// No description provided for @add_to_cart.
-  ///
-  /// In en, this message translates to:
-  /// **'Add to cart'**
-  String get add_to_cart;
-
-  /// No description provided for @mark_favorite.
-  ///
-  /// In en, this message translates to:
-  /// **'Mark Favorite'**
-  String get mark_favorite;
-
-  /// No description provided for @inclusive_of_taxes.
-  ///
-  /// In en, this message translates to:
-  /// **'(incl. of all taxes)'**
-  String get inclusive_of_taxes;
-
-  /// No description provided for @product_photos.
-  ///
-  /// In en, this message translates to:
-  /// **'Product Photos'**
-  String get product_photos;
-
-  /// No description provided for @view_product_reviews.
-  ///
-  /// In en, this message translates to:
-  /// **'View Product Reviews'**
-  String get view_product_reviews;
-
-  /// No description provided for @no_product_detail_found.
-  ///
-  /// In en, this message translates to:
-  /// **'No Product Detail Found!'**
-  String get no_product_detail_found;
-
-  /// No description provided for @product_details.
-  ///
-  /// In en, this message translates to:
-  /// **'Product Details'**
-  String get product_details;
-
-  /// No description provided for @ai_powered_description.
-  ///
-  /// In en, this message translates to:
-  /// **'AI-Powered Description'**
-  String get ai_powered_description;
-
-  /// No description provided for @get_ai_description.
-  ///
-  /// In en, this message translates to:
-  /// **'Get AI Description'**
-  String get get_ai_description;
-
-  /// No description provided for @personalized.
-  ///
-  /// In en, this message translates to:
-  /// **'Personalized'**
-  String get personalized;
-
-  /// No description provided for @generate_ai_description.
-  ///
-  /// In en, this message translates to:
-  /// **'Generate AI Description'**
-  String get generate_ai_description;
-
-  /// No description provided for @generated_by_ai.
-  ///
-  /// In en, this message translates to:
-  /// **'Generated by AI'**
-  String get generated_by_ai;
-
-  /// No description provided for @regenerate.
-  ///
-  /// In en, this message translates to:
-  /// **'Regenerate'**
-  String get regenerate;
 
   /// No description provided for @reminder_keys.
   ///
@@ -2482,48 +2098,6 @@ abstract class AppLocalizations {
   /// **'Failed to share invoice. Please try again'**
   String get invoice_share_failed;
 
-  /// No description provided for @my_orders_keys.
-  ///
-  /// In en, this message translates to:
-  /// **'================ My ORDERS KEYS ================'**
-  String get my_orders_keys;
-
-  /// No description provided for @order_id.
-  ///
-  /// In en, this message translates to:
-  /// **'Order Id: #'**
-  String get order_id;
-
-  /// No description provided for @accepted.
-  ///
-  /// In en, this message translates to:
-  /// **'Accepted'**
-  String get accepted;
-
-  /// No description provided for @order_details.
-  ///
-  /// In en, this message translates to:
-  /// **'Order Details'**
-  String get order_details;
-
-  /// No description provided for @cancel_order.
-  ///
-  /// In en, this message translates to:
-  /// **'Cancel Order'**
-  String get cancel_order;
-
-  /// No description provided for @tracking_detail.
-  ///
-  /// In en, this message translates to:
-  /// **'Tracking Details'**
-  String get tracking_detail;
-
-  /// No description provided for @no_product_selected.
-  ///
-  /// In en, this message translates to:
-  /// **'No product selected'**
-  String get no_product_selected;
-
   /// No description provided for @feedback_keys.
   ///
   /// In en, this message translates to:
@@ -2653,32 +2227,8 @@ abstract class AppLocalizations {
   /// No description provided for @ai_chat_description.
   ///
   /// In en, this message translates to:
-  /// **'Ask me about products, orders, or anything else.'**
+  /// **'Ask me about listings, renting, or app navigation.'**
   String get ai_chat_description;
-
-  /// No description provided for @ai_chat_suggestion_cart.
-  ///
-  /// In en, this message translates to:
-  /// **'What\'s in my cart?'**
-  String get ai_chat_suggestion_cart;
-
-  /// No description provided for @ai_chat_suggestion_deals.
-  ///
-  /// In en, this message translates to:
-  /// **'Show products under \$50'**
-  String get ai_chat_suggestion_deals;
-
-  /// No description provided for @ai_chat_suggestion_coupon.
-  ///
-  /// In en, this message translates to:
-  /// **'Any coupons available?'**
-  String get ai_chat_suggestion_coupon;
-
-  /// No description provided for @ai_chat_view_cart.
-  ///
-  /// In en, this message translates to:
-  /// **'View Cart'**
-  String get ai_chat_view_cart;
 
   /// No description provided for @ai_chat_error_no_response.
   ///
@@ -3022,6 +2572,12 @@ abstract class AppLocalizations {
   /// **'Message'**
   String get listing_detail_message;
 
+  /// No description provided for @listing_detail_message_unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Messaging is unavailable for this listing'**
+  String get listing_detail_message_unavailable;
+
   /// No description provided for @listing_detail_call.
   ///
   /// In en, this message translates to:
@@ -3117,6 +2673,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Utilities'**
   String get utilities;
+
+  /// No description provided for @ai_chat_suggestion_listings.
+  ///
+  /// In en, this message translates to:
+  /// **'Find an apartment'**
+  String get ai_chat_suggestion_listings;
+
+  /// No description provided for @ai_chat_suggestion_renting.
+  ///
+  /// In en, this message translates to:
+  /// **'How does renting work?'**
+  String get ai_chat_suggestion_renting;
+
+  /// No description provided for @ai_chat_suggestion_support.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact support'**
+  String get ai_chat_suggestion_support;
 }
 
 class _AppLocalizationsDelegate

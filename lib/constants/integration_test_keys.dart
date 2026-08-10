@@ -35,6 +35,7 @@ class ListingDetailPageKeys {
   final screen = const Key('listingDetailScreen');
   final hero = const Key('listingDetailHero');
   final messageButton = const Key('listingDetailMessageButton');
+  final callButton = const Key('listingDetailCallButton');
 }
 
 class Keys {

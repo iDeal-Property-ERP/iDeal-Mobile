@@ -141,6 +141,16 @@ class _NotificationSettingsScreenState
                 const Divider(),
                 _categorySwitch(
                   context,
+                  context.localization.notifications_messages,
+                  settings.messagesEnabled,
+                  settings.pushEnabled,
+                  (value) => _update(
+                    NotificationSettingsUpdate(messagesEnabled: value),
+                    settings.copyWith(messagesEnabled: value),
+                  ),
+                ),
+                _categorySwitch(
+                  context,
                   context.localization.notifications_payments,
                   settings.paymentsEnabled,
                   settings.pushEnabled,

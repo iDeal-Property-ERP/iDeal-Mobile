@@ -7,6 +7,7 @@ void main() {
   test('unknown notification kinds are safe', () {
     expect(NotificationKind.fromApi('some_new_type'), NotificationKind.unknown);
     expect(NotificationKind.paymentDue.apiValue, 'payment_due');
+    expect(NotificationKind.chatMessage.apiValue, 'chat_message');
   });
 
   test('unknown categories fall back to general', () {
@@ -15,6 +16,7 @@ void main() {
       NotificationCategory.general,
     );
     expect(NotificationCategory.maintenance.apiValue, 'maintenance');
+    expect(NotificationCategory.messages.apiValue, 'messages');
   });
 
   test('notification settings map categories and copy values', () {
@@ -24,11 +26,14 @@ void main() {
       bookingsEnabled: true,
       maintenanceEnabled: false,
       leasesEnabled: true,
+      messagesEnabled: true,
       generalEnabled: false,
     );
 
     expect(settings.categoryEnabled(NotificationCategory.payments), isFalse);
     expect(settings.categoryEnabled(NotificationCategory.bookings), isTrue);
+    expect(settings.categoryEnabled(NotificationCategory.messages), isTrue);
+    expect(settings.copyWith(messagesEnabled: false).messagesEnabled, isFalse);
     expect(settings.copyWith(generalEnabled: true).generalEnabled, isTrue);
   });
 
@@ -36,8 +41,13 @@ void main() {
     const update = NotificationSettingsUpdate(
       pushEnabled: false,
       leasesEnabled: true,
+      messagesEnabled: false,
     );
 
-    expect(update.toJson(), {'push_enabled': false, 'leases_enabled': true});
+    expect(update.toJson(), {
+      'push_enabled': false,
+      'leases_enabled': true,
+      'messages_enabled': false,
+    });
   });
 }

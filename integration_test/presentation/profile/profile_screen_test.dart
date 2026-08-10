@@ -70,7 +70,7 @@ void main() {
 
       await initializeApp(firebaseAuth: mockFirebaseAuth, dio: mockDio);
 
-      await $.pumpWidgetAndSettle(const MainApp());
+      await $.pumpWidgetAndSettle(MainApp(startupFuture: Future.value()));
 
       await $(keys.signInPage.mobileNoTextField).enterText('9999988888');
       await $(keys.signInPage.sendOTPButton).tap();

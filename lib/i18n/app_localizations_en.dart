@@ -466,132 +466,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get creating_new_account => 'Creating new account?';
 
   @override
-  String get shipping_address_keys =>
-      '================ SHIPPING ADDRESS KEYS ================';
-
-  @override
-  String get add_new_address => 'Add New Address';
-
-  @override
-  String get add_shipping_details => 'Add Shipping Details';
-
-  @override
-  String get address => 'Address';
-
-  @override
-  String get city => 'City';
-
-  @override
-  String get country => 'Country';
-
-  @override
-  String get deliver_to => 'Deliver to';
-
-  @override
-  String get enter_your_address => 'Enter Your Address';
-
-  @override
-  String get enter_zip_code => 'Enter Zip Code';
-
-  @override
-  String get select_address => 'Select Address';
-
-  @override
-  String get select_city => 'Select City';
-
-  @override
-  String get select_country => 'Select Country';
-
-  @override
-  String get select_state => 'Select State';
-
-  @override
-  String get set_as_default_address => 'Set as Default Address';
-
-  @override
-  String get shipping_address => 'Shipping Address';
-
-  @override
-  String get shipping_details => 'Shipping Details';
-
-  @override
-  String get state => 'State';
-
-  @override
-  String get use_current_location => 'Use Current Location';
-
-  @override
-  String get zip_code => 'Zip Code';
-
-  @override
-  String get checkout_keys => '================ CHECKOUT KEYS ================';
-
-  @override
-  String get cart => 'Cart';
-
-  @override
-  String get cart_and_checkout => 'Cart Details';
-
-  @override
-  String get cart_items => 'Cart Items';
-
-  @override
-  String get cash_on_delivery => 'Cash on Delivery';
-
-  @override
-  String get confirm_and_pay => 'Confirm and Pay';
-
-  @override
-  String get delivery_charges => 'Delivery Charges';
-
-  @override
-  String get discount => 'Discount';
-
-  @override
-  String get expected_delivery_by => 'Expected Delivery by';
-
-  @override
-  String get order_review => 'Order Review';
-
-  @override
-  String get order_summary => 'Order Summary';
-
-  @override
-  String get payment => 'Payment';
-
-  @override
-  String get price => 'Price';
-
-  @override
-  String price_of_items(int total_product) {
-    String _temp0 = intl.Intl.pluralLogic(
-      total_product,
-      locale: localeName,
-      other: '$total_product items',
-      one: '$total_product item',
-    );
-    return 'Price($_temp0)';
-  }
-
-  @override
-  String get select_and_review_order => 'Select & Review Order';
-
-  @override
-  String get select_payment_method => 'Select Payment Method';
-
-  @override
-  String get selected_payment_method => 'Selected Payment Method';
-
-  @override
-  String get shipping => 'Shipping';
-
-  @override
-  String get total_amount => 'Total Amount';
-
-  @override
-  String get your_cart_is_empty => 'Your Cart is Empty !';
-
-  @override
   String get coupons_keys => '================ COUPONS KEYS ================';
 
   @override
@@ -625,9 +499,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get home => 'Home';
 
   @override
-  String get pro => 'PRO';
-
-  @override
   String get rating => 'Rating';
 
   @override
@@ -656,19 +527,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Microphone permission is permanently denied. Please go to settings and enable it.';
 
   @override
-  String get wishlist_keys => '================ WISHLIST KEYS ================';
-
-  @override
-  String get wishlist => 'Wishlist';
-
-  @override
-  String get empty_wishlist_message =>
-      'You have not added any product to your wishlist. Explore products to add in your wishlist.';
-
-  @override
-  String get empty_wishlist_title => 'Your Wishlist is empty!';
-
-  @override
   String get chat_keys => '================ CHAT KEYS ================';
 
   @override
@@ -692,15 +550,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get message_description => 'Write description...';
 
   @override
-  String get no_chats => 'No Chats';
-
-  @override
-  String get no_users_to_chat_with => 'No users to chat with yet';
-
-  @override
-  String get no_users_match_search => 'No matching users';
-
-  @override
   String get no_messages_yet => 'No messages yet';
 
   @override
@@ -708,6 +557,128 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get send_a_new_message => 'Send a new message';
+
+  @override
+  String get chats_keys => '================ CHATS KEYS ================';
+
+  @override
+  String get chats => 'Chats';
+
+  @override
+  String get chats_empty_title => 'No chats yet';
+
+  @override
+  String get chats_empty_subtitle =>
+      'Message us about a listing and your conversation will appear here';
+
+  @override
+  String get chats_archived => 'Archived chats';
+
+  @override
+  String get chat_archive => 'Archive';
+
+  @override
+  String get chat_unarchive => 'Unarchive';
+
+  @override
+  String get chat_mute => 'Mute notifications';
+
+  @override
+  String get chat_unmute => 'Unmute notifications';
+
+  @override
+  String get chat_delete => 'Delete chat';
+
+  @override
+  String get chat_report => 'Report';
+
+  @override
+  String get chat_delete_title => 'Delete this chat?';
+
+  @override
+  String get chat_delete_message =>
+      'This chat will be removed from your list and you will not be able to reopen it.';
+
+  @override
+  String get chat_delete_confirm => 'Delete';
+
+  @override
+  String get chat_cancel => 'Cancel';
+
+  @override
+  String get chat_conversation_keys =>
+      '================ CHAT CONVERSATION KEYS ================';
+
+  @override
+  String get chat_message_hint => 'Message';
+
+  @override
+  String get chat_message_too_long => 'Messages can be up to 1024 characters';
+
+  @override
+  String get chat_send_failed => 'Not sent. Tap to retry.';
+
+  @override
+  String get chat_retry => 'Retry';
+
+  @override
+  String get chat_photo => 'Photo';
+
+  @override
+  String get chat_read_only_blocked =>
+      'You can no longer send messages in this chat.';
+
+  @override
+  String get chat_listing_unavailable => 'This listing is no longer available.';
+
+  @override
+  String get chat_attach_photo => 'Add photo';
+
+  @override
+  String get chat_attach_camera => 'Camera';
+
+  @override
+  String get chat_attach_gallery => 'Gallery';
+
+  @override
+  String get chat_image_too_large => 'Images must be smaller than 5 MB';
+
+  @override
+  String get chat_image_unsupported_format => 'Unsupported image format';
+
+  @override
+  String get chat_today => 'Today';
+
+  @override
+  String get chat_yesterday => 'Yesterday';
+
+  @override
+  String get chat_report_keys =>
+      '================ CHAT REPORT KEYS ================';
+
+  @override
+  String get chat_report_title => 'Report this chat';
+
+  @override
+  String get chat_report_reason_spam => 'Spam';
+
+  @override
+  String get chat_report_reason_abuse => 'Abuse';
+
+  @override
+  String get chat_report_reason_scam => 'Scam';
+
+  @override
+  String get chat_report_reason_other => 'Other';
+
+  @override
+  String get chat_report_note_hint => 'Add details (optional)';
+
+  @override
+  String get chat_report_submit => 'Submit report';
+
+  @override
+  String get chat_report_submitted => 'Report submitted';
 
   @override
   String get contact_us_keys =>
@@ -797,6 +768,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Receive alerts about your iDeal activity.';
 
   @override
+  String get notifications_messages => 'Messages';
+
+  @override
   String get notifications_payments => 'Payments';
 
   @override
@@ -851,9 +825,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'There is no card available at the moment.';
 
   @override
-  String get empty_cards_list_title => 'No Saved Card';
-
-  @override
   String get explore_products => 'Explore Products';
 
   @override
@@ -862,140 +833,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get empty_screens_keys =>
       '================ EMPTY SCREENS KEYS ================';
-
-  @override
-  String get empty_cart_message =>
-      'There is no single item here. Explore products to add in your cart.';
-
-  @override
-  String get empty_order_message =>
-      'There is no single item here. Explore products to add in your cart.';
-
-  @override
-  String get empty_order_title => 'No Orders Found';
-
-  @override
-  String get subscription_keys =>
-      '================ SUBSCRIPTION KEYS ================';
-
-  @override
-  String get upgrade_to_pro => 'Upgrade to PRO';
-
-  @override
-  String get cancel_subscription => 'Cancel Subscription';
-
-  @override
-  String get manage_subscription => 'Manage Subscription';
-
-  @override
-  String get no_subscription_available => 'No subscription plans available.';
-
-  @override
-  String get failed_to_load_subscriptions =>
-      'Failed to load subscription plans.';
-
-  @override
-  String get store_login_required =>
-      'Please log into your App Store or Play Store account.';
-
-  @override
-  String get unexpected_error_occurred => 'An unexpected error occurred.';
-
-  @override
-  String get user_purchase_cancelled => 'You cancelled the purchase.';
-
-  @override
-  String get restore_subscription => 'Restore Subscription';
-
-  @override
-  String get restore_success =>
-      'Your purchases have been restored successfully.';
-
-  @override
-  String get no_active_subscriptions =>
-      'No active subscriptions were found on your account.';
-
-  @override
-  String get restore_error => 'Error restoring purchases: ';
-
-  @override
-  String get monthly_plan => 'Monthly Plan';
-
-  @override
-  String get yearly_plan => 'Yearly Plan';
-
-  @override
-  String get monthly_duration => 'per month';
-
-  @override
-  String get monthly_renewal => 'Auto-renews every month';
-
-  @override
-  String get yearly_duration => 'per year';
-
-  @override
-  String get yearly_renewal => 'Best value – Auto-renews yearly';
-
-  @override
-  String get subscription_renew =>
-      'Your subscription will automatically renew unless canceled at least 24 hours before the end of the current period';
-
-  @override
-  String get continue_to_payment => 'Continue to Payment';
-
-  @override
-  String get unlock_access => 'Unlock Full Access to';
-
-  @override
-  String get app_name => 'iDeal Pro';
-
-  @override
-  String get plan_description => '🚀 Get unlimited access to iDeal';
-
-  @override
-  String get processing_your_payment => 'Processing Your Payment';
-
-  @override
-  String get payment_processing_message =>
-      'Please wait while we process your payment. This may take a few seconds.';
-
-  @override
-  String get subscription_activated_title => 'Subscription Activated!';
-
-  @override
-  String get subscription_activated_message =>
-      'Your subscription is now active.\nYou can explore the premium features.';
-
-  @override
-  String get payment_failed => 'Payment failed!';
-
-  @override
-  String get payment_failed_message => 'Please try again after sometime.';
-
-  @override
-  String get retry_payment => 'Retry Payment';
-
-  @override
-  String get go_to_home => 'Go to Home';
-
-  @override
-  String get subscription_management_url_unavailable =>
-      'We couldn’t load your subscription settings. Please try again later.';
-
-  @override
-  String get subscription_invalid_url => 'Invalid subscription URL.';
-
-  @override
-  String get purchase_cancelled => 'Purchase cancelled';
-
-  @override
-  String get already_subscribed => 'Already subscribed';
-
-  @override
-  String get receipt_already_in_use => 'Receipt already in use';
-
-  @override
-  String get something_went_wrong => 'Something went wrong';
 
   @override
   String get force_update_keys =>
@@ -1078,52 +915,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get try_again => 'Try Again';
-
-  @override
-  String get product_detail_keys =>
-      '================ Product Detail Keys ================';
-
-  @override
-  String get product_information => 'Product Information';
-
-  @override
-  String get add_to_cart => 'Add to cart';
-
-  @override
-  String get mark_favorite => 'Mark Favorite';
-
-  @override
-  String get inclusive_of_taxes => '(incl. of all taxes)';
-
-  @override
-  String get product_photos => 'Product Photos';
-
-  @override
-  String get view_product_reviews => 'View Product Reviews';
-
-  @override
-  String get no_product_detail_found => 'No Product Detail Found!';
-
-  @override
-  String get product_details => 'Product Details';
-
-  @override
-  String get ai_powered_description => 'AI-Powered Description';
-
-  @override
-  String get get_ai_description => 'Get AI Description';
-
-  @override
-  String get personalized => 'Personalized';
-
-  @override
-  String get generate_ai_description => 'Generate AI Description';
-
-  @override
-  String get generated_by_ai => 'Generated by AI';
-
-  @override
-  String get regenerate => 'Regenerate';
 
   @override
   String get reminder_keys => '================ REMINDER KEYS ================';
@@ -1312,28 +1103,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Failed to share invoice. Please try again';
 
   @override
-  String get my_orders_keys =>
-      '================ My ORDERS KEYS ================';
-
-  @override
-  String get order_id => 'Order Id: #';
-
-  @override
-  String get accepted => 'Accepted';
-
-  @override
-  String get order_details => 'Order Details';
-
-  @override
-  String get cancel_order => 'Cancel Order';
-
-  @override
-  String get tracking_detail => 'Tracking Details';
-
-  @override
-  String get no_product_selected => 'No product selected';
-
-  @override
   String get feedback_keys => '================ FEEDBACK KEYS ================';
 
   @override
@@ -1402,19 +1171,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ai_chat_description =>
-      'Ask me about products, orders, or anything else.';
-
-  @override
-  String get ai_chat_suggestion_cart => 'What\'s in my cart?';
-
-  @override
-  String get ai_chat_suggestion_deals => 'Show products under \$50';
-
-  @override
-  String get ai_chat_suggestion_coupon => 'Any coupons available?';
-
-  @override
-  String get ai_chat_view_cart => 'View Cart';
+      'Ask me about listings, renting, or app navigation.';
 
   @override
   String get ai_chat_error_no_response =>
@@ -1613,6 +1370,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get listing_detail_message => 'Message';
 
   @override
+  String get listing_detail_message_unavailable =>
+      'Messaging is unavailable for this listing';
+
+  @override
   String get listing_detail_call => 'Call';
 
   @override
@@ -1669,4 +1430,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get utilities => 'Utilities';
+
+  @override
+  String get ai_chat_suggestion_listings => 'Find an apartment';
+
+  @override
+  String get ai_chat_suggestion_renting => 'How does renting work?';
+
+  @override
+  String get ai_chat_suggestion_support => 'Contact support';
 }

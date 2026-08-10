@@ -7,6 +7,7 @@ enum NotificationKind {
   serviceOrderStatus('service_order_status'),
   leaseRenewal('lease_renewal'),
   ownerOnboarding('owner_onboarding'),
+  chatMessage('chat_message'),
   general('general'),
   unknown('unknown');
 
@@ -29,6 +30,7 @@ enum NotificationCategory {
   bookings('bookings'),
   maintenance('maintenance'),
   leases('leases'),
+  messages('messages'),
   general('general');
 
   const NotificationCategory(this._apiValue);

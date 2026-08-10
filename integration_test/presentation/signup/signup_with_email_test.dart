@@ -37,7 +37,7 @@ void main() {
     framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
     ($) async {
       await initializeApp(firebaseAuth: mockFirebaseAuth, dio: mockDio);
-      await $.pumpWidgetAndSettle(const MainApp());
+      await $.pumpWidgetAndSettle(MainApp(startupFuture: Future.value()));
 
       // SCENARIO 1: Successful signup with email verification
       final newUser = MockUser(email: 'newuser@example.com');

@@ -47,6 +47,8 @@ ListingDetail _listingDetail() {
     amenities: const [],
     verificationIsVerified: true,
     verificationChecklist: const [],
+    canMessage: false,
+    contactPhone: null,
   );
 }
 

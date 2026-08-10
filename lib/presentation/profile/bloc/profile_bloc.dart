@@ -56,7 +56,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     on<UpdateProfileEvent>(_onUpdateProfileEvent);
     on<UpdateProfileAvatarEvent>(_onUpdateProfileAvatarEvent);
     on<RemoveProfileAvatarEvent>(_onRemoveProfileAvatarEvent);
-    on<UpdateSubscriptionStatusEvent>(_onUpdateSubscriptionStatusEvent);
     on<SignOutEvent>(_onSignOutEvent);
   }
 
@@ -138,13 +137,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         ),
       ),
     );
-  }
-
-  void _onUpdateSubscriptionStatusEvent(
-    UpdateSubscriptionStatusEvent event,
-    Emitter<ProfileState> emit,
-  ) {
-    emit(state.copyWith(isProUser: event.isSubscribed));
   }
 
   void _onSignOutEvent(SignOutEvent event, Emitter<ProfileState> emit) async {
