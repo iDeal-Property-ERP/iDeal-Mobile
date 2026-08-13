@@ -7,6 +7,10 @@ import 'package:ideal_mobile/utils/typedef.dart';
 
 abstract class ListingDetailRemoteDataSource {
   Future<ListingDetailModel> getListingDetail({required int id});
+
+  Stream<PublicCacheResult<ListingDetailModel>> getListingDetailCached({
+    required int id,
+  });
 }
 
 class ListingDetailRemoteDataSourceImpl
@@ -20,12 +24,32 @@ class ListingDetailRemoteDataSourceImpl
 
   @override
   Future<ListingDetailModel> getListingDetail({required int id}) async {
-    final response = await _request(
-      () => _dio.get(
-        '$_detailPath$id/',
-        options: _cacheManager.noCacheOptions().toOptions(),
-      ),
+    final response = await _getListingDetailResponse(
+      id: id,
+      options: _cacheManager.noCacheOptions(),
     );
+    return _parseListingDetail(response);
+  }
+
+  @override
+  Stream<PublicCacheResult<ListingDetailModel>> getListingDetailCached({
+    required int id,
+  }) {
+    return PublicCacheCoordinator.staleWhileRevalidate(
+      cacheManager: _cacheManager,
+      request: (options) => _getListingDetailResponse(id: id, options: options),
+      decode: _parseListingDetail,
+    );
+  }
+
+  Future<Response<dynamic>> _getListingDetailResponse({
+    required int id,
+    required CacheOptions options,
+  }) => _request(
+    () => _dio.get('$_detailPath$id/', options: options.toOptions()),
+  );
+
+  ListingDetailModel _parseListingDetail(Response<dynamic> response) {
     final data = _dataFromResponse(
       response,
       missingDataMessage: 'Listing detail was not returned.',

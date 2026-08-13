@@ -61,6 +61,17 @@ class RemoteConfigService {
     }
   }
 
+  bool getBool(String key, {bool defaultValue = false}) {
+    try {
+      final value = FirebaseRemoteConfig.instance.getValue(key);
+      if (value.source == ValueSource.valueStatic) return defaultValue;
+      return value.asBool();
+    } catch (e) {
+      debugPrint('[RemoteConfig] Error getting bool for key $key: $e');
+      return defaultValue;
+    }
+  }
+
   void _logCurrentValues() {
     debugPrint(
       '[RemoteConfig] MandatoryAppVersion: '

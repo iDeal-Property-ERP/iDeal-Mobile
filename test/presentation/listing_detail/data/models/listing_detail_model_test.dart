@@ -118,6 +118,29 @@ void main() {
     expect(model.contactPhone, '+998 90 123 45 67');
   });
 
+  test('parses nullable photo variants while retaining the original URL', () {
+    final model = ListingDetailModel.fromJson({
+      ...json,
+      'photos': [
+        {
+          ...json['photos'][0] as Map<String, dynamic>,
+          'preview_url': 'https://example.com/photo-preview.jpg',
+          'display_url': 'https://example.com/photo-display.jpg',
+        },
+      ],
+    });
+
+    expect(model.photos.single.imageUrl, 'https://example.com/photo.jpg');
+    expect(
+      model.photos.single.previewUrl,
+      'https://example.com/photo-preview.jpg',
+    );
+    expect(
+      model.photos.single.displayUrl,
+      'https://example.com/photo-display.jpg',
+    );
+  });
+
   test('missing chat fields use safe defaults', () {
     final missingChatFields = {...json}
       ..remove('can_message')

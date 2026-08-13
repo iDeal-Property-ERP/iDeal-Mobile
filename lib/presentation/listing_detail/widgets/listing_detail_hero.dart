@@ -7,6 +7,8 @@ import 'package:ideal_mobile/presentation/listing_detail/domain/entities/listing
 import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_photo_viewer.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/listing_card_image.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
+import 'package:ideal_mobile/widgets/images/prioritized_image_scheduler.dart';
+import 'package:ideal_mobile/widgets/images/tiered_network_image.dart';
 
 class ListingDetailHero extends StatefulWidget {
   const ListingDetailHero({
@@ -72,10 +74,18 @@ class _ListingDetailHeroState extends State<ListingDetailHero> {
             itemCount: photos.isEmpty ? 1 : photos.length,
             onPageChanged: (index) => setState(() => _currentIndex = index),
             itemBuilder: (context, index) {
-              final imageUrl = photos.isEmpty ? null : photos[index].imageUrl;
+              final photo = photos.isEmpty ? null : photos[index];
               return GestureDetector(
                 onTap: photos.isEmpty ? null : () => _openViewer(context),
-                child: ClipRect(child: ListingCardImage(imageUrl: imageUrl)),
+                child: ClipRect(
+                  child: ListingCardImage(
+                    imageUrl: photo?.imageUrl,
+                    previewUrl: photo?.previewUrl,
+                    displayUrl: photo?.displayUrl,
+                    targetTier: ImageDisplayTier.display,
+                    priority: ImageLoadPriority.high,
+                  ),
+                ),
               );
             },
           ),

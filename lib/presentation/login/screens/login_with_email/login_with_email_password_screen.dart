@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
+import 'package:ideal_mobile/presentation/booking/booking_intent_service.dart';
 import 'package:ideal_mobile/presentation/login/bloc/login_bloc.dart';
 import 'package:ideal_mobile/presentation/login/bloc/login_events.dart';
 import 'package:ideal_mobile/presentation/login/bloc/login_state.dart';
@@ -57,7 +58,13 @@ class LoginWithEmailPasswordScreen extends StatelessWidget {
                           const DeleteAccountRoute(),
                         );
                       } else {
-                        context.router.popUntilRoot();
+                        final resumed =
+                            await BookingIntentService.resumeAfterAuthentication(
+                              context,
+                            );
+                        if (!resumed && context.mounted) {
+                          context.router.popUntilRoot();
+                        }
                       }
                     } else if (state is NavigateToEmailVerifyScreenState) {
                       await context.router.push(

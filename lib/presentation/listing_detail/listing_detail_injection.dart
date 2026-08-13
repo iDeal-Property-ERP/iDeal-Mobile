@@ -4,6 +4,7 @@ import 'package:ideal_mobile/presentation/listing_detail/data/datasources/listin
 import 'package:ideal_mobile/presentation/listing_detail/data/repositories/listing_detail_repository_impl.dart';
 import 'package:ideal_mobile/presentation/listing_detail/domain/repositories/listing_detail_repository.dart';
 import 'package:ideal_mobile/presentation/listing_detail/domain/usecases/get_listing_detail.dart';
+import 'package:ideal_mobile/presentation/listing_detail/domain/usecases/get_listing_detail_cached.dart';
 import 'package:ideal_mobile/utils/cache_manager.dart';
 
 void registerListingDetailDependencies(GetIt sl) {
@@ -14,5 +15,6 @@ void registerListingDetailDependencies(GetIt sl) {
     ..registerLazySingleton<ListingDetailRemoteDataSource>(
       () => ListingDetailRemoteDataSourceImpl(sl<Dio>(), sl<CacheManager>()),
     )
-    ..registerLazySingleton(() => GetListingDetail(sl()));
+    ..registerLazySingleton(() => GetListingDetail(sl()))
+    ..registerLazySingleton(() => GetListingDetailCached(sl()));
 }

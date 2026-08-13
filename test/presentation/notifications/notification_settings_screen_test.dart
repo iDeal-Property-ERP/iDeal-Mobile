@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -9,6 +11,7 @@ import 'package:ideal_mobile/presentation/notifications/domain/entities/notifica
 import 'package:ideal_mobile/presentation/notifications/domain/repositories/notification_settings_repository.dart';
 import 'package:ideal_mobile/presentation/notifications/domain/usecases/get_notification_settings.dart';
 import 'package:ideal_mobile/presentation/notifications/domain/usecases/update_notification_settings.dart';
+import 'package:ideal_mobile/services/push/notification_permission_status.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../test_helpers.dart';
@@ -70,7 +73,9 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         localizationsDelegates: [MockLocalizationsDelegate(localizations)],
-        home: const NotificationSettingsScreen(),
+        home: NotificationSettingsScreen(
+          getPermission: () async => NotificationPermissionStatus.granted,
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -88,6 +93,55 @@ void main() {
         ),
       ),
     ).called(1);
+  });
+
+  testWidgets('reveals settings before a slow permission result', (
+    tester,
+  ) async {
+    final permission = Completer<NotificationPermissionStatus>();
+    when(() => getSettings()).thenAnswer(
+      (_) async => const Right<Failure, NotificationSettings>(settings),
+    );
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: [MockLocalizationsDelegate(localizations)],
+        home: NotificationSettingsScreen(
+          getPermission: () => permission.future,
+        ),
+      ),
+    );
+    await tester.pump();
+    expect(find.widgetWithText(SwitchListTile, 'Messages'), findsOneWidget);
+    expect(find.text('Notifications are disabled'), findsNothing);
+    permission.complete(NotificationPermissionStatus.denied);
+    await tester.pump();
+    expect(find.text('Notifications are disabled'), findsOneWidget);
+  });
+
+  testWidgets('renders disabled structure while server settings are slow', (
+    tester,
+  ) async {
+    final server = Completer<Either<Failure, NotificationSettings>>();
+    when(() => getSettings()).thenAnswer((_) => server.future);
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: [MockLocalizationsDelegate(localizations)],
+        home: NotificationSettingsScreen(
+          getPermission: () async => NotificationPermissionStatus.granted,
+        ),
+      ),
+    );
+    await tester.pump();
+    final messages = tester.widget<SwitchListTile>(
+      find.widgetWithText(SwitchListTile, 'Messages'),
+    );
+    expect(messages.onChanged, isNull);
+    server.complete(const Right(settings));
+    await tester.pump();
+    final loaded = tester.widget<SwitchListTile>(
+      find.widgetWithText(SwitchListTile, 'Messages'),
+    );
+    expect(loaded.onChanged, isNotNull);
   });
 }
 

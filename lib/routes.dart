@@ -44,13 +44,10 @@ class AppRouter extends RootStackRouter {
 
       // Chat
       ChatsRoute.page,
-      ChatConversationRoute.page,
 
       // Notifications
       NotificationsRoute.page,
       NotificationSettingsRoute.page,
-
-      ListingDetailRoute.page,
 
       // Empty widget screens
       ServerErrorRoute.page,
@@ -107,6 +104,17 @@ class AppRouter extends RootStackRouter {
 
     return [
       initialRoute,
+      AutoRoute(page: PaymentReturnRoute.page, path: '/payment-return'),
+      AutoRoute(
+        page: ChatConversationRoute.page,
+        path: '/chats/:conversationId',
+      ),
+      AutoRoute(page: ListingDetailRoute.page, path: '/listings/:listingId'),
+      AutoRoute(page: BookingRoute.page, path: '/listings/:listingId/booking'),
+      AutoRoute(
+        page: BookingStatusRoute.page,
+        path: '/bookings/:bookingId/status',
+      ),
       ...routes,
       ...noTransitionRoutes,
       // ...fullScreenRoutes,

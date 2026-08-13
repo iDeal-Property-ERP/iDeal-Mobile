@@ -6,6 +6,7 @@ import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filte
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filters.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listings_page.dart';
 import 'package:ideal_mobile/presentation/listings/domain/repositories/listings_repository.dart';
+import 'package:ideal_mobile/utils/cache_manager.dart';
 import 'package:ideal_mobile/utils/typedef.dart';
 
 class ListingsRepositoryImpl implements ListingsRepository {
@@ -38,6 +39,37 @@ class ListingsRepositoryImpl implements ListingsRepository {
       return Right(await _remoteDataSource.getFilterOptions());
     } on APIException catch (error) {
       return Left(APIFailure.fromException(error));
+    }
+  }
+
+  @override
+  Stream<Result<PublicCacheResult<ListingsPage>>> getListingsCached({
+    required ListingFilters filters,
+    required int page,
+    int perPage = 20,
+  }) async* {
+    try {
+      await for (final event in _remoteDataSource.getListingsCached(
+        filters: filters,
+        page: page,
+        perPage: perPage,
+      )) {
+        yield Right(event);
+      }
+    } on APIException catch (error) {
+      yield Left(APIFailure.fromException(error));
+    }
+  }
+
+  @override
+  Stream<Result<PublicCacheResult<ListingFilterOptions>>>
+  getFilterOptionsCached() async* {
+    try {
+      await for (final event in _remoteDataSource.getFilterOptionsCached()) {
+        yield Right(event);
+      }
+    } on APIException catch (error) {
+      yield Left(APIFailure.fromException(error));
     }
   }
 }

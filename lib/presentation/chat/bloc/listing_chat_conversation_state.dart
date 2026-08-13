@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:ideal_mobile/presentation/chat/domain/entities/chat_conversation_state.dart';
+import 'package:ideal_mobile/presentation/chat/domain/entities/chat_conversation.dart';
 import 'package:ideal_mobile/presentation/chat/domain/entities/chat_listing_ref.dart';
 import 'package:ideal_mobile/presentation/chat/domain/entities/chat_message.dart';
 import 'package:ideal_mobile/presentation/chat/domain/entities/pending_chat_message.dart';
@@ -36,6 +37,7 @@ class ListingChatConversationState extends Equatable {
     this.peerLastReadMessageId,
     this.draft = '',
     this.isSending = false,
+    this.metadataConfirmed = false,
     this.errorMessage,
   });
 
@@ -56,6 +58,7 @@ class ListingChatConversationState extends Equatable {
       peerLastReadMessageId = null,
       draft = '',
       isSending = false,
+      metadataConfirmed = false,
       errorMessage = null;
 
   @visibleForTesting
@@ -76,6 +79,7 @@ class ListingChatConversationState extends Equatable {
     this.peerLastReadMessageId,
     this.draft = '',
     this.isSending = false,
+    this.metadataConfirmed = true,
     this.errorMessage,
   });
 
@@ -95,9 +99,13 @@ class ListingChatConversationState extends Equatable {
   final int? peerLastReadMessageId;
   final String draft;
   final bool isSending;
+
+  /// Conversation seeds are display-only until metadata has been refreshed.
+  final bool metadataConfirmed;
   final String? errorMessage;
 
-  bool get canSend => !isReadOnly && draft.trim().isNotEmpty && !isSending;
+  bool get canSend =>
+      metadataConfirmed && !isReadOnly && draft.trim().isNotEmpty && !isSending;
 
   ChatMessageStatus statusFor(ChatMessage message) {
     if (!message.isMine) return ChatMessageStatus.sent;
@@ -125,6 +133,7 @@ class ListingChatConversationState extends Equatable {
     int? peerLastReadMessageId,
     String? draft,
     bool? isSending,
+    bool? metadataConfirmed,
     Object? errorMessage = _unsetConversationError,
     bool clearErrorMessage = false,
   }) {
@@ -146,6 +155,7 @@ class ListingChatConversationState extends Equatable {
           peerLastReadMessageId ?? this.peerLastReadMessageId,
       draft: draft ?? this.draft,
       isSending: isSending ?? this.isSending,
+      metadataConfirmed: metadataConfirmed ?? this.metadataConfirmed,
       errorMessage: clearErrorMessage
           ? null
           : identical(errorMessage, _unsetConversationError)
@@ -168,6 +178,21 @@ class ListingChatConversationState extends Equatable {
     );
   }
 
+  ListingChatConversationState withConversationSeed(ChatConversation source) {
+    return copyWith(
+      conversationId: source.id,
+      listing: source.listing,
+      isReadOnly: source.isReadOnly,
+      isBlocked: source.isBlocked,
+      isArchived: source.isArchived,
+      isMuted: source.isMuted,
+      listingIsAvailable: source.listingIsAvailable,
+      lastKnownMessageId: source.lastMessageId,
+      peerLastReadMessageId: source.peerLastReadMessageId,
+      metadataConfirmed: false,
+    );
+  }
+
   @override
   List<Object?> get props => [
     status,
@@ -186,6 +211,7 @@ class ListingChatConversationState extends Equatable {
     peerLastReadMessageId,
     draft,
     isSending,
+    metadataConfirmed,
     errorMessage,
   ];
 }

@@ -25,7 +25,10 @@ class GuestAccessService {
         userDetails.token.haveContent();
   }
 
-  static Future<bool> requireAuthentication(BuildContext context) async {
+  static Future<bool> requireAuthentication(
+    BuildContext context, {
+    Future<void> Function()? onAuthenticationRequired,
+  }) async {
     if (await hasAuthenticatedSession()) return true;
     if (!context.mounted) return false;
 
@@ -49,6 +52,8 @@ class GuestAccessService {
 
     if (shouldLogin != true || !context.mounted) return false;
 
+    await onAuthenticationRequired?.call();
+    if (!context.mounted) return false;
     await context.router.replace(LoginWithPhoneNumberRoute());
     return false;
   }

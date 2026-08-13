@@ -10,6 +10,7 @@ import 'package:http_certificate_pinning/http_certificate_pinning.dart';
 import 'package:ideal_mobile/constants/constants.dart';
 import 'package:ideal_mobile/core/services/app_tour_service.dart';
 import 'package:ideal_mobile/main.dart';
+import 'package:ideal_mobile/presentation/booking/booking_injection.dart';
 import 'package:ideal_mobile/presentation/chat/chat_injection.dart';
 import 'package:ideal_mobile/presentation/feedback/data/datasources/feedback_remote_datasource.dart';
 import 'package:ideal_mobile/presentation/feedback/data/repositories/feedback_repository_impl.dart';
@@ -19,7 +20,9 @@ import 'package:ideal_mobile/presentation/listings/data/datasources/listings_rem
 import 'package:ideal_mobile/presentation/listings/data/repositories/listings_repository_impl.dart';
 import 'package:ideal_mobile/presentation/listings/domain/repositories/listings_repository.dart';
 import 'package:ideal_mobile/presentation/listings/domain/usecases/get_listing_filter_options.dart';
+import 'package:ideal_mobile/presentation/listings/domain/usecases/get_listing_filter_options_cached.dart';
 import 'package:ideal_mobile/presentation/listings/domain/usecases/get_listings.dart';
+import 'package:ideal_mobile/presentation/listings/domain/usecases/get_listings_cached.dart';
 import 'package:ideal_mobile/presentation/listing_detail/listing_detail_injection.dart';
 import 'package:ideal_mobile/presentation/login/data/datasources/auth_remote_data_source.dart';
 import 'package:ideal_mobile/presentation/login/data/repositories/auth_repository_impl.dart';
@@ -126,8 +129,12 @@ Future<void> configureDependencies({
       () => ListingsRemoteDataSourceImpl(sl<Dio>(), sl<CacheManager>()),
     )
     ..registerLazySingleton(() => GetListings(sl<ListingsRepository>()))
+    ..registerLazySingleton(() => GetListingsCached(sl<ListingsRepository>()))
     ..registerLazySingleton(
       () => GetListingFilterOptions(sl<ListingsRepository>()),
+    )
+    ..registerLazySingleton(
+      () => GetListingFilterOptionsCached(sl<ListingsRepository>()),
     )
     ..registerLazySingleton<FavoritesService>(FavoritesService.new)
     ..registerLazySingleton(() {
@@ -173,6 +180,7 @@ Future<void> configureDependencies({
   registerNotificationsDependencies(sl);
   registerChatDependencies(sl);
   registerListingDetailDependencies(sl);
+  registerBookingDependencies(sl);
 }
 
 void _registerDioInterceptor(Dio dio) {

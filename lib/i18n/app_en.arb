@@ -379,7 +379,7 @@
     "placeholders": {
       "url": {
         "type": "String",
-        "example": "https://ideal.example.com/product-detail/P001"
+        "example": "https://i-deal.uz/listings/12"
       }
     }
   },
@@ -538,6 +538,7 @@
   "listings_error_title": "Couldn't load homes",
   "listings_error_subtitle": "Check your connection and try again.",
   "listings_retry": "Retry",
+  "listings_showing_saved": "Showing saved listings. Pull to retry.",
   "listings_anywhere": "Anywhere",
   "listings_any": "Any",
   "listing_detail_keys": "======== LISTING DETAIL KEYS ========",
@@ -621,5 +622,43 @@
   "utilities": "Utilities",
   "ai_chat_suggestion_listings": "Find an apartment",
   "ai_chat_suggestion_renting": "How does renting work?",
-  "ai_chat_suggestion_support": "Contact support"
+  "ai_chat_suggestion_support": "Contact support",
+  "booking_keys": "======== BOOKING KEYS ========",
+  "booking_book_and_pay": "Book & pay",
+  "booking_title": "Book this home",
+  "booking_status_title": "Booking status",
+  "booking_choose_dates": "Choose your stay",
+  "booking_dates_inclusive": "Your start and end dates are both included.",
+  "booking_select_dates": "Select dates",
+  "booking_choose_start_date": "Choose a start date",
+  "booking_choose_end_date": "Choose an end date",
+  "booking_months": "{count} months",
+  "@booking_months": {"placeholders": {"count": {"type": "int"}}},
+  "booking_range_unavailable": "That period is not available. Choose different dates.",
+  "booking_get_quote": "Get price",
+  "booking_price_summary": "Price summary",
+  "booking_deposit": "Deposit",
+  "booking_rent": "Rent",
+  "booking_total_due_now": "Total due now",
+  "booking_pay_full_stay": "Pay rent for the full stay",
+  "booking_pay_full_stay_note": "Off by default. Otherwise only the first rental period is charged now.",
+  "booking_payment_method": "Payment method",
+  "booking_continue_to_payment": "Continue to secure payment",
+  "booking_preparing_checkout": "Preparing payment…",
+  "booking_hosted_payment_note": "Payment opens securely in your browser. Return here to check the verified result.",
+  "booking_checkout_launch_failed": "Could not open the secure payment page.",
+  "booking_check_status": "Check payment status",
+  "booking_pending_title": "Checking your payment",
+  "booking_pending_message": "The provider is still processing it. We will confirm only after the backend verifies the payment.",
+  "booking_confirmed_title": "Booking confirmed",
+  "booking_confirmed_message": "Your dates are secured. Your lease is ready for the next signing step.",
+  "booking_failed_title": "Payment failed",
+  "booking_failed_message": "The home was not booked. You can return and start a new payment.",
+  "booking_expired_title": "Payment expired",
+  "booking_expired_message": "The temporary hold was released. Choose the dates again to continue.",
+  "booking_review_title": "Payment needs review",
+  "booking_review_message": "Our finance team must review this payment. Do not pay again until support contacts you.",
+  "booking_unavailable": "Direct booking is unavailable",
+  "booking_return_unverified": "We could not match this return link to an active checkout. The link itself is not proof of payment.",
+  "booking_back_home": "Back to home"
 }

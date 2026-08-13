@@ -48,11 +48,18 @@ void main() {
     'map_lon': null,
   };
 
+  setUpAll(() {
+    registerFallbackValue(PublicCacheRequest.cacheFirst);
+  });
+
   setUp(() {
     dio = MockDio();
     cacheManager = MockCacheManager();
     cacheOptions = CacheOptions(store: MemCacheStore());
     when(() => cacheManager.noCacheOptions()).thenReturn(cacheOptions);
+    when(
+      () => cacheManager.publicCacheOptions(request: any(named: 'request')),
+    ).thenReturn(cacheOptions);
     dataSource = ListingsRemoteDataSourceImpl(dio, cacheManager);
   });
 
@@ -212,5 +219,79 @@ void main() {
             .having((error) => error.statusCode, 'status', 505),
       ),
     );
+  });
+
+  test('cached listing stream yields cache then forced fresh data', () async {
+    var call = 0;
+    when(
+      () => dio.get(
+        '/mobile/home/listings/',
+        queryParameters: any(named: 'queryParameters'),
+        options: any(named: 'options'),
+      ),
+    ).thenAnswer((_) async {
+      final network = call++ == 1;
+      return response('/mobile/home/listings/', 200, {
+        'success': true,
+        'data': {
+          'count': 1,
+          'num_pages': 1,
+          'per_page': 20,
+          'page': {
+            'number': 1,
+            'object_list': [
+              {...listing, 'id': network ? 13 : 12},
+            ],
+          },
+        },
+      })..extra[extraFromNetworkKey] = network;
+    });
+
+    final results = await dataSource
+        .getListingsCached(filters: const ListingFilters.empty(), page: 1)
+        .toList();
+
+    expect(results.map((event) => event.data.items.single.id), [12, 13]);
+    expect(results.map((event) => event.origin), [
+      PublicDataOrigin.cache,
+      PublicDataOrigin.fresh,
+    ]);
+    verify(
+      () => cacheManager.publicCacheOptions(
+        request: PublicCacheRequest.cacheFirst,
+      ),
+    ).called(1);
+    verify(
+      () => cacheManager.publicCacheOptions(
+        request: PublicCacheRequest.forceRefresh,
+      ),
+    ).called(1);
+  });
+
+  test('cached filter stream yields cache then forced fresh data', () async {
+    var call = 0;
+    when(
+      () => dio.get('/mobile/home/filters/', options: any(named: 'options')),
+    ).thenAnswer((_) async {
+      final network = call++ == 1;
+      return response('/mobile/home/filters/', 200, {
+        'success': true,
+        'data': {
+          'districts': [],
+          'tariffs': [
+            {'value': network ? 'house' : 'apartment', 'label': 'Type'},
+          ],
+        },
+      })..extra[extraFromNetworkKey] = network;
+    });
+
+    final results = await dataSource.getFilterOptionsCached().toList();
+
+    expect(results.map((event) => event.origin), [
+      PublicDataOrigin.cache,
+      PublicDataOrigin.fresh,
+    ]);
+    expect(results.first.data.tariffs.single.value, 'apartment');
+    expect(results.last.data.tariffs.single.value, 'house');
   });
 }

@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
@@ -7,6 +6,8 @@ import 'package:ideal_mobile/presentation/chat/widgets/chat_avatar.dart';
 import 'package:ideal_mobile/utils/extensions/date_time_extensions.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 import 'package:ideal_mobile/widgets/styling/app_radius.dart';
+import 'package:ideal_mobile/widgets/images/prioritized_image_scheduler.dart';
+import 'package:ideal_mobile/widgets/images/tiered_network_image.dart';
 
 class ChatConversationListTile extends StatelessWidget {
   const ChatConversationListTile({
@@ -37,7 +38,11 @@ class ChatConversationListTile extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _ListingImage(url: listing.coverImageUrl),
+            _ListingImage(
+              url: listing.coverImageUrl,
+              previewUrl: listing.coverPreviewUrl,
+              displayUrl: listing.coverDisplayUrl,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -88,9 +93,15 @@ class ChatConversationListTile extends StatelessWidget {
 }
 
 class _ListingImage extends StatelessWidget {
-  const _ListingImage({required this.url});
+  const _ListingImage({
+    required this.url,
+    required this.previewUrl,
+    required this.displayUrl,
+  });
 
   final String? url;
+  final String? previewUrl;
+  final String? displayUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -99,13 +110,18 @@ class _ListingImage extends StatelessWidget {
     }
     return ClipRRect(
       borderRadius: BorderRadius.circular(AppRadius.input),
-      child: CachedNetworkImage(
-        imageUrl: url!,
+      child: SizedBox(
         width: 56,
         height: 56,
-        fit: BoxFit.cover,
-        placeholder: (context, url) => const ChatAvatar(size: 56),
-        errorWidget: (context, url, error) => const ChatAvatar(size: 56),
+        child: TieredNetworkImage(
+          originalUrl: url,
+          previewUrl: previewUrl,
+          displayUrl: displayUrl,
+          priority: ImageLoadPriority.normal,
+          fit: BoxFit.cover,
+          loadingBuilder: (_) => const ChatAvatar(size: 56),
+          errorBuilder: (_) => const ChatAvatar(size: 56),
+        ),
       ),
     );
   }

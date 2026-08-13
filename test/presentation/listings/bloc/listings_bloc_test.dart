@@ -7,17 +7,26 @@ import 'package:ideal_mobile/presentation/listings/bloc/listings_bloc.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_event.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_state.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_card.dart';
+import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filter_options.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filters.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listings_page.dart';
 import 'package:ideal_mobile/presentation/listings/domain/usecases/get_listing_filter_options.dart';
+import 'package:ideal_mobile/presentation/listings/domain/usecases/get_listing_filter_options_cached.dart';
 import 'package:ideal_mobile/presentation/listings/domain/usecases/get_listings.dart';
+import 'package:ideal_mobile/presentation/listings/domain/usecases/get_listings_cached.dart';
 import 'package:ideal_mobile/services/favorites_service.dart';
 import 'package:ideal_mobile/services/performance_monitoring_service.dart';
+import 'package:ideal_mobile/utils/cache_manager.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockGetListings extends Mock implements GetListings {}
 
 class MockGetFilterOptions extends Mock implements GetListingFilterOptions {}
+
+class MockGetListingsCached extends Mock implements GetListingsCached {}
+
+class MockGetFilterOptionsCached extends Mock
+    implements GetListingFilterOptionsCached {}
 
 class MockFavoritesService extends Mock implements FavoritesService {}
 
@@ -30,6 +39,8 @@ void main() {
   late MockGetFilterOptions getFilterOptions;
   late MockFavoritesService favoritesService;
   late MockPerformanceMonitoringService performanceService;
+  late MockGetListingsCached getListingsCached;
+  late MockGetFilterOptionsCached getFilterOptionsCached;
 
   ListingCard listing(int id) => ListingCard(
     id: id,
@@ -68,6 +79,8 @@ void main() {
     getFilterOptions = MockGetFilterOptions();
     favoritesService = MockFavoritesService();
     performanceService = MockPerformanceMonitoringService();
+    getListingsCached = MockGetListingsCached();
+    getFilterOptionsCached = MockGetFilterOptionsCached();
 
     final serviceLocator = GetIt.instance;
     if (serviceLocator.isRegistered<PerformanceMonitoringService>()) {
@@ -252,6 +265,112 @@ void main() {
               (state) => state.errorMessage,
               'error',
               '500 Error: Server error',
+            ),
+      ],
+    );
+
+    blocTest<ListingsBloc, ListingsState>(
+      'renders cache then fresh and retains cached data after refresh failure',
+      build: () {
+        final page = ListingsPage(
+          items: [listing(7)],
+          count: 1,
+          numPages: 1,
+          perPage: 20,
+          pageNumber: 1,
+        );
+        when(
+          () => getListingsCached(filters: any(named: 'filters'), page: 1),
+        ).thenAnswer(
+          (_) => Stream.fromIterable([
+            Right<Failure, PublicCacheResult<ListingsPage>>(
+              PublicCacheResult(data: page, origin: PublicDataOrigin.cache),
+            ),
+            Right<Failure, PublicCacheResult<ListingsPage>>(
+              PublicCacheResult(data: page, origin: PublicDataOrigin.fresh),
+            ),
+            Right<Failure, PublicCacheResult<ListingsPage>>(
+              PublicCacheResult(
+                data: page,
+                origin: PublicDataOrigin.cache,
+                isStale: true,
+                refreshError: StateError('offline'),
+              ),
+            ),
+          ]),
+        );
+        return ListingsBloc(
+          getListings: getListings,
+          getFilterOptions: getFilterOptions,
+          getListingsCached: getListingsCached,
+          favoritesService: favoritesService,
+        );
+      },
+      act: (bloc) => bloc.add(const LoadListingsEvent()),
+      expect: () => [
+        isA<ListingsLoadingState>(),
+        isA<ListingsLoadedState>()
+            .having(
+              (state) => state.dataOrigin,
+              'origin',
+              PublicDataOrigin.cache,
+            )
+            .having((state) => state.isStale, 'stale', isFalse),
+        isA<ListingsLoadedState>().having(
+          (state) => state.dataOrigin,
+          'origin',
+          PublicDataOrigin.fresh,
+        ),
+        isA<ListingsLoadedState>()
+            .having((state) => state.items.single.id, 'cached item', 7)
+            .having((state) => state.isStale, 'stale', isTrue)
+            .having(
+              (state) => state.listingRefreshError,
+              'retry message',
+              contains('offline'),
+            ),
+      ],
+    );
+
+    blocTest<ListingsBloc, ListingsState>(
+      'cached filter refresh does not alter stale listing provenance or retry signal',
+      build: () {
+        when(() => getFilterOptionsCached()).thenAnswer(
+          (_) => Stream.value(
+            Right<Failure, PublicCacheResult<ListingFilterOptions>>(
+              const PublicCacheResult<ListingFilterOptions>(
+                data: ListingFilterOptions.empty(),
+                origin: PublicDataOrigin.fresh,
+              ),
+            ),
+          ),
+        );
+        return ListingsBloc(
+          getListings: getListings,
+          getFilterOptions: getFilterOptions,
+          getFilterOptionsCached: getFilterOptionsCached,
+          favoritesService: favoritesService,
+        );
+      },
+      seed: () => ListingsState.test(
+        items: [listing(1)],
+        dataOrigin: PublicDataOrigin.cache,
+        isStale: true,
+        listingRefreshError: 'offline',
+      ),
+      act: (bloc) => bloc.add(const LoadFilterOptionsEvent()),
+      expect: () => [
+        isA<ListingFilterOptionsLoadedState>()
+            .having(
+              (state) => state.dataOrigin,
+              'listing origin',
+              PublicDataOrigin.cache,
+            )
+            .having((state) => state.isStale, 'listing stale', isTrue)
+            .having(
+              (state) => state.listingRefreshError,
+              'listing retry',
+              'offline',
             ),
       ],
     );

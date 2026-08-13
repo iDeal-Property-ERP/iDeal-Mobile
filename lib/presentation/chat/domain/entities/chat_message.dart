@@ -10,6 +10,8 @@ class ChatMessage extends Equatable {
     required this.kind,
     required this.text,
     required this.imageUrl,
+    this.imagePreviewUrl,
+    this.imageDisplayUrl,
     required this.imageWidth,
     required this.imageHeight,
     required this.clientId,
@@ -25,6 +27,8 @@ class ChatMessage extends Equatable {
   final String kind;
   final String? text;
   final String? imageUrl;
+  final String? imagePreviewUrl;
+  final String? imageDisplayUrl;
   final int? imageWidth;
   final int? imageHeight;
   final String? clientId;
@@ -43,6 +47,8 @@ class ChatMessage extends Equatable {
     kind,
     text,
     imageUrl,
+    imagePreviewUrl,
+    imageDisplayUrl,
     imageWidth,
     imageHeight,
     clientId,

@@ -12,7 +12,16 @@ import 'package:open_settings_plus/open_settings_plus.dart';
 
 @RoutePage()
 class NotificationSettingsScreen extends StatefulWidget {
-  const NotificationSettingsScreen({super.key});
+  const NotificationSettingsScreen({
+    super.key,
+    this.getPermission,
+    this.getSettings,
+    this.updateSettings,
+  });
+
+  final Future<NotificationPermissionStatus> Function()? getPermission;
+  final GetNotificationSettings? getSettings;
+  final UpdateNotificationSettings? updateSettings;
 
   @override
   State<NotificationSettingsScreen> createState() =>
@@ -21,34 +30,50 @@ class NotificationSettingsScreen extends StatefulWidget {
 
 class _NotificationSettingsScreenState
     extends State<NotificationSettingsScreen> {
-  final GetNotificationSettings _getSettings = sl<GetNotificationSettings>();
-  final UpdateNotificationSettings _updateSettings =
-      sl<UpdateNotificationSettings>();
+  late final GetNotificationSettings _getSettings;
+  late final UpdateNotificationSettings _updateSettings;
   NotificationSettings? _settings;
   NotificationPermissionStatus _permission =
       NotificationPermissionStatus.notDetermined;
-  bool _loading = true;
+  bool _settingsLoading = true;
+  bool _permissionKnown = false;
   bool _saving = false;
 
   @override
   void initState() {
     super.initState();
+    _getSettings = widget.getSettings ?? sl<GetNotificationSettings>();
+    _updateSettings = widget.updateSettings ?? sl<UpdateNotificationSettings>();
     _load();
   }
 
   Future<void> _load() async {
-    final permission = await NotificationService.instance.checkPermission();
+    // These calls are unrelated; independently reveal whichever completes.
+    await Future.wait([_loadPermission(), _loadServerSettings()]);
+  }
+
+  Future<void> _loadPermission() async {
+    final permission =
+        await (widget.getPermission?.call() ??
+            NotificationService.instance.checkPermission());
+    if (mounted) {
+      setState(() {
+        _permission = permission;
+        _permissionKnown = true;
+      });
+    }
+  }
+
+  Future<void> _loadServerSettings() async {
     final result = await _getSettings();
     if (!mounted) return;
     result.fold(
       (_) => setState(() {
-        _permission = permission;
-        _loading = false;
+        _settingsLoading = false;
       }),
       (settings) => setState(() {
-        _permission = permission;
         _settings = settings;
-        _loading = false;
+        _settingsLoading = false;
       }),
     );
   }
@@ -103,104 +128,110 @@ class _NotificationSettingsScreenState
   @override
   Widget build(BuildContext context) {
     final settings = _settings;
+    final hasServerSettings = settings != null;
+    final display =
+        settings ??
+        const NotificationSettings(
+          pushEnabled: false,
+          messagesEnabled: false,
+          paymentsEnabled: false,
+          bookingsEnabled: false,
+          maintenanceEnabled: false,
+          leasesEnabled: false,
+          generalEnabled: false,
+        );
     return Scaffold(
       appBar: AppBar(title: Text(context.localization.notification_settings)),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : settings == null
-          ? Center(child: Text(context.localization.opps_something_went_wrong))
-          : ListView(
-              children: [
-                if (_permission != NotificationPermissionStatus.granted)
-                  MaterialBanner(
-                    content: Text(
-                      context.localization.notifications_permission_denied,
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: _openSystemSettings,
-                        child: Text(
-                          context.localization.notifications_open_settings,
-                        ),
-                      ),
-                    ],
-                  ),
-                SwitchListTile(
-                  title: Text(context.localization.notifications_push_enabled),
-                  subtitle: Text(
-                    context.localization.notifications_push_description,
-                  ),
-                  value: settings.pushEnabled,
-                  onChanged: _saving
-                      ? null
-                      : (value) => _update(
-                          NotificationSettingsUpdate(pushEnabled: value),
-                          settings.copyWith(pushEnabled: value),
-                        ),
-                ),
-                const Divider(),
-                _categorySwitch(
-                  context,
-                  context.localization.notifications_messages,
-                  settings.messagesEnabled,
-                  settings.pushEnabled,
-                  (value) => _update(
-                    NotificationSettingsUpdate(messagesEnabled: value),
-                    settings.copyWith(messagesEnabled: value),
-                  ),
-                ),
-                _categorySwitch(
-                  context,
-                  context.localization.notifications_payments,
-                  settings.paymentsEnabled,
-                  settings.pushEnabled,
-                  (value) => _update(
-                    NotificationSettingsUpdate(paymentsEnabled: value),
-                    settings.copyWith(paymentsEnabled: value),
-                  ),
-                ),
-                _categorySwitch(
-                  context,
-                  context.localization.notifications_bookings,
-                  settings.bookingsEnabled,
-                  settings.pushEnabled,
-                  (value) => _update(
-                    NotificationSettingsUpdate(bookingsEnabled: value),
-                    settings.copyWith(bookingsEnabled: value),
-                  ),
-                ),
-                _categorySwitch(
-                  context,
-                  context.localization.notifications_maintenance,
-                  settings.maintenanceEnabled,
-                  settings.pushEnabled,
-                  (value) => _update(
-                    NotificationSettingsUpdate(maintenanceEnabled: value),
-                    settings.copyWith(maintenanceEnabled: value),
-                  ),
-                ),
-                _categorySwitch(
-                  context,
-                  context.localization.notifications_leases,
-                  settings.leasesEnabled,
-                  settings.pushEnabled,
-                  (value) => _update(
-                    NotificationSettingsUpdate(leasesEnabled: value),
-                    settings.copyWith(leasesEnabled: value),
-                  ),
-                ),
-                _categorySwitch(
-                  context,
-                  context.localization.notifications_general,
-                  settings.generalEnabled,
-                  settings.pushEnabled,
-                  (value) => _update(
-                    NotificationSettingsUpdate(generalEnabled: value),
-                    settings.copyWith(generalEnabled: value),
-                  ),
+      body: ListView(
+        children: [
+          if (_settingsLoading) const LinearProgressIndicator(minHeight: 2),
+          if (_permissionKnown &&
+              _permission != NotificationPermissionStatus.granted)
+            MaterialBanner(
+              content: Text(
+                context.localization.notifications_permission_denied,
+              ),
+              actions: [
+                TextButton(
+                  onPressed: _openSystemSettings,
+                  child: Text(context.localization.notifications_open_settings),
                 ),
               ],
             ),
+          SwitchListTile(
+            title: Text(context.localization.notifications_push_enabled),
+            subtitle: Text(context.localization.notifications_push_description),
+            value: display.pushEnabled,
+            onChanged: _saving || !hasServerSettings
+                ? null
+                : (value) => _update(
+                    NotificationSettingsUpdate(pushEnabled: value),
+                    display.copyWith(pushEnabled: value),
+                  ),
+          ),
+          const Divider(),
+          _categorySwitch(
+            context,
+            context.localization.notifications_messages,
+            display.messagesEnabled,
+            display.pushEnabled && hasServerSettings,
+            (value) => _update(
+              NotificationSettingsUpdate(messagesEnabled: value),
+              display.copyWith(messagesEnabled: value),
+            ),
+          ),
+          _categorySwitch(
+            context,
+            context.localization.notifications_payments,
+            display.paymentsEnabled,
+            display.pushEnabled && hasServerSettings,
+            (value) => _update(
+              NotificationSettingsUpdate(paymentsEnabled: value),
+              display.copyWith(paymentsEnabled: value),
+            ),
+          ),
+          _categorySwitch(
+            context,
+            context.localization.notifications_bookings,
+            display.bookingsEnabled,
+            display.pushEnabled && hasServerSettings,
+            (value) => _update(
+              NotificationSettingsUpdate(bookingsEnabled: value),
+              display.copyWith(bookingsEnabled: value),
+            ),
+          ),
+          _categorySwitch(
+            context,
+            context.localization.notifications_maintenance,
+            display.maintenanceEnabled,
+            display.pushEnabled && hasServerSettings,
+            (value) => _update(
+              NotificationSettingsUpdate(maintenanceEnabled: value),
+              display.copyWith(maintenanceEnabled: value),
+            ),
+          ),
+          _categorySwitch(
+            context,
+            context.localization.notifications_leases,
+            display.leasesEnabled,
+            display.pushEnabled && hasServerSettings,
+            (value) => _update(
+              NotificationSettingsUpdate(leasesEnabled: value),
+              display.copyWith(leasesEnabled: value),
+            ),
+          ),
+          _categorySwitch(
+            context,
+            context.localization.notifications_general,
+            display.generalEnabled,
+            display.pushEnabled && hasServerSettings,
+            (value) => _update(
+              NotificationSettingsUpdate(generalEnabled: value),
+              display.copyWith(generalEnabled: value),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

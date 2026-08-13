@@ -7,7 +7,9 @@ import 'package:ideal_mobile/presentation/listings/bloc/listings_event.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_state.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filters.dart';
 import 'package:ideal_mobile/presentation/listings/domain/usecases/get_listing_filter_options.dart';
+import 'package:ideal_mobile/presentation/listings/domain/usecases/get_listing_filter_options_cached.dart';
 import 'package:ideal_mobile/presentation/listings/domain/usecases/get_listings.dart';
+import 'package:ideal_mobile/presentation/listings/domain/usecases/get_listings_cached.dart';
 import 'package:ideal_mobile/services/favorites_service.dart';
 import 'package:ideal_mobile/services/performance_monitoring_service.dart';
 import 'package:ideal_mobile/utils/extensions/primitive_types_extensions.dart';
@@ -17,6 +19,8 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
     GetListings? getListings,
     GetListingFilterOptions? getFilterOptions,
     GetListingFilterOptions? getListingFilterOptions,
+    GetListingsCached? getListingsCached,
+    GetListingFilterOptionsCached? getFilterOptionsCached,
     FavoritesService? favoritesService,
     PerformanceMonitoringService? performanceService,
   }) : _getListings = getListings ?? sl<GetListings>(),
@@ -24,6 +28,16 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
            getFilterOptions ??
            getListingFilterOptions ??
            sl<GetListingFilterOptions>(),
+       _getListingsCached =
+           getListingsCached ??
+           (sl.isRegistered<GetListingsCached>()
+               ? sl<GetListingsCached>()
+               : null),
+       _getFilterOptionsCached =
+           getFilterOptionsCached ??
+           (sl.isRegistered<GetListingFilterOptionsCached>()
+               ? sl<GetListingFilterOptionsCached>()
+               : null),
        _favoritesService =
            favoritesService ??
            (sl.isRegistered<FavoritesService>()
@@ -40,6 +54,8 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
 
   final GetListings _getListings;
   final GetListingFilterOptions _getFilterOptions;
+  final GetListingsCached? _getListingsCached;
+  final GetListingFilterOptionsCached? _getFilterOptionsCached;
   final FavoritesService _favoritesService;
   final PerformanceMonitoringService _performanceService;
   Timer? _searchDebounce;
@@ -152,6 +168,26 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
     Emitter<ListingsState> emit,
   ) async {
     _performanceService.startTrace(kTraceApiGetListings);
+    final cached = _getFilterOptionsCached;
+    if (cached != null) {
+      await for (final result in cached()) {
+        result.fold(
+          (failure) => emit(
+            ListingsErrorState(state, errorMessage: failure.errorMessage),
+          ),
+          (event) => emit(
+            ListingFilterOptionsLoadedState(
+              state.copyWith(
+                filterOptions: event.data,
+                // Filter data must not change the feed's cache/stale state.
+              ),
+            ),
+          ),
+        );
+      }
+      _performanceService.stopTrace(kTraceApiGetListings);
+      return;
+    }
     final result = await _getFilterOptions();
     result.fold(
       (failure) {
@@ -210,12 +246,57 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
             hasReachedMax: false,
             isLoadingMore: false,
             clearErrorMessage: true,
+            clearListingRefreshError: true,
           ),
         ),
       );
     }
 
     _performanceService.startTrace(kTraceApiGetListings);
+    final cached = _getListingsCached;
+    if (replaceItems && cached != null) {
+      await for (final result in cached(filters: filters, page: page)) {
+        result.fold(
+          (failure) {
+            _performanceService.putAttribute(
+              kTraceApiGetListings,
+              kTraceAttrError,
+              failure.errorMessage.truncate(100),
+            );
+            emit(
+              ListingsErrorState(
+                state.copyWith(isLoadingMore: false),
+                errorMessage: failure.errorMessage,
+              ),
+            );
+          },
+          (event) {
+            final response = event.data;
+            emit(
+              ListingsLoadedState(
+                state.copyWith(
+                  items: response.items,
+                  filters: filters,
+                  searchQuery: filters.query ?? '',
+                  page: response.pageNumber,
+                  numPages: response.numPages,
+                  count: response.count,
+                  hasReachedMax: response.pageNumber >= response.numPages,
+                  isLoadingMore: false,
+                  dataOrigin: event.origin,
+                  isStale: event.isStale,
+                  listingRefreshError: event.refreshError?.toString(),
+                  clearListingRefreshError: event.refreshError == null,
+                  clearErrorMessage: event.refreshError == null,
+                ),
+              ),
+            );
+          },
+        );
+      }
+      _performanceService.stopTrace(kTraceApiGetListings);
+      return;
+    }
     final result = await _getListings(
       GetListingsParams(filters: filters, page: page),
     );

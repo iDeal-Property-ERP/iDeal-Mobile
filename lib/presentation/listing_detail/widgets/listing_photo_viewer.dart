@@ -1,13 +1,12 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
-import 'package:ideal_mobile/gen/assets.gen.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
 import 'package:ideal_mobile/presentation/listing_detail/domain/entities/listing_detail.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/listing_card_image.dart';
-import 'package:ideal_mobile/utils/app_environment.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
+import 'package:ideal_mobile/widgets/images/prioritized_image_scheduler.dart';
+import 'package:ideal_mobile/widgets/images/tiered_network_image.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:shimmer/shimmer.dart';
@@ -75,7 +74,6 @@ class _ListingPhotoViewerState extends State<ListingPhotoViewer> {
                 pageController: _pageController,
                 itemCount: photos.isEmpty ? 1 : photos.length,
                 backgroundDecoration: const BoxDecoration(color: Colors.black),
-                loadingBuilder: _buildLoadingImage,
                 onPageChanged: _handlePageChanged,
                 builder: (context, index) {
                   if (photos.isEmpty) {
@@ -90,9 +88,20 @@ class _ListingPhotoViewerState extends State<ListingPhotoViewer> {
                     );
                   }
 
-                  return PhotoViewGalleryPageOptions(
-                    imageProvider: _imageProvider(photos[index].imageUrl),
-                    errorBuilder: _buildErrorImage,
+                  return PhotoViewGalleryPageOptions.customChild(
+                    child: TieredNetworkImage(
+                      originalUrl: photos[index].imageUrl,
+                      previewUrl: photos[index].previewUrl,
+                      displayUrl: photos[index].displayUrl,
+                      targetTier: ImageDisplayTier.original,
+                      priority: index == _currentIndex
+                          ? ImageLoadPriority.critical
+                          : ImageLoadPriority.high,
+                      fit: BoxFit.contain,
+                      loadingBuilder: _buildLoadingChild,
+                      errorBuilder: _buildErrorChild,
+                    ),
+                    childSize: constraints.biggest,
                     initialScale: PhotoViewComputedScale.contained,
                     minScale: PhotoViewComputedScale.contained,
                     maxScale: PhotoViewComputedScale.contained * 4,
@@ -216,14 +225,7 @@ class _ListingPhotoViewerState extends State<ListingPhotoViewer> {
     _scaleStateControllers[index].reset();
   }
 
-  ImageProvider _imageProvider(String imageUrl) {
-    if (AppEnvironment.isTestEnvironment) {
-      return AssetImage(Assets.test.images.testImage.path);
-    }
-    return CachedNetworkImageProvider(imageUrl);
-  }
-
-  Widget _buildLoadingImage(BuildContext context, ImageChunkEvent? event) {
+  Widget _buildLoadingChild(BuildContext context) {
     return Shimmer.fromColors(
       baseColor: context.currentTheme.bgNeutralLight100,
       highlightColor: context.currentTheme.bgNeutralLight100.withValues(
@@ -233,11 +235,7 @@ class _ListingPhotoViewerState extends State<ListingPhotoViewer> {
     );
   }
 
-  Widget _buildErrorImage(
-    BuildContext context,
-    Object error,
-    StackTrace? stackTrace,
-  ) {
+  Widget _buildErrorChild(BuildContext context) {
     return ColoredBox(
       color: context.currentTheme.bgNeutralLight100,
       child: Icon(
@@ -324,7 +322,12 @@ class _ViewerThumbStrip extends StatelessWidget {
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(selected ? 6 : 10),
-                  child: ListingCardImage(imageUrl: photos[index].imageUrl),
+                  child: ListingCardImage(
+                    imageUrl: photos[index].imageUrl,
+                    previewUrl: photos[index].previewUrl,
+                    displayUrl: photos[index].displayUrl,
+                    priority: ImageLoadPriority.normal,
+                  ),
                 ),
               ),
             );

@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
+import 'package:ideal_mobile/presentation/booking/booking_intent_service.dart';
 import 'package:ideal_mobile/routes.gr.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 import 'package:ideal_mobile/widgets/app_button/app_button.dart';
@@ -16,8 +17,13 @@ class NextButton extends StatelessWidget {
       foregroundColor: context.currentTheme.textNeutralLight,
       shouldSetFullWidth: true,
       size: AppButtonSize.large,
-      onPressed: () {
-        context.router.replace(const HomeRoute());
+      onPressed: () async {
+        final resumed = await BookingIntentService.resumeAfterAuthentication(
+          context,
+        );
+        if (!resumed && context.mounted) {
+          await context.router.replace(const HomeRoute());
+        }
       },
     );
   }

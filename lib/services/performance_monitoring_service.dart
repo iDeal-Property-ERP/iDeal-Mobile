@@ -40,9 +40,6 @@ class PerformanceMonitoringService {
       case AppFlavor.dev:
         debugPrint('[PerformanceMonitoring] Disabled: dev flavor');
         return false;
-      case AppFlavor.stage:
-        debugPrint('[PerformanceMonitoring] Enabled: stage flavor');
-        return true;
       case AppFlavor.prod:
         debugPrint('[PerformanceMonitoring] Enabled: prod flavor');
         return true;

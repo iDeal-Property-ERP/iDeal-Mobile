@@ -5,6 +5,7 @@ import 'package:ideal_mobile/presentation/listing_detail/domain/entities/listing
 import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_photo_viewer.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/listing_card_image.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
+import 'package:ideal_mobile/widgets/images/prioritized_image_scheduler.dart';
 
 class ListingDetailThumbStrip extends StatelessWidget {
   const ListingDetailThumbStrip({super.key, required this.detail});
@@ -38,7 +39,12 @@ class ListingDetailThumbStrip extends StatelessWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    ListingCardImage(imageUrl: photos[index].imageUrl),
+                    ListingCardImage(
+                      imageUrl: photos[index].imageUrl,
+                      previewUrl: photos[index].previewUrl,
+                      displayUrl: photos[index].displayUrl,
+                      priority: ImageLoadPriority.normal,
+                    ),
                     if (hasMorePhotos)
                       ColoredBox(
                         color: Colors.black.withValues(alpha: 0.50),

@@ -1,3 +1,5 @@
+import 'package:ideal_mobile/presentation/booking/data/models/booking_models.dart';
+import 'package:ideal_mobile/presentation/booking/domain/entities/booking.dart';
 import 'package:ideal_mobile/presentation/listing_detail/domain/entities/listing_detail.dart';
 import 'package:ideal_mobile/utils/typedef.dart';
 
@@ -35,6 +37,7 @@ class ListingDetailModel extends ListingDetail {
     required super.verificationChecklist,
     required super.canMessage,
     required super.contactPhone,
+    required super.booking,
   });
 
   factory ListingDetailModel.fromJson(DataMap json) {
@@ -78,6 +81,7 @@ class ListingDetailModel extends ListingDetail {
       verificationChecklist: _verificationChecklist(verification?['checklist']),
       canMessage: json['can_message'] == true,
       contactPhone: _contactPhone(json['contact_phone']),
+      booking: _bookingEligibility(json['booking']),
     );
   }
 
@@ -118,7 +122,39 @@ class ListingDetailModel extends ListingDetail {
     },
     'can_message': canMessage,
     'contact_phone': contactPhone,
+    'booking': _bookingToJson(booking),
   };
+}
+
+BookingEligibility _bookingEligibility(dynamic value) {
+  final json = _mapValue(value);
+  return json == null
+      ? const BookingEligibility.ineligible()
+      : BookingEligibilityModel.fromJson(json);
+}
+
+DataMap _bookingToJson(BookingEligibility booking) => {
+  'eligible': booking.eligible,
+  'reason': booking.reason,
+  'minimum_stay_months': booking.minimumStayMonths,
+  'earliest_start_date': _dateOrNull(booking.earliestStartDate),
+  'latest_end_date': _dateOrNull(booking.latestEndDate),
+  'blocked_ranges': booking.blockedRanges
+      .map(
+        (range) => {
+          'start_date': _dateOrNull(range.startDate),
+          'end_date': _dateOrNull(range.endDate),
+        },
+      )
+      .toList(growable: false),
+  'providers': booking.providers.map((provider) => provider.name).toList(),
+};
+
+String? _dateOrNull(DateTime? value) {
+  if (value == null) return null;
+  return '${value.year.toString().padLeft(4, '0')}-'
+      '${value.month.toString().padLeft(2, '0')}-'
+      '${value.day.toString().padLeft(2, '0')}';
 }
 
 List<ListingPhoto> _photos(dynamic value) {
@@ -130,6 +166,8 @@ List<ListingPhoto> _photos(dynamic value) {
         return ListingPhoto(
           id: _requiredInt(json, 'id'),
           imageUrl: _requiredString(json, 'image_url'),
+          previewUrl: _nullableString(json['preview_url']),
+          displayUrl: _nullableString(json['display_url']),
           caption: _nullableString(json['caption']),
           isPrimary: _requiredBool(json, 'is_primary'),
           sortOrder: _requiredInt(json, 'sort_order'),
@@ -197,6 +235,8 @@ DataMap _nestedMap(dynamic value, String name) {
 DataMap _photoToJson(ListingPhoto photo) => {
   'id': photo.id,
   'image_url': photo.imageUrl,
+  'preview_url': photo.previewUrl,
+  'display_url': photo.displayUrl,
   'caption': photo.caption,
   'is_primary': photo.isPrimary,
   'sort_order': photo.sortOrder,

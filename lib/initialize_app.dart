@@ -13,7 +13,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:ideal_mobile/core/services/injection_container.dart';
 import 'package:ideal_mobile/firebase_options_dev.dart' as dev;
 import 'package:ideal_mobile/firebase_options_prod.dart' as prod;
-import 'package:ideal_mobile/firebase_options_stage.dart' as stage;
 import 'package:ideal_mobile/services/ai/gemini_service.dart';
 import 'package:ideal_mobile/services/firebase_auth_services.dart';
 import 'package:ideal_mobile/services/mapkit_service.dart';
@@ -41,7 +40,6 @@ Future<void> initializeApp({
     AppFlavor.local ||
     AppFlavor.dev => dev.DefaultFirebaseOptions.currentPlatform,
     AppFlavor.prod => prod.DefaultFirebaseOptions.currentPlatform,
-    AppFlavor.stage => stage.DefaultFirebaseOptions.currentPlatform,
   };
 
   await Firebase.initializeApp(options: firebaseOptions);

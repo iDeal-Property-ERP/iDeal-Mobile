@@ -361,6 +361,9 @@ void main() {
       markRead: markRead,
       sendText: sendText,
     );
+    _stubInitial(getConversation, getMessages, markRead);
+    bloc.add(const ChatConversationStarted());
+    await Future<void>.delayed(Duration.zero);
     bloc.add(const ChatConversationDraftChanged('hello'));
     bloc.add(const ChatConversationTextSent());
     await Future<void>.delayed(Duration.zero);
@@ -398,6 +401,9 @@ void main() {
       markRead: markRead,
       sendText: sendText,
     );
+    _stubInitial(getConversation, getMessages, markRead);
+    bloc.add(const ChatConversationStarted());
+    await Future<void>.delayed(Duration.zero);
     bloc.add(const ChatConversationDraftChanged('retry me'));
     bloc.add(const ChatConversationTextSent());
     await Future<void>.delayed(Duration.zero);
@@ -409,6 +415,76 @@ void main() {
 
     expect(clientIds, [clientId, clientId]);
     expect(bloc.state.pending, isEmpty);
+    await bloc.close();
+  });
+
+  test(
+    'reveals messages before slow metadata and keeps sending gated',
+    () async {
+      final getConversation = MockGetConversation();
+      final getMessages = MockGetMessages();
+      final markRead = MockMarkConversationRead();
+      final sendText = MockSendTextMessage();
+      final metadata = Completer<Either<Failure, ChatConversation>>();
+      when(() => getConversation(any())).thenAnswer((_) => metadata.future);
+      when(() => getMessages(any())).thenAnswer(
+        (_) async =>
+            Right<Failure, ChatMessagesPage>(_page(messages: [_message()])),
+      );
+      when(() => markRead(any())).thenAnswer(
+        (_) async => Right<Failure, ChatConversationStateModel>(
+          ChatConversationStateModel.fromJson(conversationStateJson()),
+        ),
+      );
+      final bloc = _buildBloc(
+        getConversation: getConversation,
+        getMessages: getMessages,
+        markRead: markRead,
+        sendText: sendText,
+      );
+      bloc.add(const ChatConversationStarted());
+      await Future<void>.delayed(Duration.zero);
+      expect(bloc.state.messages, hasLength(1));
+      expect(bloc.state.metadataConfirmed, isFalse);
+      bloc.add(const ChatConversationTextSent('blocked'));
+      await Future<void>.delayed(Duration.zero);
+      verifyNever(() => sendText(any()));
+      metadata.complete(Right(_conversation()));
+      await Future<void>.delayed(Duration.zero);
+      expect(bloc.state.metadataConfirmed, isTrue);
+      await bloc.close();
+    },
+  );
+
+  test('keeps successful messages visible when metadata fails', () async {
+    final getConversation = MockGetConversation();
+    final getMessages = MockGetMessages();
+    final markRead = MockMarkConversationRead();
+    when(() => getConversation(any())).thenAnswer(
+      (_) async => const Left<Failure, ChatConversation>(
+        APIFailure(message: 'metadata offline', statusCode: 0),
+      ),
+    );
+    when(() => getMessages(any())).thenAnswer(
+      (_) async =>
+          Right<Failure, ChatMessagesPage>(_page(messages: [_message()])),
+    );
+    when(() => markRead(any())).thenAnswer(
+      (_) async => Right<Failure, ChatConversationStateModel>(
+        ChatConversationStateModel.fromJson(conversationStateJson()),
+      ),
+    );
+    final bloc = _buildBloc(
+      getConversation: getConversation,
+      getMessages: getMessages,
+      markRead: markRead,
+    );
+    bloc.add(const ChatConversationStarted());
+    await Future<void>.delayed(Duration.zero);
+    await Future<void>.delayed(Duration.zero);
+    expect(bloc.state.messages, hasLength(1));
+    expect(bloc.state.metadataConfirmed, isFalse);
+    expect(bloc.state.canSend, isFalse);
     await bloc.close();
   });
 }

@@ -66,6 +66,18 @@ void main() {
     expect(model.mapLon, isNull);
   });
 
+  test('retains nullable responsive image variants with legacy original', () {
+    final model = ListingCardModel.fromJson({
+      ...json,
+      'cover_preview_url': 'https://example.com/preview.jpg',
+      'cover_display_url': 'https://example.com/display.jpg',
+    });
+
+    expect(model.coverImageUrl, 'https://example.com/photo.jpg');
+    expect(model.coverPreviewUrl, 'https://example.com/preview.jpg');
+    expect(model.coverDisplayUrl, 'https://example.com/display.jpg');
+  });
+
   test('coerces string numeric values defensively', () {
     final model = ListingCardModel.fromJson({
       ...json,

@@ -6,6 +6,8 @@ import 'package:ideal_mobile/i18n/localization.dart';
 import 'package:ideal_mobile/presentation/listing_detail/bloc/listing_detail_bloc.dart';
 import 'package:ideal_mobile/presentation/listing_detail/bloc/listing_detail_event.dart';
 import 'package:ideal_mobile/presentation/listing_detail/domain/entities/listing_detail.dart';
+import 'package:ideal_mobile/presentation/booking/domain/entities/booking.dart';
+import 'package:ideal_mobile/presentation/listings/domain/entities/listing_card.dart';
 import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_about.dart';
 import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_amenities.dart';
 import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_bottom_bar.dart';
@@ -38,8 +40,14 @@ class ListingDetailBody extends StatelessWidget {
     final detail = context.select<ListingDetailBloc, ListingDetail?>(
       (bloc) => bloc.state.detail,
     );
+    final preview = context.select<ListingDetailBloc, ListingCard?>(
+      (bloc) => bloc.state.preview,
+    );
+    final isFreshDetail = context.select<ListingDetailBloc, bool>(
+      (bloc) => bloc.state.isFreshDetail,
+    );
 
-    if (isLoading) {
+    if (isLoading && detail == null && preview == null) {
       return Scaffold(
         key: keys.listingDetail.screen,
         backgroundColor: context.currentTheme.bgSurfaceBase,
@@ -47,7 +55,7 @@ class ListingDetailBody extends StatelessWidget {
       );
     }
 
-    if (errorMessage != null) {
+    if (errorMessage != null && detail == null && preview == null) {
       return Scaffold(
         key: keys.listingDetail.screen,
         backgroundColor: context.currentTheme.bgSurfaceBase,
@@ -60,7 +68,8 @@ class ListingDetailBody extends StatelessWidget {
       );
     }
 
-    if (detail == null) {
+    final visibleDetail = detail ?? _previewDetail(preview);
+    if (visibleDetail == null) {
       return Scaffold(
         key: keys.listingDetail.screen,
         backgroundColor: context.currentTheme.bgSurfaceBase,
@@ -73,8 +82,35 @@ class ListingDetailBody extends StatelessWidget {
       backgroundColor: context.currentTheme.bgSurfaceBase,
       body: Column(
         children: [
-          Expanded(child: _buildScrollContent(context, detail)),
-          ListingDetailBottomBar(detail: detail),
+          Expanded(
+            child: Stack(
+              children: [
+                _buildScrollContent(context, visibleDetail),
+                if (isLoading && !isFreshDetail)
+                  const Positioned(
+                    top: 8,
+                    right: 16,
+                    child: SizedBox.square(
+                      dimension: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  ),
+                if (errorMessage != null)
+                  Positioned(
+                    right: 16,
+                    bottom: 12,
+                    child: TextButton(
+                      onPressed: () => _retry(context, visibleDetail),
+                      child: Text(context.localization.listing_detail_retry),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          ListingDetailBottomBar(
+            detail: visibleDetail,
+            actionsEnabled: isFreshDetail,
+          ),
         ],
       ),
     );
@@ -86,6 +122,17 @@ class ListingDetailBody extends StatelessWidget {
       const SizedBox(height: 14),
       ListingDetailSpecChips(detail: detail),
     ];
+
+    if (!context.read<ListingDetailBloc>().state.isFreshDetail) {
+      // Feed cards intentionally lack these detail-only fields. Keep their
+      // space stable while an authoritative response is pending.
+      sections.addAll(const [
+        SizedBox(height: 14),
+        _PreviewSectionPlaceholder(),
+        SizedBox(height: 14),
+        _PreviewSectionPlaceholder(lines: 2),
+      ]);
+    }
 
     if (detail.verificationIsVerified &&
         detail.verificationChecklist.isNotEmpty) {
@@ -195,4 +242,70 @@ class ListingDetailBody extends StatelessWidget {
 
     return currency == 'USD' ? '\$$value' : '$value $currency';
   }
+
+  ListingDetail? _previewDetail(ListingCard? card) {
+    if (card == null) return null;
+    return ListingDetail(
+      id: card.id,
+      propertyId: card.propertyId,
+      title: card.title,
+      district: card.district,
+      address: card.address,
+      propertyType: card.propertyType,
+      rooms: card.rooms,
+      areaSqm: card.areaSqm,
+      floor: card.floor,
+      totalFloors: card.totalFloors,
+      furnishing: card.furnishing,
+      price: card.price,
+      currency: card.currency,
+      tariff: card.tariff,
+      isVerified: card.isVerified,
+      isFeatured: card.isFeatured,
+      score: card.score,
+      reviewCount: card.reviewCount,
+      mapLat: card.mapLat,
+      mapLon: card.mapLon,
+      description: null,
+      depositAmount: null,
+      minimumStay: null,
+      priceIncludes: const [],
+      responseTime: '',
+      createdAt: DateTime.fromMillisecondsSinceEpoch(0),
+      photos: card.coverImageUrl == null
+          ? const []
+          : [
+              ListingPhoto(
+                id: -card.id,
+                imageUrl: card.coverImageUrl!,
+                previewUrl: card.coverPreviewUrl,
+                displayUrl: card.coverDisplayUrl,
+                caption: null,
+                isPrimary: true,
+                sortOrder: 0,
+              ),
+            ],
+      amenities: const [],
+      verificationIsVerified: false,
+      verificationChecklist: const [],
+      canMessage: false,
+      contactPhone: null,
+      booking: const BookingEligibility.ineligible(),
+    );
+  }
+}
+
+class _PreviewSectionPlaceholder extends StatelessWidget {
+  const _PreviewSectionPlaceholder({this.lines = 3});
+
+  final int lines;
+
+  @override
+  Widget build(BuildContext context) => DecoratedBox(
+    decoration: BoxDecoration(
+      color: context.currentTheme.bgSurfaceBase2,
+      borderRadius: BorderRadius.circular(12),
+    ),
+    child: SizedBox(height: 18.0 * lines + 22),
+  );
 }

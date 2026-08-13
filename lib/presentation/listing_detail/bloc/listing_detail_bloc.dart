@@ -4,12 +4,15 @@ import 'package:ideal_mobile/core/services/injection_container.dart';
 import 'package:ideal_mobile/presentation/listing_detail/bloc/listing_detail_event.dart';
 import 'package:ideal_mobile/presentation/listing_detail/bloc/listing_detail_state.dart';
 import 'package:ideal_mobile/presentation/listing_detail/domain/usecases/get_listing_detail.dart';
+import 'package:ideal_mobile/presentation/listing_detail/domain/usecases/get_listing_detail_cached.dart';
 import 'package:ideal_mobile/services/performance_monitoring_service.dart';
+import 'package:ideal_mobile/utils/cache_manager.dart';
 import 'package:ideal_mobile/utils/extensions/primitive_types_extensions.dart';
 
 class ListingDetailBloc extends Bloc<ListingDetailEvent, ListingDetailState> {
   ListingDetailBloc({
     GetListingDetail? getListingDetail,
+    GetListingDetailCached? getListingDetailCached,
     PerformanceMonitoringService? performanceService,
   }) : _getListingDetail = getListingDetail ?? sl<GetListingDetail>(),
        _performanceService =
@@ -17,6 +20,11 @@ class ListingDetailBloc extends Bloc<ListingDetailEvent, ListingDetailState> {
            (sl.isRegistered<PerformanceMonitoringService>()
                ? sl<PerformanceMonitoringService>()
                : PerformanceMonitoringService()),
+       _getListingDetailCached =
+           getListingDetailCached ??
+           (sl.isRegistered<GetListingDetailCached>()
+               ? sl<GetListingDetailCached>()
+               : null),
        super(const ListingDetailState.initial()) {
     on<LoadListingDetailEvent>(_onLoadListingDetailEvent);
     on<RetryListingDetailEvent>(_onRetryListingDetailEvent);
@@ -24,12 +32,17 @@ class ListingDetailBloc extends Bloc<ListingDetailEvent, ListingDetailState> {
   }
 
   final GetListingDetail _getListingDetail;
+  final GetListingDetailCached? _getListingDetailCached;
   final PerformanceMonitoringService _performanceService;
 
   Future<void> _onLoadListingDetailEvent(
     LoadListingDetailEvent event,
     Emitter<ListingDetailState> emit,
   ) {
+    final seed = event.initialListing;
+    if (seed != null && seed.id == event.id) {
+      emit(state.copyWith(preview: seed, isFreshDetail: false));
+    }
     return _loadListingDetail(id: event.id, emit: emit);
   }
 
@@ -52,6 +65,33 @@ class ListingDetailBloc extends Bloc<ListingDetailEvent, ListingDetailState> {
     required Emitter<ListingDetailState> emit,
   }) async {
     emit(ListingDetailLoadingState(state));
+    final cached = _getListingDetailCached;
+    if (cached != null) {
+      await for (final result in cached(id: id)) {
+        if (isClosed) return;
+        result.fold(
+          (failure) => emit(
+            ListingDetailErrorState(state, errorMessage: failure.errorMessage),
+          ),
+          (event) {
+            if (event.data.id != id) return;
+            if (event.origin == PublicDataOrigin.fresh) {
+              emit(ListingDetailLoadedState(state, detail: event.data));
+            } else {
+              emit(
+                state.copyWith(
+                  detail: event.data,
+                  isLoading: false,
+                  isFreshDetail: false,
+                  errorMessage: event.refreshError?.toString(),
+                ),
+              );
+            }
+          },
+        );
+      }
+      return;
+    }
     _performanceService.startTrace(kTraceApiGetListingDetail);
     final result = await _getListingDetail(GetListingDetailParams(id: id));
 

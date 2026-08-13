@@ -53,22 +53,18 @@ class HomeScreenWrapper extends StatefulWidget {
 
 class HomeScreenWrapperState extends State<HomeScreenWrapper> {
   final GlobalKey bottomNavKey = GlobalKey();
-  late final ChatsBloc _chatsBloc;
+  ChatsBloc? _chatsBloc;
   late final ChatBadgeCubit _chatBadgeCubit;
   bool _ownsChatsBloc = false;
   bool _chatPollingActive = false;
+  late final List<Widget?> _pages;
 
   @override
   void initState() {
     super.initState();
-    final chatsBloc = widget.chatsBloc;
-    if (chatsBloc == null) {
-      _chatsBloc = ChatsBloc();
-      _ownsChatsBloc = true;
-    } else {
-      _chatsBloc = chatsBloc;
-    }
+    _chatsBloc = widget.chatsBloc;
     _chatBadgeCubit = widget.chatBadgeCubit ?? sl<ChatBadgeCubit>();
+    _pages = [HomeScreenBody(bottomNavKey: bottomNavKey), null, null];
     if (!AppEnvironment.isTestEnvironment) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         sl<InAppReviewService>().requestReviewIfEligible();
@@ -81,31 +77,41 @@ class HomeScreenWrapperState extends State<HomeScreenWrapper> {
     if (shouldPoll == _chatPollingActive) return;
 
     _chatPollingActive = shouldPoll;
-    _chatsBloc.add(shouldPoll ? const ChatsStarted() : const ChatsStopped());
+    final bloc = _chatsBloc;
+    if (bloc == null) return;
+    bloc.add(shouldPoll ? const ChatsStarted() : const ChatsStopped());
+  }
+
+  ChatsBloc _chatBloc() {
+    final existing = _chatsBloc;
+    if (existing != null) return existing;
+    final created = ChatsBloc();
+    _chatsBloc = created;
+    _ownsChatsBloc = true;
+    return created;
   }
 
   @override
   void dispose() {
     if (_chatPollingActive) {
-      _chatsBloc.add(const ChatsStopped());
+      _chatsBloc?.add(const ChatsStopped());
     }
-    if (_ownsChatsBloc) unawaited(_chatsBloc.close());
+    if (_ownsChatsBloc) unawaited(_chatsBloc?.close() ?? Future.value());
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> pages = [
-      HomeScreenBody(bottomNavKey: bottomNavKey),
-      ChatsScreen(bloc: _chatsBloc),
-      const ProfileScreen(),
-    ];
-
     final int currentIndex = context.select<HomeBloc, int>(
       (bloc) => bloc.state.currentBottomNavIndex,
     );
+    _pages[currentIndex] ??= switch (currentIndex) {
+      1 => ChatsScreen(bloc: _chatBloc()),
+      2 => const ProfileScreen(),
+      _ => HomeScreenBody(bottomNavKey: bottomNavKey),
+    };
     _syncChatPolling(currentIndex);
-    final String screenName = pages[currentIndex].runtimeType.toString();
+    final String screenName = _pages[currentIndex]!.runtimeType.toString();
     Clarity.setCurrentScreenName(screenName);
 
     return PopScope(
@@ -124,7 +130,10 @@ class HomeScreenWrapperState extends State<HomeScreenWrapper> {
         ),
         floatingActionButton: const AiChatFab(),
         body: SafeArea(
-          child: IndexedStack(index: currentIndex, children: pages),
+          child: IndexedStack(
+            index: currentIndex,
+            children: _pages.map((page) => page ?? const SizedBox()).toList(),
+          ),
         ),
       ),
     );

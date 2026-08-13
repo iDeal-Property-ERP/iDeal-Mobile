@@ -1315,6 +1315,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get listings_retry => 'Retry';
 
   @override
+  String get listings_showing_saved => 'Showing saved listings. Pull to retry.';
+
+  @override
   String get listings_anywhere => 'Anywhere';
 
   @override
@@ -1439,4 +1442,128 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ai_chat_suggestion_support => 'Contact support';
+
+  @override
+  String get booking_keys => '======== BOOKING KEYS ========';
+
+  @override
+  String get booking_book_and_pay => 'Book & pay';
+
+  @override
+  String get booking_title => 'Book this home';
+
+  @override
+  String get booking_status_title => 'Booking status';
+
+  @override
+  String get booking_choose_dates => 'Choose your stay';
+
+  @override
+  String get booking_dates_inclusive =>
+      'Your start and end dates are both included.';
+
+  @override
+  String get booking_select_dates => 'Select dates';
+
+  @override
+  String get booking_choose_start_date => 'Choose a start date';
+
+  @override
+  String get booking_choose_end_date => 'Choose an end date';
+
+  @override
+  String booking_months(int count) {
+    return '$count months';
+  }
+
+  @override
+  String get booking_range_unavailable =>
+      'That period is not available. Choose different dates.';
+
+  @override
+  String get booking_get_quote => 'Get price';
+
+  @override
+  String get booking_price_summary => 'Price summary';
+
+  @override
+  String get booking_deposit => 'Deposit';
+
+  @override
+  String get booking_rent => 'Rent';
+
+  @override
+  String get booking_total_due_now => 'Total due now';
+
+  @override
+  String get booking_pay_full_stay => 'Pay rent for the full stay';
+
+  @override
+  String get booking_pay_full_stay_note =>
+      'Off by default. Otherwise only the first rental period is charged now.';
+
+  @override
+  String get booking_payment_method => 'Payment method';
+
+  @override
+  String get booking_continue_to_payment => 'Continue to secure payment';
+
+  @override
+  String get booking_preparing_checkout => 'Preparing payment…';
+
+  @override
+  String get booking_hosted_payment_note =>
+      'Payment opens securely in your browser. Return here to check the verified result.';
+
+  @override
+  String get booking_checkout_launch_failed =>
+      'Could not open the secure payment page.';
+
+  @override
+  String get booking_check_status => 'Check payment status';
+
+  @override
+  String get booking_pending_title => 'Checking your payment';
+
+  @override
+  String get booking_pending_message =>
+      'The provider is still processing it. We will confirm only after the backend verifies the payment.';
+
+  @override
+  String get booking_confirmed_title => 'Booking confirmed';
+
+  @override
+  String get booking_confirmed_message =>
+      'Your dates are secured. Your lease is ready for the next signing step.';
+
+  @override
+  String get booking_failed_title => 'Payment failed';
+
+  @override
+  String get booking_failed_message =>
+      'The home was not booked. You can return and start a new payment.';
+
+  @override
+  String get booking_expired_title => 'Payment expired';
+
+  @override
+  String get booking_expired_message =>
+      'The temporary hold was released. Choose the dates again to continue.';
+
+  @override
+  String get booking_review_title => 'Payment needs review';
+
+  @override
+  String get booking_review_message =>
+      'Our finance team must review this payment. Do not pay again until support contacts you.';
+
+  @override
+  String get booking_unavailable => 'Direct booking is unavailable';
+
+  @override
+  String get booking_return_unverified =>
+      'We could not match this return link to an active checkout. The link itself is not proof of payment.';
+
+  @override
+  String get booking_back_home => 'Back to home';
 }

@@ -22,6 +22,8 @@ class ListingCardModel extends ListingCard {
     required super.score,
     required super.reviewCount,
     required super.coverImageUrl,
+    super.coverPreviewUrl,
+    super.coverDisplayUrl,
     required super.mapLat,
     required super.mapLon,
   });
@@ -47,34 +49,41 @@ class ListingCardModel extends ListingCard {
       score: _requiredDouble(json, 'score'),
       reviewCount: _requiredInt(json, 'review_count'),
       coverImageUrl: _nullableString(json['cover_image_url']),
+      coverPreviewUrl: _nullableString(json['cover_preview_url']),
+      coverDisplayUrl: _nullableString(json['cover_display_url']),
       mapLat: _nullableDouble(json['map_lat']),
       mapLon: _nullableDouble(json['map_lon']),
     );
   }
 
-  DataMap toJson() => {
-    'id': id,
-    'property_id': propertyId,
-    'title': title,
-    'district': district,
-    'address': address,
-    'property_type': propertyType,
-    'rooms': rooms,
-    'area_sqm': areaSqm,
-    'floor': floor,
-    'total_floors': totalFloors,
-    'furnishing': furnishing,
-    'price': price,
-    'currency': currency,
-    'tariff': tariff,
-    'is_verified': isVerified,
-    'is_featured': isFeatured,
-    'score': score,
-    'review_count': reviewCount,
-    'cover_image_url': coverImageUrl,
-    'map_lat': mapLat,
-    'map_lon': mapLon,
-  };
+  DataMap toJson() {
+    final result = <String, dynamic>{
+      'id': id,
+      'property_id': propertyId,
+      'title': title,
+      'district': district,
+      'address': address,
+      'property_type': propertyType,
+      'rooms': rooms,
+      'area_sqm': areaSqm,
+      'floor': floor,
+      'total_floors': totalFloors,
+      'furnishing': furnishing,
+      'price': price,
+      'currency': currency,
+      'tariff': tariff,
+      'is_verified': isVerified,
+      'is_featured': isFeatured,
+      'score': score,
+      'review_count': reviewCount,
+      'cover_image_url': coverImageUrl,
+      'map_lat': mapLat,
+      'map_lon': mapLon,
+    };
+    if (coverPreviewUrl != null) result['cover_preview_url'] = coverPreviewUrl;
+    if (coverDisplayUrl != null) result['cover_display_url'] = coverDisplayUrl;
+    return result;
+  }
 }
 
 String _requiredString(DataMap json, String key) {

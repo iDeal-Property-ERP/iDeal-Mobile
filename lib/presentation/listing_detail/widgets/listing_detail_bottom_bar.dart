@@ -5,6 +5,8 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
 import 'package:ideal_mobile/constants/integration_test_keys.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
+import 'package:ideal_mobile/presentation/booking/booking_intent_service.dart';
+import 'package:ideal_mobile/presentation/booking/domain/entities/booking.dart';
 import 'package:ideal_mobile/presentation/chat/bloc/open_conversation_cubit.dart';
 import 'package:ideal_mobile/presentation/listing_detail/domain/entities/listing_detail.dart';
 import 'package:ideal_mobile/routes.gr.dart';
@@ -21,14 +23,21 @@ class ListingDetailBottomBar extends StatelessWidget {
   const ListingDetailBottomBar({
     super.key,
     required this.detail,
+    this.actionsEnabled = true,
     this.openConversationCubit,
+    this.onBook,
   });
 
   final ListingDetail detail;
+
+  /// Preview details are display-only until the authoritative detail arrives.
+  final bool actionsEnabled;
   final OpenConversationCubit? openConversationCubit;
+  final VoidCallback? onBook;
 
   @override
   Widget build(BuildContext context) {
+    final canBook = actionsEnabled && detail.booking.eligible;
     return DecoratedBox(
       decoration: BoxDecoration(
         color: context.currentTheme.bgSurfaceBase2,
@@ -63,6 +72,18 @@ class ListingDetailBottomBar extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 16),
+              if (canBook) ...[
+                AppButton(
+                  key: keys.listingDetail.bookButton,
+                  size: AppButtonSize.large,
+                  label: context.localization.booking_book_and_pay,
+                  leftIcon: TablerIcons.calendar_check,
+                  shouldSetFullWidth: true,
+                  borderRadius: 12,
+                  onPressed: onBook ?? () => _openBooking(context),
+                ),
+                const SizedBox(height: 10),
+              ],
               Row(
                 children: [
                   Expanded(
@@ -88,6 +109,21 @@ class ListingDetailBottomBar extends StatelessWidget {
     );
   }
 
+  Future<void> _openBooking(BuildContext context) async {
+    if (!await GuestAccessService.hasAuthenticatedSession()) {
+      await GuestAccessService.requireAuthentication(
+        context,
+        onAuthenticationRequired: () => BookingIntentService.save(detail.id),
+      );
+      return;
+    }
+    if (!context.mounted) return;
+    final options = _initialOptions();
+    await context.pushRoute(
+      BookingRoute(listingId: detail.id, initialOptions: options),
+    );
+  }
+
   Future<void> _openConversation(BuildContext context) async {
     if (!await GuestAccessService.requireAuthentication(context)) return;
     if (!context.mounted) return;
@@ -96,7 +132,7 @@ class ListingDetailBottomBar extends StatelessWidget {
   }
 
   Widget _messageButton(BuildContext context) {
-    if (!detail.canMessage) {
+    if (!actionsEnabled || !detail.canMessage) {
       return _buildMessageButton(context, isEnabled: false, isLoading: false);
     }
 
@@ -140,7 +176,9 @@ class ListingDetailBottomBar extends StatelessWidget {
           : context.localization.listing_detail_message_unavailable,
       child: AppButton(
         key: keys.listingDetail.messageButton,
-        style: AppButtonStyle.primary,
+        style: detail.booking.eligible
+            ? AppButtonStyle.secondary
+            : AppButtonStyle.primary,
         size: AppButtonSize.large,
         label: context.localization.listing_detail_message,
         leftIcon: TablerIcons.message,
@@ -148,10 +186,10 @@ class ListingDetailBottomBar extends StatelessWidget {
         borderRadius: 12,
         state: canMessage ? AppButtonState.normal : AppButtonState.disabled,
         isLoading: isLoading,
-        foregroundColor: canMessage
+        foregroundColor: canMessage && !detail.booking.eligible
             ? context.currentTheme.textNeutralWhite
             : null,
-        backgroundColor: canMessage
+        backgroundColor: canMessage && !detail.booking.eligible
             ? context.currentTheme.bgBrandDefault
             : null,
         onPressed: isEnabled
@@ -184,6 +222,21 @@ class ListingDetailBottomBar extends StatelessWidget {
 
   bool _isLoading(OpenConversationState state) =>
       state.status == OpenConversationStatus.loading;
+
+  BookingOptions? _initialOptions() {
+    final rent = detail.price;
+    final deposit = detail.depositAmount;
+    if (rent == null || deposit == null || !detail.booking.eligible) {
+      return null;
+    }
+    return BookingOptions(
+      listingId: detail.id,
+      monthlyRent: rent,
+      depositAmount: deposit,
+      currency: detail.currency,
+      eligibility: detail.booking,
+    );
+  }
 }
 
 class _CallButton extends StatelessWidget {

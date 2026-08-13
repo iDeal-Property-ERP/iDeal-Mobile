@@ -1,5 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
+import 'package:dartz/dartz.dart';
+import 'package:ideal_mobile/core/errors/failure.dart';
+import 'package:ideal_mobile/presentation/chat/domain/entities/chat_conversation.dart';
+import 'package:ideal_mobile/presentation/chat/domain/entities/chat_messages_page.dart';
 
 sealed class ListingChatConversationEvent extends Equatable {
   const ListingChatConversationEvent();
@@ -10,6 +14,17 @@ sealed class ListingChatConversationEvent extends Equatable {
 
 class ChatConversationStarted extends ListingChatConversationEvent {
   const ChatConversationStarted();
+}
+
+class ChatConversationMetadataLoaded extends ListingChatConversationEvent {
+  const ChatConversationMetadataLoaded(this.result);
+  final Either<Failure, ChatConversation> result;
+}
+
+class ChatConversationInitialMessagesLoaded
+    extends ListingChatConversationEvent {
+  const ChatConversationInitialMessagesLoaded(this.result);
+  final Either<Failure, ChatMessagesPage> result;
 }
 
 class ChatConversationStopped extends ListingChatConversationEvent {

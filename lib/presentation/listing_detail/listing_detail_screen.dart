@@ -7,20 +7,32 @@ import 'package:ideal_mobile/presentation/listing_detail/bloc/listing_detail_blo
 import 'package:ideal_mobile/presentation/listing_detail/bloc/listing_detail_event.dart';
 import 'package:ideal_mobile/presentation/listing_detail/bloc/listing_detail_state.dart';
 import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_body.dart';
+import 'package:ideal_mobile/presentation/listings/domain/entities/listing_card.dart';
 import 'package:ideal_mobile/utils/extensions/build_context_ext.dart';
 
 @RoutePage()
 class ListingDetailScreen extends StatelessWidget {
-  const ListingDetailScreen({super.key, required this.listingId});
+  const ListingDetailScreen({
+    super.key,
+    @PathParam('listingId') required this.listingId,
+    this.initialListing,
+  });
 
   final int listingId;
+  final ListingCard? initialListing;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<ListingDetailBloc>(
-      create: (_) =>
-          ListingDetailBloc(getListingDetail: sl())
-            ..add(LoadListingDetailEvent(listingId)),
+      create: (_) => ListingDetailBloc(getListingDetail: sl())
+        ..add(
+          LoadListingDetailEvent(
+            listingId,
+            initialListing: initialListing?.id == listingId
+                ? initialListing
+                : null,
+          ),
+        ),
       child: BlocListener<ListingDetailBloc, ListingDetailState>(
         listener: _listenStateChanged,
         child: ListingDetailBody(listingId: listingId),

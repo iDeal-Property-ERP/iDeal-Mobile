@@ -1,9 +1,12 @@
 import 'package:equatable/equatable.dart';
+import 'package:ideal_mobile/presentation/booking/domain/entities/booking.dart';
 
 class ListingPhoto extends Equatable {
   const ListingPhoto({
     required this.id,
     required this.imageUrl,
+    this.previewUrl,
+    this.displayUrl,
     required this.caption,
     required this.isPrimary,
     required this.sortOrder,
@@ -11,12 +14,24 @@ class ListingPhoto extends Equatable {
 
   final int id;
   final String imageUrl;
+
+  /// The original URL is retained in [imageUrl] for legacy and fullscreen.
+  final String? previewUrl;
+  final String? displayUrl;
   final String? caption;
   final bool isPrimary;
   final int sortOrder;
 
   @override
-  List<Object?> get props => [id, imageUrl, caption, isPrimary, sortOrder];
+  List<Object?> get props => [
+    id,
+    imageUrl,
+    previewUrl,
+    displayUrl,
+    caption,
+    isPrimary,
+    sortOrder,
+  ];
 }
 
 class ListingAmenity extends Equatable {
@@ -78,6 +93,7 @@ class ListingDetail extends Equatable {
     required this.verificationChecklist,
     required this.canMessage,
     required this.contactPhone,
+    required this.booking,
   });
 
   final int id;
@@ -112,6 +128,7 @@ class ListingDetail extends Equatable {
   final List<VerificationItem> verificationChecklist;
   final bool canMessage;
   final String? contactPhone;
+  final BookingEligibility booking;
 
   String? get coverImageUrl => photos.isEmpty ? null : photos.first.imageUrl;
 
@@ -149,5 +166,6 @@ class ListingDetail extends Equatable {
     verificationChecklist,
     canMessage,
     contactPhone,
+    booking,
   ];
 }

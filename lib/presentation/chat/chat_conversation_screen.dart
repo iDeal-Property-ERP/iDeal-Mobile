@@ -8,6 +8,7 @@ import 'package:ideal_mobile/presentation/chat/bloc/listing_chat_conversation_bl
 import 'package:ideal_mobile/presentation/chat/bloc/listing_chat_conversation_event.dart';
 import 'package:ideal_mobile/presentation/chat/bloc/listing_chat_conversation_state.dart';
 import 'package:ideal_mobile/presentation/chat/domain/entities/chat_message.dart';
+import 'package:ideal_mobile/presentation/chat/domain/entities/chat_conversation.dart';
 import 'package:ideal_mobile/presentation/chat/domain/entities/pending_chat_message.dart';
 import 'package:ideal_mobile/presentation/chat/domain/usecases/delete_conversation.dart';
 import 'package:ideal_mobile/presentation/chat/widgets/chat_date_separator.dart';
@@ -29,11 +30,13 @@ import 'package:ideal_mobile/widgets/app_button/enums/app_button_style_enum.dart
 class ChatConversationScreen extends StatefulWidget {
   const ChatConversationScreen({
     super.key,
-    required this.conversationId,
+    @PathParam('conversationId') required this.conversationId,
+    this.initialConversation,
     this.bloc,
   });
 
   final int conversationId;
+  final ChatConversation? initialConversation;
   final ListingChatConversationBloc? bloc;
 
   @override
@@ -71,6 +74,10 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
       create: (_) {
         final created = ListingChatConversationBloc(
           conversationId: widget.conversationId,
+          initialConversation:
+              widget.initialConversation?.id == widget.conversationId
+              ? widget.initialConversation
+              : null,
         );
         _activeBloc = created;
         created.add(const ChatConversationStarted());

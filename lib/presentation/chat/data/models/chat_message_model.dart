@@ -12,6 +12,8 @@ class ChatMessageModel extends ChatMessage {
     required super.kind,
     required super.text,
     required super.imageUrl,
+    super.imagePreviewUrl,
+    super.imageDisplayUrl,
     required super.imageWidth,
     required super.imageHeight,
     required super.clientId,
@@ -29,6 +31,8 @@ class ChatMessageModel extends ChatMessage {
       kind: requiredString(json, 'kind'),
       text: nullableString(json['text']),
       imageUrl: nullableString(json['image_url']),
+      imagePreviewUrl: nullableString(json['image_preview_url']),
+      imageDisplayUrl: nullableString(json['image_display_url']),
       imageWidth: nullableInt(json['image_width']),
       imageHeight: nullableInt(json['image_height']),
       clientId: nullableString(json['client_id']),
@@ -37,19 +41,24 @@ class ChatMessageModel extends ChatMessage {
     );
   }
 
-  DataMap toJson() => {
-    'id': id,
-    'conversation_id': conversationId,
-    'sender_id': senderId,
-    'sender_side': senderSide,
-    'is_mine': isMine,
-    'kind': kind,
-    'text': text,
-    'image_url': imageUrl,
-    'image_width': imageWidth,
-    'image_height': imageHeight,
-    'client_id': clientId,
-    'is_read': isRead,
-    'created_at': createdAt.toIso8601String(),
-  };
+  DataMap toJson() {
+    final result = <String, dynamic>{
+      'id': id,
+      'conversation_id': conversationId,
+      'sender_id': senderId,
+      'sender_side': senderSide,
+      'is_mine': isMine,
+      'kind': kind,
+      'text': text,
+      'image_url': imageUrl,
+      'image_width': imageWidth,
+      'image_height': imageHeight,
+      'client_id': clientId,
+      'is_read': isRead,
+      'created_at': createdAt.toIso8601String(),
+    };
+    if (imagePreviewUrl != null) result['image_preview_url'] = imagePreviewUrl;
+    if (imageDisplayUrl != null) result['image_display_url'] = imageDisplayUrl;
+    return result;
+  }
 }

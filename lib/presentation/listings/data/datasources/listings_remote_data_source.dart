@@ -15,6 +15,14 @@ abstract class ListingsRemoteDataSource {
   });
 
   Future<ListingFilterOptionsModel> getFilterOptions();
+
+  Stream<PublicCacheResult<ListingsPageModel>> getListingsCached({
+    required ListingFilters filters,
+    required int page,
+    int perPage = 20,
+  });
+
+  Stream<PublicCacheResult<ListingFilterOptionsModel>> getFilterOptionsCached();
 }
 
 class ListingsRemoteDataSourceImpl implements ListingsRemoteDataSource {
@@ -37,13 +45,35 @@ class ListingsRemoteDataSourceImpl implements ListingsRemoteDataSource {
       'per_page': perPage,
       ...filters.toQueryParameters(),
     };
-    final response = await _request(
-      () => _dio.get(
-        _listingsPath,
-        queryParameters: queryParameters,
-        options: _cacheManager.noCacheOptions().toOptions(),
-      ),
+    final response = await _getListingsResponse(
+      queryParameters: queryParameters,
+      options: _cacheManager.noCacheOptions(),
     );
+    return _parseListings(response);
+  }
+
+  @override
+  Stream<PublicCacheResult<ListingsPageModel>> getListingsCached({
+    required ListingFilters filters,
+    required int page,
+    int perPage = 20,
+  }) {
+    final queryParameters = <String, dynamic>{
+      'page': page,
+      'per_page': perPage,
+      ...filters.toQueryParameters(),
+    };
+    return PublicCacheCoordinator.staleWhileRevalidate(
+      cacheManager: _cacheManager,
+      request: (options) => _getListingsResponse(
+        queryParameters: queryParameters,
+        options: options,
+      ),
+      decode: _parseListings,
+    );
+  }
+
+  ListingsPageModel _parseListings(Response<dynamic> response) {
     final data = _dataFromResponse(
       response,
       missingDataMessage: 'Listings were not returned.',
@@ -61,7 +91,37 @@ class ListingsRemoteDataSourceImpl implements ListingsRemoteDataSource {
 
   @override
   Future<ListingFilterOptionsModel> getFilterOptions() async {
-    final response = await _request(() => _dio.get(_filtersPath));
+    final response = await _getFilterOptionsResponse(
+      _cacheManager.noCacheOptions(),
+    );
+    return _parseFilterOptions(response);
+  }
+
+  @override
+  Stream<PublicCacheResult<ListingFilterOptionsModel>>
+  getFilterOptionsCached() {
+    return PublicCacheCoordinator.staleWhileRevalidate(
+      cacheManager: _cacheManager,
+      request: _getFilterOptionsResponse,
+      decode: _parseFilterOptions,
+    );
+  }
+
+  Future<Response<dynamic>> _getListingsResponse({
+    required DataMap queryParameters,
+    required CacheOptions options,
+  }) => _request(
+    () => _dio.get(
+      _listingsPath,
+      queryParameters: queryParameters,
+      options: options.toOptions(),
+    ),
+  );
+
+  Future<Response<dynamic>> _getFilterOptionsResponse(CacheOptions options) =>
+      _request(() => _dio.get(_filtersPath, options: options.toOptions()));
+
+  ListingFilterOptionsModel _parseFilterOptions(Response<dynamic> response) {
     final data = _dataFromResponse(
       response,
       missingDataMessage: 'Listing filters were not returned.',

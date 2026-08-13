@@ -8,6 +8,7 @@ import 'package:ideal_mobile/presentation/listings/widgets/listing_card_image.da
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 import 'package:ideal_mobile/widgets/styling/app_colors.dart';
 import 'package:ideal_mobile/widgets/styling/app_radius.dart';
+import 'package:ideal_mobile/widgets/images/prioritized_image_scheduler.dart';
 
 class ListingCardTile extends StatelessWidget {
   const ListingCardTile({
@@ -15,12 +16,14 @@ class ListingCardTile extends StatelessWidget {
     required this.listing,
     required this.isFavorite,
     required this.onFavoriteToggle,
+    this.imagePriority = ImageLoadPriority.normal,
     this.onTap,
   });
 
   final domain.ListingCard listing;
   final bool isFavorite;
   final VoidCallback onFavoriteToggle;
+  final ImageLoadPriority imagePriority;
   final VoidCallback? onTap;
 
   @override
@@ -54,7 +57,12 @@ class ListingCardTile extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          ListingCardImage(imageUrl: listing.coverImageUrl),
+          ListingCardImage(
+            imageUrl: listing.coverImageUrl,
+            previewUrl: listing.coverPreviewUrl,
+            displayUrl: listing.coverDisplayUrl,
+            priority: imagePriority,
+          ),
           Positioned(
             top: 12,
             right: 12,

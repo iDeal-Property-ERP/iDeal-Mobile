@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_card.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filter_options.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filters.dart';
+import 'package:ideal_mobile/utils/cache_manager.dart';
 
 class ListingsState with EquatableMixin {
   ListingsState({
@@ -17,6 +18,9 @@ class ListingsState with EquatableMixin {
     this.errorMessage,
     this.filterOptions = const ListingFilterOptions.empty(),
     this.favoriteIds = const <int>{},
+    this.dataOrigin = PublicDataOrigin.fresh,
+    this.isStale = false,
+    this.listingRefreshError,
   });
 
   ListingsState.initial() : this();
@@ -32,7 +36,10 @@ class ListingsState with EquatableMixin {
       isLoadingMore = state.isLoadingMore,
       errorMessage = state.errorMessage,
       filterOptions = state.filterOptions,
-      favoriteIds = state.favoriteIds;
+      favoriteIds = state.favoriteIds,
+      dataOrigin = state.dataOrigin,
+      isStale = state.isStale,
+      listingRefreshError = state.listingRefreshError;
 
   final List<ListingCard> items;
   final ListingFilters filters;
@@ -45,6 +52,9 @@ class ListingsState with EquatableMixin {
   final String? errorMessage;
   final ListingFilterOptions filterOptions;
   final Set<int> favoriteIds;
+  final PublicDataOrigin dataOrigin;
+  final bool isStale;
+  final String? listingRefreshError;
 
   ListingsState copyWith({
     List<ListingCard>? items,
@@ -58,7 +68,11 @@ class ListingsState with EquatableMixin {
     String? errorMessage,
     ListingFilterOptions? filterOptions,
     Set<int>? favoriteIds,
+    PublicDataOrigin? dataOrigin,
+    bool? isStale,
+    String? listingRefreshError,
     bool clearErrorMessage = false,
+    bool clearListingRefreshError = false,
   }) {
     return ListingsState(
       items: items ?? this.items,
@@ -74,6 +88,11 @@ class ListingsState with EquatableMixin {
           : errorMessage ?? this.errorMessage,
       filterOptions: filterOptions ?? this.filterOptions,
       favoriteIds: favoriteIds ?? this.favoriteIds,
+      dataOrigin: dataOrigin ?? this.dataOrigin,
+      isStale: isStale ?? this.isStale,
+      listingRefreshError: clearListingRefreshError
+          ? null
+          : listingRefreshError ?? this.listingRefreshError,
     );
   }
 
@@ -89,6 +108,9 @@ class ListingsState with EquatableMixin {
     bool? isLoadingMore,
     ListingFilterOptions? filterOptions,
     Set<int>? favoriteIds,
+    this.dataOrigin = PublicDataOrigin.fresh,
+    this.isStale = false,
+    this.listingRefreshError,
     this.errorMessage,
   }) : items = items ?? const [],
        filters = filters ?? const ListingFilters.empty(),
@@ -114,6 +136,9 @@ class ListingsState with EquatableMixin {
     errorMessage,
     filterOptions,
     favoriteIds,
+    dataOrigin,
+    isStale,
+    listingRefreshError,
   ];
 }
 

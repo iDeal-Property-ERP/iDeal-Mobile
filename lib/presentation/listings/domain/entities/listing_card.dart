@@ -21,6 +21,8 @@ class ListingCard extends Equatable {
     required this.score,
     required this.reviewCount,
     required this.coverImageUrl,
+    this.coverPreviewUrl,
+    this.coverDisplayUrl,
     required this.mapLat,
     required this.mapLon,
   });
@@ -46,6 +48,11 @@ class ListingCard extends Equatable {
   final double score;
   final int reviewCount;
   final String? coverImageUrl;
+
+  /// Nullable responsive variants from the backend; [coverImageUrl] remains
+  /// the legacy/original URL for old API responses.
+  final String? coverPreviewUrl;
+  final String? coverDisplayUrl;
   final double? mapLat;
   final double? mapLon;
 
@@ -70,6 +77,8 @@ class ListingCard extends Equatable {
     score,
     reviewCount,
     coverImageUrl,
+    coverPreviewUrl,
+    coverDisplayUrl,
     mapLat,
     mapLon,
   ];

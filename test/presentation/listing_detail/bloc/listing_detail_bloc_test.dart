@@ -2,11 +2,13 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ideal_mobile/core/errors/failure.dart';
+import 'package:ideal_mobile/presentation/booking/domain/entities/booking.dart';
 import 'package:ideal_mobile/presentation/listing_detail/bloc/listing_detail_bloc.dart';
 import 'package:ideal_mobile/presentation/listing_detail/bloc/listing_detail_event.dart';
 import 'package:ideal_mobile/presentation/listing_detail/bloc/listing_detail_state.dart';
 import 'package:ideal_mobile/presentation/listing_detail/domain/entities/listing_detail.dart';
 import 'package:ideal_mobile/presentation/listing_detail/domain/usecases/get_listing_detail.dart';
+import 'package:ideal_mobile/presentation/listings/domain/entities/listing_card.dart';
 import 'package:ideal_mobile/services/performance_monitoring_service.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -49,8 +51,33 @@ ListingDetail _listingDetail() {
     verificationChecklist: const [],
     canMessage: false,
     contactPhone: null,
+    booking: const BookingEligibility.ineligible(),
   );
 }
+
+ListingCard _card({int id = 12}) => ListingCard(
+  id: id,
+  propertyId: 34,
+  title: 'Feed preview',
+  district: null,
+  address: 'Address',
+  propertyType: 'apartment',
+  rooms: 2,
+  areaSqm: 65,
+  floor: 2,
+  totalFloors: 9,
+  furnishing: 'furnished',
+  price: 500,
+  currency: 'USD',
+  tariff: 'comfort',
+  isVerified: false,
+  isFeatured: false,
+  score: 0,
+  reviewCount: 0,
+  coverImageUrl: 'https://example.test/cover.jpg',
+  mapLat: null,
+  mapLon: null,
+);
 
 void main() {
   late MockGetListingDetail getListingDetail;
@@ -115,6 +142,52 @@ void main() {
             '500 Error: Server error',
           )
           .having((state) => state.isLoading, 'is loading', isFalse),
+    ],
+  );
+
+  blocTest<ListingDetailBloc, ListingDetailState>(
+    'retains a matching feed seed and gates it when refresh fails',
+    build: () {
+      when(() => getListingDetail(any())).thenAnswer(
+        (_) async => const Left(APIFailure(message: 'offline', statusCode: 0)),
+      );
+      return bloc;
+    },
+    act: (bloc) =>
+        bloc.add(LoadListingDetailEvent(12, initialListing: _card())),
+    expect: () => [
+      isA<ListingDetailState>()
+          .having((state) => state.preview?.id, 'preview id', 12)
+          .having((state) => state.isFreshDetail, 'fresh', isFalse),
+      isA<ListingDetailLoadingState>().having(
+        (state) => state.preview?.id,
+        'preview retained while loading',
+        12,
+      ),
+      isA<ListingDetailErrorState>()
+          .having((state) => state.preview?.id, 'preview retained on error', 12)
+          .having((state) => state.isFreshDetail, 'writes gated', isFalse),
+    ],
+  );
+
+  blocTest<ListingDetailBloc, ListingDetailState>(
+    'ignores a feed seed whose ID does not match the required route ID',
+    build: () {
+      when(
+        () => getListingDetail(any()),
+      ).thenAnswer((_) async => Right(_listingDetail()));
+      return bloc;
+    },
+    act: (bloc) =>
+        bloc.add(LoadListingDetailEvent(12, initialListing: _card(id: 99))),
+    verify: (_) => verify(() => getListingDetail(any())).called(1),
+    expect: () => [
+      isA<ListingDetailLoadingState>().having(
+        (state) => state.preview,
+        'mismatched preview ignored',
+        isNull,
+      ),
+      isA<ListingDetailLoadedState>(),
     ],
   );
 }

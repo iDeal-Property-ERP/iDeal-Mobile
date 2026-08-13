@@ -38,9 +38,10 @@ class _ChatInputBarState extends State<ChatInputBar> {
     >(
       buildWhen: (previous, current) =>
           previous.canSend != current.canSend ||
-          previous.isReadOnly != current.isReadOnly,
+          previous.isReadOnly != current.isReadOnly ||
+          previous.metadataConfirmed != current.metadataConfirmed,
       builder: (context, state) {
-        final enabled = !state.isReadOnly;
+        final enabled = state.metadataConfirmed && !state.isReadOnly;
         return DecoratedBox(
           decoration: BoxDecoration(
             color: context.currentTheme.bgSurfaceBase2,

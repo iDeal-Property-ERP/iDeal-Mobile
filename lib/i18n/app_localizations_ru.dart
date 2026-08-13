@@ -1340,6 +1340,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get listings_retry => 'Повторить';
 
   @override
+  String get listings_showing_saved =>
+      'Показаны сохраненные объявления. Потяните, чтобы повторить.';
+
+  @override
   String get listings_anywhere => 'Везде';
 
   @override
@@ -1466,4 +1470,128 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get ai_chat_suggestion_support => 'Связаться с поддержкой';
+
+  @override
+  String get booking_keys => '======== КЛЮЧИ БРОНИРОВАНИЯ ========';
+
+  @override
+  String get booking_book_and_pay => 'Забронировать и оплатить';
+
+  @override
+  String get booking_title => 'Забронировать жильё';
+
+  @override
+  String get booking_status_title => 'Статус бронирования';
+
+  @override
+  String get booking_choose_dates => 'Выберите даты проживания';
+
+  @override
+  String get booking_dates_inclusive =>
+      'Даты заезда и выезда включены в период.';
+
+  @override
+  String get booking_select_dates => 'Выбрать даты';
+
+  @override
+  String get booking_choose_start_date => 'Выберите дату начала';
+
+  @override
+  String get booking_choose_end_date => 'Выберите дату окончания';
+
+  @override
+  String booking_months(int count) {
+    return '$count мес.';
+  }
+
+  @override
+  String get booking_range_unavailable =>
+      'Этот период недоступен. Выберите другие даты.';
+
+  @override
+  String get booking_get_quote => 'Рассчитать стоимость';
+
+  @override
+  String get booking_price_summary => 'Расчёт стоимости';
+
+  @override
+  String get booking_deposit => 'Депозит';
+
+  @override
+  String get booking_rent => 'Аренда';
+
+  @override
+  String get booking_total_due_now => 'К оплате сейчас';
+
+  @override
+  String get booking_pay_full_stay => 'Оплатить аренду за весь период';
+
+  @override
+  String get booking_pay_full_stay_note =>
+      'По умолчанию выключено. Иначе сейчас оплачивается только первый период аренды.';
+
+  @override
+  String get booking_payment_method => 'Способ оплаты';
+
+  @override
+  String get booking_continue_to_payment => 'Перейти к безопасной оплате';
+
+  @override
+  String get booking_preparing_checkout => 'Подготавливаем оплату…';
+
+  @override
+  String get booking_hosted_payment_note =>
+      'Оплата безопасно откроется в браузере. Вернитесь сюда, чтобы проверить подтверждённый результат.';
+
+  @override
+  String get booking_checkout_launch_failed =>
+      'Не удалось открыть безопасную страницу оплаты.';
+
+  @override
+  String get booking_check_status => 'Проверить статус оплаты';
+
+  @override
+  String get booking_pending_title => 'Проверяем оплату';
+
+  @override
+  String get booking_pending_message =>
+      'Провайдер ещё обрабатывает платёж. Мы подтвердим его только после проверки сервером.';
+
+  @override
+  String get booking_confirmed_title => 'Бронирование подтверждено';
+
+  @override
+  String get booking_confirmed_message =>
+      'Даты закреплены за вами. Договор готов к следующему этапу подписания.';
+
+  @override
+  String get booking_failed_title => 'Оплата не прошла';
+
+  @override
+  String get booking_failed_message =>
+      'Жильё не забронировано. Вернитесь и начните новую оплату.';
+
+  @override
+  String get booking_expired_title => 'Время оплаты истекло';
+
+  @override
+  String get booking_expired_message =>
+      'Временная бронь снята. Выберите даты снова.';
+
+  @override
+  String get booking_review_title => 'Платёж требует проверки';
+
+  @override
+  String get booking_review_message =>
+      'Финансовая команда должна проверить платёж. Не платите повторно до связи с поддержкой.';
+
+  @override
+  String get booking_unavailable => 'Онлайн-бронирование недоступно';
+
+  @override
+  String get booking_return_unverified =>
+      'Не удалось сопоставить ссылку с активной оплатой. Сама ссылка не подтверждает платёж.';
+
+  @override
+  String get booking_back_home => 'На главную';
 }

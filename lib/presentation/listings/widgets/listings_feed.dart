@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ideal_mobile/constants/integration_test_keys.dart';
+import 'package:ideal_mobile/i18n/localization.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_bloc.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_event.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_card.dart'
@@ -9,6 +10,7 @@ import 'package:ideal_mobile/presentation/listings/domain/entities/listing_card.
 import 'package:ideal_mobile/presentation/listings/widgets/listing_card.dart';
 import 'package:ideal_mobile/routes.gr.dart';
 import 'package:ideal_mobile/utils/responsive.dart';
+import 'package:ideal_mobile/widgets/images/prioritized_image_scheduler.dart';
 
 /// Extra height reserved by a card's information block after its image.
 ///
@@ -24,6 +26,8 @@ typedef _ListingsFeedSelection = ({
   List<domain.ListingCard> items,
   bool isLoadingMore,
   Set<int> favoriteIds,
+  bool isStale,
+  String? listingRefreshError,
 });
 
 class ListingsFeedSliver extends StatelessWidget {
@@ -36,10 +40,12 @@ class ListingsFeedSliver extends StatelessWidget {
         items: bloc.state.items,
         isLoadingMore: bloc.state.isLoadingMore,
         favoriteIds: bloc.state.favoriteIds,
+        isStale: bloc.state.isStale,
+        listingRefreshError: bloc.state.listingRefreshError,
       ),
     );
 
-    return SliverPadding(
+    final grid = SliverPadding(
       padding: const EdgeInsets.symmetric(
         horizontal: kListingsFeedHorizontalPadding,
       ),
@@ -65,17 +71,52 @@ class ListingsFeedSliver extends StatelessWidget {
                 listing: listing,
                 isFavorite: selection.favoriteIds.contains(listing.id),
                 onTap: () => context.router.push(
-                  ListingDetailRoute(listingId: listing.id),
+                  ListingDetailRoute(
+                    listingId: listing.id,
+                    initialListing: listing,
+                  ),
                 ),
                 onFavoriteToggle: () {
                   context.read<ListingsBloc>().add(
                     ToggleFavoriteEvent(listing.id),
                   );
                 },
+                imagePriority: index < count * 2
+                    ? ImageLoadPriority.high
+                    : ImageLoadPriority.normal,
               );
             }, childCount: selection.items.length),
           );
         },
+      ),
+    );
+    if (!selection.isStale) return grid;
+
+    return SliverMainAxisGroup(
+      slivers: [
+        SliverToBoxAdapter(child: const _StaleListingsBanner()),
+        grid,
+      ],
+    );
+  }
+}
+
+class _StaleListingsBanner extends StatelessWidget {
+  const _StaleListingsBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      child: MaterialBanner(
+        content: Text(context.localization.listings_showing_saved),
+        actions: [
+          TextButton(
+            onPressed: () =>
+                context.read<ListingsBloc>().add(const LoadListingsEvent()),
+            child: Text(context.localization.listings_retry),
+          ),
+        ],
       ),
     );
   }

@@ -91,7 +91,7 @@
 			<string>UIInterfaceOrientationLandscapeRight</string>
 		</array>
 		<key>FlutterDeepLinkingEnabled</key>
-		<false/>
+		<true/>
 		<key>CFBundleIcons</key>
 		<dict>
 			<key>CFBundlePrimaryIcon</key>

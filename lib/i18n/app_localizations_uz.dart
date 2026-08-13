@@ -1338,6 +1338,10 @@ class AppLocalizationsUz extends AppLocalizations {
   String get listings_retry => 'Qayta urinish';
 
   @override
+  String get listings_showing_saved =>
+      'Saqlangan e\'lonlar ko\'rsatilmoqda. Qayta urinish uchun pastga torting.';
+
+  @override
   String get listings_anywhere => 'Hamma joyda';
 
   @override
@@ -1463,4 +1467,128 @@ class AppLocalizationsUz extends AppLocalizations {
   @override
   String get ai_chat_suggestion_support =>
       'Qo\'llab-quvvatlash bilan bog\'lanish';
+
+  @override
+  String get booking_keys => '======== BRON QILISH KALITLARI ========';
+
+  @override
+  String get booking_book_and_pay => 'Bron qilish va to‘lash';
+
+  @override
+  String get booking_title => 'Uyni bron qilish';
+
+  @override
+  String get booking_status_title => 'Bron holati';
+
+  @override
+  String get booking_choose_dates => 'Yashash muddatini tanlang';
+
+  @override
+  String get booking_dates_inclusive =>
+      'Boshlanish va tugash sanalari muddatga kiradi.';
+
+  @override
+  String get booking_select_dates => 'Sanalarni tanlash';
+
+  @override
+  String get booking_choose_start_date => 'Boshlanish sanasini tanlang';
+
+  @override
+  String get booking_choose_end_date => 'Tugash sanasini tanlang';
+
+  @override
+  String booking_months(int count) {
+    return '$count oy';
+  }
+
+  @override
+  String get booking_range_unavailable =>
+      'Bu muddat mavjud emas. Boshqa sanalarni tanlang.';
+
+  @override
+  String get booking_get_quote => 'Narxni hisoblash';
+
+  @override
+  String get booking_price_summary => 'Narx tafsilotlari';
+
+  @override
+  String get booking_deposit => 'Depozit';
+
+  @override
+  String get booking_rent => 'Ijara';
+
+  @override
+  String get booking_total_due_now => 'Hozir to‘lanadi';
+
+  @override
+  String get booking_pay_full_stay => 'Butun muddat uchun ijarani to‘lash';
+
+  @override
+  String get booking_pay_full_stay_note =>
+      'Odatiy holatda o‘chiq. Aks holda hozir faqat birinchi ijara muddati to‘lanadi.';
+
+  @override
+  String get booking_payment_method => 'To‘lov usuli';
+
+  @override
+  String get booking_continue_to_payment => 'Xavfsiz to‘lovga o‘tish';
+
+  @override
+  String get booking_preparing_checkout => 'To‘lov tayyorlanmoqda…';
+
+  @override
+  String get booking_hosted_payment_note =>
+      'To‘lov brauzerda xavfsiz ochiladi. Tasdiqlangan natijani tekshirish uchun ilovaga qayting.';
+
+  @override
+  String get booking_checkout_launch_failed =>
+      'Xavfsiz to‘lov sahifasini ochib bo‘lmadi.';
+
+  @override
+  String get booking_check_status => 'To‘lov holatini tekshirish';
+
+  @override
+  String get booking_pending_title => 'To‘lov tekshirilmoqda';
+
+  @override
+  String get booking_pending_message =>
+      'Provayder hali to‘lovni qayta ishlamoqda. Server tasdiqlagandan keyingina bronni tasdiqlaymiz.';
+
+  @override
+  String get booking_confirmed_title => 'Bron tasdiqlandi';
+
+  @override
+  String get booking_confirmed_message =>
+      'Sanalar siz uchun band qilindi. Shartnoma imzolashning keyingi bosqichiga tayyor.';
+
+  @override
+  String get booking_failed_title => 'To‘lov amalga oshmadi';
+
+  @override
+  String get booking_failed_message =>
+      'Uy bron qilinmadi. Qaytib yangi to‘lovni boshlashingiz mumkin.';
+
+  @override
+  String get booking_expired_title => 'To‘lov muddati tugadi';
+
+  @override
+  String get booking_expired_message =>
+      'Vaqtinchalik band bekor qilindi. Davom etish uchun sanalarni qayta tanlang.';
+
+  @override
+  String get booking_review_title => 'To‘lov tekshirilishi kerak';
+
+  @override
+  String get booking_review_message =>
+      'Moliya jamoasi bu to‘lovni tekshirishi kerak. Yordam xizmati bog‘lanmaguncha qayta to‘lamang.';
+
+  @override
+  String get booking_unavailable => 'Ilovada bron qilish mavjud emas';
+
+  @override
+  String get booking_return_unverified =>
+      'Bu qaytish havolasini faol to‘lov bilan moslashtirib bo‘lmadi. Havolaning o‘zi to‘lov isboti emas.';
+
+  @override
+  String get booking_back_home => 'Bosh sahifaga';
 }

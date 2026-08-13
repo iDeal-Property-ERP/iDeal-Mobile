@@ -1,13 +1,12 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-enum AppFlavor { local, dev, prod, stage }
+enum AppFlavor { local, dev, prod }
 
 class AppConfig {
   static const _app_flavor = 'APP_FLAVOR';
   static const _local = 'local';
   static const _dev = 'dev';
   static const _prod = 'prod';
-  static const _stage = 'stage';
 
   /// Fetch app flavor from environment variables (`dart-define`)
   static AppFlavor get appFlavor {
@@ -17,8 +16,6 @@ class AppConfig {
         return AppFlavor.local;
       case _dev:
         return AppFlavor.dev;
-      case _stage:
-        return AppFlavor.stage;
       case _prod:
         return AppFlavor.prod;
       default:
@@ -32,8 +29,6 @@ class AppConfig {
         return dotenv.env['LOCAL_API_BASE_URL'] ?? '';
       case AppFlavor.dev:
         return dotenv.env['DEV_API_BASE_URL'] ?? '';
-      case AppFlavor.stage:
-        return dotenv.env['STAGE_API_BASE_URL'] ?? '';
       case AppFlavor.prod:
         return dotenv.env['PROD_API_BASE_URL'] ?? '';
     }
@@ -45,8 +40,6 @@ class AppConfig {
         return '';
       case AppFlavor.dev:
         return dotenv.env['CERT_HASH_DEV']?.trim() ?? '';
-      case AppFlavor.stage:
-        return dotenv.env['CERT_HASH_STAGE']?.trim() ?? '';
       case AppFlavor.prod:
         return dotenv.env['CERT_HASH_PROD']?.trim() ?? '';
     }
@@ -62,8 +55,6 @@ class AppConfig {
     switch (appFlavor) {
       case AppFlavor.local:
         return '';
-      case AppFlavor.stage:
-        return dotenv.env['CLARITY_PROJECT_ID_STAGE']?.trim() ?? '';
       case AppFlavor.prod:
         return dotenv.env['CLARITY_PROJECT_ID_PROD']?.trim() ?? '';
       case AppFlavor.dev:

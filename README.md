@@ -42,11 +42,10 @@ health endpoint is `/api/v1/health/`. For an iOS Simulator, change
 use the host machine's LAN IP and bind Django to an accessible interface.
 Production requires its API host and certificate hash to be configured.
 
-Android application IDs are `com.ideal.mobile.dev`, `com.ideal.mobile.stage`,
-and `com.ideal.mobile`. Replace the placeholder deep-link host
-`ideal.example.com` in the native manifests and
-`lib/presentation/product_detail/constant/product_detail_constants.dart` when
-the production domain is available.
+Android application IDs are `com.ideal.mobile.dev` and `com.ideal.mobile`.
+Verified payment returns use
+`https://i-deal.uz/payment-return`; the app always polls the backend after the
+return and never treats URL parameters as proof of payment.
 
 ## Validate
 

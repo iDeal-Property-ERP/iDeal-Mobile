@@ -2482,6 +2482,12 @@ abstract class AppLocalizations {
   /// **'Retry'**
   String get listings_retry;
 
+  /// No description provided for @listings_showing_saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing saved listings. Pull to retry.'**
+  String get listings_showing_saved;
+
   /// No description provided for @listings_anywhere.
   ///
   /// In en, this message translates to:
@@ -2691,6 +2697,228 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Contact support'**
   String get ai_chat_suggestion_support;
+
+  /// No description provided for @booking_keys.
+  ///
+  /// In en, this message translates to:
+  /// **'======== BOOKING KEYS ========'**
+  String get booking_keys;
+
+  /// No description provided for @booking_book_and_pay.
+  ///
+  /// In en, this message translates to:
+  /// **'Book & pay'**
+  String get booking_book_and_pay;
+
+  /// No description provided for @booking_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Book this home'**
+  String get booking_title;
+
+  /// No description provided for @booking_status_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking status'**
+  String get booking_status_title;
+
+  /// No description provided for @booking_choose_dates.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your stay'**
+  String get booking_choose_dates;
+
+  /// No description provided for @booking_dates_inclusive.
+  ///
+  /// In en, this message translates to:
+  /// **'Your start and end dates are both included.'**
+  String get booking_dates_inclusive;
+
+  /// No description provided for @booking_select_dates.
+  ///
+  /// In en, this message translates to:
+  /// **'Select dates'**
+  String get booking_select_dates;
+
+  /// No description provided for @booking_choose_start_date.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a start date'**
+  String get booking_choose_start_date;
+
+  /// No description provided for @booking_choose_end_date.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an end date'**
+  String get booking_choose_end_date;
+
+  /// No description provided for @booking_months.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} months'**
+  String booking_months(int count);
+
+  /// No description provided for @booking_range_unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'That period is not available. Choose different dates.'**
+  String get booking_range_unavailable;
+
+  /// No description provided for @booking_get_quote.
+  ///
+  /// In en, this message translates to:
+  /// **'Get price'**
+  String get booking_get_quote;
+
+  /// No description provided for @booking_price_summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Price summary'**
+  String get booking_price_summary;
+
+  /// No description provided for @booking_deposit.
+  ///
+  /// In en, this message translates to:
+  /// **'Deposit'**
+  String get booking_deposit;
+
+  /// No description provided for @booking_rent.
+  ///
+  /// In en, this message translates to:
+  /// **'Rent'**
+  String get booking_rent;
+
+  /// No description provided for @booking_total_due_now.
+  ///
+  /// In en, this message translates to:
+  /// **'Total due now'**
+  String get booking_total_due_now;
+
+  /// No description provided for @booking_pay_full_stay.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay rent for the full stay'**
+  String get booking_pay_full_stay;
+
+  /// No description provided for @booking_pay_full_stay_note.
+  ///
+  /// In en, this message translates to:
+  /// **'Off by default. Otherwise only the first rental period is charged now.'**
+  String get booking_pay_full_stay_note;
+
+  /// No description provided for @booking_payment_method.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment method'**
+  String get booking_payment_method;
+
+  /// No description provided for @booking_continue_to_payment.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue to secure payment'**
+  String get booking_continue_to_payment;
+
+  /// No description provided for @booking_preparing_checkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing payment…'**
+  String get booking_preparing_checkout;
+
+  /// No description provided for @booking_hosted_payment_note.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment opens securely in your browser. Return here to check the verified result.'**
+  String get booking_hosted_payment_note;
+
+  /// No description provided for @booking_checkout_launch_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open the secure payment page.'**
+  String get booking_checkout_launch_failed;
+
+  /// No description provided for @booking_check_status.
+  ///
+  /// In en, this message translates to:
+  /// **'Check payment status'**
+  String get booking_check_status;
+
+  /// No description provided for @booking_pending_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking your payment'**
+  String get booking_pending_title;
+
+  /// No description provided for @booking_pending_message.
+  ///
+  /// In en, this message translates to:
+  /// **'The provider is still processing it. We will confirm only after the backend verifies the payment.'**
+  String get booking_pending_message;
+
+  /// No description provided for @booking_confirmed_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking confirmed'**
+  String get booking_confirmed_title;
+
+  /// No description provided for @booking_confirmed_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Your dates are secured. Your lease is ready for the next signing step.'**
+  String get booking_confirmed_message;
+
+  /// No description provided for @booking_failed_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment failed'**
+  String get booking_failed_title;
+
+  /// No description provided for @booking_failed_message.
+  ///
+  /// In en, this message translates to:
+  /// **'The home was not booked. You can return and start a new payment.'**
+  String get booking_failed_message;
+
+  /// No description provided for @booking_expired_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment expired'**
+  String get booking_expired_title;
+
+  /// No description provided for @booking_expired_message.
+  ///
+  /// In en, this message translates to:
+  /// **'The temporary hold was released. Choose the dates again to continue.'**
+  String get booking_expired_message;
+
+  /// No description provided for @booking_review_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment needs review'**
+  String get booking_review_title;
+
+  /// No description provided for @booking_review_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Our finance team must review this payment. Do not pay again until support contacts you.'**
+  String get booking_review_message;
+
+  /// No description provided for @booking_unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct booking is unavailable'**
+  String get booking_unavailable;
+
+  /// No description provided for @booking_return_unverified.
+  ///
+  /// In en, this message translates to:
+  /// **'We could not match this return link to an active checkout. The link itself is not proof of payment.'**
+  String get booking_return_unverified;
+
+  /// No description provided for @booking_back_home.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to home'**
+  String get booking_back_home;
 }
 
 class _AppLocalizationsDelegate

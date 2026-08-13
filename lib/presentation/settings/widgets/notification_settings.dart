@@ -33,7 +33,7 @@ class NotificationSettings extends StatelessWidget {
         color: context.currentTheme.iconNeutralDefault,
       ),
       onTap: () {
-        context.pushRoute(const NotificationSettingsRoute());
+        context.pushRoute(NotificationSettingsRoute());
       },
     );
   }

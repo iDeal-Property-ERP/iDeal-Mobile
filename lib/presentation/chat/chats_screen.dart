@@ -176,7 +176,12 @@ class _ChatsContent extends StatelessWidget {
   }
 
   void _openConversation(BuildContext context, ChatConversation conversation) {
-    context.router.push(ChatConversationRoute(conversationId: conversation.id));
+    context.router.push(
+      ChatConversationRoute(
+        conversationId: conversation.id,
+        initialConversation: conversation,
+      ),
+    );
   }
 
   Future<void> _showActions(

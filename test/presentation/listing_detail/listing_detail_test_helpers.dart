@@ -4,6 +4,7 @@ import 'package:ideal_mobile/presentation/listing_detail/bloc/listing_detail_blo
 import 'package:ideal_mobile/presentation/listing_detail/bloc/listing_detail_event.dart';
 import 'package:ideal_mobile/presentation/listing_detail/bloc/listing_detail_state.dart';
 import 'package:ideal_mobile/presentation/listing_detail/domain/entities/listing_detail.dart';
+import 'package:ideal_mobile/presentation/booking/domain/entities/booking.dart';
 
 class MockListingDetailBloc
     extends MockBloc<ListingDetailEvent, ListingDetailState>
@@ -28,6 +29,7 @@ ListingDetail buildListingDetail({
   bool verificationIsVerified = true,
   bool canMessage = false,
   String? contactPhone,
+  BookingEligibility booking = const BookingEligibility.ineligible(),
 }) {
   return ListingDetail(
     id: 12,
@@ -83,5 +85,6 @@ ListingDetail buildListingDetail({
         ],
     canMessage: canMessage,
     contactPhone: contactPhone,
+    booking: booking,
   );
 }

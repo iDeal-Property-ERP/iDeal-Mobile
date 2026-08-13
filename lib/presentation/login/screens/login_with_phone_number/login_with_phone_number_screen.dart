@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ideal_mobile/i18n/app_localizations.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
+import 'package:ideal_mobile/presentation/booking/booking_intent_service.dart';
 import 'package:ideal_mobile/presentation/login/bloc/login_bloc.dart';
 import 'package:ideal_mobile/presentation/login/bloc/login_events.dart';
 import 'package:ideal_mobile/presentation/login/bloc/login_state.dart';
@@ -74,7 +75,11 @@ class LoginWithPhoneNumberBody extends StatelessWidget {
           if (state is AuthenticationExceptionState) {
             _showAuthenticationError(state, context);
           } else if (state is NavigateToHomeScreenState) {
-            await context.router.replace(const HomeRoute());
+            final resumed =
+                await BookingIntentService.resumeAfterAuthentication(context);
+            if (!resumed && context.mounted) {
+              await context.router.replace(const HomeRoute());
+            }
           }
         },
         child: SafeArea(

@@ -1,12 +1,15 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:dartz/dartz.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ideal_mobile/core/errors/failure.dart';
 import 'package:ideal_mobile/core/services/injection_container.dart';
 import 'package:ideal_mobile/presentation/chat/bloc/listing_chat_conversation_event.dart';
 import 'package:ideal_mobile/presentation/chat/bloc/listing_chat_conversation_state.dart';
 import 'package:ideal_mobile/presentation/chat/domain/entities/chat_message.dart';
+import 'package:ideal_mobile/presentation/chat/domain/entities/chat_conversation.dart';
 import 'package:ideal_mobile/presentation/chat/domain/entities/chat_messages_page.dart';
 import 'package:ideal_mobile/presentation/chat/domain/entities/pending_chat_message.dart';
 import 'package:ideal_mobile/presentation/chat/domain/usecases/get_conversation.dart';
@@ -72,6 +75,7 @@ class ListingChatConversationBloc
     extends Bloc<ListingChatConversationEvent, ListingChatConversationState> {
   ListingChatConversationBloc({
     required int conversationId,
+    ChatConversation? initialConversation,
     GetConversation? getConversation,
     GetMessages? getMessages,
     SendTextMessage? sendTextMessage,
@@ -93,9 +97,13 @@ class ListingChatConversationBloc
            setConversationMuted ?? sl<SetConversationMuted>(),
        _reportConversation = reportConversation ?? sl<ReportConversation>(),
        super(
-         ListingChatConversationState.initial().copyWith(
-           conversationId: conversationId,
-         ),
+         initialConversation?.id == conversationId
+             ? ListingChatConversationState.initial().withConversationSeed(
+                 initialConversation!,
+               )
+             : ListingChatConversationState.initial().copyWith(
+                 conversationId: conversationId,
+               ),
        ) {
     _setupEventListeners();
   }
@@ -114,6 +122,8 @@ class ListingChatConversationBloc
   bool _pollInFlight = false;
   bool _readInFlight = false;
   bool _started = false;
+  bool _initialMessagesLoaded = false;
+  bool _initialLoadFinalized = false;
   bool _foreground = true;
   int _consecutiveFailures = 0;
   DateTime? _lastTrafficAt;
@@ -121,6 +131,8 @@ class ListingChatConversationBloc
 
   void _setupEventListeners() {
     on<ChatConversationStarted>(_onStarted);
+    on<ChatConversationMetadataLoaded>(_onMetadataLoaded);
+    on<ChatConversationInitialMessagesLoaded>(_onInitialMessagesLoaded);
     on<ChatConversationStopped>(_onStopped);
     on<ChatConversationPollTicked>(_onPollTicked);
     on<ChatConversationRefreshRequested>(_onRefreshRequested);
@@ -148,6 +160,8 @@ class ListingChatConversationBloc
   ) async {
     if (_started) return;
     _started = true;
+    _initialMessagesLoaded = false;
+    _initialLoadFinalized = false;
     _foreground = true;
     _consecutiveFailures = 0;
     emit(
@@ -156,15 +170,32 @@ class ListingChatConversationBloc
         clearErrorMessage: true,
       ),
     );
-    final conversationResult = await _getConversation(
-      GetConversationParams(conversationId: _conversationId),
+    // Start both reads before awaiting either. Metadata and the message area
+    // can then reveal independently instead of serializing two round trips.
+    unawaited(
+      _getConversation(
+        GetConversationParams(conversationId: _conversationId),
+      ).then((result) => add(ChatConversationMetadataLoaded(result))),
     );
-    if (isClosed) return;
+    unawaited(
+      _getMessages(
+        GetMessagesParams(conversationId: _conversationId, limit: 50),
+      ).then((result) => add(ChatConversationInitialMessagesLoaded(result))),
+    );
+  }
+
+  Future<void> _onMetadataLoaded(
+    ChatConversationMetadataLoaded event,
+    Emitter<ListingChatConversationState> emit,
+  ) async {
+    final conversationResult = event.result;
     var conversationLoaded = false;
     conversationResult.fold(
       (failure) => emit(
         state.copyWith(
-          status: ListingChatConversationStatus.failure,
+          status: state.messages.isEmpty
+              ? ListingChatConversationStatus.failure
+              : ListingChatConversationStatus.loaded,
           errorMessage: failure.errorMessage,
         ),
       ),
@@ -181,6 +212,7 @@ class ListingChatConversationBloc
             listingIsAvailable: conversation.listingIsAvailable,
             lastKnownMessageId: conversation.lastMessageId,
             peerLastReadMessageId: conversation.peerLastReadMessageId,
+            metadataConfirmed: true,
             clearErrorMessage: true,
           ),
         );
@@ -191,8 +223,28 @@ class ListingChatConversationBloc
       _stopPolling();
       return;
     }
-    await _loadMessages(emit: emit);
-    if (isClosed) return;
+    await _finishInitialLoad(emit);
+  }
+
+  Future<void> _onInitialMessagesLoaded(
+    ChatConversationInitialMessagesLoaded event,
+    Emitter<ListingChatConversationState> emit,
+  ) async {
+    _loadMessagesResult(event.result, emit: emit);
+    _initialMessagesLoaded = true;
+    await _finishInitialLoad(emit);
+  }
+
+  Future<void> _finishInitialLoad(
+    Emitter<ListingChatConversationState> emit,
+  ) async {
+    if (_initialLoadFinalized ||
+        !_initialMessagesLoaded ||
+        !state.metadataConfirmed ||
+        isClosed) {
+      return;
+    }
+    _initialLoadFinalized = true;
     _lastTrafficAt = DateTime.now();
     await _markReadIfAllowed(force: true);
     if (_started && _foreground) _startPolling();
@@ -333,7 +385,7 @@ class ListingChatConversationBloc
     ChatConversationTextSent event,
     Emitter<ListingChatConversationState> emit,
   ) async {
-    if (state.isReadOnly || state.isSending) return;
+    if (!state.metadataConfirmed || state.isReadOnly || state.isSending) return;
     final text = (event.text ?? state.draft).trim();
     if (text.isEmpty) return;
     if (text.length > 1024) {
@@ -363,7 +415,7 @@ class ListingChatConversationBloc
     ChatConversationImageSent event,
     Emitter<ListingChatConversationState> emit,
   ) async {
-    if (state.isReadOnly || state.isSending) return;
+    if (!state.metadataConfirmed || state.isReadOnly || state.isSending) return;
     final file = File(event.path);
     if (!await file.exists()) {
       emit(state.copyWith(errorMessage: 'chat_image_unsupported_format'));
@@ -407,7 +459,7 @@ class ListingChatConversationBloc
     ChatConversationRetrySent event,
     Emitter<ListingChatConversationState> emit,
   ) async {
-    if (state.isReadOnly || state.isSending) return;
+    if (!state.metadataConfirmed || state.isReadOnly || state.isSending) return;
     final pending = state.pending
         .where((item) => item.clientId == event.clientId)
         .firstOrNull;
@@ -621,6 +673,13 @@ class ListingChatConversationBloc
       GetMessagesParams(conversationId: _conversationId, limit: 50),
     );
     if (isClosed) return;
+    _loadMessagesResult(result, emit: emit);
+  }
+
+  void _loadMessagesResult(
+    Either<Failure, ChatMessagesPage> result, {
+    required Emitter<ListingChatConversationState> emit,
+  }) {
     result.fold(
       (failure) => emit(
         state.copyWith(

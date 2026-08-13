@@ -72,11 +72,18 @@ void main() {
 
   const path = '/mobile/home/listings/12/';
 
+  setUpAll(() {
+    registerFallbackValue(PublicCacheRequest.cacheFirst);
+  });
+
   setUp(() {
     dio = MockDio();
     cacheManager = MockCacheManager();
     when(
       () => cacheManager.noCacheOptions(),
+    ).thenReturn(CacheOptions(store: MemCacheStore()));
+    when(
+      () => cacheManager.publicCacheOptions(request: any(named: 'request')),
     ).thenReturn(CacheOptions(store: MemCacheStore()));
     dataSource = ListingDetailRemoteDataSourceImpl(dio, cacheManager);
   });
@@ -155,4 +162,47 @@ void main() {
       ),
     );
   });
+
+  test('cached detail stream yields cache then fresh', () async {
+    var call = 0;
+    when(() => dio.get(path, options: any(named: 'options'))).thenAnswer((
+      _,
+    ) async {
+      final network = call++ == 1;
+      return _response(path, 200, {
+        'success': true,
+        'data': {..._detailJson(), 'id': network ? 13 : 12},
+      })..extra[extraFromNetworkKey] = network;
+    });
+
+    final events = await dataSource.getListingDetailCached(id: 12).toList();
+
+    expect(events.map((event) => event.data.id), [12, 13]);
+    expect(events.map((event) => event.origin), [
+      PublicDataOrigin.cache,
+      PublicDataOrigin.fresh,
+    ]);
+  });
+
+  test(
+    'cached detail keeps data with stale signal when refresh fails',
+    () async {
+      var call = 0;
+      when(() => dio.get(path, options: any(named: 'options'))).thenAnswer((
+        _,
+      ) async {
+        if (call++ == 0) {
+          return _response(path, 200, {'success': true, 'data': _detailJson()});
+        }
+        throw DioException(requestOptions: RequestOptions(path: path));
+      });
+
+      final events = await dataSource.getListingDetailCached(id: 12).toList();
+
+      expect(events, hasLength(2));
+      expect(events.last.data.id, 12);
+      expect(events.last.isStale, isTrue);
+      expect(events.last.refreshError, isA<APIException>());
+    },
+  );
 }

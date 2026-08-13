@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
@@ -12,6 +11,8 @@ import 'package:ideal_mobile/presentation/chat/widgets/chat_message_ticks.dart';
 import 'package:ideal_mobile/utils/extensions/date_time_extensions.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 import 'package:ideal_mobile/widgets/styling/app_radius.dart';
+import 'package:ideal_mobile/widgets/images/prioritized_image_scheduler.dart';
+import 'package:ideal_mobile/widgets/images/tiered_network_image.dart';
 
 class ChatImageBubble extends StatelessWidget {
   const ChatImageBubble({
@@ -32,6 +33,8 @@ class ChatImageBubble extends StatelessWidget {
     final isMine = message?.isMine ?? true;
     final path = pending?.localPath;
     final url = message?.imageUrl;
+    final previewUrl = message?.imagePreviewUrl;
+    final displayUrl = message?.imageDisplayUrl;
     final createdAt =
         message?.createdAt ?? pending?.createdAt ?? DateTime.now();
     return Align(
@@ -39,7 +42,7 @@ class ChatImageBubble extends StatelessWidget {
       child: GestureDetector(
         onTap: status == ChatMessageStatus.failed
             ? onRetry
-            : () => _openImage(context, path ?? url),
+            : () => _openImage(context, path ?? url, previewUrl, displayUrl),
         child: Tooltip(
           message: status == ChatMessageStatus.failed
               ? context.localization.chat_retry
@@ -73,13 +76,16 @@ class ChatImageBubble extends StatelessWidget {
                             TablerIcons.photo_off,
                             color: context.currentTheme.iconNeutralDisabled,
                           )
-                        : CachedNetworkImage(
-                            imageUrl: url,
+                        : TieredNetworkImage(
+                            originalUrl: url,
+                            previewUrl: previewUrl,
+                            displayUrl: displayUrl,
+                            priority: ImageLoadPriority.high,
                             fit: BoxFit.cover,
-                            placeholder: (context, url) => const Center(
+                            loadingBuilder: (context) => const Center(
                               child: CircularProgressIndicator(),
                             ),
-                            errorWidget: (context, url, error) => Icon(
+                            errorBuilder: (context) => Icon(
                               TablerIcons.photo_off,
                               color: context.currentTheme.iconNeutralDisabled,
                             ),
@@ -124,11 +130,20 @@ class ChatImageBubble extends StatelessWidget {
     );
   }
 
-  void _openImage(BuildContext context, String? path) {
+  void _openImage(
+    BuildContext context,
+    String? path,
+    String? previewUrl,
+    String? displayUrl,
+  ) {
     if (path == null || path.isEmpty) return;
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (_) => ChatImageFullScreenView(path: path),
+        builder: (_) => ChatImageFullScreenView(
+          path: path,
+          previewUrl: previewUrl,
+          displayUrl: displayUrl,
+        ),
       ),
     );
   }

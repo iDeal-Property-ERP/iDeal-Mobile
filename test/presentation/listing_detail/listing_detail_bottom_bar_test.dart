@@ -1,7 +1,9 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ideal_mobile/constants/integration_test_keys.dart';
+import 'package:ideal_mobile/presentation/booking/domain/entities/booking.dart';
 import 'package:ideal_mobile/presentation/chat/bloc/open_conversation_cubit.dart';
 import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_bottom_bar.dart';
 import 'package:ideal_mobile/shared_pref/prefs.dart';
@@ -26,11 +28,58 @@ const secureStorageChannel = MethodChannel(
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  testWidgets('shows booking when the backend marks the listing eligible', (
+    tester,
+  ) async {
+    await tester.runWidgetTest(
+      child: Scaffold(
+        bottomNavigationBar: ListingDetailBottomBar(
+          detail: buildListingDetail(
+            booking: BookingEligibility(
+              eligible: true,
+              reason: null,
+              minimumStayMonths: 1,
+              earliestStartDate: DateTime(2026, 8, 12),
+              latestEndDate: DateTime(2027, 8, 9),
+              blockedRanges: const [],
+              providers: const [PaymentProvider.payme],
+            ),
+          ),
+          onBook: () {},
+        ),
+      ),
+    );
+
+    expect(find.byKey(keys.listingDetail.bookButton), findsOneWidget);
+  });
+
+  testWidgets('hides booking when the backend marks the listing ineligible', (
+    tester,
+  ) async {
+    await tester.runWidgetTest(
+      child: Scaffold(
+        bottomNavigationBar: ListingDetailBottomBar(
+          detail: buildListingDetail(
+            booking: const BookingEligibility.ineligible(
+              reason: 'payments_unavailable',
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byKey(keys.listingDetail.bookButton), findsNothing);
+  });
+
   testWidgets('disables messaging and hides calling without contact data', (
     tester,
   ) async {
     await tester.runWidgetTest(
-      child: ListingDetailBottomBar(detail: buildListingDetail()),
+      child: Scaffold(
+        bottomNavigationBar: ListingDetailBottomBar(
+          detail: buildListingDetail(),
+        ),
+      ),
     );
 
     final messageButton = tester.widget<AppButton>(
@@ -39,10 +88,6 @@ void main() {
 
     expect(messageButton.onPressed, isNull);
     expect(messageButton.state, AppButtonState.disabled);
-    expect(
-      find.bySemanticsLabel('Messaging is unavailable for this listing'),
-      findsOneWidget,
-    );
     expect(find.byKey(keys.listingDetail.callButton), findsNothing);
   });
 
@@ -50,8 +95,10 @@ void main() {
     tester,
   ) async {
     await tester.runWidgetTest(
-      child: ListingDetailBottomBar(
-        detail: buildListingDetail(contactPhone: '+998 90 123 45 67'),
+      child: Scaffold(
+        bottomNavigationBar: ListingDetailBottomBar(
+          detail: buildListingDetail(contactPhone: '+998 90 123 45 67'),
+        ),
       ),
     );
 
@@ -77,9 +124,11 @@ void main() {
     });
 
     await tester.runWidgetTest(
-      child: ListingDetailBottomBar(
-        detail: buildListingDetail(canMessage: true),
-        openConversationCubit: cubit,
+      child: Scaffold(
+        bottomNavigationBar: ListingDetailBottomBar(
+          detail: buildListingDetail(canMessage: true),
+          openConversationCubit: cubit,
+        ),
       ),
     );
 

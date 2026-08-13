@@ -5,6 +5,8 @@ class ChatListingRef extends Equatable {
     required this.id,
     required this.title,
     required this.coverImageUrl,
+    this.coverPreviewUrl,
+    this.coverDisplayUrl,
     required this.price,
     required this.currency,
     required this.isAvailable,
@@ -13,6 +15,8 @@ class ChatListingRef extends Equatable {
   final int id;
   final String title;
   final String? coverImageUrl;
+  final String? coverPreviewUrl;
+  final String? coverDisplayUrl;
   final double? price;
   final String currency;
   final bool isAvailable;
@@ -22,6 +26,8 @@ class ChatListingRef extends Equatable {
     id,
     title,
     coverImageUrl,
+    coverPreviewUrl,
+    coverDisplayUrl,
     price,
     currency,
     isAvailable,

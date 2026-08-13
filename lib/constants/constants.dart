@@ -79,8 +79,11 @@ const String kFirestoreDataLoss = 'data-loss';
 // Network/SSL pinning constants
 const String kConnectionIsNotSecureError = 'Connection is not secure';
 
-// Cache Api Response
-const String kApiCache = 'api_cache';
+// API cache namespace. Incrementing this retires every response written by an
+// earlier schema, which is important when an old app version may have cached
+// authenticated data under a broadly applied interceptor.
+const String kPublicApiCache = 'public_api_cache_v2';
+const int kPublicApiCacheSchemaVersion = 2;
 
 // Date formats
 const String kDefaultDateFormat = 'dd-MM-yyyy';

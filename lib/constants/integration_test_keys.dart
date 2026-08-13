@@ -36,6 +36,7 @@ class ListingDetailPageKeys {
   final hero = const Key('listingDetailHero');
   final messageButton = const Key('listingDetailMessageButton');
   final callButton = const Key('listingDetailCallButton');
+  final bookButton = const Key('listingDetailBookButton');
 }
 
 class Keys {
