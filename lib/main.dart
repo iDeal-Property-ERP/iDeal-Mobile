@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:auto_route/auto_route.dart';
 import 'package:clarity_flutter/clarity_flutter.dart';
 import 'package:country_picker/country_picker.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +15,6 @@ import 'package:ideal_mobile/i18n/i18n.dart';
 import 'package:ideal_mobile/initialize_app.dart';
 import 'package:ideal_mobile/routes.dart';
 import 'package:ideal_mobile/routes.gr.dart';
-import 'package:ideal_mobile/services/dynamic_icon_service.dart';
 import 'package:ideal_mobile/services/locale_service.dart';
 import 'package:ideal_mobile/services/notification_service.dart';
 import 'package:ideal_mobile/services/secure_storage_service.dart';
@@ -29,7 +27,6 @@ import 'package:ideal_mobile/utils/theme/bloc/theme_bloc.dart';
 import 'package:ideal_mobile/utils/theme/bloc/theme_event.dart';
 import 'package:ideal_mobile/utils/theme/bloc/theme_state.dart';
 import 'package:ideal_mobile/widgets/styling/app_theme_data.dart';
-import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:sizer/sizer.dart';
 
 final rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -66,7 +63,6 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
 
   late ThemeBloc themeBloc;
   StreamSubscription? _notificationSubscription;
-  StreamSubscription? _authSubscription;
 
   @override
   void initState() {
@@ -92,17 +88,8 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
     if (!mounted) return;
 
     _initializeClarity();
-    unawaited(sl<DynamicIconService>().syncIconFromRemoteConfig());
-
     _notificationSubscription = NotificationService.instance.onNotificationTap
         .listen(_handleNotificationTap);
-
-    _authSubscription = FirebaseAuth.instance.authStateChanges().listen((_) {
-      // Firebase's session is independent from the backend JWT used by the
-      // phone OTP flow. A Firebase signed-out state must not unregister a
-      // backend device or clear the current backend session.
-      unawaited(_initializeNotificationsForBackendSession());
-    });
     unawaited(_initializeNotificationsForBackendSession());
   }
 
@@ -209,11 +196,6 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
       unawaited(notificationSubscription.cancel());
     }
 
-    final authSubscription = _authSubscription;
-    if (authSubscription != null) {
-      unawaited(authSubscription.cancel());
-    }
-
     NotificationService.instance.dispose();
     super.dispose();
   }
@@ -225,7 +207,8 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
     if (!isConnected) {
       final stillDisconnected = !_connectivityHelper.onConnectivityChange.value;
       if (!stillDisconnected) return;
-      await rootNavigatorKey.currentContext!.pushRoute(const NoInternetRoute());
+      // Connectivity state is reflected by request-level errors. The former
+      // template popup had no recovery path and has been removed.
     } else {
       dismissConnectivityPopup();
     }
@@ -267,32 +250,27 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
           builder: (context, orientation, screenType) {
             return BlocBuilder<ThemeBloc, ThemeState>(
               builder: (context, state) {
-                // Speeds up `liquid_glass_widgets` rendering when multiple
-                // glass widgets appear on screen. Safe even if none are used.
                 return ValueListenableBuilder<Locale?>(
                   valueListenable: LocaleService.locale,
                   builder: (context, locale, _) {
-                    return GlassBackdropScope(
-                      child: MaterialApp.router(
-                        debugShowCheckedModeBanner: false,
-                        locale: locale,
-                        supportedLocales: I18n.all,
-                        localizationsDelegates: const [
-                          AppLocalizations.delegate,
-                          CountryLocalizations.delegate,
-                          GlobalMaterialLocalizations.delegate,
-                          GlobalCupertinoLocalizations.delegate,
-                          GlobalWidgetsLocalizations.delegate,
-                        ],
-                        routerConfig: appRouter.config(
-                          navigatorObservers: () => [ClarityRouteObserver()],
-                        ),
-                        theme:
-                            AppThemesData.themeData[AppThemeEnum.LightTheme]!,
-                        darkTheme:
-                            AppThemesData.themeData[AppThemeEnum.DarkTheme]!,
-                        themeMode: state.themeMode,
+                    return MaterialApp.router(
+                      debugShowCheckedModeBanner: false,
+                      locale: locale,
+                      supportedLocales: I18n.all,
+                      localizationsDelegates: const [
+                        AppLocalizations.delegate,
+                        CountryLocalizations.delegate,
+                        GlobalMaterialLocalizations.delegate,
+                        GlobalCupertinoLocalizations.delegate,
+                        GlobalWidgetsLocalizations.delegate,
+                      ],
+                      routerConfig: appRouter.config(
+                        navigatorObservers: () => [ClarityRouteObserver()],
                       ),
+                      theme: AppThemesData.themeData[AppThemeEnum.LightTheme]!,
+                      darkTheme:
+                          AppThemesData.themeData[AppThemeEnum.DarkTheme]!,
+                      themeMode: state.themeMode,
                     );
                   },
                 );

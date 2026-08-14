@@ -10,9 +10,6 @@ class ClarityRouteObserver extends AutoRouterObserver {
   ///Routes to exclude from tracking
   static const List<Type> _defaultExcludedRouteTypes = <Type>[
     InitialRoute,
-    NoInternetRoute,
-    UnderMaintenanceRoute,
-    ForceUpdateRoute,
     SslConnectionFailedRoute,
     LoginWithPhoneNumberRoute,
   ];

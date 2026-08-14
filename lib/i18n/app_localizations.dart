@@ -349,14 +349,26 @@ abstract class AppLocalizations {
   /// No description provided for @sign_in_required_title.
   ///
   /// In en, this message translates to:
-  /// **'Sign in to continue'**
+  /// **'Make iDeal work for you'**
   String get sign_in_required_title;
 
   /// No description provided for @sign_in_required_message.
   ///
   /// In en, this message translates to:
-  /// **'Please log in to access this section.'**
+  /// **'Sign in to save homes, start secure conversations, and manage your bookings in one place.'**
   String get sign_in_required_message;
+
+  /// No description provided for @guest_access_sign_in.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with phone'**
+  String get guest_access_sign_in;
+
+  /// No description provided for @guest_access_keep_browsing.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep browsing'**
+  String get guest_access_keep_browsing;
 
   /// No description provided for @login_with_email.
   ///
@@ -814,12 +826,6 @@ abstract class AppLocalizations {
   /// **'Done'**
   String get done;
 
-  /// No description provided for @community.
-  ///
-  /// In en, this message translates to:
-  /// **'Community'**
-  String get community;
-
   /// No description provided for @feedback_and_ratings.
   ///
   /// In en, this message translates to:
@@ -859,7 +865,7 @@ abstract class AppLocalizations {
   /// No description provided for @delete_account_confirmation_message.
   ///
   /// In en, this message translates to:
-  /// **'This action is irreversible. All your data will be permanently deleted. Are you sure you want to proceed?'**
+  /// **'This action is irreversible. Your account and reusable personal data will be deleted. Records retained for legal, service, or dispute purposes will be anonymized. Do you want to continue?'**
   String get delete_account_confirmation_message;
 
   /// No description provided for @delete_reason_dislike_app.
@@ -1558,23 +1564,11 @@ abstract class AppLocalizations {
   /// **'Notification Settings'**
   String get notification_settings;
 
-  /// No description provided for @change_password.
-  ///
-  /// In en, this message translates to:
-  /// **'Change Password'**
-  String get change_password;
-
   /// No description provided for @choose_app_theme.
   ///
   /// In en, this message translates to:
   /// **'Choose App Theme'**
   String get choose_app_theme;
-
-  /// No description provided for @account_security.
-  ///
-  /// In en, this message translates to:
-  /// **'Account security'**
-  String get account_security;
 
   /// No description provided for @biometric_authentication.
   ///

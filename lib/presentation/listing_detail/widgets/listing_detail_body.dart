@@ -3,11 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
 import 'package:ideal_mobile/constants/integration_test_keys.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
+import 'package:ideal_mobile/presentation/booking/domain/entities/booking.dart';
 import 'package:ideal_mobile/presentation/listing_detail/bloc/listing_detail_bloc.dart';
 import 'package:ideal_mobile/presentation/listing_detail/bloc/listing_detail_event.dart';
 import 'package:ideal_mobile/presentation/listing_detail/domain/entities/listing_detail.dart';
-import 'package:ideal_mobile/presentation/booking/domain/entities/booking.dart';
-import 'package:ideal_mobile/presentation/listings/domain/entities/listing_card.dart';
 import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_about.dart';
 import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_amenities.dart';
 import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_bottom_bar.dart';
@@ -21,6 +20,7 @@ import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_
 import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_thumb_strip.dart';
 import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_title_block.dart';
 import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_trust_card.dart';
+import 'package:ideal_mobile/presentation/listings/domain/entities/listing_card.dart';
 import 'package:ideal_mobile/presentation/map/listing_map_screen.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 
@@ -85,7 +85,11 @@ class ListingDetailBody extends StatelessWidget {
           Expanded(
             child: Stack(
               children: [
-                _buildScrollContent(context, visibleDetail),
+                _buildScrollContent(
+                  context,
+                  visibleDetail,
+                  reservePhotoStrip: preview != null && !isFreshDetail,
+                ),
                 if (isLoading && !isFreshDetail)
                   const Positioned(
                     top: 8,
@@ -116,7 +120,11 @@ class ListingDetailBody extends StatelessWidget {
     );
   }
 
-  Widget _buildScrollContent(BuildContext context, ListingDetail detail) {
+  Widget _buildScrollContent(
+    BuildContext context,
+    ListingDetail detail, {
+    required bool reservePhotoStrip,
+  }) {
     final sections = <Widget>[
       ListingDetailTitleBlock(detail: detail),
       const SizedBox(height: 14),
@@ -178,7 +186,12 @@ class ListingDetailBody extends StatelessWidget {
     return CustomScrollView(
       slivers: [
         SliverToBoxAdapter(child: ListingDetailHero(detail: detail)),
-        SliverToBoxAdapter(child: ListingDetailThumbStrip(detail: detail)),
+        SliverToBoxAdapter(
+          child: ListingDetailThumbStrip(
+            detail: detail,
+            showLoadingPlaceholder: reservePhotoStrip,
+          ),
+        ),
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.all(20),

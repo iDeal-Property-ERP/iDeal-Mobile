@@ -1,21 +1,12 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_performance/firebase_performance.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http_certificate_pinning/http_certificate_pinning.dart';
 import 'package:ideal_mobile/constants/constants.dart';
-import 'package:ideal_mobile/core/services/app_tour_service.dart';
 import 'package:ideal_mobile/main.dart';
 import 'package:ideal_mobile/presentation/booking/booking_injection.dart';
 import 'package:ideal_mobile/presentation/chat/chat_injection.dart';
-import 'package:ideal_mobile/presentation/feedback/data/datasources/feedback_remote_datasource.dart';
-import 'package:ideal_mobile/presentation/feedback/data/repositories/feedback_repository_impl.dart';
-import 'package:ideal_mobile/presentation/feedback/domain/repositories/feedback_repository.dart';
-import 'package:ideal_mobile/presentation/feedback/domain/usecases/submit_feedback.dart';
 import 'package:ideal_mobile/presentation/listings/data/datasources/listings_remote_data_source.dart';
 import 'package:ideal_mobile/presentation/listings/data/repositories/listings_repository_impl.dart';
 import 'package:ideal_mobile/presentation/listings/domain/repositories/listings_repository.dart';
@@ -38,53 +29,18 @@ import 'package:ideal_mobile/presentation/profile/domain/usecases/remove_profile
 import 'package:ideal_mobile/presentation/profile/domain/usecases/update_profile.dart';
 import 'package:ideal_mobile/presentation/profile/domain/usecases/update_profile_avatar.dart';
 import 'package:ideal_mobile/routes.gr.dart';
-import 'package:ideal_mobile/services/ai/gemini_service.dart';
-import 'package:ideal_mobile/services/dynamic_icon_service.dart';
 import 'package:ideal_mobile/services/favorites_service.dart';
-import 'package:ideal_mobile/services/firebase_auth_services.dart';
-import 'package:ideal_mobile/services/firestore_service.dart';
-import 'package:ideal_mobile/services/in_app_review_service.dart';
-import 'package:ideal_mobile/services/local_auth_services.dart';
 import 'package:ideal_mobile/services/notification_service.dart';
 import 'package:ideal_mobile/services/performance_monitoring_service.dart';
-import 'package:ideal_mobile/services/remote_config_service.dart';
 import 'package:ideal_mobile/services/secure_storage_service.dart';
 import 'package:ideal_mobile/shared_pref/prefs.dart';
 import 'package:ideal_mobile/utils/app_flavor_env.dart';
 import 'package:ideal_mobile/utils/cache_manager.dart';
-import 'package:ideal_mobile/utils/currency_converter/currency_converter_util.dart';
-import 'package:ideal_mobile/utils/currency_converter/data/datasources/currency_converter_remote_data_source.dart';
-import 'package:ideal_mobile/utils/currency_converter/data/repositories/currency_converter_repository_impl.dart';
-import 'package:ideal_mobile/utils/currency_converter/domain/repositories/currency_converter_repository.dart';
-import 'package:ideal_mobile/utils/currency_converter/domain/usecases/get_exchange_rate.dart';
-import 'package:local_auth/local_auth.dart';
 
 final sl = GetIt.instance;
 bool _isForceLoggingOutUser = false;
 
-Future<void> configureDependencies({
-  FirebaseAuth? firebaseAuth,
-  GoogleSignIn? googleSignIn,
-  FirebaseAuthService? firebaseAuthService,
-  Dio? dio,
-}) async {
-  sl.registerLazySingleton<FirebaseAuth>(
-    () => firebaseAuth ?? FirebaseAuth.instance,
-  );
-
-  sl.registerLazySingleton<GoogleSignIn>(
-    () => googleSignIn ?? GoogleSignIn.instance,
-  );
-
-  sl.registerLazySingleton<FirebaseAuthService>(
-    () =>
-        firebaseAuthService ??
-        FirebaseAuthService(
-          firebaseAuth: sl<FirebaseAuth>(),
-          googleSignIn: sl<GoogleSignIn>(),
-        ),
-  );
-
+Future<void> configureDependencies({Dio? dio}) async {
   final cacheManager = CacheManager();
   await cacheManager.initialize();
   sl.registerSingleton<CacheManager>(cacheManager);
@@ -137,45 +93,8 @@ Future<void> configureDependencies({
       () => GetListingFilterOptionsCached(sl<ListingsRepository>()),
     )
     ..registerLazySingleton<FavoritesService>(FavoritesService.new)
-    ..registerLazySingleton(() {
-      final service = GeminiService();
-      service.initialize();
-      return service;
-    }, dispose: (service) => service.dispose())
-    ..registerLazySingleton<FirebasePerformance>(
-      () => FirebasePerformance.instance,
-    )
-    ..registerLazySingleton(
-      () =>
-          PerformanceMonitoringService(performance: sl<FirebasePerformance>()),
-    )
-    ..registerLazySingleton(() => GetExchangeRate(sl()))
-    ..registerLazySingleton<CurrencyConverterRepository>(
-      () => CurrencyConverterRepositoryImpl(sl()),
-    )
-    ..registerLazySingleton<CurrencyConverterRemoteDatasource>(
-      () => CurrencyConverterRemoteDataSrcImpl(sl()),
-    )
-    ..registerLazySingleton(() => CurrencyConverterUtil(sl()))
-    ..registerLazySingleton<Dio>(() => pinnedDio)
-    ..registerLazySingleton<LocalAuthService>(
-      () => LocalAuthService(LocalAuthentication()),
-    )
-    ..registerLazySingleton<DynamicIconService>(
-      () => DynamicIconService(remoteConfigService: RemoteConfigService()),
-    )
-    ..registerLazySingleton<InAppReviewService>(() => InAppReviewService())
-    ..registerLazySingleton<FirebaseFirestore>(() => FirebaseFirestore.instance)
-    ..registerLazySingleton<FirestoreService>(
-      () => FirestoreService(firestore: sl<FirebaseFirestore>()),
-    )
-    ..registerLazySingleton(() => SubmitFeedback(sl()))
-    ..registerLazySingleton<FeedbackRepository>(
-      () => FeedbackRepositoryImpl(sl()),
-    )
-    ..registerLazySingleton<FeedbackRemoteDatasource>(
-      () => FeedbackRemoteDatasourceImpl(sl<FirestoreService>()),
-    );
+    ..registerLazySingleton(PerformanceMonitoringService.new)
+    ..registerLazySingleton<Dio>(() => pinnedDio);
 
   registerNotificationsDependencies(sl);
   registerChatDependencies(sl);
@@ -246,7 +165,6 @@ InterceptorsWrapper get _sslPinningErrorInterceptor {
       if (dioError.error.toString().contains(kConnectionIsNotSecureError)) {
         debugPrint('[SSL Pinning] Connection is not secure!');
 
-        AppTourService.dismissTour();
         await rootNavigatorKey.currentContext!.router.replaceAll([
           const SslConnectionFailedRoute(),
         ]);
@@ -295,8 +213,6 @@ InterceptorsWrapper _authErrorInterceptor() => InterceptorsWrapper(
           await sl<SecureStorageService>().clearAuthTokens();
         }
         await sl<CacheManager>().clearCachedApiResponse();
-        await sl<FirebaseAuthService>().signOut();
-
         final currentContext = rootNavigatorKey.currentContext;
         if (currentContext != null) {
           await currentContext.router.replaceAll([LoginWithPhoneNumberRoute()]);

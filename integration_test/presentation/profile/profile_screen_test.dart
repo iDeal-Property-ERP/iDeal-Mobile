@@ -8,7 +8,6 @@ import 'package:mocktail/mocktail.dart';
 import 'package:patrol/patrol.dart';
 
 import '../../demo_product_response.dart';
-import '../../mock_firebase_auth.dart';
 
 class MockDio extends Mock implements Dio {}
 
@@ -18,7 +17,6 @@ void main() {
   final mockDio = MockDio();
 
   setUpAll(() {
-    registerFallbackValue(FakeAuthCredential());
     final mockResponse = MockDioResponse<List<dynamic>>();
 
     when(() => mockResponse.statusCode).thenReturn(200);
@@ -66,9 +64,7 @@ void main() {
     'profile screen end to end test',
     framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
     ($) async {
-      final mockFirebaseAuth = MockFirebaseAuth();
-
-      await initializeApp(firebaseAuth: mockFirebaseAuth, dio: mockDio);
+      await initializeApp(dio: mockDio);
 
       await $.pumpWidgetAndSettle(MainApp(startupFuture: Future.value()));
 

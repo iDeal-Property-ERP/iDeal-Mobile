@@ -41,6 +41,8 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> {
   Widget build(BuildContext context) {
     return BlocListener<ProfileBloc, ProfileState>(
       listenWhen: (previous, current) =>
+          current is SignOutState ||
+          current is SignOutErrorState ||
           (previous.isProfileLoading &&
               !current.isProfileLoading &&
               current.profileError != null) ||
@@ -49,10 +51,7 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> {
               current.profileError != null),
       listener: (context, state) async {
         if (state is SignOutState) {
-          await context.router.pushAndPopUntil(
-            LoginWithPhoneNumberRoute(),
-            predicate: (_) => false,
-          );
+          await context.router.replaceAll([const HomeRoute()]);
         } else if (state is SignOutErrorState) {
           _showSignOutError(state, context);
         } else if (state.profileError != null) {

@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
-import 'package:ideal_mobile/presentation/reminder/model/reminder_model.dart';
 import 'package:ideal_mobile/services/push/device_registration_api.dart';
 import 'package:ideal_mobile/services/push/notification_permission_status.dart';
 import 'package:ideal_mobile/services/push/push_device_info.dart';
@@ -25,10 +24,6 @@ class NotificationService {
   final basicChannelDescription =
       'Notification channel for basic notifications';
   final basicChannelSound = 'resource://raw/basic';
-  final reminderChannel = 'reminder_channel';
-  final reminderChannelName = 'Reminders';
-  final reminderChannelDescription = 'Notification channel for reminders';
-  final reminderChannelSound = 'resource://raw/reminder';
   final appIcon = 'resource://drawable/ic_notification';
   final defaultNotificationTitle = 'New Notification';
   final defaultNotificationBody = '';
@@ -133,18 +128,6 @@ class NotificationService {
         channelShowBadge: true,
         playSound: true,
         soundSource: basicChannelSound,
-        enableVibration: true,
-      ),
-      NotificationChannel(
-        channelKey: reminderChannel,
-        channelName: reminderChannelName,
-        channelDescription: reminderChannelDescription,
-        ledColor: AppColors.white,
-        defaultColor: AppColors.brand500,
-        importance: NotificationImportance.High,
-        channelShowBadge: true,
-        playSound: true,
-        soundSource: reminderChannelSound,
         enableVibration: true,
       ),
     ], debug: kDebugMode);
@@ -430,36 +413,6 @@ class NotificationService {
     ReceivedAction receivedAction,
   ) async {
     // Notification dismissed callback
-  }
-
-  Future<bool> scheduleReminder(ReminderModel reminder) async {
-    try {
-      // Convert ID to a valid 32-bit integer by hashing
-      // Simple hash function that produces a 31-bit positive integer
-      // (avoiding sign issues)
-      final notificationId = reminder.id.toString().hashCode & 0x7FFFFFFF;
-
-      await _awesomeNotifications.createNotification(
-        content: NotificationContent(
-          id: notificationId,
-          channelKey: reminderChannel,
-          title: reminder.title,
-          body: reminder.description,
-          wakeUpScreen: true,
-          category: NotificationCategory.Reminder,
-          autoDismissible: false,
-        ),
-        schedule: NotificationCalendar.fromDate(
-          date: reminder.scheduledDateTime,
-          allowWhileIdle: true,
-          preciseAlarm: true,
-        ),
-      );
-      return true;
-    } catch (e) {
-      debugPrint('Error scheduling reminder: $e');
-      return false;
-    }
   }
 
   void dispose() {

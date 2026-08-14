@@ -18,7 +18,7 @@ class OTPVerificationButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String mobileOtpText = context.select<LoginBloc, String>(
-      (LoginBloc bloc) => bloc.state.phoneNumberLoginState?.phoneOTPText ?? '',
+      (LoginBloc bloc) => bloc.state.phoneNumberLoginState.phoneOTPText,
     );
     final bool isLoading = context.select<LoginBloc, bool>(
       (LoginBloc bloc) => bloc.state.isLoading,
@@ -37,7 +37,7 @@ class OTPVerificationButton extends StatelessWidget {
           isLoading: isLoading,
           onPressed: () {
             if (mobileOtpText.isNotEmpty && mobileOtpText.length == 6) {
-              context.read<LoginBloc>().add(FirebaseOTPVerificationEvent());
+              context.read<LoginBloc>().add(const VerifyPhoneOtpEvent());
             }
           },
         ),
@@ -73,14 +73,11 @@ class _ResendOTPButtonState extends State<_ResendOTPButton> {
   @override
   Widget build(BuildContext context) {
     final int resendTimeLeft = context.select<LoginBloc, int>(
-      (LoginBloc bloc) =>
-          bloc.state.phoneNumberLoginState?.resendOTPTimeLeft ??
-          PhoneNumberOTPScreen.kResendOTPMaxSeconds,
+      (LoginBloc bloc) => bloc.state.phoneNumberLoginState.resendOTPTimeLeft,
     );
 
     final bool isResendOTPEnabled = context.select<LoginBloc, bool>(
-      (LoginBloc bloc) =>
-          bloc.state.phoneNumberLoginState?.isResendOTPEnabled ?? false,
+      (LoginBloc bloc) => bloc.state.phoneNumberLoginState.isResendOTPEnabled,
     );
 
     final String resendOTPText =
@@ -98,7 +95,7 @@ class _ResendOTPButtonState extends State<_ResendOTPButton> {
       onPressed: () {
         if (isResendOTPEnabled) {
           context.read<LoginBloc>().add(
-            FirebasePhoneLoginEvent(isFromVerificationScreen: true),
+            const RequestPhoneOtpEvent(isResend: true),
           );
           context.read<LoginBloc>().add(
             IsResendOTPEnabledEvent(isResendOTPEnabled: false),

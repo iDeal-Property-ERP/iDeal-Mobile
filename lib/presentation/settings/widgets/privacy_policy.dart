@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
-import 'package:ideal_mobile/utils/extensions/build_context_ext.dart';
+import 'package:ideal_mobile/presentation/settings/privacy_policy_screen.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 
 class PrivacyPolicy extends StatelessWidget {
@@ -32,7 +32,9 @@ class PrivacyPolicy extends StatelessWidget {
         color: context.currentTheme.iconNeutralDefault,
       ),
       onTap: () {
-        context.showSnackBar('Privacy policy');
+        Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen()));
       },
     );
   }

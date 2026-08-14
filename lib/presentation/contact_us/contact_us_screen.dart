@@ -1,103 +1,124 @@
-import 'package:auto_route/auto_route.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ideal_mobile/i18n/app_localizations.dart';
+import 'package:ideal_mobile/core/services/injection_container.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
-import 'package:ideal_mobile/presentation/contact_us/bloc/contact_us_bloc.dart';
-import 'package:ideal_mobile/presentation/contact_us/bloc/contact_us_state.dart';
-import 'package:ideal_mobile/presentation/contact_us/widgets/contact_us_app_bar.dart';
-import 'package:ideal_mobile/presentation/contact_us/widgets/contact_us_attachment_section.dart';
-import 'package:ideal_mobile/presentation/contact_us/widgets/contact_us_description.dart';
-import 'package:ideal_mobile/presentation/contact_us/widgets/contact_us_email_section.dart';
-import 'package:ideal_mobile/presentation/contact_us/widgets/contact_us_message_section.dart';
-import 'package:ideal_mobile/presentation/contact_us/widgets/contact_us_name_section.dart';
-import 'package:ideal_mobile/presentation/contact_us/widgets/contact_us_submit_button.dart';
-import 'package:ideal_mobile/routes.gr.dart';
+import 'package:ideal_mobile/presentation/profile/data/models/mobile_user_profile.dart';
+import 'package:ideal_mobile/utils/extensions/build_context_ext.dart';
+import 'package:ideal_mobile/widgets/app_button/app_button.dart';
+import 'package:ideal_mobile/widgets/app_button/enums/app_button_size_enum.dart';
 
-@RoutePage()
 class ContactUsScreen extends StatefulWidget {
-  const ContactUsScreen({super.key});
+  const ContactUsScreen({super.key, this.profile});
+
+  final MobileUserProfile? profile;
 
   @override
   State<ContactUsScreen> createState() => _ContactUsScreenState();
 }
 
 class _ContactUsScreenState extends State<ContactUsScreen> {
-  late final ScrollController _scrollController;
-
-  @override
-  void initState() {
-    _scrollController = ScrollController();
-    super.initState();
-  }
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _messageController = TextEditingController();
+  var _submitting = false;
 
   @override
   void dispose() {
-    _scrollController.dispose();
+    _nameController.dispose();
+    _phoneController.dispose();
+    _messageController.dispose();
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final AppLocalizations appLocalizations = context.localization;
-    return BlocProvider(
-      create: (_) => ContactUsBloc(localizations: appLocalizations),
-      child: BlocListener<ContactUsBloc, ContactUsState>(
-        listener: (context, state) {
-          if (state is PickedFilesErrorState) {
-            _animateScrollViewToBottom();
-          }
-          if (state is ContactUsSubmittedState) {
-            context.router.replaceAll([const ContactUsSubmittedRoute()]);
-          }
+  Future<void> _submit() async {
+    if (_formKey.currentState?.validate() != true) return;
+    setState(() => _submitting = true);
+    final profile = widget.profile;
+    try {
+      await sl<Dio>().post(
+        '/marketplace/inquiries/',
+        data: {
+          'full_name': profile?.displayName.isNotEmpty ?? false
+              ? profile!.displayName
+              : _nameController.text.trim(),
+          'phone': profile?.phone ?? _phoneController.text.trim(),
+          'message': _messageController.text.trim(),
         },
-        child: GestureDetector(
-          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-          child: Scaffold(
-            appBar: const ContactUsAppBar(),
-            body: SingleChildScrollView(
-              controller: _scrollController,
-              child: const ContactUsScreenBody(),
-            ),
-            bottomNavigationBar: const ContactUsSubmitButton(),
-          ),
-        ),
-      ),
-    );
+      );
+      if (!mounted) return;
+      context.showSnackBar(context.localization.response_received);
+      Navigator.of(context).pop();
+    } on DioException catch (error) {
+      if (!mounted) return;
+      final body = error.response?.data;
+      final message = body is Map && body['message'] is String
+          ? body['message'] as String
+          : context.localization.opps_something_went_wrong;
+      context.showSnackBar(message, isDisplayingError: true);
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
   }
-
-  void _animateScrollViewToBottom() {
-    Future.delayed(
-      const Duration(milliseconds: 100),
-      () => _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 100),
-        curve: Curves.easeIn,
-      ),
-    );
-  }
-}
-
-class ContactUsScreenBody extends StatelessWidget {
-  const ContactUsScreenBody({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.0),
-      child: Column(
-        children: [
-          SizedBox(height: 30),
-          ContactUsDescription(),
-          SizedBox(height: 30),
-          ContactUsNameSection(),
-          SizedBox(height: 20),
-          ContactUsEmailSection(),
-          SizedBox(height: 20),
-          ContactUsMessageSection(),
-          SizedBox(height: 20),
-          ContactUsAttachmentSection(),
-        ],
+    final signedIn = widget.profile?.phone?.isNotEmpty ?? false;
+    return Scaffold(
+      appBar: AppBar(title: Text(context.localization.contact_us)),
+      body: Form(
+        key: _formKey,
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            Text(context.localization.contact_us_message),
+            const SizedBox(height: 24),
+            if (!signedIn) ...[
+              TextFormField(
+                controller: _nameController,
+                decoration: InputDecoration(
+                  labelText: context.localization.name,
+                ),
+                textInputAction: TextInputAction.next,
+                validator: (value) => value == null || value.trim().isEmpty
+                    ? context.localization.name_cannot_be_empty
+                    : null,
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _phoneController,
+                decoration: InputDecoration(
+                  labelText: context.localization.enter_phone_number,
+                ),
+                keyboardType: TextInputType.phone,
+                textInputAction: TextInputAction.next,
+                validator: (value) => value == null || value.trim().isEmpty
+                    ? context.localization.invalid_mobile_number
+                    : null,
+              ),
+              const SizedBox(height: 16),
+            ],
+            TextFormField(
+              controller: _messageController,
+              decoration: InputDecoration(
+                labelText: context.localization.message,
+              ),
+              minLines: 5,
+              maxLines: 8,
+              validator: (value) => value == null || value.trim().isEmpty
+                  ? context.localization.message_cannot_be_empty
+                  : null,
+            ),
+            const SizedBox(height: 24),
+            AppButton(
+              label: context.localization.submit,
+              shouldSetFullWidth: true,
+              size: AppButtonSize.extraLarge,
+              isLoading: _submitting,
+              onPressed: _submitting ? null : _submit,
+            ),
+          ],
+        ),
       ),
     );
   }

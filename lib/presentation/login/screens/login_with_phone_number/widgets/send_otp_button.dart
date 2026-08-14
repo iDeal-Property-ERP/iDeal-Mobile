@@ -4,7 +4,6 @@ import 'package:ideal_mobile/constants/integration_test_keys.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
 import 'package:ideal_mobile/presentation/login/bloc/login_bloc.dart';
 import 'package:ideal_mobile/presentation/login/bloc/login_events.dart';
-import 'package:ideal_mobile/presentation/login/enum/enum_login_type.dart';
 import 'package:ideal_mobile/presentation/login/screens/login_with_phone_number/widgets/channel_picker_sheet.dart';
 import 'package:ideal_mobile/utils/extensions/build_context_ext.dart';
 import 'package:ideal_mobile/utils/internet_connectivity_helper.dart';
@@ -75,7 +74,6 @@ class SendOTPButton extends StatelessWidget {
           if (!context.mounted || selectedChannel == null) return;
 
           final loginBloc = context.read<LoginBloc>();
-          loginBloc.add(SelectLoginSignupTypeEvent(LoginType.PHONE));
           loginBloc.add(SelectOtpChannelEvent(channel: selectedChannel));
           loginBloc.add(LoginWithPhoneNumEvent(phoneNumWithCountryCode));
         }

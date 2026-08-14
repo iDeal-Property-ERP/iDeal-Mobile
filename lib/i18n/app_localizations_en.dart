@@ -146,11 +146,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get login_terms_notice => 'By continuing, you agree to our';
 
   @override
-  String get sign_in_required_title => 'Sign in to continue';
+  String get sign_in_required_title => 'Make iDeal work for you';
 
   @override
   String get sign_in_required_message =>
-      'Please log in to access this section.';
+      'Sign in to save homes, start secure conversations, and manage your bookings in one place.';
+
+  @override
+  String get guest_access_sign_in => 'Sign in with phone';
+
+  @override
+  String get guest_access_keep_browsing => 'Keep browsing';
 
   @override
   String get login_with_email => 'Login with email';
@@ -389,9 +395,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get done => 'Done';
 
   @override
-  String get community => 'Community';
-
-  @override
   String get feedback_and_ratings => 'Feedback & Ratings';
 
   @override
@@ -413,7 +416,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get delete_account_confirmation_message =>
-      'This action is irreversible. All your data will be permanently deleted. Are you sure you want to proceed?';
+      'This action is irreversible. Your account and reusable personal data will be deleted. Records retained for legal, service, or dispute purposes will be anonymized. Do you want to continue?';
 
   @override
   String get delete_reason_dislike_app => 'I don’t like to be on this app';
@@ -802,13 +805,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notification_settings => 'Notification Settings';
 
   @override
-  String get change_password => 'Change Password';
-
-  @override
   String get choose_app_theme => 'Choose App Theme';
-
-  @override
-  String get account_security => 'Account security';
 
   @override
   String get biometric_authentication => 'Biometric Authentication';

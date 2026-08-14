@@ -15,8 +15,6 @@
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		A6DB135FCE5B10454CADD877 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42D24A48A45CC44A0A00B25F /* Pods_Runner.framework */; };
 		C25B21E3FCF9A2C4EF4E2BC0 /* Pods_Runner_RunnerUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A72E47D74B1F0580718981A /* Pods_Runner_RunnerUITests.framework */; };
-		D2AE71952F73C5890085015E /* diwali@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = D2AE71942F73C5890085015E /* diwali@3x.png */; };
-		D2AE71962F73C5890085015E /* diwali@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D2AE71932F73C5890085015E /* diwali@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,8 +68,6 @@
 		A375545C25A604854D160951 /* Pods-Runner-RunnerUITests.release-dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner-RunnerUITests.release-dev.xcconfig"; path = "Target Support Files/Pods-Runner-RunnerUITests/Pods-Runner-RunnerUITests.release-dev.xcconfig"; sourceTree = "<group>"; };
 		B05A0F04FE21539C00F2B9C5 /* Pods-Runner.release-dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release-dev.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release-dev.xcconfig"; sourceTree = "<group>"; };
 		B7D20E12C3771DC31DA84D4A /* Pods-Runner-RunnerUITests.release-prod.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner-RunnerUITests.release-prod.xcconfig"; path = "Target Support Files/Pods-Runner-RunnerUITests/Pods-Runner-RunnerUITests.release-prod.xcconfig"; sourceTree = "<group>"; };
-		D2AE71932F73C5890085015E /* diwali@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "diwali@2x.png"; sourceTree = "<group>"; };
-		D2AE71942F73C5890085015E /* diwali@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "diwali@3x.png"; sourceTree = "<group>"; };
 		D2B12FFC2E0E7A3E00A9D6A6 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		D2B12FFE2E0E7A3E00A9D6A6 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		D774C5437ED471137B9BDD18 /* Pods-Runner.release-prod.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release-prod.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release-prod.xcconfig"; sourceTree = "<group>"; };
@@ -174,8 +170,6 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
-				D2AE71932F73C5890085015E /* diwali@2x.png */,
-				D2AE71942F73C5890085015E /* diwali@3x.png */,
 				56B721512E56DCE700377F98 /* Runner.entitlements */,
 				97C146FA1CF9000F007C117D /* Main.storyboard */,
 				97C146FD1CF9000F007C117D /* Assets.xcassets */,
@@ -321,8 +315,6 @@
 				97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */,
 				3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */,
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
-				D2AE71952F73C5890085015E /* diwali@3x.png in Resources */,
-				D2AE71962F73C5890085015E /* diwali@2x.png in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

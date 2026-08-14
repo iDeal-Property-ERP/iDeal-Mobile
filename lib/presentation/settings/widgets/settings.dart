@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ideal_mobile/presentation/settings/widgets/account_security.dart';
-import 'package:ideal_mobile/presentation/settings/widgets/biometric_authentication.dart';
-import 'package:ideal_mobile/presentation/settings/widgets/change_password.dart';
 import 'package:ideal_mobile/presentation/settings/widgets/choose_app_theme.dart';
+import 'package:ideal_mobile/presentation/settings/widgets/delete_account.dart';
 import 'package:ideal_mobile/presentation/settings/widgets/divider.dart';
 import 'package:ideal_mobile/presentation/settings/widgets/notification_settings.dart';
 import 'package:ideal_mobile/presentation/settings/widgets/privacy_policy.dart';
@@ -27,18 +25,14 @@ class Settings extends StatelessWidget {
             children: [
               NotificationSettings(),
               SettingsSectionDivider(),
-              ChangePassword(),
-              SettingsSectionDivider(),
               ChooseAppTheme(),
-              SettingsSectionDivider(),
-              AccountSecurity(),
-              SettingsSectionDivider(),
-              BiometricAuthentication(),
               SettingsSectionDivider(),
               PrivacyPolicy(),
             ],
           ),
         ),
+        const Spacer(),
+        const DeleteAccount(),
       ],
     );
   }

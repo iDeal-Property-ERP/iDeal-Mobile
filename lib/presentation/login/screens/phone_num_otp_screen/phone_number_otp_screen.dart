@@ -10,20 +10,13 @@ import 'package:ideal_mobile/presentation/login/bloc/login_state.dart';
 import 'package:ideal_mobile/presentation/login/screens/phone_num_otp_screen/widgets/otp_input_field.dart';
 import 'package:ideal_mobile/presentation/login/screens/phone_num_otp_screen/widgets/otp_verification_button.dart';
 import 'package:ideal_mobile/presentation/login/widgets/login_app_bar.dart';
-import 'package:ideal_mobile/routes.gr.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 
 @RoutePage()
 class PhoneNumberOTPScreen extends StatefulWidget {
-  const PhoneNumberOTPScreen({
-    super.key,
-    required this.loginBloc,
-    this.isFromDeleteAccount = false,
-  });
+  const PhoneNumberOTPScreen({super.key, required this.loginBloc});
 
   final LoginBloc loginBloc;
-
-  final bool isFromDeleteAccount;
 
   static const kResendOTPMaxSeconds = 60;
 
@@ -41,7 +34,6 @@ class PhoneNumberOTPScreenState extends State<PhoneNumberOTPScreen> {
           widget.loginBloc.add(
             IsResendOTPEnabledEvent(isResendOTPEnabled: false),
           );
-          widget.loginBloc.add(PhoneNumLoginLoadingEvent(isLoading: false));
         }
       },
       child: GestureDetector(
@@ -52,9 +44,7 @@ class PhoneNumberOTPScreenState extends State<PhoneNumberOTPScreen> {
             padding: const EdgeInsets.all(16.0),
             child: BlocProvider<LoginBloc>.value(
               value: widget.loginBloc,
-              child: _PhoneNumberOTPScreenBody(
-                isFromDeleteAccount: widget.isFromDeleteAccount,
-              ),
+              child: const _PhoneNumberOTPScreenBody(),
             ),
           ),
         ),
@@ -64,31 +54,22 @@ class PhoneNumberOTPScreenState extends State<PhoneNumberOTPScreen> {
 }
 
 class _PhoneNumberOTPScreenBody extends StatelessWidget {
-  const _PhoneNumberOTPScreenBody({required this.isFromDeleteAccount});
-
-  final bool isFromDeleteAccount;
+  const _PhoneNumberOTPScreenBody();
 
   @override
   Widget build(BuildContext context) {
-    final String phoneNumber =
-        context.read<LoginBloc>().state.phoneNumberLoginState?.phoneNumber ??
-        '';
+    final String phoneNumber = context
+        .read<LoginBloc>()
+        .state
+        .phoneNumberLoginState
+        .phoneNumber;
     return BlocListener<LoginBloc, LoginState>(
       listener: (context, state) async {
         if (state is NavigateToHomeScreenState) {
-          // If user came from Delete Account flow,
-          // return them to DeleteAccountScreen
-          if (isFromDeleteAccount) {
-            await context.router.replace(const DeleteAccountRoute());
-          } else {
-            final resumed =
-                await BookingIntentService.resumeAfterAuthentication(context);
-            if (!resumed && context.mounted) context.router.popUntilRoot();
-          }
-        } else if (state is NavigateToVerifiedScreenState) {
-          await context.router.replaceAll([
-            PhoneNumberVerifiedRoute(loginBloc: context.read<LoginBloc>()),
-          ]);
+          final resumed = await BookingIntentService.resumeAfterAuthentication(
+            context,
+          );
+          if (!resumed && context.mounted) context.router.popUntilRoot();
         }
       },
       child: Column(

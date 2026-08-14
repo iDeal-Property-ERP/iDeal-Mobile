@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
@@ -7,26 +6,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ideal_mobile/core/services/injection_container.dart';
 import 'package:ideal_mobile/gen/assets.gen.dart';
 import 'package:ideal_mobile/initialize_app.dart';
-import 'package:ideal_mobile/presentation/force_update/constants/force_update_constants.dart';
 import 'package:ideal_mobile/presentation/initial/initial_screen.dart';
 import 'package:ideal_mobile/routes.gr.dart';
-import 'package:ideal_mobile/services/local_auth_services.dart';
-import 'package:ideal_mobile/services/remote_config_service.dart';
 import 'package:ideal_mobile/shared_pref/pref_keys.dart';
 import 'package:ideal_mobile/shared_pref/prefs.dart';
 import 'package:ideal_mobile/widgets/styling/app_theme_data.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 
 import '../../test_helpers.dart';
 
 class MockStackRouter extends Mock implements StackRouter {}
-
-class MockLocalAuthService extends Mock implements LocalAuthService {}
-
-class MockRemoteConfigService extends Mock implements RemoteConfigService {}
 
 void main() {
   setUpAll(() {
@@ -73,31 +64,15 @@ void main() {
 
   group('Initial startup routing', () {
     late MockStackRouter router;
-    late MockRemoteConfigService remoteConfig;
-
     setUp(() async {
       _setMockPreferences({});
-      PackageInfo.setMockInitialValues(
-        appName: 'iDeal Mobile',
-        packageName: 'com.ideal.mobile.dev',
-        version: '0.1.0',
-        buildNumber: '1',
-        buildSignature: '',
-      );
-
       await sl.reset();
 
       router = MockStackRouter();
       when(() => router.replace(any())).thenAnswer((_) async => null);
-      when(() => router.replaceAll(any())).thenAnswer((_) async {});
-
-      remoteConfig = MockRemoteConfigService();
-      when(() => remoteConfig.getString(any())).thenReturn('0.1.0');
-      RemoteConfigService.setInstanceForTesting(remoteConfig);
     });
 
     tearDown(() async {
-      RemoteConfigService.setInstanceForTesting(null);
       await sl.reset();
     });
 
@@ -119,29 +94,13 @@ void main() {
 
     testWidgets('authenticated user routes to Home once', (tester) async {
       _setMockPreferences({
-        PrefKeys.kUserDetails: json.encode({'token': 'firebase-session'}),
-        PrefKeys.kIsBiometricEnabled: false,
+        PrefKeys.kUserDetails: '{"accessToken":"backend-session"}',
       });
-      sl.registerSingleton<LocalAuthService>(MockLocalAuthService());
 
       await _pumpRoutableInitialScreen(tester, router);
 
       final route = verify(() => router.replace(captureAny())).captured.single;
       expect(route, isA<HomeRoute>());
-    });
-
-    testWidgets('mandatory update routes to Force Update once', (tester) async {
-      when(
-        () => remoteConfig.getString(kRemoteConfigMandatoryAppVersionKey),
-      ).thenReturn('0.2.0');
-
-      await _pumpRoutableInitialScreen(tester, router);
-
-      final routes =
-          verify(() => router.replaceAll(captureAny())).captured.single
-              as List<PageRouteInfo>;
-      expect(routes, hasLength(1));
-      expect(routes.single, isA<ForceUpdateRoute>());
     });
   });
 }

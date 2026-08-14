@@ -146,11 +146,17 @@ class AppLocalizationsRu extends AppLocalizations {
   String get login_terms_notice => 'Продолжая, вы соглашаетесь с';
 
   @override
-  String get sign_in_required_title => 'Войдите, чтобы продолжить';
+  String get sign_in_required_title => 'Получите больше с iDeal';
 
   @override
   String get sign_in_required_message =>
-      'Войдите в аккаунт, чтобы открыть этот раздел.';
+      'Войдите, чтобы сохранять жильё, безопасно общаться и управлять бронированиями в одном месте.';
+
+  @override
+  String get guest_access_sign_in => 'Войти по номеру телефона';
+
+  @override
+  String get guest_access_keep_browsing => 'Продолжить просмотр';
 
   @override
   String get login_with_email => 'Войти по электронной почте';
@@ -396,9 +402,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get done => 'Готово';
 
   @override
-  String get community => 'Сообщество';
-
-  @override
   String get feedback_and_ratings => 'Обратная связь и рейтинги';
 
   @override
@@ -420,7 +423,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get delete_account_confirmation_message =>
-      'Это действие необратимо. Все ваши данные будут безвозвратно удалены. Вы уверены, что хотите продолжить?';
+      'Это действие необратимо. Аккаунт и повторно используемые персональные данные будут удалены. Записи, которые необходимо сохранить для закона, сервиса или споров, будут обезличены. Продолжить?';
 
   @override
   String get delete_reason_dislike_app =>
@@ -818,13 +821,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get notification_settings => 'Настройки уведомлений';
 
   @override
-  String get change_password => 'Изменить пароль';
-
-  @override
   String get choose_app_theme => 'Выберите тему приложения';
-
-  @override
-  String get account_security => 'Безопасность аккаунта';
 
   @override
   String get biometric_authentication => 'Биометрическая аутентификация';

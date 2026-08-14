@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ideal_mobile/constants/integration_test_keys.dart';
-import 'package:ideal_mobile/core/services/app_tour_service.dart';
 import 'package:ideal_mobile/presentation/home/widgets/home_app_bar.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_bloc.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_event.dart';
@@ -14,15 +13,12 @@ import 'package:ideal_mobile/presentation/listings/widgets/listings_filter_chips
 import 'package:ideal_mobile/presentation/listings/widgets/listings_filter_sheet.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/listings_search_bar.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/map_pill_button.dart';
-import 'package:ideal_mobile/utils/app_environment.dart';
 
 /// Distance from the bottom of the feed at which the next page is requested.
 const _kLoadMoreThreshold = 400.0;
 
 class HomeScreenBody extends StatefulWidget {
-  const HomeScreenBody({super.key, required this.bottomNavKey});
-
-  final GlobalKey bottomNavKey;
+  const HomeScreenBody({super.key});
 
   @override
   State<HomeScreenBody> createState() => _HomeScreenBodyState();
@@ -31,17 +27,10 @@ class HomeScreenBody extends StatefulWidget {
 class _HomeScreenBodyState extends State<HomeScreenBody> {
   final GlobalKey _searchBarKey = GlobalKey();
   final ScrollController _scrollController = ScrollController();
-  final isFromTestEnvironment = AppEnvironment.isTestEnvironment;
-
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
-    if (!isFromTestEnvironment) {
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
-        await _checkAndShowTour();
-      });
-    }
   }
 
   @override
@@ -64,27 +53,6 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
     if (bloc.state.isLoadingMore || bloc.state.hasReachedMax) return;
 
     bloc.add(const LoadMoreListingsEvent());
-  }
-
-  Future<void> _checkAndShowTour() async {
-    try {
-      final tourCompleted = await AppTourService.isTourCompleted();
-      if (!tourCompleted && mounted) {
-        await Future.delayed(const Duration(milliseconds: 300));
-
-        if (mounted && _searchBarKey.currentContext != null) {
-          AppTourService.showTour(
-            context: context,
-            searchBarKey: _searchBarKey,
-            bottomNavKey: widget.bottomNavKey,
-          );
-        } else {
-          debugPrint('Search bar key context is null, cannot show tour');
-        }
-      }
-    } catch (e) {
-      debugPrint('Error in _checkAndShowTour: $e');
-    }
   }
 
   Future<void> _onRefresh() async {

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
-import 'package:ideal_mobile/presentation/profile/widgets/community.dart';
-import 'package:ideal_mobile/presentation/profile/widgets/divider.dart';
 import 'package:ideal_mobile/presentation/profile/widgets/notifications.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 
@@ -28,9 +26,7 @@ class ActivitySection extends StatelessWidget {
             ),
             borderRadius: BorderRadius.circular(12.0),
           ),
-          child: const Column(
-            children: [Notifications(), ProfileItemsDivider(), Community()],
-          ),
+          child: const Notifications(),
         ),
       ],
     );

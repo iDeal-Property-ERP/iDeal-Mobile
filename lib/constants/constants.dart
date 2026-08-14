@@ -1,14 +1,5 @@
 const String kLogFileName = 'app.log';
 
-/// Play Store applicationId of the published Android app.
-/// Used by the in-app review flow to deep-link to the store listing.
-const String kGooglePlayIdentifier = 'com.ideal.mobile';
-
-/// Numeric App Store ID from App Store Connect (e.g. `'1234567890'`).
-/// Placeholder — replace before iOS release. Not read by the native review
-/// dialog (StoreKit uses bundle id); only consumed by `launchStore()`.
-const String kAppStoreIdentifier = '0000000000';
-
 const kMimeTypeVideo = 'video/';
 const kMimeTypeImage = 'image/';
 const kSVGWithDot = '.svg';
@@ -53,29 +44,6 @@ const String kHeroAnimationPrefix = 'fullscreen_image_0';
 // Regex patterns
 final kEmailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
 
-// Firebase Auth exception codes
-const kFirebaseAuthWeakPasswordException = 'weak-password';
-const kFirebaseAuthUserNotFoundException = 'user-not-found';
-const kFirebaseAuthWrongPasswordException = 'wrong-password';
-const kFirebaseAuthTooManyRequestsException = 'too-many-requests';
-const kFirebaseAuthInvalidCodeException = 'invalid-verification-code';
-const kFirebaseAuthSessionExpiredException = 'session-expired';
-const kFirebaseAuthSessionEmailAlreadyInUse = 'email-already-in-use';
-const kFirebaseAuthRequiresRecentLogin = 'requires-recent-login';
-
-// Firestore exception codes
-const String kFirestorePermissionDenied = 'permission-denied';
-const String kFirestoreNotFound = 'not-found';
-const String kFirestoreAlreadyExists = 'already-exists';
-const String kFirestoreResourceExhausted = 'resource-exhausted';
-const String kFirestoreUnauthenticated = 'unauthenticated';
-const String kFirestoreUnavailable = 'unavailable';
-const String kFirestoreCancelled = 'cancelled';
-const String kFirestoreDeadlineExceeded = 'deadline-exceeded';
-const String kFirestoreInvalidArgument = 'invalid-argument';
-const String kFirestoreInternal = 'internal';
-const String kFirestoreDataLoss = 'data-loss';
-
 // Network/SSL pinning constants
 const String kConnectionIsNotSecureError = 'Connection is not secure';
 
@@ -91,12 +59,7 @@ const String kDefaultTimeFormat12Hour = 'hh:mm a';
 // Performance Monitoring Traces
 const String kTraceApiGetListings = 'api_get_listings';
 const String kTraceApiGetListingDetail = 'api_get_listing_detail';
-const String kTraceLoginEmailPassword = 'login_email_password';
-const String kTraceLoginGoogle = 'login_google';
-const String kTraceLoginApple = 'login_apple';
 const String kTraceLoginPhone = 'login_phone';
-const String kTraceSignupEmail = 'signup_email';
-const String kTraceDeleteAccount = 'delete_account';
 const String kTraceSignOut = 'sign_out';
 
 // Performance Monitoring Trace Attribute Keys

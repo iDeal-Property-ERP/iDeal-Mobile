@@ -13,7 +13,6 @@ import 'package:ideal_mobile/presentation/profile/domain/usecases/get_profile.da
 import 'package:ideal_mobile/presentation/profile/domain/usecases/remove_profile_avatar.dart';
 import 'package:ideal_mobile/presentation/profile/domain/usecases/update_profile.dart';
 import 'package:ideal_mobile/presentation/profile/domain/usecases/update_profile_avatar.dart';
-import 'package:ideal_mobile/services/firebase_auth_services.dart';
 import 'package:ideal_mobile/services/notification_service.dart';
 import 'package:ideal_mobile/services/performance_monitoring_service.dart';
 import 'package:ideal_mobile/services/secure_storage_service.dart';
@@ -147,7 +146,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         await sl<SecureStorageService>().clearAuthTokens();
       }
       await sl<CacheManager>().clearCachedApiResponse();
-      await FirebaseAuthService().signOut();
       _performanceService.putAttribute(kTraceSignOut, kTraceAttrSuccess, true);
       await HapticFeedbackUtil.light();
       emit(SignOutState());

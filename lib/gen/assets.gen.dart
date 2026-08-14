@@ -11,44 +11,8 @@
 
 import 'package:flutter/widgets.dart';
 
-class $AssetsAnimationsGen {
-  const $AssetsAnimationsGen();
-
-  /// File path: assets/animations/app_under_maintenance .json
-  String get appUnderMaintenance =>
-      'assets/animations/app_under_maintenance .json';
-
-  /// File path: assets/animations/success_checkmark_blue_bg.json
-  String get successCheckmarkBlueBg =>
-      'assets/animations/success_checkmark_blue_bg.json';
-
-  /// File path: assets/animations/success_checkmark_red_bg.json
-  String get successCheckmarkRedBg =>
-      'assets/animations/success_checkmark_red_bg.json';
-
-  /// List of all assets
-  List<String> get values => [
-    appUnderMaintenance,
-    successCheckmarkBlueBg,
-    successCheckmarkRedBg,
-  ];
-}
-
 class $AssetsIconsGen {
   const $AssetsIconsGen();
-
-  /// File path: assets/icons/account_deleted_success.svg
-  String get accountDeletedSuccess =>
-      'assets/icons/account_deleted_success.svg';
-
-  /// File path: assets/icons/app_under_maintenance.svg
-  String get appUnderMaintenance => 'assets/icons/app_under_maintenance.svg';
-
-  /// File path: assets/icons/apple.svg
-  String get apple => 'assets/icons/apple.svg';
-
-  /// File path: assets/icons/close.svg
-  String get close => 'assets/icons/close.svg';
 
   /// File path: assets/icons/company_logo_dt.png
   AssetGenImage get companyLogoDt =>
@@ -58,24 +22,6 @@ class $AssetsIconsGen {
   AssetGenImage get companyLogoLt =>
       const AssetGenImage('assets/icons/company_logo_lt.png');
 
-  /// File path: assets/icons/delivery_parcel.svg
-  String get deliveryParcel => 'assets/icons/delivery_parcel.svg';
-
-  /// File path: assets/icons/email.svg
-  String get email => 'assets/icons/email.svg';
-
-  /// File path: assets/icons/email_notification.svg
-  String get emailNotification => 'assets/icons/email_notification.svg';
-
-  /// File path: assets/icons/empty_saved_cards.svg
-  String get emptySavedCards => 'assets/icons/empty_saved_cards.svg';
-
-  /// File path: assets/icons/force_update.svg
-  String get forceUpdate => 'assets/icons/force_update.svg';
-
-  /// File path: assets/icons/google.png
-  AssetGenImage get google => const AssetGenImage('assets/icons/google.png');
-
   /// File path: assets/icons/lock.svg
   String get lock => 'assets/icons/lock.svg';
 
@@ -83,109 +29,32 @@ class $AssetsIconsGen {
   AssetGenImage get loginLogo =>
       const AssetGenImage('assets/icons/login_logo.png');
 
-  /// File path: assets/icons/mdi_tick.svg
-  String get mdiTick => 'assets/icons/mdi_tick.svg';
-
-  /// File path: assets/icons/no_chats.svg
-  String get noChats => 'assets/icons/no_chats.svg';
-
-  /// File path: assets/icons/no_internet_connection.svg
-  String get noInternetConnection => 'assets/icons/no_internet_connection.svg';
-
   /// File path: assets/icons/no_notifications.svg
   String get noNotifications => 'assets/icons/no_notifications.svg';
-
-  /// File path: assets/icons/pro_icon.png
-  AssetGenImage get proIcon => const AssetGenImage('assets/icons/pro_icon.png');
 
   /// File path: assets/icons/search_outline.svg
   String get searchOutline => 'assets/icons/search_outline.svg';
 
-  /// File path: assets/icons/send.svg
-  String get send => 'assets/icons/send.svg';
-
-  /// File path: assets/icons/server_error.svg
-  String get serverError => 'assets/icons/server_error.svg';
-
-  /// File path: assets/icons/tick.svg
-  String get tick => 'assets/icons/tick.svg';
-
-  /// File path: assets/icons/user_not_found.svg
-  String get userNotFound => 'assets/icons/user_not_found.svg';
-
   /// File path: assets/icons/user_placeholder.svg
   String get userPlaceholder => 'assets/icons/user_placeholder.svg';
 
-  /// File path: assets/icons/waveforms.svg
-  String get waveforms => 'assets/icons/waveforms.svg';
-
   /// List of all assets
   List<dynamic> get values => [
-    accountDeletedSuccess,
-    appUnderMaintenance,
-    apple,
-    close,
     companyLogoDt,
     companyLogoLt,
-    deliveryParcel,
-    email,
-    emailNotification,
-    emptySavedCards,
-    forceUpdate,
-    google,
     lock,
     loginLogo,
-    mdiTick,
-    noChats,
-    noInternetConnection,
     noNotifications,
-    proIcon,
     searchOutline,
-    send,
-    serverError,
-    tick,
-    userNotFound,
     userPlaceholder,
-    waveforms,
   ];
-}
-
-class $AssetsImagesGen {
-  const $AssetsImagesGen();
-
-  /// File path: assets/images/demo_user.jpeg
-  AssetGenImage get demoUser =>
-      const AssetGenImage('assets/images/demo_user.jpeg');
-
-  /// File path: assets/images/mastercard.png
-  AssetGenImage get mastercard =>
-      const AssetGenImage('assets/images/mastercard.png');
-
-  /// File path: assets/images/success.png
-  AssetGenImage get success => const AssetGenImage('assets/images/success.png');
-
-  /// List of all assets
-  List<AssetGenImage> get values => [demoUser, mastercard, success];
 }
 
 class $AssetsTestGen {
   const $AssetsTestGen();
 
-  /// Directory path: assets/test/files
-  $AssetsTestFilesGen get files => const $AssetsTestFilesGen();
-
   /// Directory path: assets/test/images
   $AssetsTestImagesGen get images => const $AssetsTestImagesGen();
-}
-
-class $AssetsTestFilesGen {
-  const $AssetsTestFilesGen();
-
-  /// File path: assets/test/files/test_pdf.pdf
-  String get testPdf => 'assets/test/files/test_pdf.pdf';
-
-  /// List of all assets
-  List<String> get values => [testPdf];
 }
 
 class $AssetsTestImagesGen {
@@ -201,9 +70,7 @@ class $AssetsTestImagesGen {
 
 abstract final class Assets {
   static const String aEnv = '.env';
-  static const $AssetsAnimationsGen animations = $AssetsAnimationsGen();
   static const $AssetsIconsGen icons = $AssetsIconsGen();
-  static const $AssetsImagesGen images = $AssetsImagesGen();
   static const $AssetsTestGen test = $AssetsTestGen();
 
   /// List of all assets

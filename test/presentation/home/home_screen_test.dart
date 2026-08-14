@@ -25,10 +25,8 @@ import 'package:ideal_mobile/presentation/profile/domain/usecases/get_profile.da
 import 'package:ideal_mobile/presentation/profile/domain/usecases/remove_profile_avatar.dart';
 import 'package:ideal_mobile/presentation/profile/domain/usecases/update_profile.dart';
 import 'package:ideal_mobile/presentation/profile/domain/usecases/update_profile_avatar.dart';
-import 'package:ideal_mobile/services/performance_monitoring_service.dart';
 import 'package:ideal_mobile/widgets/styling/app_theme_data.dart';
 
-import '../../../integration_test/mock_firebase_performance.dart';
 import '../../flutter_test_config.dart';
 import '../../test_helpers.dart';
 
@@ -66,14 +64,8 @@ const _testProfile = MobileUserProfile(
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  late MockFirebasePerformance mockFirebasePerformance;
-
   setUpAll(() async {
-    mockFirebasePerformance = MockFirebasePerformance();
     sl.allowReassignment = true;
-    sl.registerLazySingleton<PerformanceMonitoringService>(
-      () => PerformanceMonitoringService(performance: mockFirebasePerformance),
-    );
 
     final notificationBadgeCubit = MockNotificationBadgeCubit();
     when(() => notificationBadgeCubit.state).thenReturn(0);

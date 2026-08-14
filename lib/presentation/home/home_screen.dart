@@ -5,7 +5,6 @@ import 'package:clarity_flutter/clarity_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ideal_mobile/core/services/injection_container.dart';
-import 'package:ideal_mobile/presentation/ai_chat/widgets/ai_chat_fab.dart';
 import 'package:ideal_mobile/presentation/chat/bloc/chat_badge_cubit.dart';
 import 'package:ideal_mobile/presentation/chat/bloc/chats_bloc.dart';
 import 'package:ideal_mobile/presentation/chat/bloc/chats_event.dart';
@@ -17,8 +16,6 @@ import 'package:ideal_mobile/presentation/home/widgets/home_screen_body.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_bloc.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_event.dart';
 import 'package:ideal_mobile/presentation/profile/profile_screen.dart';
-import 'package:ideal_mobile/services/in_app_review_service.dart';
-import 'package:ideal_mobile/utils/app_environment.dart';
 
 @RoutePage()
 class HomeScreen extends StatelessWidget {
@@ -64,12 +61,7 @@ class HomeScreenWrapperState extends State<HomeScreenWrapper> {
     super.initState();
     _chatsBloc = widget.chatsBloc;
     _chatBadgeCubit = widget.chatBadgeCubit ?? sl<ChatBadgeCubit>();
-    _pages = [HomeScreenBody(bottomNavKey: bottomNavKey), null, null];
-    if (!AppEnvironment.isTestEnvironment) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        sl<InAppReviewService>().requestReviewIfEligible();
-      });
-    }
+    _pages = [const HomeScreenBody(), null, null];
   }
 
   void _syncChatPolling(int currentIndex) {
@@ -108,7 +100,7 @@ class HomeScreenWrapperState extends State<HomeScreenWrapper> {
     _pages[currentIndex] ??= switch (currentIndex) {
       1 => ChatsScreen(bloc: _chatBloc()),
       2 => const ProfileScreen(),
-      _ => HomeScreenBody(bottomNavKey: bottomNavKey),
+      _ => const HomeScreenBody(),
     };
     _syncChatPolling(currentIndex);
     final String screenName = _pages[currentIndex]!.runtimeType.toString();
@@ -128,7 +120,6 @@ class HomeScreenWrapperState extends State<HomeScreenWrapper> {
           key: bottomNavKey,
           chatBadgeCubit: _chatBadgeCubit,
         ),
-        floatingActionButton: const AiChatFab(),
         body: SafeArea(
           child: IndexedStack(
             index: currentIndex,

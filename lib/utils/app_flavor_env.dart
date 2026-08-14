@@ -34,6 +34,23 @@ class AppConfig {
     }
   }
 
+  static String get frontendBaseUrl {
+    switch (appFlavor) {
+      case AppFlavor.local:
+        return dotenv.env['LOCAL_FRONTEND_BASE_URL'] ?? '';
+      case AppFlavor.dev:
+        return dotenv.env['DEV_FRONTEND_BASE_URL'] ?? '';
+      case AppFlavor.prod:
+        return dotenv.env['PROD_FRONTEND_BASE_URL'] ?? '';
+    }
+  }
+
+  static String get supportTelegramUrl =>
+      dotenv.env['SUPPORT_TELEGRAM_URL']?.trim() ?? '';
+
+  static String get supportWhatsAppUrl =>
+      dotenv.env['SUPPORT_WHATSAPP_URL']?.trim() ?? '';
+
   static String getDioCertHash() {
     switch (appFlavor) {
       case AppFlavor.local:

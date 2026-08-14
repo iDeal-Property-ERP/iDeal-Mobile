@@ -125,8 +125,3 @@ class PhoneNumberLoginState with EquatableMixin {
     channel,
   ];
 }
-
-class FirebaseOTPAutoVerificationState extends PhoneNumberLoginState {
-  FirebaseOTPAutoVerificationState(PhoneNumberLoginState state)
-    : super.copy(state.copyWith(phoneOTPText: state.phoneOTPText));
-}

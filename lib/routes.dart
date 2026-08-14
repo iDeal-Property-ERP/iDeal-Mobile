@@ -24,37 +24,12 @@ class AppRouter extends RootStackRouter {
       // Login
       LoginWithPhoneNumberRoute.page,
       PhoneNumberOTPRoute.page,
-      LoginWithEmailPasswordRoute.page,
-      ForgotPasswordRoute.page,
-      CheckYourEmailRoute.page,
-
-      // Signup
-      PhoneNumberVerifiedRoute.page,
-      AddProfilePictureRoute.page,
-      SignupWithEmailPasswordRoute.page,
-      CreateYourPasswordRoute.page,
-      VerifyEmailRoute.page,
-
-      // Contact Us
-      ContactUsRoute.page,
-      ContactUsSubmittedRoute.page,
-
-      // Feedback
-      FeedbackRoute.page,
-
       // Chat
       ChatsRoute.page,
 
       // Notifications
       NotificationsRoute.page,
       NotificationSettingsRoute.page,
-
-      // Empty widget screens
-      ServerErrorRoute.page,
-      NoInternetRoute.page,
-      UnderMaintenanceRoute.page,
-      EmptyViewsRoute.page,
-      ReminderRoute.page,
 
       //Image view
       NetworkImageRoute.page,
@@ -63,21 +38,8 @@ class AppRouter extends RootStackRouter {
       SettingsRoute.page,
       PersonalDetailsRoute.page,
 
-      //Delete Account
-      DeleteAccountRoute.page,
-      AccountDeleteSuccessRoute.page,
-
-      //Force Update
-      ForceUpdateRoute.page,
-
-      //SSL Connection Failed
-      SslConnectionFailedRoute.page,
-
       //Change Theme
       ChangeThemeRoute.page,
-
-      // Biometrics authentication
-      BiometricAuthRoute.page,
     ].map((page) => AutoRoute(page: page, path: '/${page.name}')).toList();
 
     final List<AutoRoute> noTransitionRoutes =

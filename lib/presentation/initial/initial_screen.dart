@@ -1,29 +1,19 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_exit_app/flutter_exit_app.dart';
 import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
 import 'package:ideal_mobile/core/services/injection_container.dart';
 import 'package:ideal_mobile/gen/assets.gen.dart';
-import 'package:ideal_mobile/i18n/localization.dart';
 import 'package:ideal_mobile/initialize_app.dart';
-import 'package:ideal_mobile/presentation/biometric_auth/widgets/biometric_auth_enrollment_bottom_sheet.dart';
-import 'package:ideal_mobile/presentation/force_update/constants/force_update_constants.dart';
 import 'package:ideal_mobile/presentation/login/models/login_details.dart';
 import 'package:ideal_mobile/routes.gr.dart';
-import 'package:ideal_mobile/services/local_auth_services.dart';
-import 'package:ideal_mobile/services/remote_config_service.dart';
 import 'package:ideal_mobile/services/secure_storage_service.dart';
 import 'package:ideal_mobile/shared_pref/pref_keys.dart';
 import 'package:ideal_mobile/shared_pref/prefs.dart';
-import 'package:ideal_mobile/utils/app_version_helper.dart';
 import 'package:ideal_mobile/utils/extensions/primitive_types_extensions.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 
 @RoutePage()
 class InitialScreen extends StatefulWidget {
@@ -44,100 +34,27 @@ class _InitialScreenState extends State<InitialScreen> {
     await startupFuture;
 
     if (!mounted) return;
-    await _checkForceUpdateAndAuthStatus();
-  }
-
-  Future<void> _checkForceUpdateAndAuthStatus() async {
-    final remoteConfig = RemoteConfigService();
-
-    final appCurrentVersion = (await PackageInfo.fromPlatform()).version;
-
-    if (!mounted) return;
-
-    final currentAppVersion = getExtendedVersionNumber(appCurrentVersion);
-    final latestAppVersion = getExtendedVersionNumber(
-      remoteConfig.getString(kRemoteConfigAppLatestVersionKey),
-    );
-    final minimumRequiredVersion = getExtendedVersionNumber(
-      remoteConfig.getString(kRemoteConfigMandatoryAppVersionKey),
-    );
-
-    final isMandatoryUpdateRequired =
-        currentAppVersion < minimumRequiredVersion;
-    final isOptionalUpdateAvailable = currentAppVersion < latestAppVersion;
-
-    if (isMandatoryUpdateRequired) {
-      await _replaceAll([ForceUpdateRoute(isMandatoryUpdate: true)]);
-      return;
-    }
-
-    if (isOptionalUpdateAvailable) {
-      await showOptionalUpdate(context: context);
-    }
-
     await _checkAuthAndHandleDeepLink();
   }
 
   Future<void> _checkAuthAndHandleDeepLink() async {
-    final userDetailsJson = await Prefs.getString(PrefKeys.kUserDetails);
-    final userDetails = LoginDetails.fromJson(
-      json.decode(userDetailsJson ?? '{}'),
-    );
+    final userDetails = await LoginDetails.fromPrefs();
     final secureAccessToken = sl.isRegistered<SecureStorageService>()
         ? await sl<SecureStorageService>().getAccessToken()
         : null;
     final hasBackendAccessToken =
         secureAccessToken.haveContent() ||
         userDetails.accessToken.haveContent();
-    final hasExistingFirebaseSession = userDetails.token.haveContent();
 
     if (!mounted) return;
 
-    if (hasBackendAccessToken || hasExistingFirebaseSession) {
-      // Authenticate with biometrics if enabled
-      // This will exit app if auth fails, or return if succeeds/not enabled
-      await authenticateWithBiometrics(context);
-
-      if (!mounted) return;
-
+    if (hasBackendAccessToken) {
       await _replace(const HomeRoute());
     } else {
       final skippedLogin = await Prefs.getBool(PrefKeys.kSkippedLogin) ?? false;
       await _replace(
         skippedLogin ? const HomeRoute() : LoginWithPhoneNumberRoute(),
       );
-    }
-  }
-
-  Future<void> showOptionalUpdate({required BuildContext context}) async {
-    final dateTimeNow = DateTime.now();
-
-    final lastShownUpdatePromptTimeStamp = await Prefs.getInt(
-      kLastShownUpdatePromptTimestamp,
-    );
-
-    final lastShownUpdateTime = lastShownUpdatePromptTimeStamp != null
-        ? DateTime.fromMillisecondsSinceEpoch(lastShownUpdatePromptTimeStamp)
-        : null;
-
-    final hasNeverBeenShown = lastShownUpdateTime == null;
-    final cooldownTimePassed =
-        lastShownUpdateTime != null &&
-        dateTimeNow.difference(lastShownUpdateTime) >=
-            kOptionalUpdateCooldownTime;
-
-    final shouldShowUpdatePrompt = hasNeverBeenShown || cooldownTimePassed;
-
-    if (shouldShowUpdatePrompt) {
-      await Prefs.setInt(
-        kLastShownUpdatePromptTimestamp,
-        dateTimeNow.millisecondsSinceEpoch,
-      );
-
-      await _minimumSplashDurationFuture;
-      if (!mounted) return;
-
-      await context.router.push(ForceUpdateRoute(isMandatoryUpdate: false));
     }
   }
 
@@ -156,67 +73,6 @@ class _InitialScreenState extends State<InitialScreen> {
     if (!await _beginRedirect()) return;
 
     await context.router.replace(route);
-  }
-
-  Future<void> _replaceAll(List<PageRouteInfo> routes) async {
-    if (!await _beginRedirect()) return;
-
-    await context.router.replaceAll(routes);
-  }
-
-  Future<void> authenticateWithBiometrics(BuildContext context) async {
-    final localAuthService = sl<LocalAuthService>();
-
-    final isBiometricEnabled =
-        await Prefs.getBool(PrefKeys.kIsBiometricEnabled) ?? false;
-
-    if (!isBiometricEnabled) {
-      // User hasn't enabled biometric auth, proceed to home
-      return;
-    }
-
-    final biometricAuthStatus = await localAuthService.authenticate(
-      context.localization,
-    );
-
-    switch (biometricAuthStatus) {
-      case BiometricAuthStatus.success:
-        // Authentication successful, continue to home
-        break;
-
-      case BiometricAuthStatus.notSupported:
-        // Device doesn't support biometrics, continue to home
-        break;
-
-      case BiometricAuthStatus.notEnrolled:
-        await _showBiometricEnrollmentBottomSheet(context);
-
-      case BiometricAuthStatus.cancelled:
-        _exitApp();
-
-      case BiometricAuthStatus.error:
-        _exitApp();
-
-      case BiometricAuthStatus.tooManyAttempts:
-        _exitApp();
-    }
-  }
-
-  Future<void> _showBiometricEnrollmentBottomSheet(BuildContext context) async {
-    final result = await showBiometricSetupEnrollmentBottomSheet(context);
-
-    // If user cancelled, dismissed, or after going to settings, exit the app
-    if (result == null || result == .cancel || result == .settings) {
-      _exitApp();
-    }
-  }
-
-  void _exitApp() {
-    if (Platform.isAndroid) {
-      FlutterExitApp.exitApp();
-    } else if (Platform.isIOS) {
-      FlutterExitApp.exitApp(iosForceExit: true);
-    }
   }
 
   @override

@@ -1,152 +1,77 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
-import 'package:ideal_mobile/presentation/login/enum/enum_login_type.dart';
 import 'package:ideal_mobile/presentation/login/screens/phone_num_otp_screen/phone_number_otp_screen.dart';
-import 'package:ideal_mobile/presentation/signup/enum/user_details_input_status.dart';
 
-part 'email_password_login_state.dart';
 part 'phone_number_login_state.dart';
 
-class LoginState with EquatableMixin {
-  final bool isSignup;
-  final PhoneNumberLoginState? phoneNumberLoginState;
-  final EmailPasswordLoginState? emailPasswordLoginState;
-  final UserDetailsInputStatus userDetailsInputStatus;
-  final bool isLoading;
-  final LoginType selectedLoginType;
-
-  LoginState({
-    required this.isSignup,
+class LoginState extends Equatable {
+  const LoginState({
     required this.phoneNumberLoginState,
-    required this.emailPasswordLoginState,
-    required this.userDetailsInputStatus,
-    required this.isLoading,
-    required this.selectedLoginType,
+    this.isLoading = false,
+    this.errorMessage,
   });
 
-  LoginState.initial({
-    PhoneNumberLoginState? phoneNumberLoginState,
-    EmailPasswordLoginState? emailPasswordLoginState,
-  }) : isSignup = false,
-       phoneNumberLoginState =
-           phoneNumberLoginState ?? PhoneNumberLoginState.initial(),
-       emailPasswordLoginState =
-           emailPasswordLoginState ?? EmailPasswordLoginState.initial(),
-       isLoading = false,
-       userDetailsInputStatus = UserDetailsInputStatus.none,
-       selectedLoginType = LoginType.PHONE;
-
-  LoginState.copy(LoginState state)
-    : this(
-        isSignup: state.isSignup,
-        phoneNumberLoginState: state.phoneNumberLoginState,
-        emailPasswordLoginState: state.emailPasswordLoginState,
-        isLoading: state.isLoading,
-        userDetailsInputStatus: state.userDetailsInputStatus,
-        selectedLoginType: state.selectedLoginType,
-      );
-
-  LoginState copyWith({
-    bool? isSignup,
-    PhoneNumberLoginState? phoneNumberLoginState,
-    EmailPasswordLoginState? emailPasswordLoginState,
-    bool? isLoading,
-    UserDetailsInputStatus? userDetailsInputStatus,
-    LoginType? selectedLoginType,
-  }) {
-    return LoginState(
-      isSignup: isSignup ?? this.isSignup,
-      phoneNumberLoginState:
-          phoneNumberLoginState ?? this.phoneNumberLoginState,
-      emailPasswordLoginState:
-          emailPasswordLoginState ?? this.emailPasswordLoginState,
-      isLoading: isLoading ?? this.isLoading,
-      userDetailsInputStatus:
-          userDetailsInputStatus ?? this.userDetailsInputStatus,
-      selectedLoginType: selectedLoginType ?? this.selectedLoginType,
-    );
-  }
+  factory LoginState.initial() =>
+      LoginState(phoneNumberLoginState: PhoneNumberLoginState.initial());
 
   @visibleForTesting
-  LoginState.test({
+  factory LoginState.test({PhoneNumberLoginState? phoneNumberLoginState}) =>
+      LoginState(
+        phoneNumberLoginState:
+            phoneNumberLoginState ?? PhoneNumberLoginState.test(),
+      );
+
+  final PhoneNumberLoginState phoneNumberLoginState;
+  final bool isLoading;
+  final String? errorMessage;
+
+  LoginState copyWith({
     PhoneNumberLoginState? phoneNumberLoginState,
-    EmailPasswordLoginState? emailPasswordLoginState,
-    bool? isSignup,
-  }) : isSignup = isSignup ?? false,
-       phoneNumberLoginState =
-           phoneNumberLoginState ?? PhoneNumberLoginState.test(),
-       emailPasswordLoginState =
-           emailPasswordLoginState ?? EmailPasswordLoginState.test(),
-       isLoading = false,
-       userDetailsInputStatus = UserDetailsInputStatus.none,
-       selectedLoginType = LoginType.PHONE;
+    bool? isLoading,
+    String? errorMessage,
+    bool clearError = false,
+  }) => LoginState(
+    phoneNumberLoginState: phoneNumberLoginState ?? this.phoneNumberLoginState,
+    isLoading: isLoading ?? this.isLoading,
+    errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
+  );
 
   @override
-  List<Object?> get props => [
-    isSignup,
-    phoneNumberLoginState,
-    emailPasswordLoginState,
-    isLoading,
-    userDetailsInputStatus,
-    selectedLoginType,
-  ];
+  List<Object?> get props => [phoneNumberLoginState, isLoading, errorMessage];
 }
 
 class NavigateToOTPScreenState extends LoginState {
-  NavigateToOTPScreenState(super.state) : super.copy();
+  NavigateToOTPScreenState(LoginState state)
+    : super(
+        phoneNumberLoginState: state.phoneNumberLoginState,
+        isLoading: state.isLoading,
+        errorMessage: state.errorMessage,
+      );
 }
 
 class NavigateToHomeScreenState extends LoginState {
-  NavigateToHomeScreenState(super.state) : super.copy();
+  NavigateToHomeScreenState(LoginState state)
+    : super(
+        phoneNumberLoginState: state.phoneNumberLoginState,
+        isLoading: state.isLoading,
+        errorMessage: state.errorMessage,
+      );
 }
 
 class AuthenticationExceptionState extends LoginState {
-  AuthenticationExceptionState(super.state) : super.copy();
+  AuthenticationExceptionState(LoginState state)
+    : super(
+        phoneNumberLoginState: state.phoneNumberLoginState,
+        isLoading: state.isLoading,
+        errorMessage: state.errorMessage,
+      );
 }
 
-class ResetPasswordLinkSentState extends LoginState {
-  ResetPasswordLinkSentState(super.state) : super.copy();
-}
-
-class PhoneNumLoginLoadingState extends LoginState {
-  PhoneNumLoginLoadingState(LoginState state, {required bool isLoading})
-    : super.copy(state.copyWith(isLoading: isLoading));
-}
-
-class EmailLoginLoadingState extends LoginState {
-  EmailLoginLoadingState(LoginState state, {required bool isLoading})
-    : super.copy(state.copyWith(isLoading: isLoading));
-}
-
-class NavigateToVerifiedScreenState extends LoginState {
-  NavigateToVerifiedScreenState(super.state) : super.copy();
-}
-
-class NavigateToEmailVerifyScreenState extends LoginState {
-  NavigateToEmailVerifyScreenState(super.state) : super.copy();
-}
-
-class SignupLoadingState extends LoginState {
-  SignupLoadingState(LoginState state, {required bool isLoading})
-    : super.copy(state.copyWith(isLoading: isLoading));
-}
-
-class RestartVerificationMailResendTimerState extends LoginState {
-  RestartVerificationMailResendTimerState(super.state) : super.copy();
-}
-
-class VerificationCodeFailedToSendState extends LoginState {
-  VerificationCodeFailedToSendState(super.state) : super.copy();
-}
-
-class RegistrationCompletedState extends LoginState {
-  RegistrationCompletedState(super.state) : super.copy();
-}
-
-class NavigateToCreatePasswordState extends LoginState {
-  NavigateToCreatePasswordState(super.state) : super.copy();
-}
-
-class ClearLoginWithEmailControllerState extends LoginState {
-  ClearLoginWithEmailControllerState(super.state) : super.copy();
+class PhoneOtpAutoFilledState extends LoginState {
+  PhoneOtpAutoFilledState(LoginState state)
+    : super(
+        phoneNumberLoginState: state.phoneNumberLoginState,
+        isLoading: state.isLoading,
+        errorMessage: state.errorMessage,
+      );
 }

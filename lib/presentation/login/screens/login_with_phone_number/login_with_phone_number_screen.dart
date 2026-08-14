@@ -20,12 +20,7 @@ import 'package:ideal_mobile/utils/extensions/primitive_types_extensions.dart';
 
 @RoutePage()
 class LoginWithPhoneNumberScreen extends StatefulWidget {
-  final bool isFromDeleteAccount;
-
-  const LoginWithPhoneNumberScreen({
-    super.key,
-    this.isFromDeleteAccount = false,
-  });
+  const LoginWithPhoneNumberScreen({super.key});
 
   static const kHorizontalPadding = 16.0;
 
@@ -44,23 +39,14 @@ class _LoginWithPhoneNumberScreenState
       create: (context) => LoginBloc(localizations: appLocalizations),
       child: GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        child: Scaffold(
-          body: LoginWithPhoneNumberBody(
-            isFromDeleteAccount: widget.isFromDeleteAccount,
-          ),
-        ),
+        child: Scaffold(body: const LoginWithPhoneNumberBody()),
       ),
     );
   }
 }
 
 class LoginWithPhoneNumberBody extends StatelessWidget {
-  final bool isFromDeleteAccount;
-
-  const LoginWithPhoneNumberBody({
-    required this.isFromDeleteAccount,
-    super.key,
-  });
+  const LoginWithPhoneNumberBody({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +77,7 @@ class LoginWithPhoneNumberBody extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    _LoginTopBar(isFromDeleteAccount: isFromDeleteAccount),
+                    const _LoginTopBar(),
                     ConstrainedBox(
                       constraints: BoxConstraints(
                         minHeight: constraints.maxHeight > 56
@@ -105,7 +91,6 @@ class LoginWithPhoneNumberBody extends StatelessWidget {
                               context.pushRoute(
                                 PhoneNumberOTPRoute(
                                   loginBloc: context.read<LoginBloc>(),
-                                  isFromDeleteAccount: isFromDeleteAccount,
                                 ),
                               );
                             }
@@ -139,8 +124,7 @@ class LoginWithPhoneNumberBody extends StatelessWidget {
     AuthenticationExceptionState state,
     BuildContext context,
   ) {
-    final String? error =
-        state.emailPasswordLoginState?.authenticationErrorMessage;
+    final String? error = state.errorMessage;
     context.showSnackBar(
       error.isNullOrEmpty()
           ? context.localization.opps_something_went_wrong
@@ -150,9 +134,7 @@ class LoginWithPhoneNumberBody extends StatelessWidget {
 }
 
 class _LoginTopBar extends StatelessWidget {
-  final bool isFromDeleteAccount;
-
-  const _LoginTopBar({required this.isFromDeleteAccount});
+  const _LoginTopBar();
 
   @override
   Widget build(BuildContext context) {
@@ -160,13 +142,10 @@ class _LoginTopBar extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         const LanguageSelector(),
-        if (isFromDeleteAccount)
-          const SizedBox(width: 64)
-        else
-          TextButton(
-            onPressed: () => _skipLogin(context),
-            child: Text(context.localization.skip),
-          ),
+        TextButton(
+          onPressed: () => _skipLogin(context),
+          child: Text(context.localization.skip),
+        ),
       ],
     );
   }

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ideal_mobile/presentation/listing_detail/bloc/listing_detail_bloc.dart';
@@ -9,6 +10,7 @@ import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_
 import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_not_found.dart';
 import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_shimmer.dart';
 import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_detail_trust_card.dart';
+import 'package:ideal_mobile/presentation/listings/domain/entities/listing_card.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../test_helpers.dart';
@@ -29,6 +31,50 @@ void main() {
       );
 
       expect(find.byType(ListingDetailShimmer), findsOneWidget);
+    });
+
+    testWidgets('preview reserves the loading photo strip footprint', (
+      tester,
+    ) async {
+      final bloc = mockListingDetailBloc(
+        const ListingDetailState.test(
+          isLoading: true,
+          preview: ListingCard(
+            id: 12,
+            propertyId: 34,
+            title: 'Sunny apartment near the park',
+            district: 'Yunusobod',
+            address: '12-kvartal, Tashkent',
+            propertyType: 'apartment',
+            rooms: 2,
+            areaSqm: 68,
+            floor: 4,
+            totalFloors: 9,
+            furnishing: 'furnished',
+            price: 520,
+            currency: 'USD',
+            tariff: 'comfort',
+            isVerified: true,
+            isFeatured: false,
+            score: 9.2,
+            reviewCount: 48,
+            coverImageUrl: 'https://example.com/cover.jpg',
+            mapLat: 41.36,
+            mapLon: 69.28,
+          ),
+        ),
+      );
+
+      await tester.runWidgetTest(
+        child: const ListingDetailBody(listingId: 12),
+        providers: [BlocProvider<ListingDetailBloc>.value(value: bloc)],
+      );
+
+      final placeholder = find.byKey(
+        const ValueKey('listing_detail_thumb_strip_loading'),
+      );
+      expect(placeholder, findsOneWidget);
+      expect(tester.getSize(placeholder).height, 76);
     });
 
     testWidgets('error shows a retryable error view', (tester) async {

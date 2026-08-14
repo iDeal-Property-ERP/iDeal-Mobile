@@ -147,11 +147,18 @@ class AppLocalizationsUz extends AppLocalizations {
       'Davom etish orqali siz quyidagiga rozilik bildirasiz:';
 
   @override
-  String get sign_in_required_title => 'Davom etish uchun kiring';
+  String get sign_in_required_title =>
+      'iDeal imkoniyatlaridan to‘liq foydalaning';
 
   @override
   String get sign_in_required_message =>
-      'Bu bo‘limga kirish uchun hisobingizga kiring.';
+      'Uylarni saqlash, xavfsiz yozishish va bronlarni bir joyda boshqarish uchun kiring.';
+
+  @override
+  String get guest_access_sign_in => 'Telefon raqami bilan kirish';
+
+  @override
+  String get guest_access_keep_browsing => 'Ko‘rishda davom etish';
 
   @override
   String get login_with_email => 'Email orqali kirish';
@@ -396,9 +403,6 @@ class AppLocalizationsUz extends AppLocalizations {
   String get done => 'Bajarildi';
 
   @override
-  String get community => 'Jamiyat';
-
-  @override
   String get feedback_and_ratings => 'Fikr va reytinglar';
 
   @override
@@ -420,7 +424,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get delete_account_confirmation_message =>
-      'Bu harakatni qaytarib bo\'lmaydi. Barcha maʼlumotlaringiz butunlay oʻchirib tashlanadi. Davom etishni xohlaysizmi?';
+      'Bu harakatni qaytarib bo‘lmaydi. Hisob va qayta foydalanilishi mumkin bo‘lgan shaxsiy ma’lumotlar o‘chiriladi. Qonun, xizmat yoki nizolar uchun saqlanishi kerak bo‘lgan yozuvlar anonimlashtiriladi. Davom etasizmi?';
 
   @override
   String get delete_reason_dislike_app =>
@@ -818,13 +822,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get notification_settings => 'Bildirishnoma sozlamalari';
 
   @override
-  String get change_password => 'Parolni o\'zgartirish';
-
-  @override
   String get choose_app_theme => 'Ilova mavzusini tanlang';
-
-  @override
-  String get account_security => 'Hisob xavfsizligi';
 
   @override
   String get biometric_authentication => 'Biometrik autentifikatsiya';

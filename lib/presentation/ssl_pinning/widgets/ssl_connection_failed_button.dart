@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
-import 'package:ideal_mobile/presentation/force_update/constants/force_update_constants.dart';
 import 'package:ideal_mobile/utils/extensions/build_context_ext.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 import 'package:ideal_mobile/widgets/app_button/app_button.dart';
@@ -11,6 +10,9 @@ import 'package:url_launcher/url_launcher.dart';
 
 class SslFailedButton extends StatelessWidget {
   const SslFailedButton({super.key});
+
+  static const _appStoreUrl = 'https://apps.apple.com/app/';
+  static const _playStoreUrl = 'https://play.google.com/store/apps/details?id=';
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +31,9 @@ class SslFailedButton extends StatelessWidget {
     Uri url;
 
     if (Platform.isIOS) {
-      url = Uri.parse(kAppStoreBaseUrl);
+      url = Uri.parse(_appStoreUrl);
     } else if (Platform.isAndroid) {
-      url = Uri.parse(kPlayStoreBaseUrl);
+      url = Uri.parse(_playStoreUrl);
     } else {
       context.showSnackBar(context.localization.platform_not_supported);
       return;
