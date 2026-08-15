@@ -22,6 +22,7 @@ class ListingsFilterPillChip extends StatelessWidget {
     this.leadingIcon,
     this.badge,
     this.trailingIcon,
+    this.compact = false,
   });
 
   final String label;
@@ -30,6 +31,7 @@ class ListingsFilterPillChip extends StatelessWidget {
   final IconData? leadingIcon;
   final int? badge;
   final IconData? trailingIcon;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +45,11 @@ class ListingsFilterPillChip extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(999),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          constraints: BoxConstraints(minHeight: compact ? 36 : 44),
+          padding: EdgeInsets.symmetric(
+            horizontal: compact ? 11 : 14,
+            vertical: compact ? 6 : 8,
+          ),
           decoration: BoxDecoration(
             color: selected
                 ? context.currentTheme.bgBrandLight100
@@ -105,12 +111,14 @@ class ListingsFilterDropdownChip<T> extends StatelessWidget {
     required this.selected,
     required this.onSelected,
     this.selectedLabel,
+    this.compact = false,
   });
 
   final String label;
   final List<ListingsFilterDropdownOption<T>> options;
   final T? selected;
   final String? selectedLabel;
+  final bool compact;
   final ValueChanged<T?> onSelected;
 
   @override
@@ -136,6 +144,7 @@ class ListingsFilterDropdownChip<T> extends StatelessWidget {
           label: _visibleLabel(),
           selected: selected != null || selectedLabel != null,
           trailingIcon: TablerIcons.chevron_down,
+          compact: compact,
           onTap: () {
             if (controller.isOpen) {
               controller.close();

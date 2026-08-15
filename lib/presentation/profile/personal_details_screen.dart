@@ -11,6 +11,7 @@ import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 import 'package:ideal_mobile/validators/validators.dart';
 import 'package:ideal_mobile/widgets/app_button/app_button.dart';
 import 'package:ideal_mobile/widgets/app_button/enums/app_button_size_enum.dart';
+import 'package:ideal_mobile/widgets/app_top_bar.dart';
 
 @RoutePage()
 class PersonalDetailsScreen extends StatelessWidget {
@@ -87,15 +88,7 @@ class _PersonalDetailsFormState extends State<_PersonalDetailsForm> {
         context.router.maybePop();
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            context.localization.personal_details,
-            style: AppTextStyles.h6Bold.copyWith(
-              color: context.currentTheme.textNeutralPrimary,
-            ),
-          ),
-          centerTitle: true,
-        ),
+        appBar: AppTopBar.page(title: context.localization.personal_details),
         bottomNavigationBar: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(16),

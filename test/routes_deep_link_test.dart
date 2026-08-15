@@ -42,5 +42,12 @@ void main() {
         expect(match.single.pathParams.rawMap[route.parameter], route.value);
       }
     });
+
+    test('static listing map wins before the dynamic listing detail route', () {
+      final match = matcher.match('/listings/map');
+
+      expect(match, hasLength(1));
+      expect(match!.single.name, ListingDiscoveryMapRoute.name);
+    });
   });
 }

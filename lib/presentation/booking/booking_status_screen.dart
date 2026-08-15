@@ -9,9 +9,10 @@ import 'package:ideal_mobile/presentation/booking/bloc/booking_bloc.dart';
 import 'package:ideal_mobile/presentation/booking/bloc/booking_event.dart';
 import 'package:ideal_mobile/presentation/booking/bloc/booking_state.dart';
 import 'package:ideal_mobile/presentation/booking/data/active_checkout_store.dart';
-import 'package:ideal_mobile/presentation/booking/domain/repositories/booking_repository.dart';
 import 'package:ideal_mobile/presentation/booking/domain/entities/booking.dart';
+import 'package:ideal_mobile/presentation/booking/domain/repositories/booking_repository.dart';
 import 'package:ideal_mobile/presentation/booking/widgets/booking_status_view.dart';
+import 'package:ideal_mobile/widgets/app_top_bar.dart';
 
 @RoutePage()
 class BookingStatusScreen extends StatefulWidget {
@@ -66,7 +67,7 @@ class _BookingStatusScreenState extends State<BookingStatusScreen>
   Widget build(BuildContext context) => BlocProvider<BookingBloc>.value(
     value: _bloc,
     child: Scaffold(
-      appBar: AppBar(title: Text(context.localization.booking_status_title)),
+      appBar: AppTopBar.page(title: context.localization.booking_status_title),
       body: BlocBuilder<BookingBloc, BookingState>(
         builder: (context, state) {
           if ((state.status == BookingFlowStatus.polling ||

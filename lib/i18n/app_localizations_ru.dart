@@ -514,6 +514,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get home => 'Главная';
 
   @override
+  String get selected => 'Избранное';
+
+  @override
   String get rating => 'Рейтинг';
 
   @override
@@ -1244,6 +1247,38 @@ class AppLocalizationsRu extends AppLocalizations {
   String get listings_save => 'Сохранить';
 
   @override
+  String get selected_empty_title => 'Пока нет избранных объектов';
+
+  @override
+  String get selected_empty_subtitle =>
+      'Нажмите на сердце у любого жилья, чтобы сохранить его здесь.';
+
+  @override
+  String get selected_error_title => 'Не удалось загрузить избранные объекты';
+
+  @override
+  String get selected_load_error =>
+      'Не удалось загрузить избранные объекты. Повторите попытку.';
+
+  @override
+  String get selected_mutation_error =>
+      'Не удалось обновить избранные объекты. Повторите попытку.';
+
+  @override
+  String get selected_unknown_error =>
+      'Что-то пошло не так с избранными объектами. Повторите попытку.';
+
+  @override
+  String get selected_retry => 'Повторить';
+
+  @override
+  String get selected_page_out_of_date =>
+      'Список избранного изменился. Повторите попытку.';
+
+  @override
+  String get selected_loading_more => 'Загружаем ещё избранные объекты';
+
+  @override
   String get listings_verified => 'Проверено';
 
   @override
@@ -1280,6 +1315,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get listings_filter_district => 'Район';
 
   @override
+  String get listings_filter_property_type => 'Тип жилья';
+
+  @override
   String get listings_filter_price => 'Диапазон цен';
 
   @override
@@ -1314,6 +1352,51 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get listings_view_map => 'Карта';
+
+  @override
+  String get listing_map_search_hint => 'Поиск жилья';
+
+  @override
+  String get listing_map_full_filters => 'Все фильтры';
+
+  @override
+  String get listing_map_search_this_area => 'Искать в этой области';
+
+  @override
+  String get listing_map_list => 'Список';
+
+  @override
+  String get listing_map_zoom_in =>
+      'Приблизьте карту, чтобы увидеть все объекты';
+
+  @override
+  String get listing_map_no_results => 'В этой области нет объектов';
+
+  @override
+  String get listing_map_loading => 'Загрузка объектов';
+
+  @override
+  String get listing_map_full_info => 'Подробнее';
+
+  @override
+  String get listing_map_call => 'Позвонить';
+
+  @override
+  String get listing_map_call_failed =>
+      'Не удалось начать звонок. Проверьте настройки телефона и повторите.';
+
+  @override
+  String get listing_map_error_title => 'Не удалось загрузить эту область';
+
+  @override
+  String get listing_map_retry => 'Повторить';
+
+  @override
+  String get listing_map_near_me => 'Рядом со мной';
+
+  @override
+  String get listing_map_location_unavailable =>
+      'Не удалось определить ваше местоположение';
 
   @override
   String listings_result_count(num count) {

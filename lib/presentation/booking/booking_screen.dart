@@ -14,6 +14,7 @@ import 'package:ideal_mobile/presentation/booking/domain/entities/booking.dart';
 import 'package:ideal_mobile/presentation/booking/domain/repositories/booking_repository.dart';
 import 'package:ideal_mobile/presentation/booking/widgets/booking_status_view.dart';
 import 'package:ideal_mobile/utils/extensions/build_context_ext.dart';
+import 'package:ideal_mobile/widgets/app_top_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 @RoutePage()
@@ -75,7 +76,7 @@ class _BookingScreenState extends State<BookingScreen>
       child: BlocConsumer<BookingBloc, BookingState>(
         listener: _listen,
         builder: (context, state) => Scaffold(
-          appBar: AppBar(title: Text(context.localization.booking_title)),
+          appBar: AppTopBar.page(title: context.localization.booking_title),
           body: _body(context, state),
         ),
       ),

@@ -5,6 +5,7 @@ import 'package:ideal_mobile/i18n/localization.dart';
 import 'package:ideal_mobile/presentation/listing_detail/domain/entities/listing_detail.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/listing_card_image.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
+import 'package:ideal_mobile/widgets/app_top_bar/app_top_bar.dart';
 import 'package:ideal_mobile/widgets/images/prioritized_image_scheduler.dart';
 import 'package:ideal_mobile/widgets/images/tiered_network_image.dart';
 import 'package:photo_view/photo_view.dart';
@@ -114,10 +115,11 @@ class _ListingPhotoViewerState extends State<ListingPhotoViewer> {
             Positioned(
               top: 12,
               left: 16,
-              child: _ViewerCircleButton(
+              child: AppTopBarAction(
                 icon: TablerIcons.x,
-                label: MaterialLocalizations.of(context).closeButtonLabel,
+                tooltip: MaterialLocalizations.of(context).closeButtonLabel,
                 onPressed: () => Navigator.of(context).pop(),
+                style: AppTopBarActionStyle.overlay,
               ),
             ),
             if (photos.isNotEmpty)
@@ -246,40 +248,6 @@ class _ListingPhotoViewerState extends State<ListingPhotoViewer> {
   }
 }
 
-class _ViewerCircleButton extends StatelessWidget {
-  const _ViewerCircleButton({
-    required this.icon,
-    required this.label,
-    required this.onPressed,
-  });
-
-  final IconData icon;
-  final String label;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      label: label,
-      child: Material(
-        color: Colors.black.withValues(alpha: 0.42),
-        shape: const CircleBorder(),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          customBorder: const CircleBorder(),
-          onTap: onPressed,
-          child: SizedBox(
-            width: 40,
-            height: 40,
-            child: Icon(icon, color: Colors.white, size: 20),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class _ViewerThumbStrip extends StatelessWidget {
   const _ViewerThumbStrip({
     required this.photos,
@@ -326,7 +294,6 @@ class _ViewerThumbStrip extends StatelessWidget {
                     imageUrl: photos[index].imageUrl,
                     previewUrl: photos[index].previewUrl,
                     displayUrl: photos[index].displayUrl,
-                    priority: ImageLoadPriority.normal,
                   ),
                 ),
               ),

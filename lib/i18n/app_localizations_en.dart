@@ -502,6 +502,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get home => 'Home';
 
   @override
+  String get selected => 'Selected';
+
+  @override
   String get rating => 'Rating';
 
   @override
@@ -1219,6 +1222,38 @@ class AppLocalizationsEn extends AppLocalizations {
   String get listings_save => 'Save';
 
   @override
+  String get selected_empty_title => 'No selected homes yet';
+
+  @override
+  String get selected_empty_subtitle =>
+      'Tap the heart on any home to keep it here for later.';
+
+  @override
+  String get selected_error_title => 'Couldn\'t load your selected homes';
+
+  @override
+  String get selected_load_error =>
+      'Couldn\'t load your selected homes. Please try again.';
+
+  @override
+  String get selected_mutation_error =>
+      'Couldn\'t update your selected homes. Please try again.';
+
+  @override
+  String get selected_unknown_error =>
+      'Something went wrong with your selected homes. Please try again.';
+
+  @override
+  String get selected_retry => 'Retry';
+
+  @override
+  String get selected_page_out_of_date =>
+      'The selected homes page changed. Please try again.';
+
+  @override
+  String get selected_loading_more => 'Loading more selected homes';
+
+  @override
   String get listings_verified => 'Verified';
 
   @override
@@ -1255,6 +1290,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get listings_filter_district => 'District';
 
   @override
+  String get listings_filter_property_type => 'Property type';
+
+  @override
   String get listings_filter_price => 'Price range';
 
   @override
@@ -1289,6 +1327,50 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get listings_view_map => 'Map';
+
+  @override
+  String get listing_map_search_hint => 'Search homes';
+
+  @override
+  String get listing_map_full_filters => 'Full filters';
+
+  @override
+  String get listing_map_search_this_area => 'Search this area';
+
+  @override
+  String get listing_map_list => 'List';
+
+  @override
+  String get listing_map_zoom_in => 'Zoom in to see all homes';
+
+  @override
+  String get listing_map_no_results => 'No homes in this area';
+
+  @override
+  String get listing_map_loading => 'Loading homes';
+
+  @override
+  String get listing_map_full_info => 'Full info';
+
+  @override
+  String get listing_map_call => 'Call';
+
+  @override
+  String get listing_map_call_failed =>
+      'Couldn\'t start the call. Check your phone settings and try again.';
+
+  @override
+  String get listing_map_error_title => 'Couldn\'t load this area';
+
+  @override
+  String get listing_map_retry => 'Retry';
+
+  @override
+  String get listing_map_near_me => 'Near me';
+
+  @override
+  String get listing_map_location_unavailable =>
+      'Couldn\'t determine your location';
 
   @override
   String listings_result_count(num count) {

@@ -15,10 +15,18 @@ import 'package:ideal_mobile/widgets/app_button/enums/app_button_style_enum.dart
 import 'package:ideal_mobile/widgets/styling/app_radius.dart';
 import 'package:ideal_mobile/widgets/styling/input_decorations.dart';
 
-Future<void> showListingsFilterSheet(BuildContext context) {
-  final bloc = context.read<ListingsBloc>();
+Future<ListingFilters?> showListingsFilterSheet(
+  BuildContext context, {
+  ListingFilters? initialFilters,
+  ListingFilterOptions? filterOptions,
+  bool applyToListingsBloc = true,
+}) async {
+  final bloc = applyToListingsBloc ? context.read<ListingsBloc>() : null;
+  final currentFilters = initialFilters ?? bloc?.state.filters;
+  final currentOptions = filterOptions ?? bloc?.state.filterOptions;
+  assert(currentFilters != null && currentOptions != null);
 
-  return showModalBottomSheet<void>(
+  final result = await showModalBottomSheet<ListingFilters>(
     context: context,
     isScrollControlled: true,
     backgroundColor: context.currentTheme.bgSurfaceSheet,
@@ -28,15 +36,37 @@ Future<void> showListingsFilterSheet(BuildContext context) {
       ),
     ),
     clipBehavior: Clip.antiAlias,
-    builder: (_) => BlocProvider<ListingsBloc>.value(
-      value: bloc,
-      child: const ListingsFilterSheet(),
+    builder: (_) => DraggableScrollableSheet(
+      expand: false,
+      initialChildSize: 0.48,
+      minChildSize: 0.28,
+      maxChildSize: 0.9,
+      snap: true,
+      snapSizes: const [0.48, 0.9],
+      builder: (context, scrollController) => ListingsFilterSheet(
+        initialFilters: currentFilters!,
+        filterOptions: currentOptions!,
+        scrollController: scrollController,
+      ),
     ),
   );
+  if (result != null && bloc != null && result != bloc.state.filters) {
+    bloc.add(ApplyListingFiltersEvent(result));
+  }
+  return result;
 }
 
 class ListingsFilterSheet extends StatefulWidget {
-  const ListingsFilterSheet({super.key});
+  const ListingsFilterSheet({
+    super.key,
+    required this.initialFilters,
+    required this.filterOptions,
+    this.scrollController,
+  });
+
+  final ListingFilters initialFilters;
+  final ListingFilterOptions filterOptions;
+  final ScrollController? scrollController;
 
   @override
   State<ListingsFilterSheet> createState() => _ListingsFilterSheetState();
@@ -54,7 +84,7 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
   @override
   void initState() {
     super.initState();
-    _draft = context.read<ListingsBloc>().state.filters;
+    _draft = widget.initialFilters;
     _priceMinController = TextEditingController(
       text: _formatNumber(_draft.priceMin),
     );
@@ -80,9 +110,6 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final filterOptions = context.select<ListingsBloc, ListingFilterOptions>(
-      (bloc) => bloc.state.filterOptions,
-    );
     final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
 
     return SafeArea(
@@ -93,10 +120,11 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
           mainAxisSize: MainAxisSize.min,
           children: [
             _buildDragHandle(context),
-            Flexible(
+            Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                child: _buildForm(context, filterOptions),
+                controller: widget.scrollController,
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+                child: _buildForm(context, widget.filterOptions),
               ),
             ),
             _buildFooter(context),
@@ -128,7 +156,20 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
           context.localization.listings_filter_district,
         ),
         _buildDistrictDropdown(context, filterOptions.districts),
-        const SizedBox(height: 20),
+        const SizedBox(height: 12),
+      ]);
+    }
+
+    if (filterOptions.propertyTypes.isNotEmpty) {
+      sections.addAll([
+        _buildChoiceGroup(
+          context,
+          title: context.localization.listings_filter_property_type,
+          choices: filterOptions.propertyTypes,
+          selectedValue: _draft.propertyType,
+          onChanged: _onPropertyTypeChanged,
+        ),
+        const SizedBox(height: 12),
       ]);
     }
 
@@ -143,7 +184,7 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
         onMinChanged: _onPriceMinChanged,
         onMaxChanged: _onPriceMaxChanged,
       ),
-      const SizedBox(height: 20),
+      const SizedBox(height: 12),
       _buildSectionTitle(context, context.localization.listings_filter_rooms),
       _buildRangeFields(
         context,
@@ -154,7 +195,27 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
         onMinChanged: _onRoomsMinChanged,
         onMaxChanged: _onRoomsMaxChanged,
       ),
-      const SizedBox(height: 20),
+      const SizedBox(height: 12),
+      _buildSectionTitle(context, context.localization.listings_chip_verified),
+      Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: [
+          _buildChoice(
+            context,
+            label: context.localization.listings_any,
+            selected: _draft.verified == null,
+            onTap: () => _onVerifiedChanged(null),
+          ),
+          _buildChoice(
+            context,
+            label: context.localization.listings_chip_verified,
+            selected: _draft.verified ?? false,
+            onTap: () => _onVerifiedChanged(true),
+          ),
+        ],
+      ),
+      const SizedBox(height: 12),
     ]);
 
     if (filterOptions.furnishings.isNotEmpty) {
@@ -166,7 +227,7 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
           selectedValue: _draft.furnishing,
           onChanged: _onFurnishingChanged,
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 12),
       ]);
     }
 
@@ -190,7 +251,7 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
 
   Widget _buildSectionTitle(BuildContext context, String title) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: 6),
       child: Text(
         title,
         style: AppTextStyles.p3Medium.copyWith(
@@ -321,9 +382,10 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
       floatingLabelStyle: AppTextStyles.p3Medium.copyWith(
         color: context.currentTheme.textBrandPrimary,
       ),
+      isDense: true,
       filled: true,
       fillColor: context.currentTheme.bgNeutralLight200,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
       border: _buildOutlineInputBorder(context),
       enabledBorder: _buildOutlineInputBorder(context),
       focusedBorder: _buildOutlineInputBorder(context, hasFocus: true),
@@ -395,7 +457,8 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
         onTap: onTap,
         borderRadius: BorderRadius.circular(999),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          constraints: const BoxConstraints(minHeight: 36),
+          padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
           decoration: BoxDecoration(
             color: selected
                 ? context.currentTheme.bgBrandLight100
@@ -418,7 +481,7 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
 
   Widget _buildFooter(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
       decoration: BoxDecoration(
         color: context.currentTheme.bgSurfaceSheet,
         border: Border(
@@ -438,7 +501,7 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
               onPressed: _clearDraft,
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 8),
           Expanded(
             child: AppButton(
               size: AppButtonSize.medium,
@@ -494,6 +557,22 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
     });
   }
 
+  void _onPropertyTypeChanged(String? value) {
+    setState(() {
+      _draft = value == null
+          ? _draft.copyWith(clearPropertyType: true)
+          : _draft.copyWith(propertyType: value);
+    });
+  }
+
+  void _onVerifiedChanged(bool? value) {
+    setState(() {
+      _draft = value == null
+          ? _draft.copyWith(clearVerified: true)
+          : _draft.copyWith(verified: value);
+    });
+  }
+
   void _onTariffChanged(String? value) {
     setState(() {
       _draft = value == null
@@ -538,8 +617,7 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
     }
 
     FocusManager.instance.primaryFocus?.unfocus();
-    context.read<ListingsBloc>().add(ApplyListingFiltersEvent(normalized));
-    Navigator.of(context).pop();
+    Navigator.of(context).pop(normalized);
   }
 
   String _formatNumber(num? value) {

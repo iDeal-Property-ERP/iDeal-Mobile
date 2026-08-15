@@ -17,7 +17,7 @@ class MapPillButton extends StatelessWidget {
       shadowColor: context.currentTheme.bgShadesBlack.withValues(alpha: 0.2),
       borderRadius: BorderRadius.circular(999),
       child: InkWell(
-        onTap: onTap ?? _noop,
+        onTap: onTap,
         borderRadius: BorderRadius.circular(999),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -41,9 +41,5 @@ class MapPillButton extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  void _noop() {
-    // TODO(listings): wire up the map view — intentionally inert for now.
   }
 }

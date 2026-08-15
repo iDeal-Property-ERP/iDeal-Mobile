@@ -514,6 +514,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get home => 'Bosh sahifa';
 
   @override
+  String get selected => 'Tanlanganlar';
+
+  @override
   String get rating => 'Reyting';
 
   @override
@@ -1243,6 +1246,38 @@ class AppLocalizationsUz extends AppLocalizations {
   String get listings_save => 'Saqlash';
 
   @override
+  String get selected_empty_title => 'Hali tanlangan uylar yo\'q';
+
+  @override
+  String get selected_empty_subtitle =>
+      'Istalgan uyda yurakchani bosing, u keyin shu yerda saqlanadi.';
+
+  @override
+  String get selected_error_title => 'Tanlangan uylarni yuklab bo\'lmadi';
+
+  @override
+  String get selected_load_error =>
+      'Tanlangan uylarni yuklab bo‘lmadi. Qayta urinib ko‘ring.';
+
+  @override
+  String get selected_mutation_error =>
+      'Tanlangan uylarni yangilab bo‘lmadi. Qayta urinib ko‘ring.';
+
+  @override
+  String get selected_unknown_error =>
+      'Tanlangan uylar bilan nimadir noto‘g‘ri ketdi. Qayta urinib ko‘ring.';
+
+  @override
+  String get selected_retry => 'Qayta urinish';
+
+  @override
+  String get selected_page_out_of_date =>
+      'Tanlangan uylar ro\'yxati o\'zgardi. Qayta urinib ko\'ring.';
+
+  @override
+  String get selected_loading_more => 'Yana tanlangan uylar yuklanmoqda';
+
+  @override
   String get listings_verified => 'Tekshirilgan';
 
   @override
@@ -1279,6 +1314,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get listings_filter_district => 'Tuman';
 
   @override
+  String get listings_filter_property_type => 'Uy turi';
+
+  @override
   String get listings_filter_price => 'Narx oralig\'i';
 
   @override
@@ -1313,6 +1351,51 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get listings_view_map => 'Xarita';
+
+  @override
+  String get listing_map_search_hint => 'Uylarni qidirish';
+
+  @override
+  String get listing_map_full_filters => 'Barcha filtrlar';
+
+  @override
+  String get listing_map_search_this_area => 'Shu hududdan qidirish';
+
+  @override
+  String get listing_map_list => 'Ro\'yxat';
+
+  @override
+  String get listing_map_zoom_in =>
+      'Barcha uylarni ko\'rish uchun xaritani yaqinlashtiring';
+
+  @override
+  String get listing_map_no_results => 'Bu hududda uylar yo\'q';
+
+  @override
+  String get listing_map_loading => 'Uylar yuklanmoqda';
+
+  @override
+  String get listing_map_full_info => 'Batafsil';
+
+  @override
+  String get listing_map_call => 'Qo\'ng\'iroq';
+
+  @override
+  String get listing_map_call_failed =>
+      'Qo\'ng\'iroqni boshlash imkoni bo\'lmadi. Telefon sozlamalarini tekshirib, qayta urinib ko\'ring.';
+
+  @override
+  String get listing_map_error_title => 'Bu hududni yuklab bo\'lmadi';
+
+  @override
+  String get listing_map_retry => 'Qayta urinish';
+
+  @override
+  String get listing_map_near_me => 'Yaqinimda';
+
+  @override
+  String get listing_map_location_unavailable =>
+      'Joylashuvingizni aniqlab bo\'lmadi';
 
   @override
   String listings_result_count(num count) {

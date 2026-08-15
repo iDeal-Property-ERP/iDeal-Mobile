@@ -7,6 +7,15 @@ import 'package:ideal_mobile/constants/constants.dart';
 import 'package:ideal_mobile/main.dart';
 import 'package:ideal_mobile/presentation/booking/booking_injection.dart';
 import 'package:ideal_mobile/presentation/chat/chat_injection.dart';
+import 'package:ideal_mobile/presentation/favorites/data/datasources/favorites_remote_data_source.dart';
+import 'package:ideal_mobile/presentation/favorites/data/repositories/favorites_repository_impl.dart';
+import 'package:ideal_mobile/presentation/favorites/domain/repositories/favorites_repository.dart';
+import 'package:ideal_mobile/presentation/favorites/domain/usecases/get_favorites.dart';
+import 'package:ideal_mobile/presentation/favorites/domain/usecases/set_listing_favorite.dart';
+import 'package:ideal_mobile/presentation/listing_detail/listing_detail_injection.dart';
+import 'package:ideal_mobile/presentation/listing_map/data/datasources/listing_map_remote_data_source.dart';
+import 'package:ideal_mobile/presentation/listing_map/data/repositories/listing_map_repository_impl.dart';
+import 'package:ideal_mobile/presentation/listing_map/domain/repositories/listing_map_repository.dart';
 import 'package:ideal_mobile/presentation/listings/data/datasources/listings_remote_data_source.dart';
 import 'package:ideal_mobile/presentation/listings/data/repositories/listings_repository_impl.dart';
 import 'package:ideal_mobile/presentation/listings/domain/repositories/listings_repository.dart';
@@ -14,7 +23,6 @@ import 'package:ideal_mobile/presentation/listings/domain/usecases/get_listing_f
 import 'package:ideal_mobile/presentation/listings/domain/usecases/get_listing_filter_options_cached.dart';
 import 'package:ideal_mobile/presentation/listings/domain/usecases/get_listings.dart';
 import 'package:ideal_mobile/presentation/listings/domain/usecases/get_listings_cached.dart';
-import 'package:ideal_mobile/presentation/listing_detail/listing_detail_injection.dart';
 import 'package:ideal_mobile/presentation/login/data/datasources/auth_remote_data_source.dart';
 import 'package:ideal_mobile/presentation/login/data/repositories/auth_repository_impl.dart';
 import 'package:ideal_mobile/presentation/login/domain/repositories/auth_repository.dart';
@@ -29,7 +37,8 @@ import 'package:ideal_mobile/presentation/profile/domain/usecases/remove_profile
 import 'package:ideal_mobile/presentation/profile/domain/usecases/update_profile.dart';
 import 'package:ideal_mobile/presentation/profile/domain/usecases/update_profile_avatar.dart';
 import 'package:ideal_mobile/routes.gr.dart';
-import 'package:ideal_mobile/services/favorites_service.dart';
+import 'package:ideal_mobile/services/favorites_sync_service.dart';
+import 'package:ideal_mobile/services/legacy_favorites_cleanup_service.dart';
 import 'package:ideal_mobile/services/notification_service.dart';
 import 'package:ideal_mobile/services/performance_monitoring_service.dart';
 import 'package:ideal_mobile/services/secure_storage_service.dart';
@@ -92,7 +101,22 @@ Future<void> configureDependencies({Dio? dio}) async {
     ..registerLazySingleton(
       () => GetListingFilterOptionsCached(sl<ListingsRepository>()),
     )
-    ..registerLazySingleton<FavoritesService>(FavoritesService.new)
+    ..registerLazySingleton<FavoritesRepository>(
+      () => FavoritesRepositoryImpl(sl<FavoritesRemoteDataSource>()),
+    )
+    ..registerLazySingleton<FavoritesRemoteDataSource>(
+      () => FavoritesRemoteDataSourceImpl(sl<Dio>()),
+    )
+    ..registerLazySingleton(() => GetFavorites(sl<FavoritesRepository>()))
+    ..registerLazySingleton(() => SetListingFavorite(sl<FavoritesRepository>()))
+    ..registerLazySingleton<ListingMapRemoteDataSource>(
+      () => ListingMapRemoteDataSourceImpl(sl<Dio>()),
+    )
+    ..registerLazySingleton<ListingMapRepository>(
+      () => ListingMapRepositoryImpl(sl<ListingMapRemoteDataSource>()),
+    )
+    ..registerLazySingleton(FavoritesSyncService.new)
+    ..registerLazySingleton(LegacyFavoritesCleanupService.new)
     ..registerLazySingleton(PerformanceMonitoringService.new)
     ..registerLazySingleton<Dio>(() => pinnedDio);
 
@@ -105,13 +129,7 @@ Future<void> configureDependencies({Dio? dio}) async {
 void _registerDioInterceptor(Dio dio) {
   dio.interceptors.add(_authHeaderInterceptor());
   if (kDebugMode) {
-    dio.interceptors.add(
-      LogInterceptor(
-        requestBody: true,
-        responseBody: true,
-        logPrint: (message) => debugPrint('[Dio] $message'),
-      ),
-    );
+    dio.interceptors.add(_approvedDioLogInterceptor());
   }
 
   if (AppConfig.appFlavor == AppFlavor.local ||
@@ -133,6 +151,36 @@ void _registerDioInterceptor(Dio dio) {
     _sslPinningErrorInterceptor,
     _authErrorInterceptor(),
   ]);
+}
+
+/// Logs only safe request metadata in debug builds.
+///
+/// Bodies, headers, query parameters, and Dio error messages are deliberately
+/// excluded because they may contain credentials or user data.
+InterceptorsWrapper _approvedDioLogInterceptor() {
+  return InterceptorsWrapper(
+    onRequest: (options, handler) {
+      debugPrint('[Dio] -> ${options.method} ${options.uri.path}');
+      handler.next(options);
+    },
+    onResponse: (response, handler) {
+      final request = response.requestOptions;
+      debugPrint(
+        '[Dio] <- ${response.statusCode ?? 0} '
+        '${request.method} ${request.uri.path}',
+      );
+      handler.next(response);
+    },
+    onError: (error, handler) {
+      final request = error.requestOptions;
+      final status = error.response?.statusCode;
+      debugPrint(
+        '[Dio] !! ${status ?? 'error'} '
+        '${request.method} ${request.uri.path} (${error.type.name})',
+      );
+      handler.next(error);
+    },
+  );
 }
 
 InterceptorsWrapper _authHeaderInterceptor() {
@@ -215,7 +263,9 @@ InterceptorsWrapper _authErrorInterceptor() => InterceptorsWrapper(
         await sl<CacheManager>().clearCachedApiResponse();
         final currentContext = rootNavigatorKey.currentContext;
         if (currentContext != null) {
-          await currentContext.router.replaceAll([LoginWithPhoneNumberRoute()]);
+          await currentContext.router.replaceAll([
+            const LoginWithPhoneNumberRoute(),
+          ]);
         } else {
           debugPrint('[AuthErrorInterceptor] No navigator context available');
         }

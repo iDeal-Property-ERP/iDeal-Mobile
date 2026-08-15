@@ -1,12 +1,17 @@
 import 'package:alchemist/alchemist.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ideal_mobile/i18n/app_localizations.dart';
+import 'package:ideal_mobile/presentation/chat/bloc/chats_event.dart';
 import 'package:ideal_mobile/presentation/chat/bloc/chats_state.dart';
 import 'package:ideal_mobile/presentation/chat/bloc/listing_chat_conversation_state.dart';
 import 'package:ideal_mobile/presentation/chat/chat_conversation_screen.dart';
 import 'package:ideal_mobile/presentation/chat/chats_screen.dart';
 import 'package:ideal_mobile/presentation/chat/data/models/chat_message_model.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:mocktail_image_network/mocktail_image_network.dart';
 
 import '../../flutter_test_config.dart';
@@ -16,6 +21,51 @@ import 'data/chat_model_test_fixtures.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  testWidgets('dispatches refresh from the Chats root top bar', (tester) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.padding = const FakeViewPadding(top: 24);
+    addTearDown(tester.view.reset);
+    final bloc = mockChatsBloc(const ChatsState.initial());
+
+    await tester.runWidgetTest(child: ChatsScreen(bloc: bloc));
+
+    expect(
+      tester.getTopLeft(find.byIcon(TablerIcons.refresh)).dy,
+      greaterThanOrEqualTo(24),
+    );
+    await tester.tap(find.byIcon(TablerIcons.refresh));
+    await tester.pump();
+
+    verify(() => bloc.add(const ChatsRefreshRequested())).called(1);
+  });
+
+  testWidgets('uses the localized Chats root title', (tester) async {
+    for (final scenario in const [
+      (Locale('en'), 'Chats'),
+      (Locale('ru'), 'Чаты'),
+      (Locale('uz'), 'Suhbatlar'),
+    ]) {
+      final bloc = mockChatsBloc(const ChatsState.initial());
+      await tester.pumpWidget(
+        MaterialApp(
+          locale: scenario.$1,
+          theme: ThemeData.light(),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          home: ChatsScreen(bloc: bloc),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.text(scenario.$2), findsOneWidget);
+    }
+  });
 
   Future<void> pumpWithMockedImages(WidgetTester tester, Widget widget) {
     return mockNetworkImages(() => tester.pumpWidget(widget));

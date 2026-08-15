@@ -37,6 +37,9 @@ class ListingsFilterChips extends StatelessWidget {
         if (state.filterOptions.districts.isNotEmpty) {
           chips.add(_buildDistrictChip(context, state));
         }
+        if (state.filterOptions.propertyTypes.isNotEmpty) {
+          chips.add(_buildPropertyTypeChip(context, state));
+        }
         chips.add(_buildRoomsChip(context, state));
         chips.add(_buildPriceChip(context, state));
         if (state.filterOptions.tariffs.isNotEmpty) {
@@ -128,6 +131,32 @@ class ListingsFilterChips extends StatelessWidget {
                 clearRoomsMin: value.min == null,
                 clearRoomsMax: value.max == null,
               );
+        _applyFilters(context, updated);
+      },
+    );
+  }
+
+  Widget _buildPropertyTypeChip(BuildContext context, ListingsState state) {
+    final filters = state.filters;
+    return ListingsFilterDropdownChip<String>(
+      label: context.localization.listings_filter_property_type,
+      options: [
+        ListingsFilterDropdownOption<String>(
+          value: null,
+          label: context.localization.listings_any,
+        ),
+        ...state.filterOptions.propertyTypes.map(
+          (choice) => ListingsFilterDropdownOption<String>(
+            value: choice.value,
+            label: choice.label,
+          ),
+        ),
+      ],
+      selected: filters.propertyType,
+      onSelected: (value) {
+        final updated = value == null
+            ? filters.copyWith(clearPropertyType: true)
+            : filters.copyWith(propertyType: value);
         _applyFilters(context, updated);
       },
     );

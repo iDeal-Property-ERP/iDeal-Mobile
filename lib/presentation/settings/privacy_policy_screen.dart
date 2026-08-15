@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
 import 'package:ideal_mobile/utils/app_flavor_env.dart';
+import 'package:ideal_mobile/widgets/app_top_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -64,7 +65,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
   Widget build(BuildContext context) {
     final unavailable = _policyUri == null;
     return Scaffold(
-      appBar: AppBar(title: Text(context.localization.privacy_policy)),
+      appBar: AppTopBar.page(title: context.localization.privacy_policy),
       body: unavailable || _failed
           ? Center(
               child: TextButton(

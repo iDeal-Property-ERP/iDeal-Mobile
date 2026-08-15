@@ -25,6 +25,8 @@ class ListingCard extends Equatable {
     this.coverDisplayUrl,
     required this.mapLat,
     required this.mapLon,
+    this.contactPhone,
+    this.isFavorite = false,
   });
 
   final int id;
@@ -55,6 +57,38 @@ class ListingCard extends Equatable {
   final String? coverDisplayUrl;
   final double? mapLat;
   final double? mapLon;
+  final String? contactPhone;
+  final bool isFavorite;
+
+  ListingCard copyWith({bool? isFavorite}) {
+    return ListingCard(
+      id: id,
+      propertyId: propertyId,
+      title: title,
+      district: district,
+      address: address,
+      propertyType: propertyType,
+      rooms: rooms,
+      areaSqm: areaSqm,
+      floor: floor,
+      totalFloors: totalFloors,
+      furnishing: furnishing,
+      price: price,
+      currency: currency,
+      tariff: tariff,
+      isVerified: isVerified,
+      isFeatured: isFeatured,
+      score: score,
+      reviewCount: reviewCount,
+      coverImageUrl: coverImageUrl,
+      coverPreviewUrl: coverPreviewUrl,
+      coverDisplayUrl: coverDisplayUrl,
+      mapLat: mapLat,
+      mapLon: mapLon,
+      contactPhone: contactPhone,
+      isFavorite: isFavorite ?? this.isFavorite,
+    );
+  }
 
   @override
   List<Object?> get props => [
@@ -81,5 +115,7 @@ class ListingCard extends Equatable {
     coverDisplayUrl,
     mapLat,
     mapLon,
+    contactPhone,
+    isFavorite,
   ];
 }

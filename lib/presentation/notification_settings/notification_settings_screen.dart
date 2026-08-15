@@ -8,6 +8,7 @@ import 'package:ideal_mobile/presentation/notifications/domain/usecases/get_noti
 import 'package:ideal_mobile/presentation/notifications/domain/usecases/update_notification_settings.dart';
 import 'package:ideal_mobile/services/notification_service.dart';
 import 'package:ideal_mobile/services/push/notification_permission_status.dart';
+import 'package:ideal_mobile/widgets/app_top_bar.dart';
 import 'package:open_settings_plus/open_settings_plus.dart';
 
 @RoutePage()
@@ -141,7 +142,7 @@ class _NotificationSettingsScreenState
           generalEnabled: false,
         );
     return Scaffold(
-      appBar: AppBar(title: Text(context.localization.notification_settings)),
+      appBar: AppTopBar.page(title: context.localization.notification_settings),
       body: ListView(
         children: [
           if (_settingsLoading) const LinearProgressIndicator(minHeight: 2),

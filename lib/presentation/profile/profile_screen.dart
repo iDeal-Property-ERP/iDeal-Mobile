@@ -1,7 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
 import 'package:ideal_mobile/presentation/profile/bloc/profile_bloc.dart';
 import 'package:ideal_mobile/presentation/profile/bloc/profile_event.dart';
@@ -15,7 +14,7 @@ import 'package:ideal_mobile/presentation/profile/widgets/support_section.dart';
 import 'package:ideal_mobile/routes.gr.dart';
 import 'package:ideal_mobile/utils/extensions/build_context_ext.dart';
 import 'package:ideal_mobile/utils/extensions/primitive_types_extensions.dart';
-import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
+import 'package:ideal_mobile/widgets/app_top_bar.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -70,36 +69,31 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(
-            context.localization.profile,
-            style: AppTextStyles.h6Bold.copyWith(
-              color: context.currentTheme.textNeutralPrimary,
+        body: CustomScrollView(
+          slivers: [
+            AppSliverTopBar.root(title: context.localization.profile),
+            const SliverPadding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              sliver: SliverToBoxAdapter(
+                child: Column(
+                  children: [
+                    ProfileDetails(),
+                    SizedBox(height: 40.0),
+                    AccountSection(),
+                    SizedBox(height: 24.0),
+                    ActivitySection(),
+                    SizedBox(height: 32.0),
+                    Settings(),
+                    SizedBox(height: 24.0),
+                    SupportSection(),
+                    SizedBox(height: 24.0),
+                    SignOut(),
+                    SizedBox(height: 32.0),
+                  ],
+                ),
+              ),
             ),
-          ),
-          centerTitle: true,
-          foregroundColor: context.currentTheme.strokeShadesBlack,
-        ),
-        body: const SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0),
-            child: Column(
-              children: [
-                ProfileDetails(),
-                SizedBox(height: 40.0),
-                AccountSection(),
-                SizedBox(height: 24.0),
-                ActivitySection(),
-                SizedBox(height: 32.0),
-                Settings(),
-                SizedBox(height: 24.0),
-                SupportSection(),
-                SizedBox(height: 24.0),
-                SignOut(),
-                SizedBox(height: 32.0),
-              ],
-            ),
-          ),
+          ],
         ),
       ),
     );

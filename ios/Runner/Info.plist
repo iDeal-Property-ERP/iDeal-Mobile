@@ -62,6 +62,8 @@
 		<true/>
 		<key>NSMicrophoneUsageDescription</key>
 		<string>This app needs access to your microphone to enable voice input for searching products.</string>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>iDeal uses your location to center the map near you.</string>
 		<key>NSSpeechRecognitionUsageDescription</key>
 		<string>This app uses speech recognition so you can search for products by speaking.</string>
 		<key>UIApplicationSupportsIndirectInputEvents</key>

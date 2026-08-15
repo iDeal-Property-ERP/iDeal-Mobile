@@ -62,11 +62,13 @@ class AppConfig {
     }
   }
 
-  static String get yandexMapKitApiKey =>
-      dotenv.env['YANDEX_MAPKIT_API_KEY']?.trim() ?? '';
+  static String get yandexMapKitApiKey => dotenv.isInitialized
+      ? dotenv.env['YANDEX_MAPKIT_API_KEY']?.trim() ?? ''
+      : '';
 
-  static String get googleMapsApiKey =>
-      dotenv.env['GOOGLE_MAPS_API_KEY']?.trim() ?? '';
+  static String get googleMapsApiKey => dotenv.isInitialized
+      ? dotenv.env['GOOGLE_MAPS_API_KEY']?.trim() ?? ''
+      : '';
 
   static String getClarityProjectId() {
     switch (appFlavor) {

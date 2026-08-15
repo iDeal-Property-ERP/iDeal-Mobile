@@ -71,6 +71,7 @@ class AppRouter extends RootStackRouter {
         page: ChatConversationRoute.page,
         path: '/chats/:conversationId',
       ),
+      AutoRoute(page: ListingDiscoveryMapRoute.page, path: '/listings/map'),
       AutoRoute(page: ListingDetailRoute.page, path: '/listings/:listingId'),
       AutoRoute(page: BookingRoute.page, path: '/listings/:listingId/booking'),
       AutoRoute(

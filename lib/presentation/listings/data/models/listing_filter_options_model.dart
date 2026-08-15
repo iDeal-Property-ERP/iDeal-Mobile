@@ -4,6 +4,7 @@ import 'package:ideal_mobile/utils/typedef.dart';
 class ListingFilterOptionsModel extends ListingFilterOptions {
   const ListingFilterOptionsModel({
     super.districts,
+    super.propertyTypes,
     super.tariffs,
     super.furnishings,
     super.priceMin,
@@ -16,6 +17,7 @@ class ListingFilterOptionsModel extends ListingFilterOptions {
     final data = _mapValue(json['data']) ?? json;
     return ListingFilterOptionsModel(
       districts: _districts(data['districts']),
+      propertyTypes: _choices(data['property_types']),
       tariffs: _choices(data['tariffs']),
       furnishings: _choices(data['furnishings']),
       priceMin: _nullableDouble(_mapValue(data['price'])?['min']),

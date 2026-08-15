@@ -60,9 +60,22 @@ class ToggleFavoriteEvent extends ListingsEvent {
   List<Object> get props => [listingId];
 }
 
-class LoadFavoritesEvent extends ListingsEvent {
-  const LoadFavoritesEvent();
+class ClearFavoriteFeedbackEvent extends ListingsEvent {
+  const ClearFavoriteFeedbackEvent();
 
   @override
   List<Object> get props => [];
+}
+
+class SyncFavoriteStatusEvent extends ListingsEvent {
+  const SyncFavoriteStatusEvent({
+    required this.listingId,
+    required this.isFavorite,
+  });
+
+  final int listingId;
+  final bool isFavorite;
+
+  @override
+  List<Object> get props => [listingId, isFavorite];
 }

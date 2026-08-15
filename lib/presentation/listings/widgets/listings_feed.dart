@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,6 +11,7 @@ import 'package:ideal_mobile/presentation/listings/domain/entities/listing_card.
     as domain;
 import 'package:ideal_mobile/presentation/listings/widgets/listing_card.dart';
 import 'package:ideal_mobile/routes.gr.dart';
+import 'package:ideal_mobile/services/guest_access_service.dart';
 import 'package:ideal_mobile/utils/responsive.dart';
 import 'package:ideal_mobile/widgets/images/prioritized_image_scheduler.dart';
 
@@ -25,7 +28,6 @@ const kListingsFeedHorizontalPadding = 16.0;
 typedef _ListingsFeedSelection = ({
   List<domain.ListingCard> items,
   bool isLoadingMore,
-  Set<int> favoriteIds,
   bool isStale,
   String? listingRefreshError,
 });
@@ -39,7 +41,6 @@ class ListingsFeedSliver extends StatelessWidget {
       (bloc) => (
         items: bloc.state.items,
         isLoadingMore: bloc.state.isLoadingMore,
-        favoriteIds: bloc.state.favoriteIds,
         isStale: bloc.state.isStale,
         listingRefreshError: bloc.state.listingRefreshError,
       ),
@@ -69,7 +70,7 @@ class ListingsFeedSliver extends StatelessWidget {
               return ListingCardTile(
                 key: keys.homePage.listingCardKey(listing.id),
                 listing: listing,
-                isFavorite: selection.favoriteIds.contains(listing.id),
+                isFavorite: listing.isFavorite,
                 onTap: () => context.router.push(
                   ListingDetailRoute(
                     listingId: listing.id,
@@ -77,9 +78,7 @@ class ListingsFeedSliver extends StatelessWidget {
                   ),
                 ),
                 onFavoriteToggle: () {
-                  context.read<ListingsBloc>().add(
-                    ToggleFavoriteEvent(listing.id),
-                  );
+                  unawaited(_toggleFavorite(context, listing.id));
                 },
                 imagePriority: index < count * 2
                     ? ImageLoadPriority.high
@@ -94,10 +93,16 @@ class ListingsFeedSliver extends StatelessWidget {
 
     return SliverMainAxisGroup(
       slivers: [
-        SliverToBoxAdapter(child: const _StaleListingsBanner()),
+        const SliverToBoxAdapter(child: _StaleListingsBanner()),
         grid,
       ],
     );
+  }
+
+  Future<void> _toggleFavorite(BuildContext context, int listingId) async {
+    if (!await GuestAccessService.requireAuthentication(context)) return;
+    if (!context.mounted) return;
+    context.read<ListingsBloc>().add(ToggleFavoriteEvent(listingId));
   }
 }
 

@@ -26,6 +26,8 @@ class ListingCardModel extends ListingCard {
     super.coverDisplayUrl,
     required super.mapLat,
     required super.mapLon,
+    super.contactPhone,
+    super.isFavorite,
   });
 
   factory ListingCardModel.fromJson(DataMap json) {
@@ -53,6 +55,8 @@ class ListingCardModel extends ListingCard {
       coverDisplayUrl: _nullableString(json['cover_display_url']),
       mapLat: _nullableDouble(json['map_lat']),
       mapLon: _nullableDouble(json['map_lon']),
+      contactPhone: _nullableString(json['contact_phone']),
+      isFavorite: _nullableBool(json['is_favorite']) ?? false,
     );
   }
 
@@ -82,6 +86,8 @@ class ListingCardModel extends ListingCard {
     };
     if (coverPreviewUrl != null) result['cover_preview_url'] = coverPreviewUrl;
     if (coverDisplayUrl != null) result['cover_display_url'] = coverDisplayUrl;
+    if (contactPhone != null) result['contact_phone'] = contactPhone;
+    result['is_favorite'] = isFavorite;
     return result;
   }
 }
@@ -134,7 +140,12 @@ double? _nullableDouble(dynamic value) {
 }
 
 bool _requiredBool(DataMap json, String key) {
-  final value = json[key];
+  final parsed = _nullableBool(json[key]);
+  if (parsed != null) return parsed;
+  throw FormatException('Invalid $key.');
+}
+
+bool? _nullableBool(dynamic value) {
   if (value is bool) return value;
   if (value is num && (value == 0 || value == 1)) return value == 1;
   if (value is String) {
@@ -145,5 +156,5 @@ bool _requiredBool(DataMap json, String key) {
         return false;
     }
   }
-  throw FormatException('Invalid $key.');
+  return null;
 }

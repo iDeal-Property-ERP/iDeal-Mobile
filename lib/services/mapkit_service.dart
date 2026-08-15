@@ -4,26 +4,57 @@ import 'package:ideal_mobile/utils/app_flavor_env.dart';
 import 'package:yandex_maps_mapkit/init.dart' as init;
 import 'package:yandex_maps_mapkit/mapkit_factory.dart' as mapkit_factory;
 
-class MapkitService {
+abstract interface class YandexMapLifecycle {
+  bool get isAvailable;
+
+  Future<bool> initialize();
+
+  void start();
+
+  void stop();
+}
+
+class YandexMapLifecycleLease {
+  YandexMapLifecycle? _activeLifecycle;
+
+  YandexMapLifecycle? get activeLifecycle => _activeLifecycle;
+
+  void start(YandexMapLifecycle lifecycle) {
+    if (identical(_activeLifecycle, lifecycle)) return;
+    stop();
+    if (!lifecycle.isAvailable) return;
+    lifecycle.start();
+    _activeLifecycle = lifecycle;
+  }
+
+  void stop() {
+    _activeLifecycle?.stop();
+    _activeLifecycle = null;
+  }
+}
+
+class MapkitService implements YandexMapLifecycle {
   MapkitService._();
 
   static final instance = MapkitService._();
 
-  Future<void>? _initialization;
+  Future<bool>? _initialization;
   bool _available = false;
   int _activeMapViews = 0;
 
+  @override
   bool get isAvailable => _available;
 
-  Future<void> initialize() {
+  @override
+  Future<bool> initialize() {
     return _initialization ??= _initialize();
   }
 
-  Future<void> _initialize() async {
+  Future<bool> _initialize() async {
     if (AppEnvironment.isTestEnvironment ||
         kIsWeb ||
         AppConfig.yandexMapKitApiKey.isEmpty) {
-      return;
+      return false;
     }
 
     try {
@@ -32,8 +63,10 @@ class MapkitService {
     } on Object catch (error, stackTrace) {
       debugPrint('[MapKit] Initialization warning: $error\n$stackTrace');
     }
+    return _available;
   }
 
+  @override
   void start() {
     if (!_available) return;
 
@@ -42,6 +75,7 @@ class MapkitService {
     }
   }
 
+  @override
   void stop() {
     if (!_available || _activeMapViews == 0) return;
 

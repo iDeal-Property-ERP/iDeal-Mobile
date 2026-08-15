@@ -4,6 +4,7 @@ import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
 import 'package:ideal_mobile/presentation/listing_detail/domain/entities/listing_detail.dart';
 import 'package:ideal_mobile/presentation/map/widgets/property_map_view.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
+import 'package:ideal_mobile/widgets/app_top_bar/app_top_bar.dart';
 
 class ListingMapScreen extends StatelessWidget {
   const ListingMapScreen({super.key, required this.detail});
@@ -42,25 +43,11 @@ class ListingMapScreen extends StatelessWidget {
             Positioned(
               top: 12,
               left: 16,
-              child: Semantics(
-                button: true,
-                label: MaterialLocalizations.of(context).closeButtonLabel,
-                child: Material(
-                  color: context.currentTheme.bgSurfaceBase.withValues(
-                    alpha: 0.9,
-                  ),
-                  shape: const CircleBorder(),
-                  clipBehavior: Clip.antiAlias,
-                  child: InkWell(
-                    customBorder: const CircleBorder(),
-                    onTap: () => Navigator.of(context).pop(),
-                    child: const SizedBox(
-                      width: 40,
-                      height: 40,
-                      child: Icon(TablerIcons.x, size: 20),
-                    ),
-                  ),
-                ),
+              child: AppTopBarAction(
+                icon: TablerIcons.x,
+                tooltip: MaterialLocalizations.of(context).closeButtonLabel,
+                onPressed: () => Navigator.of(context).pop(),
+                style: AppTopBarActionStyle.overlay,
               ),
             ),
             Positioned(

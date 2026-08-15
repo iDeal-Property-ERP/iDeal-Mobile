@@ -1006,6 +1006,12 @@ abstract class AppLocalizations {
   /// **'Home'**
   String get home;
 
+  /// No description provided for @selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected'**
+  String get selected;
+
   /// No description provided for @rating.
   ///
   /// In en, this message translates to:
@@ -2296,6 +2302,60 @@ abstract class AppLocalizations {
   /// **'Save'**
   String get listings_save;
 
+  /// No description provided for @selected_empty_title.
+  ///
+  /// In en, this message translates to:
+  /// **'No selected homes yet'**
+  String get selected_empty_title;
+
+  /// No description provided for @selected_empty_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the heart on any home to keep it here for later.'**
+  String get selected_empty_subtitle;
+
+  /// No description provided for @selected_error_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your selected homes'**
+  String get selected_error_title;
+
+  /// No description provided for @selected_load_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your selected homes. Please try again.'**
+  String get selected_load_error;
+
+  /// No description provided for @selected_mutation_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t update your selected homes. Please try again.'**
+  String get selected_mutation_error;
+
+  /// No description provided for @selected_unknown_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong with your selected homes. Please try again.'**
+  String get selected_unknown_error;
+
+  /// No description provided for @selected_retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get selected_retry;
+
+  /// No description provided for @selected_page_out_of_date.
+  ///
+  /// In en, this message translates to:
+  /// **'The selected homes page changed. Please try again.'**
+  String get selected_page_out_of_date;
+
+  /// No description provided for @selected_loading_more.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading more selected homes'**
+  String get selected_loading_more;
+
   /// No description provided for @listings_verified.
   ///
   /// In en, this message translates to:
@@ -2368,6 +2428,12 @@ abstract class AppLocalizations {
   /// **'District'**
   String get listings_filter_district;
 
+  /// No description provided for @listings_filter_property_type.
+  ///
+  /// In en, this message translates to:
+  /// **'Property type'**
+  String get listings_filter_property_type;
+
   /// No description provided for @listings_filter_price.
   ///
   /// In en, this message translates to:
@@ -2439,6 +2505,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Map'**
   String get listings_view_map;
+
+  /// No description provided for @listing_map_search_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search homes'**
+  String get listing_map_search_hint;
+
+  /// No description provided for @listing_map_full_filters.
+  ///
+  /// In en, this message translates to:
+  /// **'Full filters'**
+  String get listing_map_full_filters;
+
+  /// No description provided for @listing_map_search_this_area.
+  ///
+  /// In en, this message translates to:
+  /// **'Search this area'**
+  String get listing_map_search_this_area;
+
+  /// No description provided for @listing_map_list.
+  ///
+  /// In en, this message translates to:
+  /// **'List'**
+  String get listing_map_list;
+
+  /// No description provided for @listing_map_zoom_in.
+  ///
+  /// In en, this message translates to:
+  /// **'Zoom in to see all homes'**
+  String get listing_map_zoom_in;
+
+  /// No description provided for @listing_map_no_results.
+  ///
+  /// In en, this message translates to:
+  /// **'No homes in this area'**
+  String get listing_map_no_results;
+
+  /// No description provided for @listing_map_loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading homes'**
+  String get listing_map_loading;
+
+  /// No description provided for @listing_map_full_info.
+  ///
+  /// In en, this message translates to:
+  /// **'Full info'**
+  String get listing_map_full_info;
+
+  /// No description provided for @listing_map_call.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get listing_map_call;
+
+  /// No description provided for @listing_map_call_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t start the call. Check your phone settings and try again.'**
+  String get listing_map_call_failed;
+
+  /// No description provided for @listing_map_error_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load this area'**
+  String get listing_map_error_title;
+
+  /// No description provided for @listing_map_retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get listing_map_retry;
+
+  /// No description provided for @listing_map_near_me.
+  ///
+  /// In en, this message translates to:
+  /// **'Near me'**
+  String get listing_map_near_me;
+
+  /// No description provided for @listing_map_location_unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t determine your location'**
+  String get listing_map_location_unavailable;
 
   /// The number of verified homes in the search results.
   ///

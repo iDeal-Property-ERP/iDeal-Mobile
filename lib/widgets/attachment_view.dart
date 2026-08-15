@@ -2,6 +2,7 @@ import 'package:auto_route/annotations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
+import 'package:ideal_mobile/widgets/app_top_bar.dart';
 
 @RoutePage()
 class NetworkImageScreen extends StatelessWidget {
@@ -12,11 +13,7 @@ class NetworkImageScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        iconTheme: IconThemeData(
-          color: context.currentTheme.iconNeutralDefault,
-        ),
-      ),
+      appBar: const AppTopBar.page(title: ''),
       body: Center(
         child: Hero(
           tag: link,

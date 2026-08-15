@@ -4,7 +4,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_core_platform_interface/test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ideal_mobile/i18n/app_localizations.dart';
 import 'package:ideal_mobile/presentation/home/bloc/home_bloc.dart';
 import 'package:ideal_mobile/presentation/home/bloc/home_event.dart';
 import 'package:ideal_mobile/presentation/home/bloc/home_state.dart';
@@ -16,6 +18,7 @@ import 'package:ideal_mobile/presentation/profile/profile_screen.dart';
 import 'package:ideal_mobile/presentation/profile/widgets/profile_details.dart';
 import 'package:ideal_mobile/widgets/styling/app_theme_data.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:sizer/sizer.dart';
 
 import '../../flutter_test_config.dart';
 import '../../test_helpers.dart';
@@ -70,6 +73,44 @@ void main() {
       // assert
       expect(find.byType(ProfileScreenBody), findsOneWidget);
       expect(find.text('Sign out'), findsOneWidget);
+    });
+
+    testWidgets('uses the localized Profile root title', (tester) async {
+      for (final scenario in const [
+        (Locale('en'), 'Profile'),
+        (Locale('ru'), 'Профиль'),
+        (Locale('uz'), 'Profil'),
+      ]) {
+        final profileBloc = MockProfileBloc();
+        when(
+          () => profileBloc.state,
+        ).thenReturn(const ProfileState.test(profile: testProfile));
+
+        await tester.pumpWidget(
+          Sizer(
+            builder: (context, orientation, screenType) {
+              return MaterialApp(
+                locale: scenario.$1,
+                theme: AppThemesData.themeData[AppThemeEnum.LightTheme],
+                supportedLocales: AppLocalizations.supportedLocales,
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                home: BlocProvider<ProfileBloc>.value(
+                  value: profileBloc,
+                  child: const ProfileScreenBody(),
+                ),
+              );
+            },
+          ),
+        );
+        await tester.pump();
+
+        expect(find.text(scenario.$2), findsOneWidget);
+      }
     });
 
     // Golden tests

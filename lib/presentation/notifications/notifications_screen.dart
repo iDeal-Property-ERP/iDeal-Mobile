@@ -1,14 +1,16 @@
 import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:ideal_mobile/i18n/localization.dart';
 import 'package:ideal_mobile/presentation/notifications/bloc/notification_bloc.dart';
 import 'package:ideal_mobile/presentation/notifications/bloc/notification_event.dart';
 import 'package:ideal_mobile/presentation/notifications/bloc/notification_state.dart';
 import 'package:ideal_mobile/presentation/notifications/widgets/empty_notifications_view.dart';
-import 'package:ideal_mobile/presentation/notifications/widgets/notification_app_bar.dart';
 import 'package:ideal_mobile/presentation/notifications/widgets/notification_list.dart';
 import 'package:ideal_mobile/presentation/notifications/widgets/notification_loading_shimmer_list.dart';
 import 'package:ideal_mobile/utils/extensions/build_context_ext.dart';
+import 'package:ideal_mobile/widgets/app_top_bar.dart';
 
 @RoutePage()
 class NotificationsScreen extends StatelessWidget {
@@ -37,9 +39,24 @@ class _NotificationsScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      appBar: NotificationAppBar(),
-      body: NotificationScreenBody(),
+    final hasUnread = context.select<NotificationBloc, bool>(
+      (bloc) => bloc.state.items.any((notification) => !notification.isRead),
+    );
+    return Scaffold(
+      appBar: AppTopBar.page(
+        title: context.localization.notifications,
+        actions: [
+          if (hasUnread)
+            AppTopBarAction(
+              icon: TablerIcons.checks,
+              tooltip: context.localization.notifications_mark_all_read,
+              onPressed: () => context.read<NotificationBloc>().add(
+                const MarkAllNotificationsReadEvent(),
+              ),
+            ),
+        ],
+      ),
+      body: const NotificationScreenBody(),
     );
   }
 }

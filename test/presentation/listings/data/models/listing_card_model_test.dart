@@ -24,6 +24,7 @@ void main() {
     'cover_image_url': 'https://example.com/photo.jpg',
     'map_lat': 41.36,
     'map_lon': 69.28,
+    'is_favorite': false,
   };
 
   test('parses a listing card from JSON', () {
@@ -37,7 +38,23 @@ void main() {
     expect(model.price, 520.0);
     expect(model.score, 9.2);
     expect(model.isVerified, isTrue);
+    expect(model.isFavorite, isFalse);
     expect(model.toJson(), json);
+  });
+
+  test('parses favorite state from backend response', () {
+    final model = ListingCardModel.fromJson({...json, 'is_favorite': true});
+
+    expect(model.isFavorite, isTrue);
+    expect(model.toJson()['is_favorite'], isTrue);
+  });
+
+  test('defaults favorite state to false when backend omits it', () {
+    final payload = {...json}..remove('is_favorite');
+
+    final model = ListingCardModel.fromJson(payload);
+
+    expect(model.isFavorite, isFalse);
   });
 
   test('accepts nullable listing fields', () {

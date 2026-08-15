@@ -1,10 +1,11 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ideal_mobile/i18n/localization.dart';
 import 'package:ideal_mobile/presentation/settings/widgets/settings.dart';
-import 'package:ideal_mobile/presentation/settings/widgets/settings_appbar.dart';
 import 'package:ideal_mobile/utils/theme/bloc/theme_bloc.dart';
 import 'package:ideal_mobile/utils/theme/bloc/theme_state.dart';
+import 'package:ideal_mobile/widgets/app_top_bar.dart';
 
 @RoutePage()
 class SettingsScreen extends StatelessWidget {
@@ -22,7 +23,7 @@ class SettingsScreenBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const SettingsAppbar(),
+      appBar: AppTopBar.page(title: context.localization.settings),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: BlocBuilder<ThemeBloc, ThemeState>(

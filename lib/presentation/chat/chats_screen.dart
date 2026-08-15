@@ -2,7 +2,6 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
 import 'package:ideal_mobile/presentation/chat/bloc/chats_bloc.dart';
 import 'package:ideal_mobile/presentation/chat/bloc/chats_event.dart';
@@ -17,9 +16,8 @@ import 'package:ideal_mobile/routes.gr.dart';
 import 'package:ideal_mobile/utils/extensions/build_context_ext.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 import 'package:ideal_mobile/widgets/app_button/app_button.dart';
-import 'package:ideal_mobile/widgets/app_button/enums/app_button_size_enum.dart';
-import 'package:ideal_mobile/widgets/app_button/enums/app_button_state_enum.dart';
 import 'package:ideal_mobile/widgets/app_button/enums/app_button_style_enum.dart';
+import 'package:ideal_mobile/widgets/app_top_bar.dart';
 
 @RoutePage()
 class ChatsScreen extends StatefulWidget {
@@ -54,7 +52,7 @@ class _ChatsScreenState extends State<ChatsScreen> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final bloc = widget.bloc;
-    final body = const _ChatsBody();
+    const body = _ChatsBody();
     if (bloc != null) {
       _activeBloc = bloc;
       return BlocProvider.value(value: bloc, child: body);
@@ -84,26 +82,6 @@ class _ChatsBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.currentTheme.bgSurfaceBase,
-      appBar: AppBar(
-        backgroundColor: context.currentTheme.bgSurfaceBase2,
-        elevation: 0,
-        centerTitle: true,
-        title: Text(
-          context.localization.chats,
-          style: AppTextStyles.h6SemiBold.copyWith(
-            color: context.currentTheme.textNeutralPrimary,
-          ),
-        ),
-        actions: [
-          AppButton.icon(
-            iconData: TablerIcons.refresh,
-            size: AppButtonSize.large,
-            iconOrTextColorOverride: context.currentTheme.iconNeutralDefault,
-            onPressed: () =>
-                context.read<ChatsBloc>().add(const ChatsRefreshRequested()),
-          ),
-        ],
-      ),
       body: BlocListener<ChatsBloc, ChatsState>(
         listenWhen: (previous, current) =>
             previous.errorMessage != current.errorMessage,
@@ -124,16 +102,29 @@ class _ChatsContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ChatsBloc, ChatsState>(
       builder: (context, state) {
-        if (state.isLoading && state.activeItems.isEmpty) {
-          return const ChatListShimmer();
-        }
         return RefreshIndicator(
           onRefresh: () async {
             context.read<ChatsBloc>().add(const ChatsRefreshRequested());
           },
           child: CustomScrollView(
             slivers: [
-              if (state.activeItems.isEmpty)
+              AppSliverTopBar.root(
+                title: context.localization.chats,
+                actions: [
+                  AppTopBarAction(
+                    icon: TablerIcons.refresh,
+                    tooltip: MaterialLocalizations.of(
+                      context,
+                    ).refreshIndicatorSemanticLabel,
+                    onPressed: () => context.read<ChatsBloc>().add(
+                      const ChatsRefreshRequested(),
+                    ),
+                  ),
+                ],
+              ),
+              if (state.isLoading && state.activeItems.isEmpty)
+                const SliverFillRemaining(child: ChatListShimmer())
+              else if (state.activeItems.isEmpty)
                 const SliverToBoxAdapter(
                   child: SizedBox(height: 320, child: ChatEmptyView()),
                 )
@@ -269,15 +260,11 @@ class _ChatsContent extends StatelessWidget {
         actions: [
           AppButton(
             style: AppButtonStyle.link,
-            size: AppButtonSize.small,
-            state: AppButtonState.normal,
             label: context.localization.chat_cancel,
             onPressed: () => Navigator.pop(context, false),
           ),
           AppButton(
             style: AppButtonStyle.link,
-            size: AppButtonSize.small,
-            state: AppButtonState.normal,
             label: context.localization.chat_delete_confirm,
             onPressed: () => Navigator.pop(context, true),
           ),

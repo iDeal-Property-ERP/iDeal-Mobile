@@ -5,6 +5,7 @@ class ListingFilters extends Equatable {
   const ListingFilters({
     this.query,
     this.districtId,
+    this.propertyType,
     this.priceMin,
     this.priceMax,
     this.roomsMin,
@@ -17,6 +18,7 @@ class ListingFilters extends Equatable {
   const ListingFilters.empty()
     : query = null,
       districtId = null,
+      propertyType = null,
       priceMin = null,
       priceMax = null,
       roomsMin = null,
@@ -27,6 +29,7 @@ class ListingFilters extends Equatable {
 
   final String? query;
   final int? districtId;
+  final String? propertyType;
   final double? priceMin;
   final double? priceMax;
   final int? roomsMin;
@@ -40,6 +43,7 @@ class ListingFilters extends Equatable {
   ListingFilters copyWith({
     String? query,
     int? districtId,
+    String? propertyType,
     double? priceMin,
     double? priceMax,
     int? roomsMin,
@@ -49,6 +53,7 @@ class ListingFilters extends Equatable {
     String? tariff,
     bool clearQuery = false,
     bool clearDistrictId = false,
+    bool clearPropertyType = false,
     bool clearPriceMin = false,
     bool clearPriceMax = false,
     bool clearRoomsMin = false,
@@ -60,6 +65,9 @@ class ListingFilters extends Equatable {
     return ListingFilters(
       query: clearQuery ? null : query ?? this.query,
       districtId: clearDistrictId ? null : districtId ?? this.districtId,
+      propertyType: clearPropertyType
+          ? null
+          : propertyType ?? this.propertyType,
       priceMin: clearPriceMin ? null : priceMin ?? this.priceMin,
       priceMax: clearPriceMax ? null : priceMax ?? this.priceMax,
       roomsMin: clearRoomsMin ? null : roomsMin ?? this.roomsMin,
@@ -81,6 +89,7 @@ class ListingFilters extends Equatable {
 
     addParameter('q', query);
     addParameter('district_id', districtId);
+    addParameter('property_type', propertyType);
     addParameter('price_min', priceMin);
     addParameter('price_max', priceMax);
     addParameter('rooms_min', roomsMin);
@@ -97,6 +106,7 @@ class ListingFilters extends Equatable {
   int get activeCount {
     var count = 0;
     if (districtId != null) count++;
+    if (propertyType?.isNotEmpty ?? false) count++;
     if (priceMin != null) count++;
     if (priceMax != null) count++;
     if (roomsMin != null) count++;
@@ -111,6 +121,7 @@ class ListingFilters extends Equatable {
   List<Object?> get props => [
     query,
     districtId,
+    propertyType,
     priceMin,
     priceMax,
     roomsMin,

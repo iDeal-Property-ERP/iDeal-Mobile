@@ -4,6 +4,7 @@ import 'package:ideal_mobile/core/services/injection_container.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
 import 'package:ideal_mobile/presentation/booking/data/active_checkout_store.dart';
 import 'package:ideal_mobile/routes.gr.dart';
+import 'package:ideal_mobile/widgets/app_top_bar.dart';
 
 @RoutePage()
 class PaymentReturnScreen extends StatefulWidget {
@@ -46,7 +47,7 @@ class _PaymentReturnScreenState extends State<PaymentReturnScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(context.localization.booking_status_title)),
+    appBar: AppTopBar.page(title: context.localization.booking_status_title),
     body: Center(
       child: Padding(
         padding: const EdgeInsets.all(24),

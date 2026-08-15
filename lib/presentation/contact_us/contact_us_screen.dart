@@ -6,6 +6,7 @@ import 'package:ideal_mobile/presentation/profile/data/models/mobile_user_profil
 import 'package:ideal_mobile/utils/extensions/build_context_ext.dart';
 import 'package:ideal_mobile/widgets/app_button/app_button.dart';
 import 'package:ideal_mobile/widgets/app_button/enums/app_button_size_enum.dart';
+import 'package:ideal_mobile/widgets/app_top_bar.dart';
 
 class ContactUsScreen extends StatefulWidget {
   const ContactUsScreen({super.key, this.profile});
@@ -65,7 +66,7 @@ class _ContactUsScreenState extends State<ContactUsScreen> {
   Widget build(BuildContext context) {
     final signedIn = widget.profile?.phone?.isNotEmpty ?? false;
     return Scaffold(
-      appBar: AppBar(title: Text(context.localization.contact_us)),
+      appBar: AppTopBar.page(title: context.localization.contact_us),
       body: Form(
         key: _formKey,
         child: ListView(

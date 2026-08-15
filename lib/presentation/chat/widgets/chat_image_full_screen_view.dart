@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:ideal_mobile/widgets/app_top_bar/app_top_bar.dart';
 import 'package:ideal_mobile/widgets/images/prioritized_image_scheduler.dart';
 import 'package:ideal_mobile/widgets/images/tiered_network_image.dart';
 import 'package:photo_view/photo_view.dart';
@@ -23,45 +25,57 @@ class ChatImageFullScreenView extends StatelessWidget {
     final isLocal = path.startsWith('/') || path.startsWith('file:');
     return Scaffold(
       backgroundColor: Colors.black,
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        foregroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          onPressed: () => Navigator.of(context).maybePop(),
-          icon: const Icon(TablerIcons.x),
+      body: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.light.copyWith(
+          systemNavigationBarColor: Colors.black,
+          systemNavigationBarIconBrightness: Brightness.light,
         ),
-      ),
-      body: isLocal
-          ? PhotoView(
-              imageProvider: FileImage(File(path)),
-              backgroundDecoration: const BoxDecoration(color: Colors.black),
-              initialScale: PhotoViewComputedScale.contained,
-              minScale: PhotoViewComputedScale.contained,
-              maxScale: PhotoViewComputedScale.contained * 4,
-            )
-          : PhotoView.customChild(
-              child: TieredNetworkImage(
-                originalUrl: path,
-                previewUrl: previewUrl,
-                displayUrl: displayUrl,
-                targetTier: ImageDisplayTier.original,
-                priority: ImageLoadPriority.critical,
-                fit: BoxFit.contain,
-                loadingBuilder: (_) => const Center(
-                  child: CircularProgressIndicator(color: Colors.white),
-                ),
-                errorBuilder: (_) => const Center(
-                  child: Icon(TablerIcons.photo_off, color: Colors.white54),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            if (isLocal)
+              PhotoView(
+                imageProvider: FileImage(File(path)),
+                backgroundDecoration: const BoxDecoration(color: Colors.black),
+                initialScale: PhotoViewComputedScale.contained,
+                minScale: PhotoViewComputedScale.contained,
+                maxScale: PhotoViewComputedScale.contained * 4,
+              )
+            else
+              PhotoView.customChild(
+                backgroundDecoration: const BoxDecoration(color: Colors.black),
+                childSize: MediaQuery.sizeOf(context),
+                initialScale: PhotoViewComputedScale.contained,
+                minScale: PhotoViewComputedScale.contained,
+                maxScale: PhotoViewComputedScale.contained * 4,
+                child: TieredNetworkImage(
+                  originalUrl: path,
+                  previewUrl: previewUrl,
+                  displayUrl: displayUrl,
+                  targetTier: ImageDisplayTier.original,
+                  priority: ImageLoadPriority.critical,
+                  fit: BoxFit.contain,
+                  loadingBuilder: (_) => const Center(
+                    child: CircularProgressIndicator(color: Colors.white),
+                  ),
+                  errorBuilder: (_) => const Center(
+                    child: Icon(TablerIcons.photo_off, color: Colors.white54),
+                  ),
                 ),
               ),
-              childSize: MediaQuery.sizeOf(context),
-              backgroundDecoration: const BoxDecoration(color: Colors.black),
-              initialScale: PhotoViewComputedScale.contained,
-              minScale: PhotoViewComputedScale.contained,
-              maxScale: PhotoViewComputedScale.contained * 4,
+            Positioned(
+              top: MediaQuery.paddingOf(context).top + 12,
+              left: 16,
+              child: AppTopBarAction(
+                icon: TablerIcons.x,
+                tooltip: MaterialLocalizations.of(context).closeButtonLabel,
+                onPressed: () => Navigator.of(context).maybePop(),
+                style: AppTopBarActionStyle.overlay,
+              ),
             ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -48,6 +48,10 @@ class BottomNavBar extends StatelessWidget {
           label: context.localization.home,
         ),
         BottomNavigationBarItem(
+          icon: const Icon(TablerIcons.heart),
+          label: context.localization.selected,
+        ),
+        BottomNavigationBarItem(
           icon: BlocProvider.value(
             value: badgeCubit,
             child: const _ChatBadgeIcon(),

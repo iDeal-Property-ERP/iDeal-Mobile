@@ -57,6 +57,12 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull);
+    final sheet = find.byType(DraggableScrollableSheet);
+    expect(sheet, findsOneWidget);
+    expect(
+      tester.getSize(sheet).height,
+      lessThan(tester.view.physicalSize.height * 0.7),
+    );
     expect(find.text('Apply'), findsOneWidget);
     expect(find.text('Clear all'), findsOneWidget);
   });

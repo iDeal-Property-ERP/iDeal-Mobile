@@ -1,16 +1,12 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
 import 'package:ideal_mobile/presentation/change_theme/widgets/theme_list_options.dart';
 import 'package:ideal_mobile/utils/extensions/primitive_types_extensions.dart';
 import 'package:ideal_mobile/utils/theme/bloc/theme_bloc.dart';
 import 'package:ideal_mobile/utils/theme/bloc/theme_event.dart';
-import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
-import 'package:ideal_mobile/widgets/app_button/app_button.dart';
-import 'package:ideal_mobile/widgets/app_button/enums/app_button_size_enum.dart';
+import 'package:ideal_mobile/widgets/app_top_bar.dart';
 
 @RoutePage()
 class ChangeThemeScreen extends StatefulWidget {
@@ -24,21 +20,7 @@ class _ChangeThemeScreenState extends State<ChangeThemeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        leading: AppButton.icon(
-          iconData: TablerIcons.arrow_left,
-          iconOrTextColorOverride: context.currentTheme.iconNeutralDefault,
-          size: AppButtonSize.extraLarge,
-          onPressed: () => context.router.maybePop(),
-        ),
-        title: Text(
-          context.localization.choose_app_theme,
-          style: AppTextStyles.h6SemiBold.copyWith(
-            color: context.currentTheme.textNeutralPrimary,
-          ),
-        ),
-      ),
+      appBar: AppTopBar.page(title: context.localization.choose_app_theme),
       body: const _ChangeThemeScreenBody(),
     );
   }

@@ -1,42 +1,26 @@
-// The package exposes these Flutter bindings under `src` only.
-// ignore_for_file: implementation_imports
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
-import 'package:ideal_mobile/presentation/map/widgets/property_map_pin.dart';
+import 'package:ideal_mobile/presentation/map/domain/property_map_models.dart';
+import 'package:ideal_mobile/presentation/map/services/property_map_provider_selector.dart';
+import 'package:ideal_mobile/presentation/map/widgets/providers/google_property_map.dart';
+import 'package:ideal_mobile/presentation/map/widgets/providers/yandex_property_map.dart';
 import 'package:ideal_mobile/services/mapkit_service.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
-import 'package:yandex_maps_mapkit/mapkit.dart' as mapkit;
 
-import 'package:yandex_maps_mapkit/ui_view.dart';
-import 'package:yandex_maps_mapkit/yandex_map.dart';
+export 'package:ideal_mobile/presentation/map/domain/property_map_models.dart';
+export 'package:ideal_mobile/presentation/map/services/property_map_provider_selector.dart';
 
-class PropertyMapMarker {
-  const PropertyMapMarker({
-    required this.id,
-    required this.latitude,
-    required this.longitude,
-    this.label,
-  });
-
-  final int id;
-  final double latitude;
-  final double longitude;
-  final String? label;
-}
-
-class CameraTarget {
-  const CameraTarget({
-    required this.latitude,
-    required this.longitude,
-    this.zoom = 15,
-  });
-
-  final double latitude;
-  final double longitude;
-  final double zoom;
-}
+typedef PropertyMapProviderViewBuilder =
+    Widget Function(
+      BuildContext context,
+      PropertyMapProvider provider,
+      PropertyMapView configuration,
+      ValueChanged<PropertyMapProvider> onProviderReady,
+      ValueChanged<PropertyMapProvider> onProviderFailed,
+    );
 
 class PropertyMapView extends StatefulWidget {
   const PropertyMapView({
@@ -44,134 +28,195 @@ class PropertyMapView extends StatefulWidget {
     required this.markers,
     required this.initialCamera,
     this.interactive = false,
+    this.fitMarkersOnCreate = false,
+    this.controller,
+    this.providerSelector,
+    this.yandexLifecycle,
+    this.providerViewBuilder,
+    this.providerStartupTimeout = const Duration(seconds: 15),
+    this.onProviderReady,
     this.onMarkerTap,
+    this.onClusterTap,
+    this.onMapTap,
+    this.onCameraMove,
+    this.onCameraIdle,
+    this.onCameraSettled,
+    this.onVisibleBoundsChanged,
   });
 
   final List<PropertyMapMarker> markers;
   final CameraTarget initialCamera;
   final bool interactive;
+  final bool fitMarkersOnCreate;
+  final PropertyMapController? controller;
+
+  /// Injectable so tests and host screens do not depend on global SDK state.
+  final PropertyMapProviderSelector? providerSelector;
+  final YandexMapLifecycle? yandexLifecycle;
+
+  /// Allows provider callbacks and failure paths to be tested without a
+  /// platform view. Production callers normally leave this unset.
+  @visibleForTesting
+  final PropertyMapProviderViewBuilder? providerViewBuilder;
+
+  @visibleForTesting
+  final Duration providerStartupTimeout;
+
+  final ValueChanged<PropertyMapProvider>? onProviderReady;
   final ValueChanged<int>? onMarkerTap;
+  final ValueChanged<PropertyMapCluster>? onClusterTap;
+  final ValueChanged<PropertyMapCoordinate>? onMapTap;
+  final ValueChanged<PropertyMapCameraState>? onCameraMove;
+  final ValueChanged<PropertyMapBounds>? onCameraIdle;
+  final ValueChanged<PropertyMapCameraIdleState>? onCameraSettled;
+  final ValueChanged<PropertyMapBounds>? onVisibleBoundsChanged;
 
   @override
   State<PropertyMapView> createState() => _PropertyMapViewState();
 }
 
 class _PropertyMapViewState extends State<PropertyMapView> {
-  late final AppLifecycleListener _appLifecycleListener;
-  late final _MarkerTapListener _markerTapListener;
-  late final Future<void> _initialization;
-  bool _isStarted = false;
+  final Set<PropertyMapProvider> _failedProviders = {};
+  late Future<PropertyMapProvider?> _provider;
+  Timer? _providerStartupTimer;
+  int _selectionGeneration = 0;
+  PropertyMapProvider? _activeProvider;
+
+  YandexMapLifecycle get _yandexLifecycle =>
+      widget.yandexLifecycle ?? MapkitService.instance;
+
+  PropertyMapProviderSelector get _providerSelector =>
+      widget.providerSelector ??
+      PropertyMapProviderSelector.automatic(mapkitService: _yandexLifecycle);
 
   @override
   void initState() {
     super.initState();
-    _initialization = MapkitService.instance.initialize();
-    _markerTapListener = _MarkerTapListener(widget.onMarkerTap);
-    _appLifecycleListener = AppLifecycleListener(
-      onResume: _start,
-      onInactive: _stop,
-      onPause: _stop,
-      onDetach: _stop,
-    );
+    _provider = _selectProvider();
+  }
+
+  @override
+  void didUpdateWidget(PropertyMapView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.providerSelector != widget.providerSelector ||
+        oldWidget.yandexLifecycle != widget.yandexLifecycle) {
+      _failedProviders.clear();
+      _provider = _selectProvider();
+    }
   }
 
   @override
   void dispose() {
-    _stop();
-    _appLifecycleListener.dispose();
+    _selectionGeneration++;
+    _activeProvider = null;
+    _providerStartupTimer?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<void>(
-      future: _initialization,
-      builder: (context, _) {
-        if (!MapkitService.instance.isAvailable) {
-          return const _MapUnavailable();
+    return FutureBuilder<PropertyMapProvider?>(
+      future: _provider,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return ColoredBox(color: context.currentTheme.bgNeutralLight100);
         }
-
-        // MapKit requires this before its native map view is created. Calling
-        // it only from `onMapCreated` is too late for the first frame.
-        _start();
-
-        return YandexMap(
-          platformViewType: PlatformViewType.Hybrid,
-          onMapCreated: (mapWindow) {
-            final map = mapWindow.map;
-            map
-              ..move(
-                mapkit.CameraPosition(
-                  mapkit.Point(
-                    latitude: widget.initialCamera.latitude,
-                    longitude: widget.initialCamera.longitude,
-                  ),
-                  zoom: widget.initialCamera.zoom,
-                  azimuth: 0,
-                  tilt: 0,
-                ),
-              )
-              ..nightModeEnabled =
-                  Theme.of(context).brightness == Brightness.dark
-              ..zoomGesturesEnabled = widget.interactive
-              ..scrollGesturesEnabled = widget.interactive
-              ..rotateGesturesEnabled = widget.interactive
-              ..tiltGesturesEnabled = widget.interactive;
-
-            for (final marker in widget.markers) {
-              final placemark = map.mapObjects.addPlacemark()
-                ..geometry = mapkit.Point(
-                  latitude: marker.latitude,
-                  longitude: marker.longitude,
-                )
-                ..userData = marker.id
-                ..setView(
-                  ViewProvider(
-                    builder: () => PropertyMapPin(
-                      backgroundColor: context.currentTheme.bgBrandDefault,
-                      iconColor: context.currentTheme.iconBrandPrimary,
-                    ),
-                  ),
-                );
-
-              if (widget.onMarkerTap != null) {
-                placemark.addTapListener(_markerTapListener);
-              }
-            }
-          },
-        );
+        final provider = snapshot.data;
+        final providerViewBuilder = widget.providerViewBuilder;
+        if (provider != null && providerViewBuilder != null) {
+          return providerViewBuilder(
+            context,
+            provider,
+            widget,
+            _handleProviderReady,
+            _handleProviderFailed,
+          );
+        }
+        return switch (provider) {
+          PropertyMapProvider.yandex => YandexPropertyMap(
+            key: const ValueKey(PropertyMapProvider.yandex),
+            lifecycle: _yandexLifecycle,
+            markers: widget.markers,
+            initialCamera: widget.initialCamera,
+            interactive: widget.interactive,
+            fitMarkersOnCreate: widget.fitMarkersOnCreate,
+            controller: widget.controller,
+            onMapReady: _handleProviderReady,
+            onProviderFailed: _handleProviderFailed,
+            onMarkerTap: widget.onMarkerTap,
+            onClusterTap: widget.onClusterTap,
+            onMapTap: widget.onMapTap,
+            onCameraMove: widget.onCameraMove,
+            onCameraIdle: widget.onCameraIdle,
+            onCameraSettled: widget.onCameraSettled,
+            onVisibleBoundsChanged: widget.onVisibleBoundsChanged,
+          ),
+          PropertyMapProvider.google => GooglePropertyMap(
+            key: const ValueKey(PropertyMapProvider.google),
+            markers: widget.markers,
+            initialCamera: widget.initialCamera,
+            interactive: widget.interactive,
+            fitMarkersOnCreate: widget.fitMarkersOnCreate,
+            controller: widget.controller,
+            onMapReady: _handleProviderReady,
+            onProviderFailed: _handleProviderFailed,
+            onMarkerTap: widget.onMarkerTap,
+            onClusterTap: widget.onClusterTap,
+            onMapTap: widget.onMapTap,
+            onCameraMove: widget.onCameraMove,
+            onCameraIdle: widget.onCameraIdle,
+            onCameraSettled: widget.onCameraSettled,
+            onVisibleBoundsChanged: widget.onVisibleBoundsChanged,
+          ),
+          null => const PropertyMapUnavailable(),
+        };
       },
     );
   }
 
-  void _start() {
-    if (_isStarted || !MapkitService.instance.isAvailable) return;
-    _isStarted = true;
-    MapkitService.instance.start();
+  Future<PropertyMapProvider?> _selectProvider() {
+    _providerStartupTimer?.cancel();
+    _activeProvider = null;
+    final generation = ++_selectionGeneration;
+    final selection = _providerSelector.select(excluding: _failedProviders);
+    unawaited(
+      selection.then((provider) {
+        if (!mounted || generation != _selectionGeneration) return;
+        _activeProvider = provider;
+        _providerStartupTimer?.cancel();
+        if (provider != null) {
+          _providerStartupTimer = Timer(
+            widget.providerStartupTimeout,
+            () => _handleProviderFailed(provider),
+          );
+        }
+      }),
+    );
+    return selection;
   }
 
-  void _stop() {
-    if (!_isStarted) return;
-    _isStarted = false;
-    MapkitService.instance.stop();
+  void _handleProviderReady(PropertyMapProvider provider) {
+    if (_activeProvider != provider) return;
+    _providerStartupTimer?.cancel();
+    widget.onProviderReady?.call(provider);
+  }
+
+  void _handleProviderFailed(PropertyMapProvider provider) {
+    if (!mounted ||
+        _activeProvider != provider ||
+        _failedProviders.contains(provider)) {
+      return;
+    }
+    _providerStartupTimer?.cancel();
+    setState(() {
+      _failedProviders.add(provider);
+      _provider = _selectProvider();
+    });
   }
 }
 
-class _MarkerTapListener implements mapkit.MapObjectTapListener {
-  const _MarkerTapListener(this.onMarkerTap);
-
-  final ValueChanged<int>? onMarkerTap;
-
-  @override
-  bool onMapObjectTap(mapkit.MapObject mapObject, mapkit.Point point) {
-    final id = mapObject.userData;
-    if (id is int) onMarkerTap?.call(id);
-    return true;
-  }
-}
-
-class _MapUnavailable extends StatelessWidget {
-  const _MapUnavailable();
+class PropertyMapUnavailable extends StatelessWidget {
+  const PropertyMapUnavailable({super.key});
 
   @override
   Widget build(BuildContext context) {

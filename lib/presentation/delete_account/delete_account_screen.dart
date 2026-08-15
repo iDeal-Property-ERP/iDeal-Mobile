@@ -10,6 +10,7 @@ import 'package:ideal_mobile/utils/cache_manager.dart';
 import 'package:ideal_mobile/utils/extensions/build_context_ext.dart';
 import 'package:ideal_mobile/widgets/app_button/app_button.dart';
 import 'package:ideal_mobile/widgets/app_button/enums/app_button_size_enum.dart';
+import 'package:ideal_mobile/widgets/app_top_bar.dart';
 
 class DeleteAccountScreen extends StatefulWidget {
   const DeleteAccountScreen({super.key});
@@ -123,7 +124,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(context.localization.delete_account)),
+    appBar: AppTopBar.page(title: context.localization.delete_account),
     body: Padding(
       padding: const EdgeInsets.all(16),
       child: Column(

@@ -1,10 +1,10 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:ideal_mobile/gen/assets.gen.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 import 'package:ideal_mobile/widgets/app_button/app_button.dart';
 import 'package:ideal_mobile/widgets/app_button/enums/app_button_size_enum.dart';
+import 'package:ideal_mobile/widgets/app_top_bar/app_top_bar.dart';
 
 class LoginAppBar extends StatelessWidget implements PreferredSizeWidget {
   const LoginAppBar({
@@ -20,35 +20,47 @@ class LoginAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      leading: removeLeading
-          ? const SizedBox.shrink()
-          : AppButton.icon(
-              iconData: TablerIcons.arrow_left,
-              iconOrTextColorOverride: context.currentTheme.iconNeutralDefault,
-              size: AppButtonSize.extraLarge,
-              onPressed: () {
-                context.router.maybePop();
-              },
-            ),
-      title: showAppIcon
-          ? AppButton.icon(
-              appIcon: context.themeAsset(
-                light: Assets.icons.companyLogoLt.path,
-                dark: Assets.icons.companyLogoDt.path,
+    final topInset = MediaQueryData.fromView(View.of(context)).padding.top;
+    final bar = AppTopBar.page(
+      title: '',
+      showBackButton: !removeLeading,
+      onBack: removeLeading ? null : () => context.router.maybePop(),
+    );
+
+    return PreferredSize(
+      preferredSize: bar.preferredSize,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          bar,
+          if (showAppIcon)
+            Positioned(
+              top: topInset,
+              left: 0,
+              right: 0,
+              height: AppTopBar.height,
+              child: IgnorePointer(
+                child: Center(
+                  child: AppButton.icon(
+                    appIcon: context.themeAsset(
+                      light: Assets.icons.companyLogoLt.path,
+                      dark: Assets.icons.companyLogoDt.path,
+                    ),
+                    size: AppButtonSize.extraLarge,
+                    iconOrTextColorOverride:
+                        context.currentTheme.bgBrandDefault,
+                    onPressed: () {},
+                  ),
+                ),
               ),
-              size: AppButtonSize.extraLarge,
-              iconOrTextColorOverride: context.currentTheme.bgBrandDefault,
-              onPressed: () {},
-            )
-          : null,
-      actions: [?rightAction],
-      centerTitle: true,
-      elevation: 0.01,
-      shadowColor: context.currentTheme.strokeNeutralLight50,
+            ),
+          if (rightAction != null)
+            Positioned(top: topInset + 10, right: 8, child: rightAction!),
+        ],
+      ),
     );
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(AppTopBar.height);
 }

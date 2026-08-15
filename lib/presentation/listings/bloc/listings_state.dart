@@ -15,12 +15,14 @@ class ListingsState with EquatableMixin {
     this.count = 0,
     this.hasReachedMax = false,
     this.isLoadingMore = false,
+    this.isListingsLoading = false,
+    this.hasLoadedListings = false,
     this.errorMessage,
     this.filterOptions = const ListingFilterOptions.empty(),
-    this.favoriteIds = const <int>{},
     this.dataOrigin = PublicDataOrigin.fresh,
     this.isStale = false,
     this.listingRefreshError,
+    this.favoriteMutationErrorMessage,
   });
 
   ListingsState.initial() : this();
@@ -34,12 +36,14 @@ class ListingsState with EquatableMixin {
       count = state.count,
       hasReachedMax = state.hasReachedMax,
       isLoadingMore = state.isLoadingMore,
+      isListingsLoading = state.isListingsLoading,
+      hasLoadedListings = state.hasLoadedListings,
       errorMessage = state.errorMessage,
       filterOptions = state.filterOptions,
-      favoriteIds = state.favoriteIds,
       dataOrigin = state.dataOrigin,
       isStale = state.isStale,
-      listingRefreshError = state.listingRefreshError;
+      listingRefreshError = state.listingRefreshError,
+      favoriteMutationErrorMessage = state.favoriteMutationErrorMessage;
 
   final List<ListingCard> items;
   final ListingFilters filters;
@@ -49,12 +53,14 @@ class ListingsState with EquatableMixin {
   final int count;
   final bool hasReachedMax;
   final bool isLoadingMore;
+  final bool isListingsLoading;
+  final bool hasLoadedListings;
   final String? errorMessage;
   final ListingFilterOptions filterOptions;
-  final Set<int> favoriteIds;
   final PublicDataOrigin dataOrigin;
   final bool isStale;
   final String? listingRefreshError;
+  final String? favoriteMutationErrorMessage;
 
   ListingsState copyWith({
     List<ListingCard>? items,
@@ -65,14 +71,17 @@ class ListingsState with EquatableMixin {
     int? count,
     bool? hasReachedMax,
     bool? isLoadingMore,
+    bool? isListingsLoading,
+    bool? hasLoadedListings,
     String? errorMessage,
     ListingFilterOptions? filterOptions,
-    Set<int>? favoriteIds,
     PublicDataOrigin? dataOrigin,
     bool? isStale,
     String? listingRefreshError,
+    String? favoriteMutationErrorMessage,
     bool clearErrorMessage = false,
     bool clearListingRefreshError = false,
+    bool clearFavoriteMutationErrorMessage = false,
   }) {
     return ListingsState(
       items: items ?? this.items,
@@ -83,16 +92,20 @@ class ListingsState with EquatableMixin {
       count: count ?? this.count,
       hasReachedMax: hasReachedMax ?? this.hasReachedMax,
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
+      isListingsLoading: isListingsLoading ?? this.isListingsLoading,
+      hasLoadedListings: hasLoadedListings ?? this.hasLoadedListings,
       errorMessage: clearErrorMessage
           ? null
           : errorMessage ?? this.errorMessage,
       filterOptions: filterOptions ?? this.filterOptions,
-      favoriteIds: favoriteIds ?? this.favoriteIds,
       dataOrigin: dataOrigin ?? this.dataOrigin,
       isStale: isStale ?? this.isStale,
       listingRefreshError: clearListingRefreshError
           ? null
           : listingRefreshError ?? this.listingRefreshError,
+      favoriteMutationErrorMessage: clearFavoriteMutationErrorMessage
+          ? null
+          : favoriteMutationErrorMessage ?? this.favoriteMutationErrorMessage,
     );
   }
 
@@ -106,12 +119,14 @@ class ListingsState with EquatableMixin {
     int? count,
     bool? hasReachedMax,
     bool? isLoadingMore,
+    bool? isListingsLoading,
+    bool? hasLoadedListings,
     ListingFilterOptions? filterOptions,
-    Set<int>? favoriteIds,
     this.dataOrigin = PublicDataOrigin.fresh,
     this.isStale = false,
     this.listingRefreshError,
     this.errorMessage,
+    this.favoriteMutationErrorMessage,
   }) : items = items ?? const [],
        filters = filters ?? const ListingFilters.empty(),
        searchQuery = searchQuery ?? '',
@@ -120,8 +135,9 @@ class ListingsState with EquatableMixin {
        count = count ?? 0,
        hasReachedMax = hasReachedMax ?? false,
        isLoadingMore = isLoadingMore ?? false,
-       filterOptions = filterOptions ?? const ListingFilterOptions.empty(),
-       favoriteIds = favoriteIds ?? const <int>{};
+       isListingsLoading = isListingsLoading ?? false,
+       hasLoadedListings = hasLoadedListings ?? false,
+       filterOptions = filterOptions ?? const ListingFilterOptions.empty();
 
   @override
   List<Object?> get props => [
@@ -133,12 +149,14 @@ class ListingsState with EquatableMixin {
     count,
     hasReachedMax,
     isLoadingMore,
+    isListingsLoading,
+    hasLoadedListings,
     errorMessage,
     filterOptions,
-    favoriteIds,
     dataOrigin,
     isStale,
     listingRefreshError,
+    favoriteMutationErrorMessage,
   ];
 }
 

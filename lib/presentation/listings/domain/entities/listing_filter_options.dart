@@ -23,6 +23,7 @@ class ListingChoice extends Equatable {
 class ListingFilterOptions extends Equatable {
   const ListingFilterOptions({
     this.districts = const [],
+    this.propertyTypes = const [],
     this.tariffs = const [],
     this.furnishings = const [],
     this.priceMin,
@@ -33,6 +34,7 @@ class ListingFilterOptions extends Equatable {
 
   const ListingFilterOptions.empty()
     : districts = const [],
+      propertyTypes = const [],
       tariffs = const [],
       furnishings = const [],
       priceMin = null,
@@ -41,6 +43,7 @@ class ListingFilterOptions extends Equatable {
       roomsMax = null;
 
   final List<ListingDistrict> districts;
+  final List<ListingChoice> propertyTypes;
   final List<ListingChoice> tariffs;
   final List<ListingChoice> furnishings;
   final double? priceMin;
@@ -51,6 +54,7 @@ class ListingFilterOptions extends Equatable {
   @override
   List<Object?> get props => [
     districts,
+    propertyTypes,
     tariffs,
     furnishings,
     priceMin,

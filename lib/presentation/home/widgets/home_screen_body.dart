@@ -1,10 +1,15 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:ideal_mobile/constants/integration_test_keys.dart';
-import 'package:ideal_mobile/presentation/home/widgets/home_app_bar.dart';
+import 'package:ideal_mobile/core/services/injection_container.dart';
+import 'package:ideal_mobile/gen/assets.gen.dart';
+import 'package:ideal_mobile/i18n/localization.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_bloc.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_event.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_state.dart';
+import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filters.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/listing_card_shimmer.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/listings_empty_view.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/listings_error_view.dart';
@@ -13,6 +18,11 @@ import 'package:ideal_mobile/presentation/listings/widgets/listings_filter_chips
 import 'package:ideal_mobile/presentation/listings/widgets/listings_filter_sheet.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/listings_search_bar.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/map_pill_button.dart';
+import 'package:ideal_mobile/presentation/notifications/bloc/notification_badge_cubit.dart';
+import 'package:ideal_mobile/routes.gr.dart';
+import 'package:ideal_mobile/utils/extensions/build_context_ext.dart';
+import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
+import 'package:ideal_mobile/widgets/app_top_bar.dart';
 
 /// Distance from the bottom of the feed at which the next page is requested.
 const _kLoadMoreThreshold = 400.0;
@@ -61,49 +71,121 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: Stack(
-        children: [
-          RefreshIndicator(
-            onRefresh: _onRefresh,
-            child: CustomScrollView(
-              key: keys.homePage.listingsFeedKey,
-              controller: _scrollController,
-              physics: const AlwaysScrollableScrollPhysics(),
-              slivers: [
-                const SliverToBoxAdapter(child: HomeAppBar()),
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-                    child: ListingsSearchBar(key: _searchBarKey),
+    return BlocListener<ListingsBloc, ListingsState>(
+      listenWhen: (previous, current) =>
+          previous.favoriteMutationErrorMessage !=
+          current.favoriteMutationErrorMessage,
+      listener: (context, state) {
+        final message = state.favoriteMutationErrorMessage;
+        if (message == null || message.isEmpty) return;
+        context.showSnackBar(message, isDisplayingError: true);
+        context.read<ListingsBloc>().add(const ClearFavoriteFeedbackEvent());
+      },
+      child: BlocProvider.value(
+        value: sl<NotificationBadgeCubit>()..initialize(),
+        child: BlocBuilder<NotificationBadgeCubit, int>(
+          builder: (context, unreadCount) {
+            return GestureDetector(
+              onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+              child: Stack(
+                children: [
+                  RefreshIndicator(
+                    onRefresh: _onRefresh,
+                    child: CustomScrollView(
+                      key: keys.homePage.listingsFeedKey,
+                      controller: _scrollController,
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      slivers: [
+                        AppSliverTopBar.root(
+                          title: context.localization.home,
+                          actions: [
+                            AppTopBarAction(
+                              icon: TablerIcons.bell,
+                              tooltip: context.localization.notifications,
+                              badge: _notificationBadge(unreadCount),
+                              onPressed: () =>
+                                  context.pushRoute(NotificationsRoute()),
+                            ),
+                          ],
+                        ),
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+                            child: ListingsSearchBar(key: _searchBarKey),
+                          ),
+                        ),
+                        SliverToBoxAdapter(
+                          child: ListingsFilterChips(
+                            onOpenFilters: () =>
+                                showListingsFilterSheet(context),
+                          ),
+                        ),
+                        const SliverToBoxAdapter(child: SizedBox(height: 12)),
+                        const _ListingsFeedSection(),
+                        const SliverToBoxAdapter(child: SizedBox(height: 96)),
+                      ],
+                    ),
                   ),
-                ),
-                SliverToBoxAdapter(
-                  child: ListingsFilterChips(
-                    onOpenFilters: () => showListingsFilterSheet(context),
+                  const Positioned(
+                    left: 16,
+                    top: 18,
+                    child: IgnorePointer(child: _HomeLogo()),
                   ),
-                ),
-                const SliverToBoxAdapter(child: SizedBox(height: 12)),
-                const _ListingsFeedSection(),
-                // Keeps the last row clear of the floating map pill.
-                const SliverToBoxAdapter(child: SizedBox(height: 96)),
-              ],
-            ),
-          ),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 24,
-            child: Center(
-              child: MapPillButton(
-                // TODO(listings): wire up the map view — inert for now.
-                onTap: () {},
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 24,
+                    child: Center(child: MapPillButton(onTap: _openMap)),
+                  ),
+                ],
               ),
-            ),
-          ),
-        ],
+            );
+          },
+        ),
       ),
+    );
+  }
+
+  String? _notificationBadge(int unreadCount) {
+    if (unreadCount <= 0) return null;
+    return unreadCount > 9 ? '9+' : '•';
+  }
+
+  void _openMap() {
+    final listingsBloc = context.read<ListingsBloc>();
+    final state = listingsBloc.state;
+    context.router.push(
+      ListingDiscoveryMapRoute(
+        initialFilters: state.filters,
+        filterOptions: state.filterOptions,
+        seedListings: state.items,
+        onFiltersChanged: (filters) =>
+            _applyReturnedFilters(listingsBloc, filters),
+      ),
+    );
+  }
+
+  void _applyReturnedFilters(
+    ListingsBloc listingsBloc,
+    ListingFilters filters,
+  ) {
+    if (listingsBloc.isClosed || filters == listingsBloc.state.filters) return;
+    listingsBloc.add(ApplyListingFiltersEvent(filters));
+  }
+}
+
+class _HomeLogo extends StatelessWidget {
+  const _HomeLogo();
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+      context.themeAsset(
+        light: Assets.icons.companyLogoLt.path,
+        dark: Assets.icons.companyLogoDt.path,
+      ),
+      width: 28,
+      height: 28,
     );
   }
 }
@@ -115,11 +197,20 @@ class _ListingsFeedSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final status = context
-        .select<ListingsBloc, ({bool isEmpty, bool hasError, bool isLoading})>(
+        .select<
+          ListingsBloc,
+          ({
+            bool isEmpty,
+            bool hasError,
+            bool isLoading,
+            bool hasLoadedListings,
+          })
+        >(
           (bloc) => (
             isEmpty: bloc.state.items.isEmpty,
             hasError: bloc.state.errorMessage != null,
-            isLoading: bloc.state is ListingsLoadingState,
+            isLoading: bloc.state.isListingsLoading,
+            hasLoadedListings: bloc.state.hasLoadedListings,
           ),
         );
 
@@ -135,8 +226,8 @@ class _ListingsFeedSection extends StatelessWidget {
       );
     }
 
-    if (status.isLoading && status.isEmpty) {
-      return const SliverToBoxAdapter(child: ListingCardShimmerGrid());
+    if ((status.isLoading || !status.hasLoadedListings) && status.isEmpty) {
+      return const ListingCardShimmerGrid();
     }
 
     if (status.isEmpty) {

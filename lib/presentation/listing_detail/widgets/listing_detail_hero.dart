@@ -7,8 +7,8 @@ import 'package:ideal_mobile/presentation/listing_detail/domain/entities/listing
 import 'package:ideal_mobile/presentation/listing_detail/widgets/listing_photo_viewer.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/listing_card_image.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
+import 'package:ideal_mobile/widgets/app_top_bar/app_top_bar.dart';
 import 'package:ideal_mobile/widgets/images/prioritized_image_scheduler.dart';
-import 'package:ideal_mobile/widgets/images/tiered_network_image.dart';
 
 class ListingDetailHero extends StatefulWidget {
   const ListingDetailHero({
@@ -82,7 +82,6 @@ class _ListingDetailHeroState extends State<ListingDetailHero> {
                     imageUrl: photo?.imageUrl,
                     previewUrl: photo?.previewUrl,
                     displayUrl: photo?.displayUrl,
-                    targetTier: ImageDisplayTier.display,
                     priority: ImageLoadPriority.high,
                   ),
                 ),
@@ -92,10 +91,11 @@ class _ListingDetailHeroState extends State<ListingDetailHero> {
           Positioned(
             top: topControlOffset,
             left: 16,
-            child: _HeroCircleButton(
+            child: AppTopBarAction(
               icon: TablerIcons.arrow_left,
-              label: MaterialLocalizations.of(context).backButtonTooltip,
+              tooltip: MaterialLocalizations.of(context).backButtonTooltip,
               onPressed: () => Navigator.of(context).maybePop(),
+              style: AppTopBarActionStyle.overlay,
             ),
           ),
           Positioned(
@@ -103,20 +103,22 @@ class _ListingDetailHeroState extends State<ListingDetailHero> {
             right: 16,
             child: Row(
               children: [
-                _HeroCircleButton(
+                AppTopBarAction(
                   icon: TablerIcons.share,
-                  label: context.localization.listing_detail_share,
+                  tooltip: context.localization.listing_detail_share,
                   onPressed: () {
                     // TODO(listing-detail): wire share
                   },
+                  style: AppTopBarActionStyle.overlay,
                 ),
                 const SizedBox(width: 8),
-                _HeroCircleButton(
+                AppTopBarAction(
                   icon: TablerIcons.heart,
-                  label: context.localization.save,
+                  tooltip: context.localization.save,
                   onPressed: () {
                     // TODO(listing-detail): wire favourite
                   },
+                  style: AppTopBarActionStyle.overlay,
                 ),
               ],
             ),
@@ -167,39 +169,5 @@ class _ListingDetailHeroState extends State<ListingDetailHero> {
     if (length <= 0 || index < 0) return 0;
     if (index >= length) return length - 1;
     return index;
-  }
-}
-
-class _HeroCircleButton extends StatelessWidget {
-  const _HeroCircleButton({
-    required this.icon,
-    required this.label,
-    required this.onPressed,
-  });
-
-  final IconData icon;
-  final String label;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      label: label,
-      child: Material(
-        color: Colors.black.withValues(alpha: 0.42),
-        shape: const CircleBorder(),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          customBorder: const CircleBorder(),
-          onTap: onPressed,
-          child: SizedBox(
-            width: 40,
-            height: 40,
-            child: Icon(icon, color: Colors.white, size: 20),
-          ),
-        ),
-      ),
-    );
   }
 }

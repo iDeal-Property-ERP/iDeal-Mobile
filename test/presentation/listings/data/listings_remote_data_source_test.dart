@@ -41,6 +41,7 @@ void main() {
     'tariff': 'comfort',
     'is_verified': true,
     'is_featured': false,
+    'is_favorite': true,
     'score': 9.2,
     'review_count': 14,
     'cover_image_url': null,
@@ -92,6 +93,7 @@ void main() {
     );
 
     expect(result.items.single.id, 12);
+    expect(result.items.single.isFavorite, isTrue);
     verify(
       () => dio.get(
         '/mobile/home/listings/',
