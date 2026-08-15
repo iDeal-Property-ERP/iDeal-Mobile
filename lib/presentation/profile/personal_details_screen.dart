@@ -42,7 +42,6 @@ class _PersonalDetailsFormState extends State<_PersonalDetailsForm> {
   late final TextEditingController _patronymicController;
   late final TextEditingController _emailController;
   late final TextEditingController _phoneController;
-  late final TextEditingController _nationalityController;
   bool _awaitingSave = false;
 
   @override
@@ -58,9 +57,6 @@ class _PersonalDetailsFormState extends State<_PersonalDetailsForm> {
     );
     _emailController = TextEditingController(text: profile?.email ?? '');
     _phoneController = TextEditingController(text: profile?.phone ?? '');
-    _nationalityController = TextEditingController(
-      text: profile?.nationality ?? '',
-    );
   }
 
   @override
@@ -70,7 +66,6 @@ class _PersonalDetailsFormState extends State<_PersonalDetailsForm> {
     _patronymicController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
-    _nationalityController.dispose();
     super.dispose();
   }
 
@@ -138,7 +133,7 @@ class _PersonalDetailsFormState extends State<_PersonalDetailsForm> {
                 _ProfileTextField(
                   label: context.localization.email,
                   controller: _emailController,
-                  textInputAction: TextInputAction.next,
+                  textInputAction: TextInputAction.done,
                   keyboardType: TextInputType.emailAddress,
                   maxLength: 254,
                   validator: (value) =>
@@ -147,17 +142,10 @@ class _PersonalDetailsFormState extends State<_PersonalDetailsForm> {
                 _ProfileTextField(
                   label: context.localization.mobile_number,
                   controller: _phoneController,
-                  textInputAction: TextInputAction.next,
+                  textInputAction: TextInputAction.none,
                   keyboardType: TextInputType.phone,
                   readOnly: true,
                   enabled: false,
-                ),
-                _ProfileTextField(
-                  label: context.localization.nationality,
-                  controller: _nationalityController,
-                  textInputAction: TextInputAction.done,
-                  textCapitalization: TextCapitalization.words,
-                  maxLength: 50,
                 ),
               ],
             ),
@@ -183,8 +171,6 @@ class _PersonalDetailsFormState extends State<_PersonalDetailsForm> {
           patronymic: _optionalValue(_patronymicController),
           clearPatronymic: _optionalValue(_patronymicController) == null,
           email: _emailController.text.trim(),
-          nationality: _optionalValue(_nationalityController),
-          clearNationality: _optionalValue(_nationalityController) == null,
         ),
       ),
     );

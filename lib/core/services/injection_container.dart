@@ -30,6 +30,7 @@ import 'package:ideal_mobile/presentation/login/domain/usecases/request_otp.dart
 import 'package:ideal_mobile/presentation/login/domain/usecases/verify_otp.dart';
 import 'package:ideal_mobile/presentation/notifications/notifications_injection.dart';
 import 'package:ideal_mobile/presentation/profile/data/datasources/profile_remote_data_source.dart';
+import 'package:ideal_mobile/presentation/profile/data/datasources/support_remote_data_source.dart';
 import 'package:ideal_mobile/presentation/profile/data/repositories/profile_repository_impl.dart';
 import 'package:ideal_mobile/presentation/profile/domain/repositories/profile_repository.dart';
 import 'package:ideal_mobile/presentation/profile/domain/usecases/get_profile.dart';
@@ -82,6 +83,9 @@ Future<void> configureDependencies({Dio? dio}) async {
     )
     ..registerLazySingleton<ProfileRemoteDataSource>(
       () => ProfileRemoteDataSourceImpl(sl<Dio>(), sl<CacheManager>()),
+    )
+    ..registerLazySingleton<SupportRemoteDataSource>(
+      () => SupportRemoteDataSourceImpl(sl<Dio>(), sl<CacheManager>()),
     )
     ..registerLazySingleton(() => GetProfile(sl<ProfileRepository>()))
     ..registerLazySingleton(() => UpdateProfile(sl<ProfileRepository>()))
