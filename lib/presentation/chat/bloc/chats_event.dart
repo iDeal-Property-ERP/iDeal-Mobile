@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
+import 'package:ideal_mobile/presentation/chat/bloc/chats_state.dart';
 
 sealed class ChatsEvent extends Equatable {
   const ChatsEvent();
@@ -16,16 +17,31 @@ class ChatsStopped extends ChatsEvent {
   const ChatsStopped();
 }
 
-class ChatsLoadRequested extends ChatsEvent {
-  const ChatsLoadRequested();
+class ChatsTabSelected extends ChatsEvent {
+  const ChatsTabSelected(this.tab);
+
+  final ChatsTab tab;
+
+  @override
+  List<Object> get props => [tab];
 }
 
 class ChatsRefreshRequested extends ChatsEvent {
-  const ChatsRefreshRequested();
+  const ChatsRefreshRequested({this.tab});
+
+  final ChatsTab? tab;
+
+  @override
+  List<Object?> get props => [tab];
 }
 
-class ChatsArchivedToggled extends ChatsEvent {
-  const ChatsArchivedToggled();
+class ChatsLoadMoreRequested extends ChatsEvent {
+  const ChatsLoadMoreRequested(this.tab);
+
+  final ChatsTab tab;
+
+  @override
+  List<Object> get props => [tab];
 }
 
 class ChatsPollTicked extends ChatsEvent {

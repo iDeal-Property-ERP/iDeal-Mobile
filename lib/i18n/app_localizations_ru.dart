@@ -590,7 +590,27 @@ class AppLocalizationsRu extends AppLocalizations {
       'Напишите нам по поводу объявления, и ваш диалог появится здесь';
 
   @override
-  String get chats_archived => 'Архивные чаты';
+  String get chats_active => 'Активные';
+
+  @override
+  String get chats_archived => 'Архив';
+
+  @override
+  String get chats_archived_empty_title => 'Нет архивных чатов';
+
+  @override
+  String get chats_archived_empty_subtitle =>
+      'Архивированные чаты появятся здесь';
+
+  @override
+  String get chats_loading_more => 'Загружаем ещё чаты';
+
+  @override
+  String get chats_load_error =>
+      'Не удалось загрузить чаты. Попробуйте ещё раз.';
+
+  @override
+  String get chats_retry => 'Повторить';
 
   @override
   String get chat_archive => 'Архивировать';

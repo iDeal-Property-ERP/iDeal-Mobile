@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
 import 'package:ideal_mobile/presentation/chat/bloc/chats_bloc.dart';
 import 'package:ideal_mobile/presentation/chat/bloc/chats_event.dart';
@@ -11,13 +12,14 @@ import 'package:ideal_mobile/presentation/chat/widgets/chat_conversation_list_ti
 import 'package:ideal_mobile/presentation/chat/widgets/chat_empty_view.dart';
 import 'package:ideal_mobile/presentation/chat/widgets/chat_list_shimmer.dart';
 import 'package:ideal_mobile/presentation/chat/widgets/chat_report_sheet.dart';
-import 'package:ideal_mobile/presentation/chat/widgets/chats_archived_group.dart';
 import 'package:ideal_mobile/routes.gr.dart';
 import 'package:ideal_mobile/utils/extensions/build_context_ext.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 import 'package:ideal_mobile/widgets/app_button/app_button.dart';
 import 'package:ideal_mobile/widgets/app_button/enums/app_button_style_enum.dart';
 import 'package:ideal_mobile/widgets/app_top_bar.dart';
+
+const _kChatsLoadMoreThreshold = 400.0;
 
 @RoutePage()
 class ChatsScreen extends StatefulWidget {
@@ -95,63 +97,194 @@ class _ChatsBody extends StatelessWidget {
   }
 }
 
-class _ChatsContent extends StatelessWidget {
+class _ChatsContent extends StatefulWidget {
   const _ChatsContent();
+
+  @override
+  State<_ChatsContent> createState() => _ChatsContentState();
+}
+
+class _ChatsContentState extends State<_ChatsContent> {
+  final ScrollController _activeController = ScrollController();
+  final ScrollController _archivedController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _activeController.addListener(
+      () => _onScroll(ChatsTab.active, _activeController),
+    );
+    _archivedController.addListener(
+      () => _onScroll(ChatsTab.archived, _archivedController),
+    );
+  }
+
+  @override
+  void dispose() {
+    _activeController.dispose();
+    _archivedController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll(ChatsTab tab, ScrollController controller) {
+    if (!controller.hasClients) return;
+    final position = controller.position;
+    if (position.pixels < position.maxScrollExtent - _kChatsLoadMoreThreshold) {
+      return;
+    }
+
+    final feed = context.read<ChatsBloc>().state.feedFor(tab);
+    if (!feed.hasLoaded ||
+        feed.hasReachedMax ||
+        feed.isLoading ||
+        feed.isLoadingMore) {
+      return;
+    }
+    context.read<ChatsBloc>().add(ChatsLoadMoreRequested(tab));
+  }
+
+  Future<void> _refresh(ChatsTab tab) async {
+    final bloc = context.read<ChatsBloc>();
+    bloc.add(ChatsRefreshRequested(tab: tab));
+    await bloc.stream.firstWhere((state) => !state.feedFor(tab).isLoading);
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ChatsBloc, ChatsState>(
       builder: (context, state) {
-        return RefreshIndicator(
-          onRefresh: () async {
-            context.read<ChatsBloc>().add(const ChatsRefreshRequested());
-          },
-          child: CustomScrollView(
-            slivers: [
-              AppSliverTopBar.root(
-                title: context.localization.chats,
-                actions: [
-                  AppTopBarAction(
-                    icon: TablerIcons.refresh,
-                    tooltip: MaterialLocalizations.of(
-                      context,
-                    ).refreshIndicatorSemanticLabel,
-                    onPressed: () => context.read<ChatsBloc>().add(
-                      const ChatsRefreshRequested(),
-                    ),
-                  ),
-                ],
-              ),
-              if (state.isLoading && state.activeItems.isEmpty)
-                const SliverFillRemaining(child: ChatListShimmer())
-              else if (state.activeItems.isEmpty)
-                const SliverToBoxAdapter(
-                  child: SizedBox(height: 320, child: ChatEmptyView()),
-                )
-              else
-                SliverList.builder(
-                  itemCount: state.activeItems.length,
-                  itemBuilder: (context, index) =>
-                      _conversationTile(context, state.activeItems[index]),
-                ),
-              SliverToBoxAdapter(
-                child: ChatsArchivedGroup(
-                  expanded: state.archivedExpanded,
-                  loading: state.isLoadingArchived,
-                  conversations: state.archivedItems,
-                  onToggle: () => context.read<ChatsBloc>().add(
-                    const ChatsArchivedToggled(),
-                  ),
-                  onConversationTap: (conversation) =>
-                      _openConversation(context, conversation),
-                  onConversationLongPress: (conversation) =>
-                      _showActions(context, conversation),
+        return IndexedStack(
+          index: state.selectedTab.index,
+          children: [
+            _ChatsFeed(
+              key: const PageStorageKey('active_chats_feed'),
+              tab: ChatsTab.active,
+              controller: _activeController,
+              state: state,
+              onRefresh: () => _refresh(ChatsTab.active),
+            ),
+            _ChatsFeed(
+              key: const PageStorageKey('archived_chats_feed'),
+              tab: ChatsTab.archived,
+              controller: _archivedController,
+              state: state,
+              onRefresh: () => _refresh(ChatsTab.archived),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _ChatsFeed extends StatelessWidget {
+  const _ChatsFeed({
+    super.key,
+    required this.tab,
+    required this.controller,
+    required this.state,
+    required this.onRefresh,
+  });
+
+  final ChatsTab tab;
+  final ScrollController controller;
+  final ChatsState state;
+  final RefreshCallback onRefresh;
+
+  @override
+  Widget build(BuildContext context) {
+    final feed = state.feedFor(tab);
+    return RefreshIndicator(
+      onRefresh: onRefresh,
+      child: CustomScrollView(
+        controller: controller,
+        physics: const AlwaysScrollableScrollPhysics(),
+        slivers: [
+          AppSliverTopBar.root(
+            title: context.localization.chats,
+            bottomHeight: 48,
+            bottom: _ChatsTabs(selectedTab: state.selectedTab),
+            actions: [
+              AppTopBarAction(
+                icon: TablerIcons.refresh,
+                tooltip: MaterialLocalizations.of(
+                  context,
+                ).refreshIndicatorSemanticLabel,
+                onPressed: () => context.read<ChatsBloc>().add(
+                  ChatsRefreshRequested(tab: tab),
                 ),
               ),
             ],
           ),
-        );
-      },
+          if (feed.isLoading && feed.items.isEmpty)
+            const SliverFillRemaining(child: ChatListShimmer())
+          else if (feed.errorMessage != null && feed.items.isEmpty)
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: _ChatsErrorView(
+                onRetry: () => context.read<ChatsBloc>().add(
+                  ChatsRefreshRequested(tab: tab),
+                ),
+              ),
+            )
+          else if (feed.items.isEmpty)
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: ChatEmptyView(
+                title: tab == ChatsTab.archived
+                    ? context.localization.chats_archived_empty_title
+                    : null,
+                subtitle: tab == ChatsTab.archived
+                    ? context.localization.chats_archived_empty_subtitle
+                    : null,
+              ),
+            )
+          else
+            SliverList.builder(
+              itemCount: feed.items.length,
+              itemBuilder: (context, index) =>
+                  _conversationTile(context, feed.items[index]),
+            ),
+          if (feed.isLoadingMore)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                child: Column(
+                  children: [
+                    const CircularProgressIndicator.adaptive(),
+                    const SizedBox(height: 12),
+                    Text(
+                      context.localization.chats_loading_more,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: context.currentTheme.textNeutralSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          if (feed.errorMessage != null && feed.items.isNotEmpty)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                child: MaterialBanner(
+                  content: Text(context.localization.chats_load_error),
+                  actions: [
+                    TextButton(
+                      onPressed: () => context.read<ChatsBloc>().add(
+                        feed.failedPage == 1
+                            ? ChatsRefreshRequested(tab: tab)
+                            : ChatsLoadMoreRequested(tab),
+                      ),
+                      child: Text(context.localization.chats_retry),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          const SliverToBoxAdapter(child: SizedBox(height: 24)),
+        ],
+      ),
     );
   }
 
@@ -272,5 +405,122 @@ class _ChatsContent extends StatelessWidget {
       ),
     );
     return result ?? false;
+  }
+}
+
+class _ChatsTabs extends StatelessWidget {
+  const _ChatsTabs({required this.selectedTab});
+
+  final ChatsTab selectedTab;
+
+  @override
+  Widget build(BuildContext context) {
+    return ColoredBox(
+      color: context.currentTheme.bgSurfaceBase,
+      child: Row(
+        children: [
+          _ChatsTabButton(
+            label: context.localization.chats_active,
+            selected: selectedTab == ChatsTab.active,
+            onTap: () => context.read<ChatsBloc>().add(
+              const ChatsTabSelected(ChatsTab.active),
+            ),
+          ),
+          _ChatsTabButton(
+            label: context.localization.chats_archived,
+            selected: selectedTab == ChatsTab.archived,
+            onTap: () => context.read<ChatsBloc>().add(
+              const ChatsTabSelected(ChatsTab.archived),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ChatsTabButton extends StatelessWidget {
+  const _ChatsTabButton({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = selected
+        ? context.currentTheme.textBrandPrimary
+        : context.currentTheme.textNeutralSecondary;
+    return Expanded(
+      child: Semantics(
+        button: true,
+        selected: selected,
+        child: InkWell(
+          onTap: onTap,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Expanded(
+                child: Center(
+                  child: Text(
+                    label,
+                    style: AppTextStyles.p3SemiBold.copyWith(color: color),
+                  ),
+                ),
+              ),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                height: 2,
+                color: selected
+                    ? context.currentTheme.strokeBrandDefault
+                    : Colors.transparent,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ChatsErrorView extends StatelessWidget {
+  const _ChatsErrorView({required this.onRetry});
+
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              TablerIcons.alert_circle,
+              size: 64,
+              color: context.currentTheme.iconErrorDefault,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              context.localization.chats_load_error,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.p2SemiBold.copyWith(
+                color: context.currentTheme.textNeutralPrimary,
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextButton(
+              onPressed: onRetry,
+              child: Text(context.localization.chats_retry),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

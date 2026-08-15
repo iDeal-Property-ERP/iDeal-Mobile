@@ -30,21 +30,21 @@ void main() {
 
     await tester.runWidgetTest(child: ChatsScreen(bloc: bloc));
 
-    expect(
-      tester.getTopLeft(find.byIcon(TablerIcons.refresh)).dy,
-      greaterThanOrEqualTo(24),
-    );
-    await tester.tap(find.byIcon(TablerIcons.refresh));
+    final visibleRefresh = find.byIcon(TablerIcons.refresh).hitTestable();
+    expect(tester.getTopLeft(visibleRefresh).dy, greaterThanOrEqualTo(24));
+    await tester.tap(visibleRefresh);
     await tester.pump();
 
-    verify(() => bloc.add(const ChatsRefreshRequested())).called(1);
+    verify(
+      () => bloc.add(const ChatsRefreshRequested(tab: ChatsTab.active)),
+    ).called(1);
   });
 
   testWidgets('uses the localized Chats root title', (tester) async {
     for (final scenario in const [
-      (Locale('en'), 'Chats'),
-      (Locale('ru'), 'Чаты'),
-      (Locale('uz'), 'Suhbatlar'),
+      (Locale('en'), 'Chats', 'Active', 'Archived'),
+      (Locale('ru'), 'Чаты', 'Активные', 'Архив'),
+      (Locale('uz'), 'Suhbatlar', 'Faol', 'Arxiv'),
     ]) {
       final bloc = mockChatsBloc(const ChatsState.initial());
       await tester.pumpWidget(
@@ -63,7 +63,9 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text(scenario.$2), findsOneWidget);
+      expect(find.text(scenario.$2).hitTestable(), findsOneWidget);
+      expect(find.text(scenario.$3).hitTestable(), findsOneWidget);
+      expect(find.text(scenario.$4).hitTestable(), findsOneWidget);
     }
   });
 
@@ -88,7 +90,16 @@ void main() {
       pumpBeforeTest: settleWithMockedImages,
       builder: () {
         final bloc = mockChatsBloc(
-          ChatsState.test(activeItems: [buildChatConversation()]),
+          ChatsState.test(
+            activeFeed: ChatsFeedState(
+              items: [buildChatConversation()],
+              page: 1,
+              numPages: 1,
+              count: 1,
+              hasLoaded: true,
+              hasReachedMax: true,
+            ),
+          ),
         );
         return createTestScenario(
           name: 'chats page',
@@ -99,23 +110,34 @@ void main() {
     );
 
     goldenTest(
-      'chats page archived expanded',
+      'chats page archived tab',
       fileName: 'chats_page_archived_expanded',
       pumpWidget: pumpWithMockedImages,
       pumpBeforeTest: settleWithMockedImages,
       builder: () {
         final bloc = mockChatsBloc(
           ChatsState.test(
-            activeItems: [buildChatConversation()],
-            archivedItems: [
-              buildChatConversation(isArchived: true, unreadCount: 0),
-            ],
-            archivedExpanded: true,
-            archivedLoaded: true,
+            selectedTab: ChatsTab.archived,
+            activeFeed: ChatsFeedState(
+              items: [buildChatConversation()],
+              page: 1,
+              numPages: 1,
+              count: 1,
+              hasLoaded: true,
+              hasReachedMax: true,
+            ),
+            archivedFeed: ChatsFeedState(
+              items: [buildChatConversation(isArchived: true, unreadCount: 0)],
+              page: 1,
+              numPages: 1,
+              count: 1,
+              hasLoaded: true,
+              hasReachedMax: true,
+            ),
           ),
         );
         return createTestScenario(
-          name: 'chats page archived expanded',
+          name: 'chats page archived tab',
           child: ChatsScreen(bloc: bloc),
         );
       },

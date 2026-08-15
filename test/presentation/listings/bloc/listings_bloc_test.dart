@@ -176,6 +176,26 @@ void main() {
             ])
             .having((state) => state.page, 'page', 2),
       ],
+      verify: (_) => verify(
+        () => getListings(
+          const GetListingsParams(filters: ListingFilters.empty(), page: 2),
+        ),
+      ).called(1),
+    );
+
+    blocTest<ListingsBloc, ListingsState>(
+      'does not load more while the first page or refresh is loading',
+      build: () => listingsBloc,
+      seed: () => ListingsState.test(
+        items: [listing(1)],
+        page: 1,
+        numPages: 2,
+        count: 2,
+        isListingsLoading: true,
+      ),
+      act: (bloc) => bloc.add(const LoadMoreListingsEvent()),
+      expect: () => <ListingsState>[],
+      verify: (_) => verifyNever(() => getListings(any())),
     );
 
     blocTest<ListingsBloc, ListingsState>(

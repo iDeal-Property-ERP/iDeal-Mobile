@@ -60,7 +60,11 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
     }
 
     final bloc = context.read<ListingsBloc>();
-    if (bloc.state.isLoadingMore || bloc.state.hasReachedMax) return;
+    if (bloc.state.isListingsLoading ||
+        bloc.state.isLoadingMore ||
+        bloc.state.hasReachedMax) {
+      return;
+    }
 
     bloc.add(const LoadMoreListingsEvent());
   }

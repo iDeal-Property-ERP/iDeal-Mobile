@@ -153,6 +153,30 @@ void main() {
     verify(() => bloc.add(const LoadMoreSelectedEvent())).called(1);
   });
 
+  testWidgets('requests the next Selected page near the bottom', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(411, 896);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final bloc = MockSelectedBloc();
+    when(() => bloc.state).thenReturn(
+      SelectedState.test(
+        hasLoaded: true,
+        items: List<ListingCard>.generate(30, (index) => listing(index + 1)),
+        page: 1,
+        numPages: 2,
+        count: 31,
+      ),
+    );
+
+    await pumpScreen(tester, bloc);
+    await tester.drag(find.byType(CustomScrollView), const Offset(0, -10000));
+    await tester.pump();
+
+    verify(() => bloc.add(const LoadMoreSelectedEvent())).called(1);
+  });
+
   testWidgets(
     'shows snackbar feedback when load more fails with visible cards',
     (tester) async {

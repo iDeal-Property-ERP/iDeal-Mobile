@@ -1144,11 +1144,47 @@ abstract class AppLocalizations {
   /// **'Message us about a listing and your conversation will appear here'**
   String get chats_empty_subtitle;
 
+  /// No description provided for @chats_active.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get chats_active;
+
   /// No description provided for @chats_archived.
   ///
   /// In en, this message translates to:
-  /// **'Archived chats'**
+  /// **'Archived'**
   String get chats_archived;
+
+  /// No description provided for @chats_archived_empty_title.
+  ///
+  /// In en, this message translates to:
+  /// **'No archived chats'**
+  String get chats_archived_empty_title;
+
+  /// No description provided for @chats_archived_empty_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Chats you archive will appear here'**
+  String get chats_archived_empty_subtitle;
+
+  /// No description provided for @chats_loading_more.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading more chats'**
+  String get chats_loading_more;
+
+  /// No description provided for @chats_load_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load chats. Please try again.'**
+  String get chats_load_error;
+
+  /// No description provided for @chats_retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get chats_retry;
 
   /// No description provided for @chat_archive.
   ///

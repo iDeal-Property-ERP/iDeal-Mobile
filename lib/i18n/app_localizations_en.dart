@@ -578,7 +578,26 @@ class AppLocalizationsEn extends AppLocalizations {
       'Message us about a listing and your conversation will appear here';
 
   @override
-  String get chats_archived => 'Archived chats';
+  String get chats_active => 'Active';
+
+  @override
+  String get chats_archived => 'Archived';
+
+  @override
+  String get chats_archived_empty_title => 'No archived chats';
+
+  @override
+  String get chats_archived_empty_subtitle =>
+      'Chats you archive will appear here';
+
+  @override
+  String get chats_loading_more => 'Loading more chats';
+
+  @override
+  String get chats_load_error => 'Couldn\'t load chats. Please try again.';
+
+  @override
+  String get chats_retry => 'Retry';
 
   @override
   String get chat_archive => 'Archive';

@@ -5,7 +5,10 @@ import 'package:ideal_mobile/i18n/localization.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 
 class ChatEmptyView extends StatelessWidget {
-  const ChatEmptyView({super.key});
+  const ChatEmptyView({super.key, this.title, this.subtitle});
+
+  final String? title;
+  final String? subtitle;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +25,7 @@ class ChatEmptyView extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              context.localization.chats_empty_title,
+              title ?? context.localization.chats_empty_title,
               textAlign: TextAlign.center,
               style: AppTextStyles.p1SemiBold.copyWith(
                 color: context.currentTheme.textNeutralPrimary,
@@ -30,7 +33,7 @@ class ChatEmptyView extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              context.localization.chats_empty_subtitle,
+              subtitle ?? context.localization.chats_empty_subtitle,
               textAlign: TextAlign.center,
               style: AppTextStyles.p3Regular.copyWith(
                 color: context.currentTheme.textNeutralSecondary,

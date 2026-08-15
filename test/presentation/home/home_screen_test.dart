@@ -384,6 +384,34 @@ void main() {
       expect(tester.getCenter(action), actionCenterBefore);
     });
 
+    testWidgets('requests the next Home page near the bottom', (tester) async {
+      tester.view.physicalSize = const Size(411, 896);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      final listingsBloc = MockListingsBloc();
+      when(() => listingsBloc.state).thenReturn(
+        ListingsState.test(
+          items: List<ListingCard>.generate(
+            30,
+            (index) => _homeTestListing(index + 1),
+          ),
+          page: 1,
+          numPages: 2,
+          count: 31,
+          hasLoadedListings: true,
+        ),
+      );
+
+      await tester.runWidgetTest(
+        providers: [BlocProvider<ListingsBloc>.value(value: listingsBloc)],
+        child: const Scaffold(body: HomeScreenBody()),
+      );
+      await tester.drag(find.byType(CustomScrollView), const Offset(0, -10000));
+      await tester.pump();
+
+      verify(() => listingsBloc.add(const LoadMoreListingsEvent())).called(1);
+    });
+
     testWidgets('refreshes Selected when the tab becomes active', (
       tester,
     ) async {

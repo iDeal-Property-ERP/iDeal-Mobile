@@ -118,7 +118,9 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
     LoadMoreListingsEvent event,
     Emitter<ListingsState> emit,
   ) {
-    if (state.hasReachedMax || state.isLoadingMore) return Future.value();
+    if (state.isListingsLoading || state.hasReachedMax || state.isLoadingMore) {
+      return Future.value();
+    }
 
     final nextPage = state.page + 1;
     emit(

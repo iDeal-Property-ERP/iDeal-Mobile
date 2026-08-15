@@ -150,6 +150,8 @@ class AppSliverTopBar extends StatelessWidget {
     this.leading,
     this.onBack,
     this.actions = const <AppTopBarAction>[],
+    this.bottom,
+    this.bottomHeight,
     this.showBackButton = false,
   });
 
@@ -159,13 +161,23 @@ class AppSliverTopBar extends StatelessWidget {
   final Widget? leading;
   final VoidCallback? onBack;
   final List<AppTopBarAction> actions;
+  final Widget? bottom;
+  final double? bottomHeight;
   final bool showBackButton;
+
+  double get _bottomExtent {
+    if (bottom == null) return 0;
+    if (bottomHeight != null) return bottomHeight!;
+    return bottom is PreferredSizeWidget
+        ? (bottom! as PreferredSizeWidget).preferredSize.height
+        : 48;
+  }
 
   @override
   Widget build(BuildContext context) {
     final colors = _TopBarColors.of(context, AppTopBarActionStyle.neutral);
     final topInset = MediaQuery.paddingOf(context).top;
-    final extent = height + topInset;
+    final extent = height + topInset + _bottomExtent;
 
     return SliverAppBar(
       primary: false,
@@ -182,12 +194,17 @@ class AppSliverTopBar extends StatelessWidget {
       systemOverlayStyle: _TopBarColors.overlayStyle(context),
       flexibleSpace: Padding(
         padding: EdgeInsets.only(top: topInset),
-        child: _TopBarContent(
-          title: title,
-          leading: leading,
-          onBack: onBack,
-          actions: actions,
-          showBackButton: showBackButton,
+        child: Column(
+          children: [
+            _TopBarContent(
+              title: title,
+              leading: leading,
+              onBack: onBack,
+              actions: actions,
+              showBackButton: showBackButton,
+            ),
+            if (bottom != null) SizedBox(height: _bottomExtent, child: bottom),
+          ],
         ),
       ),
     );

@@ -591,7 +591,27 @@ class AppLocalizationsUz extends AppLocalizations {
       'E\'lon haqida bizga yozing, suhbatingiz shu yerda paydo bo‘ladi';
 
   @override
-  String get chats_archived => 'Arxivlangan suhbatlar';
+  String get chats_active => 'Faol';
+
+  @override
+  String get chats_archived => 'Arxiv';
+
+  @override
+  String get chats_archived_empty_title => 'Arxivlangan suhbatlar yo‘q';
+
+  @override
+  String get chats_archived_empty_subtitle =>
+      'Arxivlagan suhbatlaringiz shu yerda ko‘rinadi';
+
+  @override
+  String get chats_loading_more => 'Yana suhbatlar yuklanmoqda';
+
+  @override
+  String get chats_load_error =>
+      'Suhbatlarni yuklab bo‘lmadi. Qayta urinib ko‘ring.';
+
+  @override
+  String get chats_retry => 'Qayta urinish';
 
   @override
   String get chat_archive => 'Arxivlash';
