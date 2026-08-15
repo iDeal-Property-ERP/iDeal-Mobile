@@ -1,7 +1,7 @@
-import 'dart:ui' show lerpDouble;
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
 import 'package:ideal_mobile/widgets/styling/app_colors.dart';
 
 /// The visual treatment used by an [AppTopBarAction].
@@ -30,6 +30,9 @@ class AppTopBarAction extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = _TopBarColors.of(context, style);
     final isEnabled = enabled && onPressed != null;
+    final iconSize = style == AppTopBarActionStyle.overlay
+        ? 20.0
+        : AppTopBar.iconSize;
 
     return Tooltip(
       message: tooltip,
@@ -42,8 +45,8 @@ class AppTopBarAction extends StatelessWidget {
           children: [
             IconButton(
               onPressed: isEnabled ? onPressed : null,
-              icon: Icon(icon, size: 20),
-              iconSize: 20,
+              icon: Icon(icon, size: iconSize),
+              iconSize: iconSize,
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints.tightFor(
                 width: AppTopBar.controlSize,
@@ -56,6 +59,7 @@ class AppTopBarAction extends StatelessWidget {
                 disabledForegroundColor: colors.foreground.withValues(
                   alpha: 0.4,
                 ),
+                overlayColor: colors.foreground.withValues(alpha: 0.08),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(AppTopBar.controlRadius),
                 ),
@@ -87,8 +91,9 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
     this.showBackButton = true,
   });
 
-  static const double height = 64;
+  static const double height = 56;
   static const double controlSize = 44;
+  static const double iconSize = 22;
   static const double controlRadius = 14;
 
   final String title;
@@ -113,72 +118,176 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final colors = _TopBarColors.of(context, AppTopBarActionStyle.neutral);
-    final overlayStyle = _TopBarColors.overlayStyle(context);
     final topInset = MediaQueryData.fromView(View.of(context)).padding.top;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: overlayStyle,
+      value: _TopBarColors.overlayStyle(context),
       child: Material(
         color: colors.surface,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            border: Border(bottom: BorderSide(color: colors.divider)),
-          ),
-          child: Column(
-            children: [
-              SizedBox(height: topInset),
-              SizedBox(
-                height: height,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    Center(child: _title(context)),
-                    Row(
-                      children: [
-                        if (showBackButton)
-                          Padding(
-                            padding: const EdgeInsets.only(left: 8),
-                            child: _BackButton(onPressed: onBack),
-                          )
-                        else
-                          const SizedBox(width: 60),
-                        const Spacer(),
-                        if (actions.isNotEmpty)
-                          Padding(
-                            padding: const EdgeInsets.only(right: 8),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                for (final action in actions)
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 4),
-                                    child: action,
-                                  ),
-                              ],
-                            ),
-                          )
-                        else
-                          const SizedBox(width: 8),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              if (bottom != null)
-                SizedBox(height: _bottomExtent, child: bottom),
-            ],
-          ),
+        child: Column(
+          children: [
+            SizedBox(height: topInset),
+            _TopBarContent(
+              title: title,
+              contextualTitle: contextualTitle,
+              onBack: onBack,
+              actions: actions,
+              showBackButton: showBackButton,
+            ),
+            if (bottom != null) SizedBox(height: _bottomExtent, child: bottom),
+          ],
         ),
       ),
     );
   }
+}
 
-  Widget _title(BuildContext context) {
-    final titleStyle = Theme.of(context).textTheme.titleMedium?.copyWith(
-      fontSize: 18,
-      fontWeight: FontWeight.w600,
+/// A fixed, pinned root bar that does not react visually to scrolling.
+class AppSliverTopBar extends StatelessWidget {
+  const AppSliverTopBar.root({
+    super.key,
+    required this.title,
+    this.leading,
+    this.onBack,
+    this.actions = const <AppTopBarAction>[],
+    this.showBackButton = false,
+  });
+
+  static const double height = AppTopBar.height;
+
+  final String title;
+  final Widget? leading;
+  final VoidCallback? onBack;
+  final List<AppTopBarAction> actions;
+  final bool showBackButton;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = _TopBarColors.of(context, AppTopBarActionStyle.neutral);
+    final topInset = MediaQuery.paddingOf(context).top;
+    final extent = height + topInset;
+
+    return SliverAppBar(
+      primary: false,
+      pinned: true,
+      automaticallyImplyLeading: false,
+      expandedHeight: extent,
+      collapsedHeight: extent,
+      toolbarHeight: extent,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      backgroundColor: colors.surface,
+      surfaceTintColor: Colors.transparent,
+      foregroundColor: colors.foreground,
+      systemOverlayStyle: _TopBarColors.overlayStyle(context),
+      flexibleSpace: Padding(
+        padding: EdgeInsets.only(top: topInset),
+        child: _TopBarContent(
+          title: title,
+          leading: leading,
+          onBack: onBack,
+          actions: actions,
+          showBackButton: showBackButton,
+        ),
+      ),
+    );
+  }
+}
+
+class _TopBarContent extends StatelessWidget {
+  const _TopBarContent({
+    required this.title,
+    required this.actions,
+    required this.showBackButton,
+    this.leading,
+    this.contextualTitle,
+    this.onBack,
+  });
+
+  final String title;
+  final Widget? leading;
+  final String? contextualTitle;
+  final VoidCallback? onBack;
+  final List<AppTopBarAction> actions;
+  final bool showBackButton;
+
+  @override
+  Widget build(BuildContext context) {
+    final hasLeading = leading != null || showBackButton;
+    final leadingInset = hasLeading ? 60.0 : 16.0;
+    final actionsInset = actions.isEmpty
+        ? 16.0
+        : 16.0 +
+              actions.length * AppTopBar.controlSize +
+              (actions.length - 1) * 4;
+    final titleInset = leadingInset > actionsInset
+        ? leadingInset
+        : actionsInset;
+
+    return SizedBox(
+      height: AppTopBar.height,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: titleInset),
+              child: _TopBarTitle(
+                title: title,
+                contextualTitle: contextualTitle,
+              ),
+            ),
+          ),
+          if (hasLeading)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8),
+                child: leading == null
+                    ? _BackButton(onPressed: onBack)
+                    : SizedBox.square(
+                        dimension: AppTopBar.controlSize,
+                        child: Center(child: leading),
+                      ),
+              ),
+            ),
+          if (actions.isNotEmpty)
+            Align(
+              alignment: Alignment.centerRight,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    for (var index = 0; index < actions.length; index++) ...[
+                      if (index > 0) const SizedBox(width: 4),
+                      actions[index],
+                    ],
+                  ],
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TopBarTitle extends StatelessWidget {
+  const _TopBarTitle({required this.title, this.contextualTitle});
+
+  final String title;
+  final String? contextualTitle;
+
+  @override
+  Widget build(BuildContext context) {
+    final foreground = _TopBarColors.of(
+      context,
+      AppTopBarActionStyle.neutral,
+    ).foreground;
+    final titleStyle = AppTextStyles.p1SemiBold.copyWith(
       height: 1.2,
-      color: _TopBarColors.of(context, AppTopBarActionStyle.neutral).foreground,
+      color: foreground,
     );
     final titleText = Semantics(
       header: true,
@@ -191,141 +300,22 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
       ),
     );
 
-    final titleContent = contextualTitle == null
-        ? titleText
-        : Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                contextualTitle!,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: titleStyle?.copyWith(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  color: titleStyle.color?.withValues(alpha: 0.7),
-                ),
-              ),
-              const SizedBox(height: 2),
-              titleText,
-            ],
-          );
-    return Padding(
-      padding: EdgeInsets.only(
-        left: showBackButton ? 60 : 16,
-        right: actions.isEmpty ? 16 : 60 + actions.length * 48,
-      ),
-      child: titleContent,
-    );
-  }
-}
-
-/// A pinned root bar that interpolates its centered title from 22px to 18px.
-class AppSliverTopBar extends StatelessWidget {
-  const AppSliverTopBar.root({
-    super.key,
-    required this.title,
-    this.onBack,
-    this.actions = const <AppTopBarAction>[],
-    this.showBackButton = false,
-  });
-
-  static const double expandedHeight = 88;
-  static const double collapsedHeight = 64;
-
-  final String title;
-  final VoidCallback? onBack;
-  final List<AppTopBarAction> actions;
-  final bool showBackButton;
-
-  /// Returns the title size for a sliver extent between 64px and 88px.
-  static double titleFontSizeForExtent(double extent) {
-    final clampedExtent = extent.clamp(collapsedHeight, expandedHeight);
-    final collapse =
-        (expandedHeight - clampedExtent) / (expandedHeight - collapsedHeight);
-    return lerpDouble(22, 18, collapse) ?? 18;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = _TopBarColors.of(context, AppTopBarActionStyle.neutral);
-    final topInset = MediaQuery.paddingOf(context).top;
-    return SliverAppBar(
-      pinned: true,
-      automaticallyImplyLeading: false,
-      expandedHeight: expandedHeight,
-      collapsedHeight: collapsedHeight,
-      toolbarHeight: collapsedHeight,
-      elevation: 0,
-      scrolledUnderElevation: 0,
-      backgroundColor: colors.surface,
-      surfaceTintColor: Colors.transparent,
-      foregroundColor: colors.foreground,
-      systemOverlayStyle: _TopBarColors.overlayStyle(context),
-      shape: Border(bottom: BorderSide(color: colors.divider)),
-      flexibleSpace: LayoutBuilder(
-        builder: (context, constraints) {
-          final extent = constraints.biggest.height - topInset;
-          final titleStyle = Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontSize: titleFontSizeForExtent(extent),
-            fontWeight: FontWeight.w600,
+    if (contextualTitle == null) return titleText;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          contextualTitle!,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: AppTextStyles.p4Medium.copyWith(
             height: 1.2,
-            color: colors.foreground,
-          );
-          return Padding(
-            padding: EdgeInsets.only(top: topInset),
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                Center(
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      left: showBackButton ? 60 : 16,
-                      right: actions.isEmpty ? 16 : 60 + actions.length * 48,
-                    ),
-                    child: Semantics(
-                      header: true,
-                      child: Text(
-                        title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.center,
-                        style: titleStyle,
-                      ),
-                    ),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: showBackButton
-                      ? Padding(
-                          padding: const EdgeInsets.only(left: 8),
-                          child: _BackButton(onPressed: onBack),
-                        )
-                      : null,
-                ),
-                if (actions.isNotEmpty)
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          for (final action in actions)
-                            Padding(
-                              padding: const EdgeInsets.only(left: 4),
-                              child: action,
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          );
-        },
-      ),
+            color: foreground.withValues(alpha: 0.7),
+          ),
+        ),
+        const SizedBox(height: 2),
+        titleText,
+      ],
     );
   }
 }
@@ -346,16 +336,17 @@ class _BackButton extends StatelessWidget {
         label: tooltip,
         child: IconButton(
           onPressed: onPressed ?? () => Navigator.of(context).maybePop(),
-          icon: const Icon(Icons.arrow_back_rounded, size: 20),
-          iconSize: 20,
+          icon: const Icon(TablerIcons.arrow_left, size: AppTopBar.iconSize),
+          iconSize: AppTopBar.iconSize,
           padding: EdgeInsets.zero,
           constraints: const BoxConstraints.tightFor(
             width: AppTopBar.controlSize,
             height: AppTopBar.controlSize,
           ),
           style: IconButton.styleFrom(
-            backgroundColor: colors.background,
+            backgroundColor: Colors.transparent,
             foregroundColor: colors.foreground,
+            overlayColor: colors.foreground.withValues(alpha: 0.08),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(AppTopBar.controlRadius),
             ),
@@ -386,12 +377,12 @@ class _TopBarBadge extends StatelessWidget {
         label,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: TextStyle(
-          color: textColor,
+        style: const TextStyle(
+          color: AppColors.white,
           fontSize: 9,
           fontWeight: FontWeight.w700,
           height: 1,
-        ),
+        ).copyWith(color: textColor),
       ),
     );
   }
@@ -403,44 +394,38 @@ class _TopBarColors {
     required this.foreground,
     required this.background,
     required this.badge,
-    required this.divider,
   });
 
   final Color surface;
   final Color foreground;
   final Color background;
   final Color badge;
-  final Color divider;
 
   factory _TopBarColors.of(BuildContext context, AppTopBarActionStyle style) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final foreground = isDark ? AppColors.neutral50 : AppColors.neutral900;
     final surface = isDark
-        ? AppColors.bgSurfaceBase2dark
-        : AppColors.bgSurfaceBase2;
-    final divider = isDark ? AppColors.dark700 : AppColors.neutral100;
+        ? AppColors.bgSurfaceBaseDark
+        : AppColors.bgSurfaceBase;
 
     return switch (style) {
       AppTopBarActionStyle.neutral => _TopBarColors(
         surface: surface,
         foreground: foreground,
-        background: isDark ? AppColors.dark700 : AppColors.neutral50,
+        background: Colors.transparent,
         badge: isDark ? AppColors.brand400 : AppColors.brand600,
-        divider: divider,
       ),
       AppTopBarActionStyle.brand => _TopBarColors(
         surface: surface,
-        foreground: foreground,
+        foreground: AppColors.white,
         background: Theme.of(context).colorScheme.primary,
         badge: isDark ? AppColors.brand200 : AppColors.brand800,
-        divider: divider,
       ),
       AppTopBarActionStyle.overlay => _TopBarColors(
         surface: Colors.transparent,
         foreground: AppColors.white,
         background: Colors.white.withValues(alpha: 0.18),
         badge: AppColors.brand500,
-        divider: Colors.transparent,
       ),
     };
   }
@@ -448,8 +433,8 @@ class _TopBarColors {
   static SystemUiOverlayStyle overlayStyle(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final surface = isDark
-        ? AppColors.bgSurfaceBase2dark
-        : AppColors.bgSurfaceBase2;
+        ? AppColors.bgSurfaceBaseDark
+        : AppColors.bgSurfaceBase;
     return SystemUiOverlayStyle(
       statusBarColor: surface,
       statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,

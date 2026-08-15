@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ideal_mobile/widgets/app_top_bar/app_top_bar.dart';
 import 'package:ideal_mobile/widgets/styling/app_colors.dart';
@@ -10,22 +11,29 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('AppSliverTopBar', () {
-    test('interpolates the root title from expanded to compact size', () {
-      expect(AppSliverTopBar.titleFontSizeForExtent(88), 22);
-      expect(AppSliverTopBar.titleFontSizeForExtent(76), 20);
-      expect(AppSliverTopBar.titleFontSizeForExtent(64), 18);
-      expect(AppSliverTopBar.titleFontSizeForExtent(120), 22);
-      expect(AppSliverTopBar.titleFontSizeForExtent(0), 18);
-    });
-
-    testWidgets('is pinned and collapses from 88px to 64px', (tester) async {
+    testWidgets('is pinned and remains visually fixed while scrolling', (
+      tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(375, 800));
       addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(
         _testApp(
           CustomScrollView(
             slivers: [
-              const AppSliverTopBar.root(title: 'Discover'),
+              const AppSliverTopBar.root(
+                title: 'Discover',
+                leading: Icon(
+                  Icons.home_outlined,
+                  key: ValueKey('leading-icon'),
+                ),
+                actions: [
+                  AppTopBarAction(
+                    icon: Icons.refresh,
+                    tooltip: 'Refresh',
+                    onPressed: _noop,
+                  ),
+                ],
+              ),
               SliverList.builder(
                 itemBuilder: (_, index) =>
                     SizedBox(height: 120, child: Text('Item $index')),
@@ -38,17 +46,43 @@ void main() {
 
       final appBar = tester.widget<SliverAppBar>(find.byType(SliverAppBar));
       expect(appBar.pinned, isTrue);
-      expect(appBar.expandedHeight, 88);
-      expect(appBar.collapsedHeight, 64);
-      expect(tester.widget<Text>(find.text('Discover')).style!.fontSize, 22);
-
-      await tester.drag(find.byType(CustomScrollView), const Offset(0, -40));
-      await tester.pumpAndSettle();
+      expect(appBar.primary, isFalse);
+      expect(appBar.expandedHeight, AppTopBar.height);
+      expect(appBar.collapsedHeight, AppTopBar.height);
+      expect(appBar.toolbarHeight, AppTopBar.height);
+      expect(appBar.shape, isNull);
       expect(tester.widget<Text>(find.text('Discover')).style!.fontSize, 18);
-      final renderSliver = tester.renderObject<RenderSliver>(
+      expect(
+        tester.widget<Text>(find.text('Discover')).style!.fontWeight,
+        FontWeight.w600,
+      );
+      expect(tester.widget<Icon>(find.byIcon(Icons.refresh)).size, 22);
+
+      final titleCenterBefore = tester.getCenter(find.text('Discover'));
+      final leadingCenterBefore = tester.getCenter(
+        find.byKey(const ValueKey('leading-icon')),
+      );
+      final actionCenterBefore = tester.getCenter(find.byTooltip('Refresh'));
+      final renderSliverBefore = tester.renderObject<RenderSliver>(
         find.byType(SliverAppBar),
       );
-      expect(renderSliver.geometry!.paintExtent, 64);
+      expect(renderSliverBefore.geometry!.paintExtent, AppTopBar.height);
+      expect(titleCenterBefore.dx, closeTo(375 / 2, 0.01));
+
+      await tester.drag(find.byType(CustomScrollView), const Offset(0, -120));
+      await tester.pumpAndSettle();
+
+      expect(tester.widget<Text>(find.text('Discover')).style!.fontSize, 18);
+      expect(tester.getCenter(find.text('Discover')), titleCenterBefore);
+      expect(
+        tester.getCenter(find.byKey(const ValueKey('leading-icon'))),
+        leadingCenterBefore,
+      );
+      expect(tester.getCenter(find.byTooltip('Refresh')), actionCenterBefore);
+      final renderSliverAfter = tester.renderObject<RenderSliver>(
+        find.byType(SliverAppBar),
+      );
+      expect(renderSliverAfter.geometry!.paintExtent, AppTopBar.height);
     });
 
     testWidgets('reserves the status-bar inset without shrinking the content', (
@@ -83,19 +117,28 @@ void main() {
       );
 
       final action = find.byTooltip('Refresh');
+      final appBar = tester.widget<SliverAppBar>(find.byType(SliverAppBar));
+      expect(appBar.expandedHeight, 24 + AppTopBar.height);
+      expect(appBar.collapsedHeight, 24 + AppTopBar.height);
       expect(tester.getTopLeft(action).dy, greaterThanOrEqualTo(24));
-      expect(tester.getBottomRight(action).dy, lessThanOrEqualTo(24 + 88));
+      expect(
+        tester.getBottomRight(action).dy,
+        lessThanOrEqualTo(24 + AppTopBar.height),
+      );
       expect(tester.getTopLeft(find.text('Discover')).dy, greaterThan(24));
+      final titleCenterBefore = tester.getCenter(find.text('Discover'));
+      final actionCenterBefore = tester.getCenter(action);
 
-      await tester.drag(find.byType(CustomScrollView), const Offset(0, -40));
+      await tester.drag(find.byType(CustomScrollView), const Offset(0, -120));
       await tester.pumpAndSettle();
       expect(tester.widget<Text>(find.text('Discover')).style!.fontSize, 18);
-      expect(tester.getTopLeft(action).dy, greaterThanOrEqualTo(24));
+      expect(tester.getCenter(find.text('Discover')), titleCenterBefore);
+      expect(tester.getCenter(action), actionCenterBefore);
     });
   });
 
   group('AppTopBar.page', () {
-    testWidgets('uses a fixed 64px row and supports bottom content', (
+    testWidgets('uses a fixed 56px row and supports bottom content', (
       tester,
     ) async {
       const bottom = PreferredSize(
@@ -108,12 +151,12 @@ void main() {
         bottom: bottom,
       );
 
-      expect(bar.preferredSize, const Size.fromHeight(88));
+      expect(bar.preferredSize, const Size.fromHeight(80));
       await tester.pumpWidget(_testApp(const Scaffold(appBar: bar)));
       expect(find.text('Apartment'), findsOneWidget);
       expect(find.text('Details'), findsOneWidget);
       expect(find.text('Context controls'), findsOneWidget);
-      expect(find.byIcon(Icons.arrow_back_rounded), findsOneWidget);
+      expect(find.byIcon(TablerIcons.arrow_left), findsOneWidget);
     });
 
     testWidgets('back button pops the current route', (tester) async {
@@ -140,7 +183,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Pushed page'), findsOneWidget);
 
-      await tester.tap(find.byIcon(Icons.arrow_back_rounded));
+      await tester.tap(find.byIcon(TablerIcons.arrow_left));
       await tester.pumpAndSettle();
       expect(find.text('Open'), findsOneWidget);
       expect(find.text('Pushed page'), findsNothing);
@@ -238,7 +281,7 @@ void main() {
 
       expect(
         styleFor('Neutral action').backgroundColor!.resolve(const {}),
-        AppColors.neutral50,
+        Colors.transparent,
       );
       expect(
         styleFor('Brand action').backgroundColor!.resolve(const {}),
@@ -248,6 +291,7 @@ void main() {
         styleFor('Overlay action').backgroundColor!.resolve(const {}),
         Colors.white.withValues(alpha: 0.18),
       );
+      expect(tester.widget<Icon>(find.byIcon(Icons.image_outlined)).size, 20);
       expect(
         styleFor(
           'Disabled action',
@@ -323,18 +367,21 @@ void main() {
         _testApp(const Scaffold(appBar: AppTopBar.page(title: 'Details'))),
       );
 
-      expect(tester.getSize(find.byType(AppTopBar)).height, 24 + 64);
       expect(
-        tester.getTopLeft(find.byIcon(Icons.arrow_back_rounded)).dy,
+        tester.getSize(find.byType(AppTopBar)).height,
+        24 + AppTopBar.height,
+      );
+      expect(
+        tester.getTopLeft(find.byIcon(TablerIcons.arrow_left)).dy,
         greaterThanOrEqualTo(24),
       );
-      expect(tester.getBottomRight(find.byType(IconButton)).dy, 24 + 54);
+      expect(tester.getBottomRight(find.byType(IconButton)).dy, 24 + 50);
     });
   });
 
   group('theme fallback and status bar', () {
     testWidgets(
-      'light and dark themes use surface2 and matching overlay style',
+      'light and dark themes use the base surface and matching overlay style',
       (tester) async {
         await tester.pumpWidget(
           _testApp(const Scaffold(appBar: AppTopBar.page(title: 'Theme'))),
@@ -352,7 +399,7 @@ void main() {
               .themeData[AppThemeEnum.LightTheme]!
               .appBarTheme
               .backgroundColor,
-          AppColors.bgSurfaceBase2,
+          AppColors.bgSurfaceBase,
         );
 
         await tester.pumpWidget(
@@ -374,7 +421,7 @@ void main() {
               .themeData[AppThemeEnum.DarkTheme]!
               .appBarTheme
               .backgroundColor,
-          AppColors.bgSurfaceBase2dark,
+          AppColors.bgSurfaceBaseDark,
         );
       },
     );

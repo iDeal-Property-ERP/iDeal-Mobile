@@ -98,6 +98,7 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
                       slivers: [
                         AppSliverTopBar.root(
                           title: context.localization.home,
+                          leading: const _HomeLogo(),
                           actions: [
                             AppTopBarAction(
                               icon: TablerIcons.bell,
@@ -125,11 +126,6 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
                         const SliverToBoxAdapter(child: SizedBox(height: 96)),
                       ],
                     ),
-                  ),
-                  const Positioned(
-                    left: 16,
-                    top: 18,
-                    child: IgnorePointer(child: _HomeLogo()),
                   ),
                   Positioned(
                     left: 0,
@@ -179,13 +175,20 @@ class _HomeLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Image.asset(
-      context.themeAsset(
-        light: Assets.icons.companyLogoLt.path,
-        dark: Assets.icons.companyLogoDt.path,
+    return Semantics(
+      image: true,
+      label: 'iDeal',
+      child: ExcludeSemantics(
+        child: Image.asset(
+          context.themeAsset(
+            light: Assets.icons.companyLogoLt.path,
+            dark: Assets.icons.companyLogoDt.path,
+          ),
+          width: 28,
+          height: 28,
+          fit: BoxFit.contain,
+        ),
       ),
-      width: 28,
-      height: 28,
     );
   }
 }

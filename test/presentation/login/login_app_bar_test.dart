@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ideal_mobile/presentation/login/widgets/login_app_bar.dart';
 import 'package:ideal_mobile/widgets/app_button/app_button.dart';
@@ -18,7 +19,7 @@ void main() {
     );
 
     expect(find.byType(AppTopBar), findsOneWidget);
-    expect(find.byIcon(Icons.arrow_back_rounded), findsOneWidget);
+    expect(find.byIcon(TablerIcons.arrow_left), findsOneWidget);
     expect(find.byType(AppButton), findsOneWidget);
   });
 

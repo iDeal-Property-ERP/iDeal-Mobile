@@ -338,6 +338,52 @@ void main() {
       expect(route, isA<NotificationsRoute>());
     });
 
+    testWidgets('keeps the logo, title, and action fixed while scrolling', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(411, 896);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+
+      final listingsBloc = MockListingsBloc();
+      when(() => listingsBloc.state).thenReturn(
+        ListingsState.test(
+          items: List<ListingCard>.generate(
+            8,
+            (index) => _homeTestListing(index + 1),
+          ),
+          hasLoadedListings: true,
+          hasReachedMax: true,
+        ),
+      );
+
+      await tester.runWidgetTest(
+        providers: [BlocProvider<ListingsBloc>.value(value: listingsBloc)],
+        child: const Scaffold(body: HomeScreenBody()),
+      );
+
+      final logo = find.descendant(
+        of: find.byType(AppSliverTopBar),
+        matching: find.byType(Image),
+      );
+      final title = find.descendant(
+        of: find.byType(AppSliverTopBar),
+        matching: find.text('Home'),
+      );
+      final action = find.byTooltip('Notifications');
+      expect(logo, findsOneWidget);
+      final logoCenterBefore = tester.getCenter(logo);
+      final titleCenterBefore = tester.getCenter(title);
+      final actionCenterBefore = tester.getCenter(action);
+
+      await tester.drag(find.byType(CustomScrollView), const Offset(0, -300));
+      await tester.pumpAndSettle();
+
+      expect(tester.getCenter(logo), logoCenterBefore);
+      expect(tester.getCenter(title), titleCenterBefore);
+      expect(tester.getCenter(action), actionCenterBefore);
+    });
+
     testWidgets('refreshes Selected when the tab becomes active', (
       tester,
     ) async {
