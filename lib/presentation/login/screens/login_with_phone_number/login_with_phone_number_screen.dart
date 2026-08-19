@@ -39,7 +39,7 @@ class _LoginWithPhoneNumberScreenState
       create: (context) => LoginBloc(localizations: appLocalizations),
       child: GestureDetector(
         onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-        child: Scaffold(body: const LoginWithPhoneNumberBody()),
+        child: const Scaffold(body: LoginWithPhoneNumberBody()),
       ),
     );
   }
@@ -53,7 +53,7 @@ class LoginWithPhoneNumberBody extends StatelessWidget {
     return PopScope(
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) {
-          context.read<LoginBloc>().add(ResetPhoneNumberStateEvent());
+          context.read<LoginBloc>().add(const ResetPhoneNumberStateEvent());
         }
       },
       child: BlocListener<LoginBloc, LoginState>(

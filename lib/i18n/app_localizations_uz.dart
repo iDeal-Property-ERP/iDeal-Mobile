@@ -391,7 +391,19 @@ class AppLocalizationsUz extends AppLocalizations {
   String get sign_out => 'Tizimdan chiqish';
 
   @override
+  String get sign_out_confirmation_message => 'Tizimdan chiqmoqchimisiz?';
+
+  @override
   String get skip => 'Oʻtkazib yuborish';
+
+  @override
+  String get preferences => 'Parametrlar';
+
+  @override
+  String get appearance => 'Ko‘rinish';
+
+  @override
+  String get version => 'Versiya';
 
   @override
   String get activity => 'Faoliyat';
@@ -1298,6 +1310,40 @@ class AppLocalizationsUz extends AppLocalizations {
   String get selected_loading_more => 'Yana tanlangan uylar yuklanmoqda';
 
   @override
+  String selected_result_count(num count) {
+    return '$count ta tanlangan uy';
+  }
+
+  @override
+  String get selected_sort => 'Saralash';
+
+  @override
+  String get selected_sort_recent => 'Yaqinda tanlangan';
+
+  @override
+  String get selected_sort_price_asc => 'Narx: arzondan qimmatga';
+
+  @override
+  String get selected_sort_price_desc => 'Narx: qimmatdan arzonga';
+
+  @override
+  String get selected_no_matches_title =>
+      'Bu shartlarga mos tanlangan uy yo\'q';
+
+  @override
+  String get selected_no_matches_subtitle =>
+      'Qidiruvni kengaytiring yoki filtrlarni tozalang.';
+
+  @override
+  String get selected_clear_filters => 'Filtrlarni tozalash';
+
+  @override
+  String get selected_removed => 'Tanlanganlardan olib tashlandi';
+
+  @override
+  String get selected_undo => 'Qaytarish';
+
+  @override
   String get listings_verified => 'Tekshirilgan';
 
   @override
@@ -1580,6 +1626,36 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get booking_status_title => 'Bron holati';
+
+  @override
+  String get booking_status_requested => 'Yuborildi';
+
+  @override
+  String get booking_status_approved => 'Qabul qilindi';
+
+  @override
+  String get booking_status_rejected => 'Rad etildi';
+
+  @override
+  String get booking_status_cancelled => 'Bekor qilindi';
+
+  @override
+  String get booking_status_payment_pending => 'To‘lov kutilmoqda';
+
+  @override
+  String get booking_status_confirmed => 'Tasdiqlandi';
+
+  @override
+  String get booking_status_payment_failed => 'To‘lov amalga oshmadi';
+
+  @override
+  String get booking_status_payment_expired => 'To‘lov muddati tugadi';
+
+  @override
+  String get booking_status_reconciliation_required => 'Tekshirilmoqda';
+
+  @override
+  String get no_bookings_yet => 'Sizda hali bronlar yo‘q';
 
   @override
   String get booking_choose_dates => 'Yashash muddatini tanlang';

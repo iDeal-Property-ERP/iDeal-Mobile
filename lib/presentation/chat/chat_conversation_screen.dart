@@ -7,8 +7,8 @@ import 'package:ideal_mobile/i18n/localization.dart';
 import 'package:ideal_mobile/presentation/chat/bloc/listing_chat_conversation_bloc.dart';
 import 'package:ideal_mobile/presentation/chat/bloc/listing_chat_conversation_event.dart';
 import 'package:ideal_mobile/presentation/chat/bloc/listing_chat_conversation_state.dart';
-import 'package:ideal_mobile/presentation/chat/domain/entities/chat_message.dart';
 import 'package:ideal_mobile/presentation/chat/domain/entities/chat_conversation.dart';
+import 'package:ideal_mobile/presentation/chat/domain/entities/chat_message.dart';
 import 'package:ideal_mobile/presentation/chat/domain/entities/pending_chat_message.dart';
 import 'package:ideal_mobile/presentation/chat/domain/usecases/delete_conversation.dart';
 import 'package:ideal_mobile/presentation/chat/widgets/chat_date_separator.dart';
@@ -22,8 +22,6 @@ import 'package:ideal_mobile/utils/extensions/build_context_ext.dart';
 import 'package:ideal_mobile/utils/extensions/date_time_extensions.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 import 'package:ideal_mobile/widgets/app_button/app_button.dart';
-import 'package:ideal_mobile/widgets/app_button/enums/app_button_size_enum.dart';
-import 'package:ideal_mobile/widgets/app_button/enums/app_button_state_enum.dart';
 import 'package:ideal_mobile/widgets/app_button/enums/app_button_style_enum.dart';
 
 @RoutePage()
@@ -195,15 +193,11 @@ class _ChatConversationScaffold extends StatelessWidget {
         actions: [
           AppButton(
             style: AppButtonStyle.link,
-            size: AppButtonSize.small,
-            state: AppButtonState.normal,
             label: context.localization.chat_cancel,
             onPressed: () => Navigator.pop(context, false),
           ),
           AppButton(
             style: AppButtonStyle.link,
-            size: AppButtonSize.small,
-            state: AppButtonState.normal,
             label: context.localization.chat_delete_confirm,
             onPressed: () => Navigator.pop(context, true),
           ),

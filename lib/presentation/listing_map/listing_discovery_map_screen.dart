@@ -33,6 +33,7 @@ class ListingDiscoveryMapScreen extends StatefulWidget {
     this.initialFilters = const ListingFilters.empty(),
     this.filterOptions = const ListingFilterOptions.empty(),
     this.seedListings = const [],
+    this.favoritesOnly = false,
     this.onFiltersChanged,
     this.bloc,
     this.providerSelector,
@@ -44,6 +45,9 @@ class ListingDiscoveryMapScreen extends StatefulWidget {
   final ListingFilters initialFilters;
   final ListingFilterOptions filterOptions;
   final List<ListingCard> seedListings;
+
+  /// Restricts map results to the authenticated user's favorites.
+  final bool favoritesOnly;
   final ValueChanged<ListingFilters>? onFiltersChanged;
 
   @visibleForTesting
@@ -90,7 +94,11 @@ class _ListingDiscoveryMapScreenState extends State<ListingDiscoveryMapScreen> {
     super.initState();
     _ownsBloc = widget.bloc == null;
     _bloc =
-        widget.bloc ?? ListingMapBloc(repository: sl<ListingMapRepository>());
+        widget.bloc ??
+        ListingMapBloc(
+          repository: sl<ListingMapRepository>(),
+          favoritesOnly: widget.favoritesOnly,
+        );
     _previewController = PageController();
     _mapController = PropertyMapController();
     _locationService =

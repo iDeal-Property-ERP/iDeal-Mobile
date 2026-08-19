@@ -12,6 +12,7 @@ abstract class ListingMapRemoteDataSource {
     required PropertyMapBounds bounds,
     required ListingFilters filters,
     CancelToken? cancelToken,
+    bool favoritesOnly = false,
   });
 }
 
@@ -27,10 +28,12 @@ class ListingMapRemoteDataSourceImpl implements ListingMapRemoteDataSource {
     required PropertyMapBounds bounds,
     required ListingFilters filters,
     CancelToken? cancelToken,
+    bool favoritesOnly = false,
   }) async {
     final query = <String, dynamic>{
       'bbox': _bbox(bounds),
       ...filters.toQueryParameters(),
+      if (favoritesOnly) 'favorites_only': true,
     };
 
     try {

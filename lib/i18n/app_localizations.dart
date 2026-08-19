@@ -802,11 +802,35 @@ abstract class AppLocalizations {
   /// **'Sign out'**
   String get sign_out;
 
+  /// No description provided for @sign_out_confirmation_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to sign out?'**
+  String get sign_out_confirmation_message;
+
   /// No description provided for @skip.
   ///
   /// In en, this message translates to:
   /// **'Skip'**
   String get skip;
+
+  /// No description provided for @preferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences'**
+  String get preferences;
+
+  /// No description provided for @appearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get appearance;
+
+  /// No description provided for @version.
+  ///
+  /// In en, this message translates to:
+  /// **'Version'**
+  String get version;
 
   /// No description provided for @activity.
   ///
@@ -2392,6 +2416,66 @@ abstract class AppLocalizations {
   /// **'Loading more selected homes'**
   String get selected_loading_more;
 
+  /// The number of homes in the current selected list.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} selected homes'**
+  String selected_result_count(num count);
+
+  /// No description provided for @selected_sort.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort'**
+  String get selected_sort;
+
+  /// No description provided for @selected_sort_recent.
+  ///
+  /// In en, this message translates to:
+  /// **'Recently selected'**
+  String get selected_sort_recent;
+
+  /// No description provided for @selected_sort_price_asc.
+  ///
+  /// In en, this message translates to:
+  /// **'Price: low to high'**
+  String get selected_sort_price_asc;
+
+  /// No description provided for @selected_sort_price_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Price: high to low'**
+  String get selected_sort_price_desc;
+
+  /// No description provided for @selected_no_matches_title.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching selected homes'**
+  String get selected_no_matches_title;
+
+  /// No description provided for @selected_no_matches_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Try widening your search or clearing some filters.'**
+  String get selected_no_matches_subtitle;
+
+  /// No description provided for @selected_clear_filters.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear filters'**
+  String get selected_clear_filters;
+
+  /// No description provided for @selected_removed.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed from selected homes'**
+  String get selected_removed;
+
+  /// No description provided for @selected_undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get selected_undo;
+
   /// No description provided for @listings_verified.
   ///
   /// In en, this message translates to:
@@ -2901,6 +2985,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Booking status'**
   String get booking_status_title;
+
+  /// No description provided for @booking_status_requested.
+  ///
+  /// In en, this message translates to:
+  /// **'Requested'**
+  String get booking_status_requested;
+
+  /// No description provided for @booking_status_approved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get booking_status_approved;
+
+  /// No description provided for @booking_status_rejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get booking_status_rejected;
+
+  /// No description provided for @booking_status_cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get booking_status_cancelled;
+
+  /// No description provided for @booking_status_payment_pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment pending'**
+  String get booking_status_payment_pending;
+
+  /// No description provided for @booking_status_confirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed'**
+  String get booking_status_confirmed;
+
+  /// No description provided for @booking_status_payment_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment failed'**
+  String get booking_status_payment_failed;
+
+  /// No description provided for @booking_status_payment_expired.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment expired'**
+  String get booking_status_payment_expired;
+
+  /// No description provided for @booking_status_reconciliation_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Under review'**
+  String get booking_status_reconciliation_required;
+
+  /// No description provided for @no_bookings_yet.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no bookings yet'**
+  String get no_bookings_yet;
 
   /// No description provided for @booking_choose_dates.
   ///

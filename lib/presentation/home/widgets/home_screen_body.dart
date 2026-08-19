@@ -9,6 +9,7 @@ import 'package:ideal_mobile/i18n/localization.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_bloc.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_event.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_state.dart';
+import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filter_options.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filters.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/listing_card_shimmer.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/listings_empty_view.dart';
@@ -116,14 +117,51 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
                         SliverToBoxAdapter(
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-                            child: ListingsSearchBar(key: _searchBarKey),
+                            child:
+                                BlocSelector<
+                                  ListingsBloc,
+                                  ListingsState,
+                                  String
+                                >(
+                                  selector: (state) => state.searchQuery,
+                                  builder: (context, searchQuery) {
+                                    return ListingsSearchBar(
+                                      key: _searchBarKey,
+                                      query: searchQuery,
+                                      onQueryChanged: (query) => context
+                                          .read<ListingsBloc>()
+                                          .add(SearchListingsEvent(query)),
+                                    );
+                                  },
+                                ),
                           ),
                         ),
                         SliverToBoxAdapter(
-                          child: ListingsFilterChips(
-                            onOpenFilters: () =>
-                                showListingsFilterSheet(context),
-                          ),
+                          child:
+                              BlocSelector<
+                                ListingsBloc,
+                                ListingsState,
+                                ({
+                                  ListingFilters filters,
+                                  ListingFilterOptions options,
+                                })
+                              >(
+                                selector: (state) => (
+                                  filters: state.filters,
+                                  options: state.filterOptions,
+                                ),
+                                builder: (context, value) {
+                                  return ListingsFilterChips(
+                                    filters: value.filters,
+                                    filterOptions: value.options,
+                                    onFiltersChanged: (filters) => context
+                                        .read<ListingsBloc>()
+                                        .add(ApplyListingFiltersEvent(filters)),
+                                    onOpenFilters: () =>
+                                        showListingsFilterSheet(context),
+                                  );
+                                },
+                              ),
                         ),
                         const SliverToBoxAdapter(child: SizedBox(height: 12)),
                         const _ListingsFeedSection(),

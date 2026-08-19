@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 import 'package:ideal_mobile/widgets/styling/app_radius.dart';
+import 'package:shimmer/shimmer.dart';
 
 class ChatListShimmer extends StatelessWidget {
   const ChatListShimmer({super.key, this.itemCount = 7});

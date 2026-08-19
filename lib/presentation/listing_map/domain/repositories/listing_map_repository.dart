@@ -11,5 +11,6 @@ abstract class ListingMapRepository {
     required PropertyMapBounds bounds,
     required ListingFilters filters,
     CancelToken? cancelToken,
+    bool favoritesOnly = false,
   });
 }

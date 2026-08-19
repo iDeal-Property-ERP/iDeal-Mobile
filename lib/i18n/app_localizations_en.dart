@@ -383,7 +383,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sign_out => 'Sign out';
 
   @override
+  String get sign_out_confirmation_message =>
+      'Are you sure you want to sign out?';
+
+  @override
   String get skip => 'Skip';
+
+  @override
+  String get preferences => 'Preferences';
+
+  @override
+  String get appearance => 'Appearance';
+
+  @override
+  String get version => 'Version';
 
   @override
   String get activity => 'Activity';
@@ -1273,6 +1286,39 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selected_loading_more => 'Loading more selected homes';
 
   @override
+  String selected_result_count(num count) {
+    return '$count selected homes';
+  }
+
+  @override
+  String get selected_sort => 'Sort';
+
+  @override
+  String get selected_sort_recent => 'Recently selected';
+
+  @override
+  String get selected_sort_price_asc => 'Price: low to high';
+
+  @override
+  String get selected_sort_price_desc => 'Price: high to low';
+
+  @override
+  String get selected_no_matches_title => 'No matching selected homes';
+
+  @override
+  String get selected_no_matches_subtitle =>
+      'Try widening your search or clearing some filters.';
+
+  @override
+  String get selected_clear_filters => 'Clear filters';
+
+  @override
+  String get selected_removed => 'Removed from selected homes';
+
+  @override
+  String get selected_undo => 'Undo';
+
+  @override
   String get listings_verified => 'Verified';
 
   @override
@@ -1552,6 +1598,36 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get booking_status_title => 'Booking status';
+
+  @override
+  String get booking_status_requested => 'Requested';
+
+  @override
+  String get booking_status_approved => 'Approved';
+
+  @override
+  String get booking_status_rejected => 'Rejected';
+
+  @override
+  String get booking_status_cancelled => 'Cancelled';
+
+  @override
+  String get booking_status_payment_pending => 'Payment pending';
+
+  @override
+  String get booking_status_confirmed => 'Confirmed';
+
+  @override
+  String get booking_status_payment_failed => 'Payment failed';
+
+  @override
+  String get booking_status_payment_expired => 'Payment expired';
+
+  @override
+  String get booking_status_reconciliation_required => 'Under review';
+
+  @override
+  String get no_bookings_yet => 'You have no bookings yet';
 
   @override
   String get booking_choose_dates => 'Choose your stay';

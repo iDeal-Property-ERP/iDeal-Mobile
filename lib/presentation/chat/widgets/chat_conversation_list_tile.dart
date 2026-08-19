@@ -5,9 +5,8 @@ import 'package:ideal_mobile/presentation/chat/domain/entities/chat_conversation
 import 'package:ideal_mobile/presentation/chat/widgets/chat_avatar.dart';
 import 'package:ideal_mobile/utils/extensions/date_time_extensions.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
-import 'package:ideal_mobile/widgets/styling/app_radius.dart';
-import 'package:ideal_mobile/widgets/images/prioritized_image_scheduler.dart';
 import 'package:ideal_mobile/widgets/images/tiered_network_image.dart';
+import 'package:ideal_mobile/widgets/styling/app_radius.dart';
 
 class ChatConversationListTile extends StatelessWidget {
   const ChatConversationListTile({
@@ -36,7 +35,6 @@ class ChatConversationListTile extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             _ListingImage(
               url: listing.coverImageUrl,
@@ -117,8 +115,6 @@ class _ListingImage extends StatelessWidget {
           originalUrl: url,
           previewUrl: previewUrl,
           displayUrl: displayUrl,
-          priority: ImageLoadPriority.normal,
-          fit: BoxFit.cover,
           loadingBuilder: (_) => const ChatAvatar(size: 56),
           errorBuilder: (_) => const ChatAvatar(size: 56),
         ),

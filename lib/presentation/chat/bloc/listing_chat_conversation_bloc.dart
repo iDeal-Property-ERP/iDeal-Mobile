@@ -8,8 +8,8 @@ import 'package:ideal_mobile/core/errors/failure.dart';
 import 'package:ideal_mobile/core/services/injection_container.dart';
 import 'package:ideal_mobile/presentation/chat/bloc/listing_chat_conversation_event.dart';
 import 'package:ideal_mobile/presentation/chat/bloc/listing_chat_conversation_state.dart';
-import 'package:ideal_mobile/presentation/chat/domain/entities/chat_message.dart';
 import 'package:ideal_mobile/presentation/chat/domain/entities/chat_conversation.dart';
+import 'package:ideal_mobile/presentation/chat/domain/entities/chat_message.dart';
 import 'package:ideal_mobile/presentation/chat/domain/entities/chat_messages_page.dart';
 import 'package:ideal_mobile/presentation/chat/domain/entities/pending_chat_message.dart';
 import 'package:ideal_mobile/presentation/chat/domain/usecases/get_conversation.dart';
@@ -98,10 +98,10 @@ class ListingChatConversationBloc
        _reportConversation = reportConversation ?? sl<ReportConversation>(),
        super(
          initialConversation?.id == conversationId
-             ? ListingChatConversationState.initial().withConversationSeed(
+             ? const ListingChatConversationState.initial().withConversationSeed(
                  initialConversation!,
                )
-             : ListingChatConversationState.initial().copyWith(
+             : const ListingChatConversationState.initial().copyWith(
                  conversationId: conversationId,
                ),
        ) {
@@ -179,7 +179,7 @@ class ListingChatConversationBloc
     );
     unawaited(
       _getMessages(
-        GetMessagesParams(conversationId: _conversationId, limit: 50),
+        GetMessagesParams(conversationId: _conversationId),
       ).then((result) => add(ChatConversationInitialMessagesLoaded(result))),
     );
   }
@@ -273,7 +273,6 @@ class ListingChatConversationBloc
       GetMessagesParams(
         conversationId: _conversationId,
         afterId: state.lastKnownMessageId,
-        limit: 50,
       ),
     );
     if (isClosed) {
@@ -336,7 +335,6 @@ class ListingChatConversationBloc
       GetMessagesParams(
         conversationId: _conversationId,
         beforeId: oldestId,
-        limit: 50,
       ),
     );
     if (isClosed) return;
@@ -670,7 +668,7 @@ class ListingChatConversationBloc
     required Emitter<ListingChatConversationState> emit,
   }) async {
     final result = await _getMessages(
-      GetMessagesParams(conversationId: _conversationId, limit: 50),
+      GetMessagesParams(conversationId: _conversationId),
     );
     if (isClosed) return;
     _loadMessagesResult(result, emit: emit);

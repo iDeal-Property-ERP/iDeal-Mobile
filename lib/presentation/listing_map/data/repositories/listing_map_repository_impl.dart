@@ -19,6 +19,7 @@ class ListingMapRepositoryImpl implements ListingMapRepository {
     required PropertyMapBounds bounds,
     required ListingFilters filters,
     CancelToken? cancelToken,
+    bool favoritesOnly = false,
   }) async {
     try {
       return Right(
@@ -26,6 +27,7 @@ class ListingMapRepositoryImpl implements ListingMapRepository {
           bounds: bounds,
           filters: filters,
           cancelToken: cancelToken,
+          favoritesOnly: favoritesOnly,
         ),
       );
     } on DioException catch (error) {

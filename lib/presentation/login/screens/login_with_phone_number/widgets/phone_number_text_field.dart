@@ -37,7 +37,7 @@ class _PhoneNumberTextFieldState extends State<PhoneNumberTextField> {
     super.initState();
     _phoneInputController = TextEditingController(
       text:
-          context.read<LoginBloc>().state.phoneNumberLoginState?.phoneNumber ??
+          context.read<LoginBloc>().state.phoneNumberLoginState.phoneNumber ??
           '',
     );
     _focusNode.addListener(() {
@@ -65,20 +65,20 @@ class _PhoneNumberTextFieldState extends State<PhoneNumberTextField> {
         .read<LoginBloc>()
         .state
         .phoneNumberLoginState
-        ?.phoneNumErrorMessage;
+        .phoneNumErrorMessage;
     if (previousError.haveContent()) {
-      context.read<LoginBloc>().add(PhoneNumErrorEvent(errorMessage: ''));
+      context.read<LoginBloc>().add(const PhoneNumErrorEvent(errorMessage: ''));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final bool hasFocus = context.select<LoginBloc, bool>(
-      (bloc) => bloc.state.phoneNumberLoginState?.phoneInputHasFocus ?? false,
+      (bloc) => bloc.state.phoneNumberLoginState.phoneInputHasFocus ?? false,
     );
 
     final String? phoneNumError = context.select<LoginBloc, String?>(
-      (bloc) => bloc.state.phoneNumberLoginState?.phoneNumErrorMessage,
+      (bloc) => bloc.state.phoneNumberLoginState.phoneNumErrorMessage,
     );
 
     return SafeArea(

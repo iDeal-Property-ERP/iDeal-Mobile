@@ -10,9 +10,9 @@ import 'package:ideal_mobile/presentation/chat/widgets/chat_image_full_screen_vi
 import 'package:ideal_mobile/presentation/chat/widgets/chat_message_ticks.dart';
 import 'package:ideal_mobile/utils/extensions/date_time_extensions.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
-import 'package:ideal_mobile/widgets/styling/app_radius.dart';
 import 'package:ideal_mobile/widgets/images/prioritized_image_scheduler.dart';
 import 'package:ideal_mobile/widgets/images/tiered_network_image.dart';
+import 'package:ideal_mobile/widgets/styling/app_radius.dart';
 
 class ChatImageBubble extends StatelessWidget {
   const ChatImageBubble({
@@ -81,7 +81,6 @@ class ChatImageBubble extends StatelessWidget {
                             previewUrl: previewUrl,
                             displayUrl: displayUrl,
                             priority: ImageLoadPriority.high,
-                            fit: BoxFit.cover,
                             loadingBuilder: (context) => const Center(
                               child: CircularProgressIndicator(),
                             ),

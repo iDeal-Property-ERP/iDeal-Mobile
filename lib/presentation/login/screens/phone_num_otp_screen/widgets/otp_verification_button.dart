@@ -98,7 +98,7 @@ class _ResendOTPButtonState extends State<_ResendOTPButton> {
             const RequestPhoneOtpEvent(isResend: true),
           );
           context.read<LoginBloc>().add(
-            IsResendOTPEnabledEvent(isResendOTPEnabled: false),
+            const IsResendOTPEnabledEvent(isResendOTPEnabled: false),
           );
           startTimer();
         }
@@ -116,7 +116,7 @@ class _ResendOTPButtonState extends State<_ResendOTPButton> {
       } else {
         timer.cancel();
         context.read<LoginBloc>().add(
-          IsResendOTPEnabledEvent(isResendOTPEnabled: true),
+          const IsResendOTPEnabledEvent(isResendOTPEnabled: true),
         );
       }
     });

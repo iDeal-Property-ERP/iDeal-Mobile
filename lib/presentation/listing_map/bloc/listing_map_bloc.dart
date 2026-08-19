@@ -8,9 +8,12 @@ import 'package:ideal_mobile/presentation/listing_map/domain/repositories/listin
 import 'package:ideal_mobile/presentation/map/domain/property_map_models.dart';
 
 class ListingMapBloc extends Bloc<ListingMapEvent, ListingMapState> {
-  ListingMapBloc({required ListingMapRepository repository})
-    : _repository = repository,
-      super(const ListingMapState()) {
+  ListingMapBloc({
+    required ListingMapRepository repository,
+    bool favoritesOnly = false,
+  }) : _repository = repository,
+       _favoritesOnly = favoritesOnly,
+       super(const ListingMapState()) {
     on<InitializeListingMap>(_onInitialize);
     on<ListingMapCameraSettled>(_onCameraSettled);
     on<SearchListingMapArea>(_onSearchArea);
@@ -26,6 +29,7 @@ class ListingMapBloc extends Bloc<ListingMapEvent, ListingMapState> {
   static const searchDebounceDelay = Duration(milliseconds: 500);
 
   final ListingMapRepository _repository;
+  final bool _favoritesOnly;
   CancelToken? _cancelToken;
   Timer? _programmaticSettleTimer;
   Timer? _searchDebounceTimer;
@@ -213,6 +217,7 @@ class ListingMapBloc extends Bloc<ListingMapEvent, ListingMapState> {
         bounds: bounds,
         filters: filters,
         cancelToken: cancelToken,
+        favoritesOnly: _favoritesOnly,
       );
       if (isClosed || generation != _requestGeneration) return;
       if (identical(_cancelToken, cancelToken)) _cancelToken = null;

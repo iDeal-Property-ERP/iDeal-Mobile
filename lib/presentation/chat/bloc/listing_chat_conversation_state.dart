@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
-import 'package:ideal_mobile/presentation/chat/domain/entities/chat_conversation_state.dart';
 import 'package:ideal_mobile/presentation/chat/domain/entities/chat_conversation.dart';
+import 'package:ideal_mobile/presentation/chat/domain/entities/chat_conversation_state.dart';
 import 'package:ideal_mobile/presentation/chat/domain/entities/chat_listing_ref.dart';
 import 'package:ideal_mobile/presentation/chat/domain/entities/chat_message.dart';
 import 'package:ideal_mobile/presentation/chat/domain/entities/pending_chat_message.dart';

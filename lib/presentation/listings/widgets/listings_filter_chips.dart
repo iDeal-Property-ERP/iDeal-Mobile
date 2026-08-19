@@ -1,63 +1,63 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
-import 'package:ideal_mobile/presentation/listings/bloc/listings_bloc.dart';
-import 'package:ideal_mobile/presentation/listings/bloc/listings_event.dart';
-import 'package:ideal_mobile/presentation/listings/bloc/listings_state.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filter_options.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filters.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/listings_filter_dropdown_chip.dart';
 
 class ListingsFilterChips extends StatelessWidget {
-  const ListingsFilterChips({super.key, required this.onOpenFilters});
+  const ListingsFilterChips({
+    super.key,
+    required this.filters,
+    required this.filterOptions,
+    required this.onFiltersChanged,
+    required this.onOpenFilters,
+  });
 
+  final ListingFilters filters;
+  final ListingFilterOptions filterOptions;
+  final ValueChanged<ListingFilters> onFiltersChanged;
   final VoidCallback onOpenFilters;
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ListingsBloc, ListingsState>(
-      builder: (context, state) {
-        final filters = state.filters;
-        final chips = <Widget>[
-          ListingsFilterPillChip(
-            label: context.localization.listings_all_filters,
-            selected: filters.activeCount > 0,
-            leadingIcon: TablerIcons.adjustments,
-            badge: filters.activeCount > 0 ? filters.activeCount : null,
-            onTap: onOpenFilters,
-          ),
-          ListingsFilterPillChip(
-            label: context.localization.listings_chip_verified,
-            selected: filters.verified ?? false,
-            onTap: () => _toggleVerified(context, filters),
-          ),
-        ];
+    final chips = <Widget>[
+      ListingsFilterPillChip(
+        label: context.localization.listings_all_filters,
+        selected: filters.activeCount > 0,
+        leadingIcon: TablerIcons.adjustments,
+        badge: filters.activeCount > 0 ? filters.activeCount : null,
+        onTap: onOpenFilters,
+      ),
+      ListingsFilterPillChip(
+        label: context.localization.listings_chip_verified,
+        selected: filters.verified ?? false,
+        onTap: () => _toggleVerified(filters),
+      ),
+    ];
 
-        if (state.filterOptions.districts.isNotEmpty) {
-          chips.add(_buildDistrictChip(context, state));
-        }
-        if (state.filterOptions.propertyTypes.isNotEmpty) {
-          chips.add(_buildPropertyTypeChip(context, state));
-        }
-        chips.add(_buildRoomsChip(context, state));
-        chips.add(_buildPriceChip(context, state));
-        if (state.filterOptions.tariffs.isNotEmpty) {
-          chips.add(_buildTariffChip(context, state));
-        }
-        if (state.filterOptions.furnishings.isNotEmpty) {
-          chips.add(_buildFurnishingChip(context, state));
-        }
+    if (filterOptions.districts.isNotEmpty) {
+      chips.add(_buildDistrictChip(context));
+    }
+    if (filterOptions.propertyTypes.isNotEmpty) {
+      chips.add(_buildPropertyTypeChip(context));
+    }
+    chips.add(_buildRoomsChip(context));
+    chips.add(_buildPriceChip(context));
+    if (filterOptions.tariffs.isNotEmpty) {
+      chips.add(_buildTariffChip(context));
+    }
+    if (filterOptions.furnishings.isNotEmpty) {
+      chips.add(_buildFurnishingChip(context));
+    }
 
-        return ScrollConfiguration(
-          behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(children: _withGaps(chips)),
-          ),
-        );
-      },
+    return ScrollConfiguration(
+      behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Row(children: _withGaps(chips)),
+      ),
     );
   }
 
@@ -70,9 +70,8 @@ class ListingsFilterChips extends StatelessWidget {
     return widgets;
   }
 
-  Widget _buildDistrictChip(BuildContext context, ListingsState state) {
-    final filters = state.filters;
-    final districts = state.filterOptions.districts;
+  Widget _buildDistrictChip(BuildContext context) {
+    final districts = filterOptions.districts;
     final selectedDistrict = _findDistrict(districts, filters.districtId);
     final options = <ListingsFilterDropdownOption<int>>[
       ListingsFilterDropdownOption<int>(
@@ -98,13 +97,12 @@ class ListingsFilterChips extends StatelessWidget {
         final updated = value == null
             ? filters.copyWith(clearDistrictId: true)
             : filters.copyWith(districtId: value);
-        _applyFilters(context, updated);
+        onFiltersChanged(updated);
       },
     );
   }
 
-  Widget _buildRoomsChip(BuildContext context, ListingsState state) {
-    final filters = state.filters;
+  Widget _buildRoomsChip(BuildContext context) {
     final selectedRange = _matchingRange(
       filters.roomsMin,
       filters.roomsMax,
@@ -115,7 +113,7 @@ class ListingsFilterChips extends StatelessWidget {
 
     return ListingsFilterDropdownChip<_FilterRange>(
       label: context.localization.listings_filter_rooms,
-      options: _roomOptions(context, state.filterOptions),
+      options: _roomOptions(context),
       selected: selectedRange,
       selectedLabel: hasSelectedRange
           ? _roomsRangeLabel(
@@ -131,13 +129,12 @@ class ListingsFilterChips extends StatelessWidget {
                 clearRoomsMin: value.min == null,
                 clearRoomsMax: value.max == null,
               );
-        _applyFilters(context, updated);
+        onFiltersChanged(updated);
       },
     );
   }
 
-  Widget _buildPropertyTypeChip(BuildContext context, ListingsState state) {
-    final filters = state.filters;
+  Widget _buildPropertyTypeChip(BuildContext context) {
     return ListingsFilterDropdownChip<String>(
       label: context.localization.listings_filter_property_type,
       options: [
@@ -145,7 +142,7 @@ class ListingsFilterChips extends StatelessWidget {
           value: null,
           label: context.localization.listings_any,
         ),
-        ...state.filterOptions.propertyTypes.map(
+        ...filterOptions.propertyTypes.map(
           (choice) => ListingsFilterDropdownOption<String>(
             value: choice.value,
             label: choice.label,
@@ -157,13 +154,12 @@ class ListingsFilterChips extends StatelessWidget {
         final updated = value == null
             ? filters.copyWith(clearPropertyType: true)
             : filters.copyWith(propertyType: value);
-        _applyFilters(context, updated);
+        onFiltersChanged(updated);
       },
     );
   }
 
-  Widget _buildPriceChip(BuildContext context, ListingsState state) {
-    final filters = state.filters;
+  Widget _buildPriceChip(BuildContext context) {
     final selectedRange = _matchingRange(
       filters.priceMin,
       filters.priceMax,
@@ -190,13 +186,12 @@ class ListingsFilterChips extends StatelessWidget {
                 clearPriceMin: value.min == null,
                 clearPriceMax: value.max == null,
               );
-        _applyFilters(context, updated);
+        onFiltersChanged(updated);
       },
     );
   }
 
-  Widget _buildTariffChip(BuildContext context, ListingsState state) {
-    final filters = state.filters;
+  Widget _buildTariffChip(BuildContext context) {
     return ListingsFilterDropdownChip<String>(
       label: context.localization.listings_filter_tariff,
       options: [
@@ -204,7 +199,7 @@ class ListingsFilterChips extends StatelessWidget {
           value: null,
           label: context.localization.listings_any,
         ),
-        ...state.filterOptions.tariffs.map(
+        ...filterOptions.tariffs.map(
           (choice) => ListingsFilterDropdownOption<String>(
             value: choice.value,
             label: choice.label,
@@ -216,13 +211,12 @@ class ListingsFilterChips extends StatelessWidget {
         final updated = value == null
             ? filters.copyWith(clearTariff: true)
             : filters.copyWith(tariff: value);
-        _applyFilters(context, updated);
+        onFiltersChanged(updated);
       },
     );
   }
 
-  Widget _buildFurnishingChip(BuildContext context, ListingsState state) {
-    final filters = state.filters;
+  Widget _buildFurnishingChip(BuildContext context) {
     return ListingsFilterDropdownChip<String>(
       label: context.localization.listings_filter_furnishing,
       options: [
@@ -230,7 +224,7 @@ class ListingsFilterChips extends StatelessWidget {
           value: null,
           label: context.localization.listings_any,
         ),
-        ...state.filterOptions.furnishings.map(
+        ...filterOptions.furnishings.map(
           (choice) => ListingsFilterDropdownOption<String>(
             value: choice.value,
             label: choice.label,
@@ -242,14 +236,13 @@ class ListingsFilterChips extends StatelessWidget {
         final updated = value == null
             ? filters.copyWith(clearFurnishing: true)
             : filters.copyWith(furnishing: value);
-        _applyFilters(context, updated);
+        onFiltersChanged(updated);
       },
     );
   }
 
   List<ListingsFilterDropdownOption<_FilterRange>> _roomOptions(
     BuildContext context,
-    ListingFilterOptions filterOptions,
   ) {
     return [
       ListingsFilterDropdownOption<_FilterRange>(
@@ -257,7 +250,7 @@ class ListingsFilterChips extends StatelessWidget {
         label: context.localization.listings_any,
       ),
       for (final preset in _roomPresets)
-        if (_isRoomPresetInBounds(preset, filterOptions))
+        if (_isRoomPresetInBounds(preset))
           ListingsFilterDropdownOption<_FilterRange>(
             value: preset,
             label: _roomsRangeLabel(preset),
@@ -302,10 +295,7 @@ class ListingsFilterChips extends StatelessWidget {
     return null;
   }
 
-  bool _isRoomPresetInBounds(
-    _FilterRange preset,
-    ListingFilterOptions filterOptions,
-  ) {
+  bool _isRoomPresetInBounds(_FilterRange preset) {
     if (preset.max != null &&
         filterOptions.roomsMin != null &&
         preset.max! < filterOptions.roomsMin!) {
@@ -345,15 +335,11 @@ class ListingsFilterChips extends StatelessWidget {
     return value.toString();
   }
 
-  void _toggleVerified(BuildContext context, ListingFilters filters) {
-    final updated = filters.verified ?? false
-        ? filters.copyWith(clearVerified: true)
-        : filters.copyWith(verified: true);
-    _applyFilters(context, updated);
-  }
-
-  void _applyFilters(BuildContext context, ListingFilters filters) {
-    context.read<ListingsBloc>().add(ApplyListingFiltersEvent(filters));
+  void _toggleVerified(ListingFilters currentFilters) {
+    final updated = currentFilters.verified ?? false
+        ? currentFilters.copyWith(clearVerified: true)
+        : currentFilters.copyWith(verified: true);
+    onFiltersChanged(updated);
   }
 }
 

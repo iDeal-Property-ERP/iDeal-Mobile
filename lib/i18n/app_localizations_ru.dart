@@ -390,7 +390,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String get sign_out => 'Выйти';
 
   @override
+  String get sign_out_confirmation_message => 'Вы уверены, что хотите выйти?';
+
+  @override
   String get skip => 'Пропустить';
+
+  @override
+  String get preferences => 'Предпочтения';
+
+  @override
+  String get appearance => 'Оформление';
+
+  @override
+  String get version => 'Версия';
 
   @override
   String get activity => 'Активность';
@@ -1299,6 +1311,40 @@ class AppLocalizationsRu extends AppLocalizations {
   String get selected_loading_more => 'Загружаем ещё избранные объекты';
 
   @override
+  String selected_result_count(num count) {
+    return '$count избранных объектов';
+  }
+
+  @override
+  String get selected_sort => 'Сортировка';
+
+  @override
+  String get selected_sort_recent => 'Недавно добавленные';
+
+  @override
+  String get selected_sort_price_asc => 'Цена: по возрастанию';
+
+  @override
+  String get selected_sort_price_desc => 'Цена: по убыванию';
+
+  @override
+  String get selected_no_matches_title =>
+      'Нет избранных объектов по этим условиям';
+
+  @override
+  String get selected_no_matches_subtitle =>
+      'Попробуйте расширить поиск или сбросить фильтры.';
+
+  @override
+  String get selected_clear_filters => 'Сбросить фильтры';
+
+  @override
+  String get selected_removed => 'Удалено из избранного';
+
+  @override
+  String get selected_undo => 'Отменить';
+
+  @override
   String get listings_verified => 'Проверено';
 
   @override
@@ -1582,6 +1628,36 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get booking_status_title => 'Статус бронирования';
+
+  @override
+  String get booking_status_requested => 'Запрошено';
+
+  @override
+  String get booking_status_approved => 'Одобрено';
+
+  @override
+  String get booking_status_rejected => 'Отклонено';
+
+  @override
+  String get booking_status_cancelled => 'Отменено';
+
+  @override
+  String get booking_status_payment_pending => 'Ожидает оплаты';
+
+  @override
+  String get booking_status_confirmed => 'Подтверждено';
+
+  @override
+  String get booking_status_payment_failed => 'Платёж не прошёл';
+
+  @override
+  String get booking_status_payment_expired => 'Срок оплаты истёк';
+
+  @override
+  String get booking_status_reconciliation_required => 'На проверке';
+
+  @override
+  String get no_bookings_yet => 'У вас пока нет бронирований';
 
   @override
   String get booking_choose_dates => 'Выберите даты проживания';

@@ -1,5 +1,4 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ideal_mobile/core/services/injection_container.dart';
 import 'package:ideal_mobile/presentation/booking/data/active_checkout_store.dart';
@@ -122,5 +121,5 @@ PaymentCheckout _checkout() => PaymentCheckout(
   provider: PaymentProvider.payme,
   status: PaymentCheckoutStatus.pending,
   checkoutUrl: Uri.parse('https://pay.test/checkout'),
-  expiresAt: DateTime(2026, 9, 1),
+  expiresAt: DateTime(2026, 9),
 );

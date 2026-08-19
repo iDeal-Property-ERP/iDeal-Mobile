@@ -34,88 +34,88 @@ class ListingDetailShimmer extends StatelessWidget {
                       scrollDirection: Axis.horizontal,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: 4,
-                      separatorBuilder: (_, __) => const SizedBox(width: 8),
-                      itemBuilder: (_, __) =>
+                      separatorBuilder: (_, _) => const SizedBox(width: 8),
+                      itemBuilder: (_, _) =>
                           const ShimmerImage(width: 84, height: 60, radius: 10),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(20),
+                  const Padding(
+                    padding: EdgeInsets.all(20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Row(
                           children: [
-                            const ShimmerText(width: 160),
-                            const Spacer(),
-                            const ShimmerContent(
+                            ShimmerText(width: 160),
+                            Spacer(),
+                            ShimmerContent(
                               width: 82,
                               height: 28,
                               radius: 999,
                             ),
                           ],
                         ),
-                        const SizedBox(height: 9),
-                        const ShimmerText(width: 250),
-                        const SizedBox(height: 6),
-                        const ShimmerText(width: 190),
-                        const SizedBox(height: 14),
+                        SizedBox(height: 9),
+                        ShimmerText(width: 250),
+                        SizedBox(height: 6),
+                        ShimmerText(width: 190),
+                        SizedBox(height: 14),
                         Wrap(
                           spacing: 8,
                           runSpacing: 8,
                           children: [
-                            const ShimmerContent(
+                            ShimmerContent(
                               width: 92,
                               height: 38,
                               radius: 8,
                             ),
-                            const ShimmerContent(
+                            ShimmerContent(
                               width: 88,
                               height: 38,
                               radius: 8,
                             ),
-                            const ShimmerContent(
+                            ShimmerContent(
                               width: 105,
                               height: 38,
                               radius: 8,
                             ),
-                            const ShimmerContent(
+                            ShimmerContent(
                               width: 98,
                               height: 38,
                               radius: 8,
                             ),
                           ],
                         ),
-                        const SizedBox(height: 14),
-                        const ShimmerContent(
+                        SizedBox(height: 14),
+                        ShimmerContent(
                           width: double.infinity,
                           height: 138,
                           radius: 16,
                         ),
-                        const SizedBox(height: 14),
-                        const ShimmerText(width: 145),
-                        const SizedBox(height: 8),
-                        const ShimmerContent(
+                        SizedBox(height: 14),
+                        ShimmerText(width: 145),
+                        SizedBox(height: 8),
+                        ShimmerContent(
                           width: double.infinity,
                           height: 72,
                           radius: 4,
                         ),
-                        const SizedBox(height: 14),
-                        const ShimmerText(width: 185),
-                        const SizedBox(height: 13),
-                        const ShimmerContent(
+                        SizedBox(height: 14),
+                        ShimmerText(width: 185),
+                        SizedBox(height: 13),
+                        ShimmerContent(
                           width: double.infinity,
                           height: 62,
                           radius: 4,
                         ),
-                        const SizedBox(height: 14),
-                        const ShimmerContent(
+                        SizedBox(height: 14),
+                        ShimmerContent(
                           width: double.infinity,
                           height: 46,
                           radius: 4,
                         ),
-                        const SizedBox(height: 14),
-                        const ShimmerText(width: 250),
+                        SizedBox(height: 14),
+                        ShimmerText(width: 250),
                       ],
                     ),
                   ),
@@ -132,25 +132,25 @@ class ListingDetailShimmer extends StatelessWidget {
                 ),
               ),
             ),
-            child: SafeArea(
+            child: const SafeArea(
               top: false,
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
+                padding: EdgeInsets.fromLTRB(16, 14, 16, 24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Align(
+                    Align(
                       alignment: Alignment.centerLeft,
                       child: ShimmerText(width: 112),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     Row(
                       children: [
-                        const Expanded(
+                        Expanded(
                           child: ShimmerButton(height: 48, radius: 12),
                         ),
-                        const SizedBox(width: 12),
-                        const ShimmerButton(width: 48, height: 48, radius: 12),
+                        SizedBox(width: 12),
+                        ShimmerButton(width: 48, height: 48, radius: 12),
                       ],
                     ),
                   ],

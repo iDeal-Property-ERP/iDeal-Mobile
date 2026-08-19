@@ -1,6 +1,6 @@
+import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
-import 'package:dartz/dartz.dart';
 import 'package:ideal_mobile/core/errors/failure.dart';
 import 'package:ideal_mobile/presentation/chat/domain/entities/chat_conversation.dart';
 import 'package:ideal_mobile/presentation/chat/domain/entities/chat_messages_page.dart';

@@ -9,79 +9,82 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i31;
+import 'dart:async' as _i33;
 
-import 'package:auto_route/auto_route.dart' as _i21;
-import 'package:collection/collection.dart' as _i30;
-import 'package:flutter/material.dart' as _i22;
+import 'package:auto_route/auto_route.dart' as _i22;
+import 'package:collection/collection.dart' as _i32;
+import 'package:flutter/material.dart' as _i23;
 import 'package:ideal_mobile/presentation/booking/booking_screen.dart' as _i1;
 import 'package:ideal_mobile/presentation/booking/booking_status_screen.dart'
     as _i2;
+import 'package:ideal_mobile/presentation/booking/bookings_screen.dart' as _i3;
 import 'package:ideal_mobile/presentation/booking/domain/entities/booking.dart'
-    as _i23;
-import 'package:ideal_mobile/presentation/booking/payment_return_screen.dart'
-    as _i16;
-import 'package:ideal_mobile/presentation/change_theme/change_theme_screen.dart'
-    as _i3;
-import 'package:ideal_mobile/presentation/chat/bloc/chats_bloc.dart' as _i26;
-import 'package:ideal_mobile/presentation/chat/bloc/listing_chat_conversation_bloc.dart'
-    as _i25;
-import 'package:ideal_mobile/presentation/chat/chat_conversation_screen.dart'
-    as _i4;
-import 'package:ideal_mobile/presentation/chat/chats_screen.dart' as _i5;
-import 'package:ideal_mobile/presentation/chat/domain/entities/chat_conversation.dart'
     as _i24;
-import 'package:ideal_mobile/presentation/home/home_screen.dart' as _i6;
-import 'package:ideal_mobile/presentation/initial/initial_screen.dart' as _i7;
-import 'package:ideal_mobile/presentation/listing_detail/listing_detail_screen.dart'
-    as _i8;
-import 'package:ideal_mobile/presentation/listing_map/bloc/listing_map_bloc.dart'
-    as _i28;
-import 'package:ideal_mobile/presentation/listing_map/listing_discovery_map_screen.dart'
-    as _i9;
-import 'package:ideal_mobile/presentation/listings/domain/entities/listing_card.dart'
-    as _i27;
-import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filter_options.dart'
-    as _i11;
-import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filters.dart'
-    as _i10;
-import 'package:ideal_mobile/presentation/login/bloc/login_bloc.dart' as _i37;
-import 'package:ideal_mobile/presentation/login/screens/login_with_phone_number/login_with_phone_number_screen.dart'
-    as _i12;
-import 'package:ideal_mobile/presentation/login/screens/phone_num_otp_screen/phone_number_otp_screen.dart'
-    as _i18;
-import 'package:ideal_mobile/presentation/map/widgets/property_map_view.dart'
-    as _i29;
-import 'package:ideal_mobile/presentation/notification_settings/notification_settings_screen.dart'
-    as _i14;
-import 'package:ideal_mobile/presentation/notifications/bloc/notification_bloc.dart'
-    as _i35;
-import 'package:ideal_mobile/presentation/notifications/domain/usecases/get_notification_settings.dart'
-    as _i33;
-import 'package:ideal_mobile/presentation/notifications/domain/usecases/update_notification_settings.dart'
-    as _i34;
-import 'package:ideal_mobile/presentation/notifications/notifications_screen.dart'
-    as _i15;
-import 'package:ideal_mobile/presentation/profile/bloc/profile_bloc.dart'
-    as _i36;
-import 'package:ideal_mobile/presentation/profile/personal_details_screen.dart'
+import 'package:ideal_mobile/presentation/booking/payment_return_screen.dart'
     as _i17;
-import 'package:ideal_mobile/presentation/settings/settings_screen.dart'
+import 'package:ideal_mobile/presentation/change_theme/change_theme_screen.dart'
+    as _i4;
+import 'package:ideal_mobile/presentation/chat/bloc/chats_bloc.dart' as _i27;
+import 'package:ideal_mobile/presentation/chat/bloc/listing_chat_conversation_bloc.dart'
+    as _i26;
+import 'package:ideal_mobile/presentation/chat/chat_conversation_screen.dart'
+    as _i5;
+import 'package:ideal_mobile/presentation/chat/chats_screen.dart' as _i6;
+import 'package:ideal_mobile/presentation/chat/domain/entities/chat_conversation.dart'
+    as _i25;
+import 'package:ideal_mobile/presentation/home/home_screen.dart' as _i7;
+import 'package:ideal_mobile/presentation/initial/initial_screen.dart' as _i8;
+import 'package:ideal_mobile/presentation/listing_detail/listing_detail_screen.dart'
+    as _i9;
+import 'package:ideal_mobile/presentation/listing_map/bloc/listing_map_bloc.dart'
+    as _i29;
+import 'package:ideal_mobile/presentation/listing_map/listing_discovery_map_screen.dart'
+    as _i10;
+import 'package:ideal_mobile/presentation/listings/domain/entities/listing_card.dart'
+    as _i28;
+import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filter_options.dart'
+    as _i12;
+import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filters.dart'
+    as _i11;
+import 'package:ideal_mobile/presentation/login/bloc/login_bloc.dart' as _i39;
+import 'package:ideal_mobile/presentation/login/screens/login_with_phone_number/login_with_phone_number_screen.dart'
+    as _i13;
+import 'package:ideal_mobile/presentation/login/screens/phone_num_otp_screen/phone_number_otp_screen.dart'
     as _i19;
-import 'package:ideal_mobile/presentation/ssl_pinning/ssl_connection_failed_screen.dart'
+import 'package:ideal_mobile/presentation/map/services/property_map_location_service.dart'
+    as _i31;
+import 'package:ideal_mobile/presentation/map/widgets/property_map_view.dart'
+    as _i30;
+import 'package:ideal_mobile/presentation/notification_settings/notification_settings_screen.dart'
+    as _i15;
+import 'package:ideal_mobile/presentation/notifications/bloc/notification_bloc.dart'
+    as _i37;
+import 'package:ideal_mobile/presentation/notifications/domain/usecases/get_notification_settings.dart'
+    as _i35;
+import 'package:ideal_mobile/presentation/notifications/domain/usecases/update_notification_settings.dart'
+    as _i36;
+import 'package:ideal_mobile/presentation/notifications/notifications_screen.dart'
+    as _i16;
+import 'package:ideal_mobile/presentation/profile/bloc/profile_bloc.dart'
+    as _i38;
+import 'package:ideal_mobile/presentation/profile/personal_details_screen.dart'
+    as _i18;
+import 'package:ideal_mobile/presentation/settings/settings_screen.dart'
     as _i20;
+import 'package:ideal_mobile/presentation/ssl_pinning/ssl_connection_failed_screen.dart'
+    as _i21;
 import 'package:ideal_mobile/services/push/notification_permission_status.dart'
-    as _i32;
-import 'package:ideal_mobile/widgets/attachment_view.dart' as _i13;
+    as _i34;
+import 'package:ideal_mobile/widgets/attachment_view.dart' as _i14;
 
 /// generated route for
 /// [_i1.BookingScreen]
-class BookingRoute extends _i21.PageRouteInfo<BookingRouteArgs> {
+class BookingRoute extends _i22.PageRouteInfo<BookingRouteArgs> {
   BookingRoute({
-    _i22.Key? key,
+    _i23.Key? key,
     required int listingId,
-    _i23.BookingOptions? initialOptions,
-    List<_i21.PageRouteInfo>? children,
+    _i24.BookingOptions? initialOptions,
+    List<_i22.PageRouteInfo>? children,
   }) : super(
          BookingRoute.name,
          args: BookingRouteArgs(
@@ -95,7 +98,7 @@ class BookingRoute extends _i21.PageRouteInfo<BookingRouteArgs> {
 
   static const String name = 'BookingRoute';
 
-  static _i21.PageInfo page = _i21.PageInfo(
+  static _i22.PageInfo page = _i22.PageInfo(
     name,
     builder: (data) {
       final pathParams = data.inheritedPathParams;
@@ -119,11 +122,11 @@ class BookingRouteArgs {
     this.initialOptions,
   });
 
-  final _i22.Key? key;
+  final _i23.Key? key;
 
   final int listingId;
 
-  final _i23.BookingOptions? initialOptions;
+  final _i24.BookingOptions? initialOptions;
 
   @override
   String toString() {
@@ -146,12 +149,12 @@ class BookingRouteArgs {
 
 /// generated route for
 /// [_i2.BookingStatusScreen]
-class BookingStatusRoute extends _i21.PageRouteInfo<BookingStatusRouteArgs> {
+class BookingStatusRoute extends _i22.PageRouteInfo<BookingStatusRouteArgs> {
   BookingStatusRoute({
-    _i22.Key? key,
+    _i23.Key? key,
     required int bookingId,
-    _i23.PaymentCheckout? initialCheckout,
-    List<_i21.PageRouteInfo>? children,
+    _i24.PaymentCheckout? initialCheckout,
+    List<_i22.PageRouteInfo>? children,
   }) : super(
          BookingStatusRoute.name,
          args: BookingStatusRouteArgs(
@@ -165,7 +168,7 @@ class BookingStatusRoute extends _i21.PageRouteInfo<BookingStatusRouteArgs> {
 
   static const String name = 'BookingStatusRoute';
 
-  static _i21.PageInfo page = _i21.PageInfo(
+  static _i22.PageInfo page = _i22.PageInfo(
     name,
     builder: (data) {
       final pathParams = data.inheritedPathParams;
@@ -189,11 +192,11 @@ class BookingStatusRouteArgs {
     this.initialCheckout,
   });
 
-  final _i22.Key? key;
+  final _i23.Key? key;
 
   final int bookingId;
 
-  final _i23.PaymentCheckout? initialCheckout;
+  final _i24.PaymentCheckout? initialCheckout;
 
   @override
   String toString() {
@@ -215,31 +218,47 @@ class BookingStatusRouteArgs {
 }
 
 /// generated route for
-/// [_i3.ChangeThemeScreen]
-class ChangeThemeRoute extends _i21.PageRouteInfo<void> {
-  const ChangeThemeRoute({List<_i21.PageRouteInfo>? children})
-    : super(ChangeThemeRoute.name, initialChildren: children);
+/// [_i3.BookingsScreen]
+class BookingsRoute extends _i22.PageRouteInfo<void> {
+  const BookingsRoute({List<_i22.PageRouteInfo>? children})
+    : super(BookingsRoute.name, initialChildren: children);
 
-  static const String name = 'ChangeThemeRoute';
+  static const String name = 'BookingsRoute';
 
-  static _i21.PageInfo page = _i21.PageInfo(
+  static _i22.PageInfo page = _i22.PageInfo(
     name,
     builder: (data) {
-      return const _i3.ChangeThemeScreen();
+      return const _i3.BookingsScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i4.ChatConversationScreen]
+/// [_i4.ChangeThemeScreen]
+class ChangeThemeRoute extends _i22.PageRouteInfo<void> {
+  const ChangeThemeRoute({List<_i22.PageRouteInfo>? children})
+    : super(ChangeThemeRoute.name, initialChildren: children);
+
+  static const String name = 'ChangeThemeRoute';
+
+  static _i22.PageInfo page = _i22.PageInfo(
+    name,
+    builder: (data) {
+      return const _i4.ChangeThemeScreen();
+    },
+  );
+}
+
+/// generated route for
+/// [_i5.ChatConversationScreen]
 class ChatConversationRoute
-    extends _i21.PageRouteInfo<ChatConversationRouteArgs> {
+    extends _i22.PageRouteInfo<ChatConversationRouteArgs> {
   ChatConversationRoute({
-    _i22.Key? key,
+    _i23.Key? key,
     required int conversationId,
-    _i24.ChatConversation? initialConversation,
-    _i25.ListingChatConversationBloc? bloc,
-    List<_i21.PageRouteInfo>? children,
+    _i25.ChatConversation? initialConversation,
+    _i26.ListingChatConversationBloc? bloc,
+    List<_i22.PageRouteInfo>? children,
   }) : super(
          ChatConversationRoute.name,
          args: ChatConversationRouteArgs(
@@ -254,7 +273,7 @@ class ChatConversationRoute
 
   static const String name = 'ChatConversationRoute';
 
-  static _i21.PageInfo page = _i21.PageInfo(
+  static _i22.PageInfo page = _i22.PageInfo(
     name,
     builder: (data) {
       final pathParams = data.inheritedPathParams;
@@ -263,7 +282,7 @@ class ChatConversationRoute
           conversationId: pathParams.getInt('conversationId'),
         ),
       );
-      return _i4.ChatConversationScreen(
+      return _i5.ChatConversationScreen(
         key: args.key,
         conversationId: args.conversationId,
         initialConversation: args.initialConversation,
@@ -281,13 +300,13 @@ class ChatConversationRouteArgs {
     this.bloc,
   });
 
-  final _i22.Key? key;
+  final _i23.Key? key;
 
   final int conversationId;
 
-  final _i24.ChatConversation? initialConversation;
+  final _i25.ChatConversation? initialConversation;
 
-  final _i25.ListingChatConversationBloc? bloc;
+  final _i26.ListingChatConversationBloc? bloc;
 
   @override
   String toString() {
@@ -313,13 +332,13 @@ class ChatConversationRouteArgs {
 }
 
 /// generated route for
-/// [_i5.ChatsScreen]
-class ChatsRoute extends _i21.PageRouteInfo<ChatsRouteArgs> {
+/// [_i6.ChatsScreen]
+class ChatsRoute extends _i22.PageRouteInfo<ChatsRouteArgs> {
   ChatsRoute({
-    _i22.Key? key,
-    _i26.ChatsBloc? bloc,
+    _i23.Key? key,
+    _i27.ChatsBloc? bloc,
     bool startImmediately = false,
-    List<_i21.PageRouteInfo>? children,
+    List<_i22.PageRouteInfo>? children,
   }) : super(
          ChatsRoute.name,
          args: ChatsRouteArgs(
@@ -332,13 +351,13 @@ class ChatsRoute extends _i21.PageRouteInfo<ChatsRouteArgs> {
 
   static const String name = 'ChatsRoute';
 
-  static _i21.PageInfo page = _i21.PageInfo(
+  static _i22.PageInfo page = _i22.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<ChatsRouteArgs>(
         orElse: () => const ChatsRouteArgs(),
       );
-      return _i5.ChatsScreen(
+      return _i6.ChatsScreen(
         key: args.key,
         bloc: args.bloc,
         startImmediately: args.startImmediately,
@@ -350,9 +369,9 @@ class ChatsRoute extends _i21.PageRouteInfo<ChatsRouteArgs> {
 class ChatsRouteArgs {
   const ChatsRouteArgs({this.key, this.bloc, this.startImmediately = false});
 
-  final _i22.Key? key;
+  final _i23.Key? key;
 
-  final _i26.ChatsBloc? bloc;
+  final _i27.ChatsBloc? bloc;
 
   final bool startImmediately;
 
@@ -375,45 +394,45 @@ class ChatsRouteArgs {
 }
 
 /// generated route for
-/// [_i6.HomeScreen]
-class HomeRoute extends _i21.PageRouteInfo<void> {
-  const HomeRoute({List<_i21.PageRouteInfo>? children})
+/// [_i7.HomeScreen]
+class HomeRoute extends _i22.PageRouteInfo<void> {
+  const HomeRoute({List<_i22.PageRouteInfo>? children})
     : super(HomeRoute.name, initialChildren: children);
 
   static const String name = 'HomeRoute';
 
-  static _i21.PageInfo page = _i21.PageInfo(
+  static _i22.PageInfo page = _i22.PageInfo(
     name,
     builder: (data) {
-      return const _i6.HomeScreen();
+      return const _i7.HomeScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i7.InitialScreen]
-class InitialRoute extends _i21.PageRouteInfo<void> {
-  const InitialRoute({List<_i21.PageRouteInfo>? children})
+/// [_i8.InitialScreen]
+class InitialRoute extends _i22.PageRouteInfo<void> {
+  const InitialRoute({List<_i22.PageRouteInfo>? children})
     : super(InitialRoute.name, initialChildren: children);
 
   static const String name = 'InitialRoute';
 
-  static _i21.PageInfo page = _i21.PageInfo(
+  static _i22.PageInfo page = _i22.PageInfo(
     name,
     builder: (data) {
-      return const _i7.InitialScreen();
+      return const _i8.InitialScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i8.ListingDetailScreen]
-class ListingDetailRoute extends _i21.PageRouteInfo<ListingDetailRouteArgs> {
+/// [_i9.ListingDetailScreen]
+class ListingDetailRoute extends _i22.PageRouteInfo<ListingDetailRouteArgs> {
   ListingDetailRoute({
-    _i22.Key? key,
+    _i23.Key? key,
     required int listingId,
-    _i27.ListingCard? initialListing,
-    List<_i21.PageRouteInfo>? children,
+    _i28.ListingCard? initialListing,
+    List<_i22.PageRouteInfo>? children,
   }) : super(
          ListingDetailRoute.name,
          args: ListingDetailRouteArgs(
@@ -427,7 +446,7 @@ class ListingDetailRoute extends _i21.PageRouteInfo<ListingDetailRouteArgs> {
 
   static const String name = 'ListingDetailRoute';
 
-  static _i21.PageInfo page = _i21.PageInfo(
+  static _i22.PageInfo page = _i22.PageInfo(
     name,
     builder: (data) {
       final pathParams = data.inheritedPathParams;
@@ -435,7 +454,7 @@ class ListingDetailRoute extends _i21.PageRouteInfo<ListingDetailRouteArgs> {
         orElse: () =>
             ListingDetailRouteArgs(listingId: pathParams.getInt('listingId')),
       );
-      return _i8.ListingDetailScreen(
+      return _i9.ListingDetailScreen(
         key: args.key,
         listingId: args.listingId,
         initialListing: args.initialListing,
@@ -451,11 +470,11 @@ class ListingDetailRouteArgs {
     this.initialListing,
   });
 
-  final _i22.Key? key;
+  final _i23.Key? key;
 
   final int listingId;
 
-  final _i27.ListingCard? initialListing;
+  final _i28.ListingCard? initialListing;
 
   @override
   String toString() {
@@ -477,21 +496,23 @@ class ListingDetailRouteArgs {
 }
 
 /// generated route for
-/// [_i9.ListingDiscoveryMapScreen]
+/// [_i10.ListingDiscoveryMapScreen]
 class ListingDiscoveryMapRoute
-    extends _i21.PageRouteInfo<ListingDiscoveryMapRouteArgs> {
+    extends _i22.PageRouteInfo<ListingDiscoveryMapRouteArgs> {
   ListingDiscoveryMapRoute({
-    _i22.Key? key,
-    _i10.ListingFilters initialFilters = const _i10.ListingFilters.empty(),
-    _i11.ListingFilterOptions filterOptions =
-        const _i11.ListingFilterOptions.empty(),
-    List<_i27.ListingCard> seedListings = const [],
-    _i22.ValueChanged<_i10.ListingFilters>? onFiltersChanged,
-    _i28.ListingMapBloc? bloc,
-    _i29.PropertyMapProviderSelector? providerSelector,
-    _i29.PropertyMapProviderViewBuilder? providerViewBuilder,
-    _i9.ListingMapUriLauncher? uriLauncher,
-    List<_i21.PageRouteInfo>? children,
+    _i23.Key? key,
+    _i11.ListingFilters initialFilters = const _i11.ListingFilters.empty(),
+    _i12.ListingFilterOptions filterOptions =
+        const _i12.ListingFilterOptions.empty(),
+    List<_i28.ListingCard> seedListings = const [],
+    bool favoritesOnly = false,
+    _i23.ValueChanged<_i11.ListingFilters>? onFiltersChanged,
+    _i29.ListingMapBloc? bloc,
+    _i30.PropertyMapProviderSelector? providerSelector,
+    _i30.PropertyMapProviderViewBuilder? providerViewBuilder,
+    _i10.ListingMapUriLauncher? uriLauncher,
+    _i31.PropertyMapLocationService? locationService,
+    List<_i22.PageRouteInfo>? children,
   }) : super(
          ListingDiscoveryMapRoute.name,
          args: ListingDiscoveryMapRouteArgs(
@@ -499,33 +520,37 @@ class ListingDiscoveryMapRoute
            initialFilters: initialFilters,
            filterOptions: filterOptions,
            seedListings: seedListings,
+           favoritesOnly: favoritesOnly,
            onFiltersChanged: onFiltersChanged,
            bloc: bloc,
            providerSelector: providerSelector,
            providerViewBuilder: providerViewBuilder,
            uriLauncher: uriLauncher,
+           locationService: locationService,
          ),
          initialChildren: children,
        );
 
   static const String name = 'ListingDiscoveryMapRoute';
 
-  static _i21.PageInfo page = _i21.PageInfo(
+  static _i22.PageInfo page = _i22.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<ListingDiscoveryMapRouteArgs>(
         orElse: () => const ListingDiscoveryMapRouteArgs(),
       );
-      return _i9.ListingDiscoveryMapScreen(
+      return _i10.ListingDiscoveryMapScreen(
         key: args.key,
         initialFilters: args.initialFilters,
         filterOptions: args.filterOptions,
         seedListings: args.seedListings,
+        favoritesOnly: args.favoritesOnly,
         onFiltersChanged: args.onFiltersChanged,
         bloc: args.bloc,
         providerSelector: args.providerSelector,
         providerViewBuilder: args.providerViewBuilder,
         uriLauncher: args.uriLauncher,
+        locationService: args.locationService,
       );
     },
   );
@@ -534,37 +559,43 @@ class ListingDiscoveryMapRoute
 class ListingDiscoveryMapRouteArgs {
   const ListingDiscoveryMapRouteArgs({
     this.key,
-    this.initialFilters = const _i10.ListingFilters.empty(),
-    this.filterOptions = const _i11.ListingFilterOptions.empty(),
+    this.initialFilters = const _i11.ListingFilters.empty(),
+    this.filterOptions = const _i12.ListingFilterOptions.empty(),
     this.seedListings = const [],
+    this.favoritesOnly = false,
     this.onFiltersChanged,
     this.bloc,
     this.providerSelector,
     this.providerViewBuilder,
     this.uriLauncher,
+    this.locationService,
   });
 
-  final _i22.Key? key;
+  final _i23.Key? key;
 
-  final _i10.ListingFilters initialFilters;
+  final _i11.ListingFilters initialFilters;
 
-  final _i11.ListingFilterOptions filterOptions;
+  final _i12.ListingFilterOptions filterOptions;
 
-  final List<_i27.ListingCard> seedListings;
+  final List<_i28.ListingCard> seedListings;
 
-  final _i22.ValueChanged<_i10.ListingFilters>? onFiltersChanged;
+  final bool favoritesOnly;
 
-  final _i28.ListingMapBloc? bloc;
+  final _i23.ValueChanged<_i11.ListingFilters>? onFiltersChanged;
 
-  final _i29.PropertyMapProviderSelector? providerSelector;
+  final _i29.ListingMapBloc? bloc;
 
-  final _i29.PropertyMapProviderViewBuilder? providerViewBuilder;
+  final _i30.PropertyMapProviderSelector? providerSelector;
 
-  final _i9.ListingMapUriLauncher? uriLauncher;
+  final _i30.PropertyMapProviderViewBuilder? providerViewBuilder;
+
+  final _i10.ListingMapUriLauncher? uriLauncher;
+
+  final _i31.PropertyMapLocationService? locationService;
 
   @override
   String toString() {
-    return 'ListingDiscoveryMapRouteArgs{key: $key, initialFilters: $initialFilters, filterOptions: $filterOptions, seedListings: $seedListings, onFiltersChanged: $onFiltersChanged, bloc: $bloc, providerSelector: $providerSelector, providerViewBuilder: $providerViewBuilder, uriLauncher: $uriLauncher}';
+    return 'ListingDiscoveryMapRouteArgs{key: $key, initialFilters: $initialFilters, filterOptions: $filterOptions, seedListings: $seedListings, favoritesOnly: $favoritesOnly, onFiltersChanged: $onFiltersChanged, bloc: $bloc, providerSelector: $providerSelector, providerViewBuilder: $providerViewBuilder, uriLauncher: $uriLauncher, locationService: $locationService}';
   }
 
   @override
@@ -574,15 +605,17 @@ class ListingDiscoveryMapRouteArgs {
     return key == other.key &&
         initialFilters == other.initialFilters &&
         filterOptions == other.filterOptions &&
-        const _i30.ListEquality<_i27.ListingCard>().equals(
+        const _i32.ListEquality<_i28.ListingCard>().equals(
           seedListings,
           other.seedListings,
         ) &&
+        favoritesOnly == other.favoritesOnly &&
         onFiltersChanged == other.onFiltersChanged &&
         bloc == other.bloc &&
         providerSelector == other.providerSelector &&
         providerViewBuilder == other.providerViewBuilder &&
-        uriLauncher == other.uriLauncher;
+        uriLauncher == other.uriLauncher &&
+        locationService == other.locationService;
   }
 
   @override
@@ -590,37 +623,39 @@ class ListingDiscoveryMapRouteArgs {
       key.hashCode ^
       initialFilters.hashCode ^
       filterOptions.hashCode ^
-      const _i30.ListEquality<_i27.ListingCard>().hash(seedListings) ^
+      const _i32.ListEquality<_i28.ListingCard>().hash(seedListings) ^
+      favoritesOnly.hashCode ^
       onFiltersChanged.hashCode ^
       bloc.hashCode ^
       providerSelector.hashCode ^
       providerViewBuilder.hashCode ^
-      uriLauncher.hashCode;
+      uriLauncher.hashCode ^
+      locationService.hashCode;
 }
 
 /// generated route for
-/// [_i12.LoginWithPhoneNumberScreen]
-class LoginWithPhoneNumberRoute extends _i21.PageRouteInfo<void> {
-  const LoginWithPhoneNumberRoute({List<_i21.PageRouteInfo>? children})
+/// [_i13.LoginWithPhoneNumberScreen]
+class LoginWithPhoneNumberRoute extends _i22.PageRouteInfo<void> {
+  const LoginWithPhoneNumberRoute({List<_i22.PageRouteInfo>? children})
     : super(LoginWithPhoneNumberRoute.name, initialChildren: children);
 
   static const String name = 'LoginWithPhoneNumberRoute';
 
-  static _i21.PageInfo page = _i21.PageInfo(
+  static _i22.PageInfo page = _i22.PageInfo(
     name,
     builder: (data) {
-      return const _i12.LoginWithPhoneNumberScreen();
+      return const _i13.LoginWithPhoneNumberScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i13.NetworkImageScreen]
-class NetworkImageRoute extends _i21.PageRouteInfo<NetworkImageRouteArgs> {
+/// [_i14.NetworkImageScreen]
+class NetworkImageRoute extends _i22.PageRouteInfo<NetworkImageRouteArgs> {
   NetworkImageRoute({
-    _i22.Key? key,
+    _i23.Key? key,
     required String link,
-    List<_i21.PageRouteInfo>? children,
+    List<_i22.PageRouteInfo>? children,
   }) : super(
          NetworkImageRoute.name,
          args: NetworkImageRouteArgs(key: key, link: link),
@@ -629,11 +664,11 @@ class NetworkImageRoute extends _i21.PageRouteInfo<NetworkImageRouteArgs> {
 
   static const String name = 'NetworkImageRoute';
 
-  static _i21.PageInfo page = _i21.PageInfo(
+  static _i22.PageInfo page = _i22.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<NetworkImageRouteArgs>();
-      return _i13.NetworkImageScreen(key: args.key, link: args.link);
+      return _i14.NetworkImageScreen(key: args.key, link: args.link);
     },
   );
 }
@@ -641,7 +676,7 @@ class NetworkImageRoute extends _i21.PageRouteInfo<NetworkImageRouteArgs> {
 class NetworkImageRouteArgs {
   const NetworkImageRouteArgs({this.key, required this.link});
 
-  final _i22.Key? key;
+  final _i23.Key? key;
 
   final String link;
 
@@ -662,15 +697,15 @@ class NetworkImageRouteArgs {
 }
 
 /// generated route for
-/// [_i14.NotificationSettingsScreen]
+/// [_i15.NotificationSettingsScreen]
 class NotificationSettingsRoute
-    extends _i21.PageRouteInfo<NotificationSettingsRouteArgs> {
+    extends _i22.PageRouteInfo<NotificationSettingsRouteArgs> {
   NotificationSettingsRoute({
-    _i22.Key? key,
-    _i31.Future<_i32.NotificationPermissionStatus> Function()? getPermission,
-    _i33.GetNotificationSettings? getSettings,
-    _i34.UpdateNotificationSettings? updateSettings,
-    List<_i21.PageRouteInfo>? children,
+    _i23.Key? key,
+    _i33.Future<_i34.NotificationPermissionStatus> Function()? getPermission,
+    _i35.GetNotificationSettings? getSettings,
+    _i36.UpdateNotificationSettings? updateSettings,
+    List<_i22.PageRouteInfo>? children,
   }) : super(
          NotificationSettingsRoute.name,
          args: NotificationSettingsRouteArgs(
@@ -684,13 +719,13 @@ class NotificationSettingsRoute
 
   static const String name = 'NotificationSettingsRoute';
 
-  static _i21.PageInfo page = _i21.PageInfo(
+  static _i22.PageInfo page = _i22.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<NotificationSettingsRouteArgs>(
         orElse: () => const NotificationSettingsRouteArgs(),
       );
-      return _i14.NotificationSettingsScreen(
+      return _i15.NotificationSettingsScreen(
         key: args.key,
         getPermission: args.getPermission,
         getSettings: args.getSettings,
@@ -708,14 +743,14 @@ class NotificationSettingsRouteArgs {
     this.updateSettings,
   });
 
-  final _i22.Key? key;
+  final _i23.Key? key;
 
-  final _i31.Future<_i32.NotificationPermissionStatus> Function()?
+  final _i33.Future<_i34.NotificationPermissionStatus> Function()?
   getPermission;
 
-  final _i33.GetNotificationSettings? getSettings;
+  final _i35.GetNotificationSettings? getSettings;
 
-  final _i34.UpdateNotificationSettings? updateSettings;
+  final _i36.UpdateNotificationSettings? updateSettings;
 
   @override
   String toString() {
@@ -737,12 +772,12 @@ class NotificationSettingsRouteArgs {
 }
 
 /// generated route for
-/// [_i15.NotificationsScreen]
-class NotificationsRoute extends _i21.PageRouteInfo<NotificationsRouteArgs> {
+/// [_i16.NotificationsScreen]
+class NotificationsRoute extends _i22.PageRouteInfo<NotificationsRouteArgs> {
   NotificationsRoute({
-    _i35.NotificationBloc? bloc,
-    _i22.Key? key,
-    List<_i21.PageRouteInfo>? children,
+    _i37.NotificationBloc? bloc,
+    _i23.Key? key,
+    List<_i22.PageRouteInfo>? children,
   }) : super(
          NotificationsRoute.name,
          args: NotificationsRouteArgs(bloc: bloc, key: key),
@@ -751,13 +786,13 @@ class NotificationsRoute extends _i21.PageRouteInfo<NotificationsRouteArgs> {
 
   static const String name = 'NotificationsRoute';
 
-  static _i21.PageInfo page = _i21.PageInfo(
+  static _i22.PageInfo page = _i22.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<NotificationsRouteArgs>(
         orElse: () => const NotificationsRouteArgs(),
       );
-      return _i15.NotificationsScreen(bloc: args.bloc, key: args.key);
+      return _i16.NotificationsScreen(bloc: args.bloc, key: args.key);
     },
   );
 }
@@ -765,9 +800,9 @@ class NotificationsRoute extends _i21.PageRouteInfo<NotificationsRouteArgs> {
 class NotificationsRouteArgs {
   const NotificationsRouteArgs({this.bloc, this.key});
 
-  final _i35.NotificationBloc? bloc;
+  final _i37.NotificationBloc? bloc;
 
-  final _i22.Key? key;
+  final _i23.Key? key;
 
   @override
   String toString() {
@@ -786,12 +821,12 @@ class NotificationsRouteArgs {
 }
 
 /// generated route for
-/// [_i16.PaymentReturnScreen]
-class PaymentReturnRoute extends _i21.PageRouteInfo<PaymentReturnRouteArgs> {
+/// [_i17.PaymentReturnScreen]
+class PaymentReturnRoute extends _i22.PageRouteInfo<PaymentReturnRouteArgs> {
   PaymentReturnRoute({
-    _i22.Key? key,
+    _i23.Key? key,
     String? checkoutToken,
-    List<_i21.PageRouteInfo>? children,
+    List<_i22.PageRouteInfo>? children,
   }) : super(
          PaymentReturnRoute.name,
          args: PaymentReturnRouteArgs(key: key, checkoutToken: checkoutToken),
@@ -801,7 +836,7 @@ class PaymentReturnRoute extends _i21.PageRouteInfo<PaymentReturnRouteArgs> {
 
   static const String name = 'PaymentReturnRoute';
 
-  static _i21.PageInfo page = _i21.PageInfo(
+  static _i22.PageInfo page = _i22.PageInfo(
     name,
     builder: (data) {
       final queryParams = data.queryParams;
@@ -810,7 +845,7 @@ class PaymentReturnRoute extends _i21.PageRouteInfo<PaymentReturnRouteArgs> {
           checkoutToken: queryParams.optString('checkout'),
         ),
       );
-      return _i16.PaymentReturnScreen(
+      return _i17.PaymentReturnScreen(
         key: args.key,
         checkoutToken: args.checkoutToken,
       );
@@ -821,7 +856,7 @@ class PaymentReturnRoute extends _i21.PageRouteInfo<PaymentReturnRouteArgs> {
 class PaymentReturnRouteArgs {
   const PaymentReturnRouteArgs({this.key, this.checkoutToken});
 
-  final _i22.Key? key;
+  final _i23.Key? key;
 
   final String? checkoutToken;
 
@@ -842,13 +877,13 @@ class PaymentReturnRouteArgs {
 }
 
 /// generated route for
-/// [_i17.PersonalDetailsScreen]
+/// [_i18.PersonalDetailsScreen]
 class PersonalDetailsRoute
-    extends _i21.PageRouteInfo<PersonalDetailsRouteArgs> {
+    extends _i22.PageRouteInfo<PersonalDetailsRouteArgs> {
   PersonalDetailsRoute({
-    _i22.Key? key,
-    required _i36.ProfileBloc profileBloc,
-    List<_i21.PageRouteInfo>? children,
+    _i23.Key? key,
+    required _i38.ProfileBloc profileBloc,
+    List<_i22.PageRouteInfo>? children,
   }) : super(
          PersonalDetailsRoute.name,
          args: PersonalDetailsRouteArgs(key: key, profileBloc: profileBloc),
@@ -857,11 +892,11 @@ class PersonalDetailsRoute
 
   static const String name = 'PersonalDetailsRoute';
 
-  static _i21.PageInfo page = _i21.PageInfo(
+  static _i22.PageInfo page = _i22.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<PersonalDetailsRouteArgs>();
-      return _i17.PersonalDetailsScreen(
+      return _i18.PersonalDetailsScreen(
         key: args.key,
         profileBloc: args.profileBloc,
       );
@@ -872,9 +907,9 @@ class PersonalDetailsRoute
 class PersonalDetailsRouteArgs {
   const PersonalDetailsRouteArgs({this.key, required this.profileBloc});
 
-  final _i22.Key? key;
+  final _i23.Key? key;
 
-  final _i36.ProfileBloc profileBloc;
+  final _i38.ProfileBloc profileBloc;
 
   @override
   String toString() {
@@ -893,12 +928,12 @@ class PersonalDetailsRouteArgs {
 }
 
 /// generated route for
-/// [_i18.PhoneNumberOTPScreen]
-class PhoneNumberOTPRoute extends _i21.PageRouteInfo<PhoneNumberOTPRouteArgs> {
+/// [_i19.PhoneNumberOTPScreen]
+class PhoneNumberOTPRoute extends _i22.PageRouteInfo<PhoneNumberOTPRouteArgs> {
   PhoneNumberOTPRoute({
-    _i22.Key? key,
-    required _i37.LoginBloc loginBloc,
-    List<_i21.PageRouteInfo>? children,
+    _i23.Key? key,
+    required _i39.LoginBloc loginBloc,
+    List<_i22.PageRouteInfo>? children,
   }) : super(
          PhoneNumberOTPRoute.name,
          args: PhoneNumberOTPRouteArgs(key: key, loginBloc: loginBloc),
@@ -907,11 +942,11 @@ class PhoneNumberOTPRoute extends _i21.PageRouteInfo<PhoneNumberOTPRouteArgs> {
 
   static const String name = 'PhoneNumberOTPRoute';
 
-  static _i21.PageInfo page = _i21.PageInfo(
+  static _i22.PageInfo page = _i22.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<PhoneNumberOTPRouteArgs>();
-      return _i18.PhoneNumberOTPScreen(
+      return _i19.PhoneNumberOTPScreen(
         key: args.key,
         loginBloc: args.loginBloc,
       );
@@ -922,9 +957,9 @@ class PhoneNumberOTPRoute extends _i21.PageRouteInfo<PhoneNumberOTPRouteArgs> {
 class PhoneNumberOTPRouteArgs {
   const PhoneNumberOTPRouteArgs({this.key, required this.loginBloc});
 
-  final _i22.Key? key;
+  final _i23.Key? key;
 
-  final _i37.LoginBloc loginBloc;
+  final _i39.LoginBloc loginBloc;
 
   @override
   String toString() {
@@ -943,33 +978,33 @@ class PhoneNumberOTPRouteArgs {
 }
 
 /// generated route for
-/// [_i19.SettingsScreen]
-class SettingsRoute extends _i21.PageRouteInfo<void> {
-  const SettingsRoute({List<_i21.PageRouteInfo>? children})
+/// [_i20.SettingsScreen]
+class SettingsRoute extends _i22.PageRouteInfo<void> {
+  const SettingsRoute({List<_i22.PageRouteInfo>? children})
     : super(SettingsRoute.name, initialChildren: children);
 
   static const String name = 'SettingsRoute';
 
-  static _i21.PageInfo page = _i21.PageInfo(
+  static _i22.PageInfo page = _i22.PageInfo(
     name,
     builder: (data) {
-      return const _i19.SettingsScreen();
+      return const _i20.SettingsScreen();
     },
   );
 }
 
 /// generated route for
-/// [_i20.SslConnectionFailedScreen]
-class SslConnectionFailedRoute extends _i21.PageRouteInfo<void> {
-  const SslConnectionFailedRoute({List<_i21.PageRouteInfo>? children})
+/// [_i21.SslConnectionFailedScreen]
+class SslConnectionFailedRoute extends _i22.PageRouteInfo<void> {
+  const SslConnectionFailedRoute({List<_i22.PageRouteInfo>? children})
     : super(SslConnectionFailedRoute.name, initialChildren: children);
 
   static const String name = 'SslConnectionFailedRoute';
 
-  static _i21.PageInfo page = _i21.PageInfo(
+  static _i22.PageInfo page = _i22.PageInfo(
     name,
     builder: (data) {
-      return const _i20.SslConnectionFailedScreen();
+      return const _i21.SslConnectionFailedScreen();
     },
   );
 }

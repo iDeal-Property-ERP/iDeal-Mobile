@@ -21,7 +21,7 @@ class MockStackRouter extends Mock implements StackRouter {}
 
 void main() {
   setUpAll(() {
-    registerFallbackValue(LoginWithPhoneNumberRoute());
+    registerFallbackValue(const LoginWithPhoneNumberRoute());
   });
 
   group('Initial screen body', () {

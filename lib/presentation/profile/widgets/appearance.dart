@@ -6,27 +6,22 @@ import 'package:ideal_mobile/i18n/localization.dart';
 import 'package:ideal_mobile/routes.gr.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 
-class Notifications extends StatelessWidget {
-  const Notifications({super.key});
+class Appearance extends StatelessWidget {
+  const Appearance({super.key});
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(8),
-          topRight: Radius.circular(8),
-          bottomLeft: Radius.circular(8),
-          bottomRight: Radius.circular(8),
-        ),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
       ),
       tileColor: context.currentTheme.bgSurfaceBase2,
       leading: Icon(
-        TablerIcons.bell,
+        TablerIcons.palette,
         color: context.currentTheme.iconNeutralDefault,
       ),
       title: Text(
-        context.localization.notifications,
+        context.localization.appearance,
         style: AppTextStyles.h6SemiBold.copyWith(
           color: context.currentTheme.textNeutralPrimary,
         ),
@@ -35,7 +30,9 @@ class Notifications extends StatelessWidget {
         TablerIcons.chevron_right,
         color: context.currentTheme.iconNeutralDefault,
       ),
-      onTap: () => context.pushRoute(NotificationsRoute()),
+      onTap: () {
+        context.router.push(const ChangeThemeRoute());
+      },
     );
   }
 }

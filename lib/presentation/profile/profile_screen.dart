@@ -2,15 +2,21 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
+import 'package:ideal_mobile/presentation/home/bloc/home_bloc.dart';
+import 'package:ideal_mobile/presentation/home/bloc/home_event.dart';
 import 'package:ideal_mobile/presentation/profile/bloc/profile_bloc.dart';
 import 'package:ideal_mobile/presentation/profile/bloc/profile_event.dart';
 import 'package:ideal_mobile/presentation/profile/bloc/profile_state.dart';
-import 'package:ideal_mobile/presentation/profile/widgets/account_section.dart';
-import 'package:ideal_mobile/presentation/profile/widgets/activity_section.dart';
+import 'package:ideal_mobile/presentation/profile/widgets/app_version_text.dart';
+import 'package:ideal_mobile/presentation/profile/widgets/appearance.dart';
+import 'package:ideal_mobile/presentation/profile/widgets/divider.dart';
+import 'package:ideal_mobile/presentation/profile/widgets/help_and_support.dart';
+import 'package:ideal_mobile/presentation/profile/widgets/my_orders.dart';
+import 'package:ideal_mobile/presentation/profile/widgets/personal_details.dart';
 import 'package:ideal_mobile/presentation/profile/widgets/profile_details.dart';
+import 'package:ideal_mobile/presentation/profile/widgets/profile_section.dart';
 import 'package:ideal_mobile/presentation/profile/widgets/settings.dart';
 import 'package:ideal_mobile/presentation/profile/widgets/sign_out.dart';
-import 'package:ideal_mobile/presentation/profile/widgets/support_section.dart';
 import 'package:ideal_mobile/routes.gr.dart';
 import 'package:ideal_mobile/utils/extensions/build_context_ext.dart';
 import 'package:ideal_mobile/utils/extensions/primitive_types_extensions.dart';
@@ -50,7 +56,14 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> {
               current.profileError != null),
       listener: (context, state) async {
         if (state is SignOutState) {
-          await context.router.replaceAll([const HomeRoute()]);
+          try {
+            context.read<HomeBloc>().add(
+              const BottomNavBarIndexChangedEvent(index: 0),
+            );
+          } catch (_) {}
+          if (context.mounted) {
+            await context.router.replaceAll([const HomeRoute()]);
+          }
         } else if (state is SignOutErrorState) {
           _showSignOutError(state, context);
         } else if (state.profileError != null) {
@@ -72,23 +85,44 @@ class _ProfileScreenBodyState extends State<ProfileScreenBody> {
         body: CustomScrollView(
           slivers: [
             AppSliverTopBar.root(title: context.localization.profile),
-            const SliverPadding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               sliver: SliverToBoxAdapter(
                 child: Column(
+                  crossAxisAlignment: .start,
                   children: [
-                    ProfileDetails(),
-                    SizedBox(height: 40.0),
-                    AccountSection(),
-                    SizedBox(height: 24.0),
-                    ActivitySection(),
-                    SizedBox(height: 32.0),
-                    Settings(),
-                    SizedBox(height: 24.0),
-                    SupportSection(),
-                    SizedBox(height: 24.0),
-                    SignOut(),
-                    SizedBox(height: 32.0),
+                    const ProfileDetails(),
+                    const SizedBox(height: 32.0),
+                    ProfileSection(
+                      title: context.localization.activity,
+                      child: const MyOrders(),
+                    ),
+                    const SizedBox(height: 24.0),
+                    ProfileSection(
+                      title: context.localization.account,
+                      child: const PersonalDetails(),
+                    ),
+                    const SizedBox(height: 24.0),
+                    ProfileSection(
+                      title: context.localization.preferences,
+                      child: const Column(
+                        children: [
+                          Appearance(),
+                          ProfileItemsDivider(),
+                          Settings(),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24.0),
+                    ProfileSection(
+                      title: context.localization.support,
+                      child: const HelpAndSupport(),
+                    ),
+                    const SizedBox(height: 24.0),
+                    const SignOut(),
+                    const SizedBox(height: 24.0),
+                    const Center(child: AppVersionText()),
+                    const SizedBox(height: 32.0),
                   ],
                 ),
               ),

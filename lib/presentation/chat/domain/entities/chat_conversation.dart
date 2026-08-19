@@ -1,4 +1,3 @@
-import 'package:equatable/equatable.dart';
 import 'package:ideal_mobile/presentation/chat/domain/entities/chat_conversation_state.dart';
 import 'package:ideal_mobile/presentation/chat/domain/entities/chat_listing_ref.dart';
 

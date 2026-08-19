@@ -2,17 +2,19 @@ import 'dart:async';
 
 import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
-import 'package:ideal_mobile/presentation/listings/bloc/listings_bloc.dart';
-import 'package:ideal_mobile/presentation/listings/bloc/listings_event.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 import 'package:ideal_mobile/widgets/styling/app_radius.dart';
 
 class ListingsSearchBar extends StatefulWidget {
-  const ListingsSearchBar({super.key});
+  const ListingsSearchBar({super.key, this.query = '', this.onQueryChanged});
+
+  /// The active query. External changes (e.g. cleared filters) update the
+  /// field text without emitting another [onQueryChanged].
+  final String query;
+  final ValueChanged<String>? onQueryChanged;
 
   @override
   State<ListingsSearchBar> createState() => _ListingsSearchBarState();
@@ -30,8 +32,20 @@ class _ListingsSearchBarState extends State<ListingsSearchBar> {
   @override
   void initState() {
     super.initState();
+    if (widget.query.isNotEmpty) {
+      _searchController.text = widget.query;
+    }
     _searchController.addListener(_onSearchTextChanged);
     _debouncerSubscription = _debouncer.values.listen(_dispatchSearch);
+  }
+
+  @override
+  void didUpdateWidget(covariant ListingsSearchBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.query != oldWidget.query &&
+        widget.query != _searchController.text) {
+      _setTextWithoutDebouncing(widget.query);
+    }
   }
 
   @override
@@ -55,7 +69,7 @@ class _ListingsSearchBarState extends State<ListingsSearchBar> {
     if (query.isEmpty) {
       FocusManager.instance.primaryFocus?.unfocus();
     }
-    context.read<ListingsBloc>().add(SearchListingsEvent(query));
+    widget.onQueryChanged?.call(query);
   }
 
   void _setTextWithoutDebouncing(String value) {

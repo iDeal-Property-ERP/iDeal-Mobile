@@ -80,5 +80,5 @@ PaymentCheckout _checkout({required int bookingId}) => PaymentCheckout(
   provider: PaymentProvider.payme,
   status: PaymentCheckoutStatus.pending,
   checkoutUrl: Uri.parse('https://pay.test/checkout'),
-  expiresAt: DateTime(2026, 9, 1),
+  expiresAt: DateTime(2026, 9),
 );

@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:alchemist/alchemist.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_core_platform_interface/test.dart';
@@ -16,6 +19,7 @@ import 'package:ideal_mobile/presentation/profile/bloc/profile_state.dart';
 import 'package:ideal_mobile/presentation/profile/data/models/mobile_user_profile.dart';
 import 'package:ideal_mobile/presentation/profile/profile_screen.dart';
 import 'package:ideal_mobile/presentation/profile/widgets/profile_details.dart';
+import 'package:ideal_mobile/routes.gr.dart';
 import 'package:ideal_mobile/widgets/styling/app_theme_data.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:sizer/sizer.dart';
@@ -27,6 +31,10 @@ class MockHomeBloc extends MockBloc<HomeEvent, HomeState> implements HomeBloc {}
 
 class MockProfileBloc extends MockBloc<ProfileEvent, ProfileState>
     implements ProfileBloc {}
+
+class MockStackRouter extends Mock implements StackRouter {}
+
+class FakePageRouteInfo extends Fake implements PageRouteInfo<Object?> {}
 
 const testProfile = MobileUserProfile(
   id: 1,
@@ -42,6 +50,7 @@ const testProfile = MobileUserProfile(
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   setUpAll(() async {
+    registerFallbackValue(FakePageRouteInfo());
     setupFirebaseCoreMocks();
     await Firebase.initializeApp(
       name: 'tenantIdTest',
@@ -73,6 +82,53 @@ void main() {
       // assert
       expect(find.byType(ProfileScreenBody), findsOneWidget);
       expect(find.text('Sign out'), findsOneWidget);
+    });
+
+    testWidgets('redirects to home tab and replaces route on SignOutState', (
+      tester,
+    ) async {
+      final profileBloc = MockProfileBloc();
+      final homeBloc = MockHomeBloc();
+      final router = MockStackRouter();
+
+      final profileStreamController =
+          StreamController<ProfileState>.broadcast();
+      addTearDown(profileStreamController.close);
+
+      when(
+        () => profileBloc.state,
+      ).thenReturn(const ProfileState.test(profile: testProfile));
+      when(
+        () => profileBloc.stream,
+      ).thenAnswer((_) => profileStreamController.stream);
+      when(
+        () => homeBloc.state,
+      ).thenReturn(HomeState.test(currentBottomNavIndex: 3));
+      when(() => router.replaceAll(any())).thenAnswer((_) async {});
+
+      await tester.runWidgetTest(
+        providers: [
+          BlocProvider<ProfileBloc>.value(value: profileBloc),
+          BlocProvider<HomeBloc>.value(value: homeBloc),
+        ],
+        child: StackRouterScope(
+          controller: router,
+          stateHash: 0,
+          child: const ProfileScreenBody(),
+        ),
+      );
+
+      profileStreamController.add(SignOutState());
+      await tester.pumpAndSettle();
+
+      verify(
+        () => homeBloc.add(const BottomNavBarIndexChangedEvent(index: 0)),
+      ).called(1);
+      final routes =
+          verify(() => router.replaceAll(captureAny())).captured.single
+              as List<PageRouteInfo>;
+      expect(routes, hasLength(1));
+      expect(routes.first, isA<HomeRoute>());
     });
 
     testWidgets('uses the localized Profile root title', (tester) async {

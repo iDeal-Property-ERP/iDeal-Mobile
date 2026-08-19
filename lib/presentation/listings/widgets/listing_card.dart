@@ -6,9 +6,9 @@ import 'package:ideal_mobile/presentation/listings/domain/entities/listing_card.
     as domain;
 import 'package:ideal_mobile/presentation/listings/widgets/listing_card_image.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
+import 'package:ideal_mobile/widgets/images/prioritized_image_scheduler.dart';
 import 'package:ideal_mobile/widgets/styling/app_colors.dart';
 import 'package:ideal_mobile/widgets/styling/app_radius.dart';
-import 'package:ideal_mobile/widgets/images/prioritized_image_scheduler.dart';
 
 class ListingCardTile extends StatelessWidget {
   const ListingCardTile({

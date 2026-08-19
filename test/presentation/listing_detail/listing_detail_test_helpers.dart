@@ -1,10 +1,10 @@
 import 'package:bloc_test/bloc_test.dart';
-import 'package:mocktail/mocktail.dart';
+import 'package:ideal_mobile/presentation/booking/domain/entities/booking.dart';
 import 'package:ideal_mobile/presentation/listing_detail/bloc/listing_detail_bloc.dart';
 import 'package:ideal_mobile/presentation/listing_detail/bloc/listing_detail_event.dart';
 import 'package:ideal_mobile/presentation/listing_detail/bloc/listing_detail_state.dart';
 import 'package:ideal_mobile/presentation/listing_detail/domain/entities/listing_detail.dart';
-import 'package:ideal_mobile/presentation/booking/domain/entities/booking.dart';
+import 'package:mocktail/mocktail.dart';
 
 class MockListingDetailBloc
     extends MockBloc<ListingDetailEvent, ListingDetailState>
@@ -57,7 +57,7 @@ ListingDetail buildListingDetail({
     minimumStay: 3,
     priceIncludes: const ['Water', 'Wi-Fi'],
     responseTime: 'Usually within an hour',
-    createdAt: DateTime(2026, 1, 1),
+    createdAt: DateTime(2026),
     photos: List<ListingPhoto>.generate(
       5,
       (index) => ListingPhoto(

@@ -1,9 +1,16 @@
 import 'package:dio/dio.dart';
 import 'package:ideal_mobile/core/errors/exceptions.dart';
+import 'package:ideal_mobile/presentation/favorites/domain/entities/selected_sort.dart';
 import 'package:ideal_mobile/presentation/listings/data/models/listings_page_model.dart';
+import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filters.dart';
 
 abstract class FavoritesRemoteDataSource {
-  Future<ListingsPageModel> getFavorites({required int page, int perPage = 20});
+  Future<ListingsPageModel> getFavorites({
+    required int page,
+    int perPage = 20,
+    ListingFilters? filters,
+    SelectedSort? sort,
+  });
 
   Future<void> setFavorite({required int listingId, required bool isFavorite});
 }
@@ -19,12 +26,17 @@ class FavoritesRemoteDataSourceImpl implements FavoritesRemoteDataSource {
   Future<ListingsPageModel> getFavorites({
     required int page,
     int perPage = 20,
+    ListingFilters? filters,
+    SelectedSort? sort,
   }) async {
+    final queryParameters = {
+      'page': page,
+      'per_page': perPage,
+      ...?filters?.toQueryParameters(),
+      if (sort != null) 'sort': sort.wireValue,
+    };
     final response = await _request(
-      () => _dio.get(
-        _favoritesPath,
-        queryParameters: {'page': page, 'per_page': perPage},
-      ),
+      () => _dio.get(_favoritesPath, queryParameters: queryParameters),
     );
 
     final body = _bodyFromResponse(response);

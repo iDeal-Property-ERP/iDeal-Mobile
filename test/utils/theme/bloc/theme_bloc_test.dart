@@ -1,11 +1,11 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:ideal_mobile/services/theme_service.dart';
 import 'package:ideal_mobile/utils/theme/bloc/theme_bloc.dart';
 import 'package:ideal_mobile/utils/theme/bloc/theme_event.dart';
 import 'package:ideal_mobile/utils/theme/bloc/theme_state.dart';
+import 'package:mocktail/mocktail.dart';
 
 class MockThemeService extends Mock implements ThemeService {}
 

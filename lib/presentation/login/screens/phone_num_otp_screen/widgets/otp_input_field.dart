@@ -29,7 +29,7 @@ class _OTPCodeInputFieldState extends State<OTPCodeInputField>
   void initState() {
     _pinController = TextEditingController(
       text:
-          context.read<LoginBloc>().state.phoneNumberLoginState?.phoneOTPText ??
+          context.read<LoginBloc>().state.phoneNumberLoginState.phoneOTPText ??
           '',
     );
     super.initState();
@@ -54,7 +54,7 @@ class _OTPCodeInputFieldState extends State<OTPCodeInputField>
   Widget build(BuildContext context) {
     final String? errorText = context.select<LoginBloc, String?>(
       (LoginBloc bloc) =>
-          bloc.state.phoneNumberLoginState?.phoneOTPErrorMessage,
+          bloc.state.phoneNumberLoginState.phoneOTPErrorMessage,
     );
     return BlocListener<LoginBloc, LoginState>(
       listener: (context, state) {
@@ -65,12 +65,12 @@ class _OTPCodeInputFieldState extends State<OTPCodeInputField>
       child: PopScope(
         onPopInvokedWithResult: (didPop, result) {
           if (errorText.haveContent()) {
-            context.read<LoginBloc>().add(PhoneOtpErrorEvent(errorMessage: ''));
+            context.read<LoginBloc>().add(const PhoneOtpErrorEvent(errorMessage: ''));
           }
           if (_pinController.text.isNotEmpty) {
             _pinController.text = '';
             context.read<LoginBloc>().add(
-              PhoneOtpTextChangeEvent(phoneOtpText: ''),
+              const PhoneOtpTextChangeEvent(phoneOtpText: ''),
             );
           }
           final bool isResendOTPEnabled =
@@ -78,11 +78,11 @@ class _OTPCodeInputFieldState extends State<OTPCodeInputField>
                   .read<LoginBloc>()
                   .state
                   .phoneNumberLoginState
-                  ?.isResendOTPEnabled ??
+                  .isResendOTPEnabled ??
               false;
           if (isResendOTPEnabled) {
             context.read<LoginBloc>().add(
-              IsResendOTPEnabledEvent(isResendOTPEnabled: false),
+              const IsResendOTPEnabledEvent(isResendOTPEnabled: false),
             );
           }
         },
@@ -104,7 +104,7 @@ class _OTPCodeInputFieldState extends State<OTPCodeInputField>
             onChanged: (pin) {
               if (errorText.haveContent()) {
                 context.read<LoginBloc>().add(
-                  PhoneOtpErrorEvent(errorMessage: ''),
+                  const PhoneOtpErrorEvent(errorMessage: ''),
                 );
               }
               context.read<LoginBloc>().add(

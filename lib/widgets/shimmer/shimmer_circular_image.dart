@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:sizer/sizer.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
+import 'package:sizer/sizer.dart';
 
 class ShimmerCircularImage extends StatelessWidget {
   const ShimmerCircularImage({super.key, required this.size});

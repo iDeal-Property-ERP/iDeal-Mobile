@@ -22,7 +22,7 @@ void main() {
 
   test('maps a successful datasource result to Right', () async {
     when(
-      () => remote.getChatSummary(since: null),
+      () => remote.getChatSummary(),
     ).thenAnswer((_) async => ChatSummaryModel.fromJson(summaryJson()));
 
     final result = await repository.getChatSummary();
@@ -33,7 +33,7 @@ void main() {
 
   test('maps APIException to Left APIFailure', () async {
     when(
-      () => remote.getChatSummary(since: null),
+      () => remote.getChatSummary(),
     ).thenThrow(const APIException(message: 'Unavailable', statusCode: 503));
 
     final result = await repository.getChatSummary();

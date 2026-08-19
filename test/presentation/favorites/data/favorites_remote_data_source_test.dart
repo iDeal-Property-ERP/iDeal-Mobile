@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ideal_mobile/core/errors/exceptions.dart';
 import 'package:ideal_mobile/presentation/favorites/data/datasources/favorites_remote_data_source.dart';
+import 'package:ideal_mobile/presentation/favorites/domain/entities/selected_sort.dart';
+import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filters.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockDio extends Mock implements Dio {}
@@ -84,6 +86,53 @@ void main() {
       ).called(1);
     },
   );
+
+  test('GET forwards filters and sort as query parameters', () async {
+    when(
+      () => dio.get(
+        '/mobile/favorites/',
+        queryParameters: any(named: 'queryParameters'),
+      ),
+    ).thenAnswer(
+      (_) async => response('/mobile/favorites/', 200, {
+        'success': true,
+        'data': {
+          'count': 0,
+          'num_pages': 1,
+          'per_page': 20,
+          'page': {'number': 1, 'object_list': <dynamic>[]},
+        },
+      }),
+    );
+
+    await dataSource.getFavorites(
+      page: 1,
+      filters: const ListingFilters(
+        query: 'loft',
+        districtId: 3,
+        priceMin: 300,
+        priceMax: 800,
+        verified: true,
+      ),
+      sort: SelectedSort.priceAsc,
+    );
+
+    verify(
+      () => dio.get(
+        '/mobile/favorites/',
+        queryParameters: {
+          'page': 1,
+          'per_page': 20,
+          'q': 'loft',
+          'district_id': 3,
+          'price_min': 300.0,
+          'price_max': 800.0,
+          'verified': true,
+          'sort': 'price_asc',
+        },
+      ),
+    ).called(1);
+  });
 
   test(
     'PUT selects the listing favorite path and maps a successful envelope',

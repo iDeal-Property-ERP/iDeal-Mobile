@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
 import 'package:ideal_mobile/utils/date_time_picker_util.dart';
 import 'package:ideal_mobile/utils/extensions/date_time_extensions.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 

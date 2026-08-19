@@ -22,10 +22,10 @@ class SendOTPButton extends StatelessWidget {
       (bloc) => bloc.state.isLoading,
     );
     final String countryCode = context.select<LoginBloc, String>(
-      (bloc) => bloc.state.phoneNumberLoginState?.countryCode ?? '',
+      (bloc) => bloc.state.phoneNumberLoginState.countryCode ?? '',
     );
     final String phoneNumWithCountryCode = context.select<LoginBloc, String>(
-      (bloc) => bloc.state.phoneNumberLoginState?.phoneNumber ?? '',
+      (bloc) => bloc.state.phoneNumberLoginState.phoneNumber ?? '',
     );
     String phoneNumberOnly = '';
     if (countryCode.isNotEmpty &&

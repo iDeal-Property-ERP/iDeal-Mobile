@@ -3,13 +3,22 @@ import 'dart:async';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
 import 'package:ideal_mobile/presentation/favorites/bloc/selected_bloc.dart';
 import 'package:ideal_mobile/presentation/favorites/bloc/selected_event.dart';
 import 'package:ideal_mobile/presentation/favorites/bloc/selected_state.dart';
+import 'package:ideal_mobile/presentation/favorites/domain/entities/selected_sort.dart';
+import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filter_options.dart';
+import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filters.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/listing_card.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/listing_card_shimmer.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/listings_feed.dart';
+import 'package:ideal_mobile/presentation/listings/widgets/listings_filter_chips.dart';
+import 'package:ideal_mobile/presentation/listings/widgets/listings_filter_dropdown_chip.dart';
+import 'package:ideal_mobile/presentation/listings/widgets/listings_filter_sheet.dart';
+import 'package:ideal_mobile/presentation/listings/widgets/listings_search_bar.dart';
+import 'package:ideal_mobile/presentation/listings/widgets/map_pill_button.dart';
 import 'package:ideal_mobile/routes.gr.dart';
 import 'package:ideal_mobile/utils/extensions/build_context_ext.dart';
 import 'package:ideal_mobile/utils/responsive.dart';
@@ -29,6 +38,17 @@ String _selectedErrorMessage(BuildContext context, String message) {
       return context.localization.selected_page_out_of_date;
     default:
       return context.localization.selected_unknown_error;
+  }
+}
+
+String _selectedSortLabel(BuildContext context, SelectedSort sort) {
+  switch (sort) {
+    case SelectedSort.priceAsc:
+      return context.localization.selected_sort_price_asc;
+    case SelectedSort.priceDesc:
+      return context.localization.selected_sort_price_desc;
+    case SelectedSort.recent:
+      return context.localization.selected_sort_recent;
   }
 }
 
@@ -81,10 +101,46 @@ class _SelectedScreenState extends State<SelectedScreen> {
     await bloc.stream.firstWhere((state) => !state.isLoading);
   }
 
+  void _openMap() {
+    final bloc = context.read<SelectedBloc>();
+    final state = bloc.state;
+    context.router.push(
+      ListingDiscoveryMapRoute(
+        initialFilters: state.filters,
+        filterOptions: state.filterOptions,
+        seedListings: state.items,
+        favoritesOnly: true,
+        onFiltersChanged: (filters) {
+          if (bloc.isClosed || filters == bloc.state.filters) return;
+          bloc.add(ApplySelectedFiltersEvent(filters));
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocListener(
       listeners: [
+        BlocListener<SelectedBloc, SelectedState>(
+          listenWhen: (previous, current) =>
+              previous.removedListing != current.removedListing &&
+              current.removedListing != null,
+          listener: (context, state) {
+            final removed = state.removedListing;
+            if (removed == null) return;
+            context.showSnackBar(
+              context.localization.selected_removed,
+              action: SnackBarAction(
+                label: context.localization.selected_undo,
+                onPressed: () => context.read<SelectedBloc>().add(
+                  RestoreSelectedFavoriteEvent(removed.listingId),
+                ),
+              ),
+              duration: const Duration(seconds: 4),
+            );
+          },
+        ),
         BlocListener<SelectedBloc, SelectedState>(
           listenWhen: (previous, current) =>
               previous.favoriteMutationErrorMessage !=
@@ -115,14 +171,153 @@ class _SelectedScreenState extends State<SelectedScreen> {
           },
         ),
       ],
-      child: RefreshIndicator(
-        onRefresh: _onRefresh,
-        child: CustomScrollView(
-          controller: _scrollController,
-          physics: const AlwaysScrollableScrollPhysics(),
-          slivers: [
-            AppSliverTopBar.root(title: context.localization.selected),
-            const _SelectedBody(),
+      child: Stack(
+        children: [
+          RefreshIndicator(
+            onRefresh: _onRefresh,
+            child: CustomScrollView(
+              controller: _scrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                AppSliverTopBar.root(title: context.localization.selected),
+                const _SelectedSearchBarSection(),
+                const SliverToBoxAdapter(child: SizedBox(height: 4)),
+                const _SelectedFilterChipsSection(),
+                const SliverToBoxAdapter(child: SizedBox(height: 12)),
+                const _SelectedResultsHeader(),
+                const _SelectedBody(),
+              ],
+            ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 24,
+            child: BlocSelector<SelectedBloc, SelectedState, bool>(
+              selector: (state) => state.items.isNotEmpty,
+              builder: (context, hasItems) {
+                if (!hasItems) return const SizedBox.shrink();
+                return Center(child: MapPillButton(onTap: _openMap));
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SelectedSearchBarSection extends StatelessWidget {
+  const _SelectedSearchBarSection();
+
+  @override
+  Widget build(BuildContext context) {
+    final query = context.select<SelectedBloc, String>(
+      (bloc) => bloc.state.filters.query ?? '',
+    );
+
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+        child: ListingsSearchBar(
+          query: query,
+          onQueryChanged: (value) =>
+              context.read<SelectedBloc>().add(SearchSelectedEvent(value)),
+        ),
+      ),
+    );
+  }
+}
+
+class _SelectedFilterChipsSection extends StatelessWidget {
+  const _SelectedFilterChipsSection();
+
+  @override
+  Widget build(BuildContext context) {
+    final selection = context
+        .select<
+          SelectedBloc,
+          ({ListingFilters filters, ListingFilterOptions options})
+        >(
+          (bloc) =>
+              (filters: bloc.state.filters, options: bloc.state.filterOptions),
+        );
+
+    return SliverToBoxAdapter(
+      child: ListingsFilterChips(
+        filters: selection.filters,
+        filterOptions: selection.options,
+        onFiltersChanged: (filters) => context.read<SelectedBloc>().add(
+          ApplySelectedFiltersEvent(filters),
+        ),
+        onOpenFilters: () =>
+            _openFilters(context, selection.filters, selection.options),
+      ),
+    );
+  }
+
+  void _openFilters(
+    BuildContext context,
+    ListingFilters filters,
+    ListingFilterOptions options,
+  ) {
+    final bloc = context.read<SelectedBloc>();
+    showListingsFilterSheet(
+      context,
+      initialFilters: filters,
+      filterOptions: options,
+      applyToListingsBloc: false,
+    ).then((result) {
+      if (result == null || bloc.isClosed) return;
+      if (result == bloc.state.filters) return;
+      bloc.add(ApplySelectedFiltersEvent(result));
+    });
+  }
+}
+
+class _SelectedResultsHeader extends StatelessWidget {
+  const _SelectedResultsHeader();
+
+  @override
+  Widget build(BuildContext context) {
+    final status = context
+        .select<SelectedBloc, ({int count, SelectedSort sort})>(
+          (bloc) => (count: bloc.state.count, sort: bloc.state.sort),
+        );
+    final hasItems = context.select<SelectedBloc, bool>(
+      (bloc) => bloc.state.items.isNotEmpty,
+    );
+    if (!hasItems) return const SliverToBoxAdapter(child: SizedBox.shrink());
+
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                context.localization.selected_result_count(status.count),
+                style: AppTextStyles.p3Medium.copyWith(
+                  color: context.currentTheme.textNeutralSecondary,
+                ),
+              ),
+            ),
+            ListingsFilterDropdownChip<SelectedSort>(
+              label: context.localization.selected_sort,
+              options: [
+                for (final sort in SelectedSort.values)
+                  ListingsFilterDropdownOption<SelectedSort>(
+                    value: sort,
+                    label: _selectedSortLabel(context, sort),
+                  ),
+              ],
+              selected: status.sort,
+              selectedLabel: _selectedSortLabel(context, status.sort),
+              onSelected: (sort) {
+                if (sort == null) return;
+                context.read<SelectedBloc>().add(ChangeSelectedSortEvent(sort));
+              },
+            ),
           ],
         ),
       ),
@@ -159,6 +354,20 @@ class _SelectedBody extends StatelessWidget {
     }
 
     if (state.items.isEmpty) {
+      if (state.hasActiveFilters) {
+        return SliverFillRemaining(
+          hasScrollBody: false,
+          child: _SelectedStateView(
+            icon: Icons.search_off,
+            title: context.localization.selected_no_matches_title,
+            subtitle: context.localization.selected_no_matches_subtitle,
+            actionLabel: context.localization.selected_clear_filters,
+            onAction: () => context.read<SelectedBloc>().add(
+              const ClearSelectedFiltersEvent(),
+            ),
+          ),
+        );
+      }
       return SliverFillRemaining(
         hasScrollBody: false,
         child: _SelectedStateView(
@@ -251,7 +460,7 @@ class _SelectedBody extends StatelessWidget {
               ),
             ),
           ),
-        const SliverToBoxAdapter(child: SizedBox(height: 24)),
+        const SliverToBoxAdapter(child: SizedBox(height: 96)),
       ],
     );
   }

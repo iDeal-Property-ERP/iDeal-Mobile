@@ -14,7 +14,6 @@ class HeadingWelcomeWidget extends StatelessWidget {
         const SizedBox(height: 16),
         Row(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Image.asset(Assets.icons.loginLogo.path, width: 88, height: 88),
             const SizedBox(width: 12),

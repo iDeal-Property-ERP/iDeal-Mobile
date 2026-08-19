@@ -4,13 +4,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:sizer/sizer.dart';
 import 'package:ideal_mobile/i18n/app_localizations.dart';
 import 'package:ideal_mobile/utils/theme/bloc/theme_bloc.dart';
 import 'package:ideal_mobile/utils/theme/bloc/theme_event.dart';
 import 'package:ideal_mobile/utils/theme/bloc/theme_state.dart';
 import 'package:ideal_mobile/widgets/styling/app_theme_data.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:sizer/sizer.dart';
 
 import 'flutter_test_config.dart';
 

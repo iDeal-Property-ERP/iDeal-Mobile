@@ -139,6 +139,11 @@ void main() {
     );
 
     await pumpScreen(tester, bloc);
+    await tester.scrollUntilVisible(
+      find.byType(MaterialBanner),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
 
     expect(find.text('Loading more selected homes'), findsOneWidget);
     expect(

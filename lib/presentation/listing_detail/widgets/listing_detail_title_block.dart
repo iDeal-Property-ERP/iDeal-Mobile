@@ -59,7 +59,6 @@ class ListingDetailTitleBlock extends StatelessWidget {
         ),
         const SizedBox(height: 6),
         Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Icon(
               TablerIcons.map_pin,

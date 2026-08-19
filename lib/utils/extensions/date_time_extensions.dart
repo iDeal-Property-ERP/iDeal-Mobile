@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
-import 'package:intl/intl.dart';
 import 'package:ideal_mobile/constants/constants.dart';
 import 'package:ideal_mobile/i18n/app_localizations.dart';
 import 'package:ideal_mobile/utils/app_environment.dart';
+import 'package:intl/intl.dart';
 
 extension DateTimeExtensions on DateTime {
   String format({String pattern = kDefaultDateFormat}) {

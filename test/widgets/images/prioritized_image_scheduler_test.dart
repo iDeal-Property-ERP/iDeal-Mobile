@@ -8,7 +8,6 @@ void main() {
     final started = <String>[];
     final completions = <String, Completer<String>>{};
     final scheduler = PrioritizedImageDownloadScheduler<String>(
-      maxConcurrentDownloads: 3,
       downloader: (url) {
         started.add(url);
         return (completions[url] ??= Completer<String>()).future;

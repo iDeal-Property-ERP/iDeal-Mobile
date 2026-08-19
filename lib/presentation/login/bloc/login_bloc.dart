@@ -270,8 +270,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
   Future<void> _storeBackendTokens(AuthTokens tokens) async {
     final secureStorage = _secureStorageService;
-    if (secureStorage == null)
+    if (secureStorage == null) {
       throw StateError('Secure storage is not configured.');
+    }
 
     await secureStorage.writeAuthTokens(
       accessToken: tokens.accessToken,

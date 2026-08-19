@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
 import 'package:ideal_mobile/core/services/injection_container.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
@@ -10,6 +9,7 @@ import 'package:ideal_mobile/utils/extensions/build_context_ext.dart';
 import 'package:ideal_mobile/utils/image_picker_util.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 import 'package:ideal_mobile/widgets/styling/app_radius.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ChatAttachSheet {
   const ChatAttachSheet._();

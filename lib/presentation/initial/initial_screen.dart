@@ -53,7 +53,7 @@ class _InitialScreenState extends State<InitialScreen> {
     } else {
       final skippedLogin = await Prefs.getBool(PrefKeys.kSkippedLogin) ?? false;
       await _replace(
-        skippedLogin ? const HomeRoute() : LoginWithPhoneNumberRoute(),
+        skippedLogin ? const HomeRoute() : const LoginWithPhoneNumberRoute(),
       );
     }
   }

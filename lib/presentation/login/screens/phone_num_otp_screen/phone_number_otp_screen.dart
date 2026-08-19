@@ -30,9 +30,9 @@ class PhoneNumberOTPScreenState extends State<PhoneNumberOTPScreen> {
     return PopScope(
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) {
-          widget.loginBloc.add(PhoneOtpTextChangeEvent(phoneOtpText: ''));
+          widget.loginBloc.add(const PhoneOtpTextChangeEvent(phoneOtpText: ''));
           widget.loginBloc.add(
-            IsResendOTPEnabledEvent(isResendOTPEnabled: false),
+            const IsResendOTPEnabledEvent(isResendOTPEnabled: false),
           );
         }
       },

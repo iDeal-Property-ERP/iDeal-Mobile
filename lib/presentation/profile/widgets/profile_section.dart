@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
-import 'package:ideal_mobile/i18n/localization.dart';
-import 'package:ideal_mobile/presentation/profile/widgets/personal_details.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 
-class AccountSection extends StatelessWidget {
-  const AccountSection({super.key});
+class ProfileSection extends StatelessWidget {
+  const ProfileSection({super.key, required this.title, required this.child});
+
+  final String title;
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +14,7 @@ class AccountSection extends StatelessWidget {
       crossAxisAlignment: .start,
       children: [
         Text(
-          context.localization.account,
+          title,
           style: AppTextStyles.h6SemiBold.copyWith(
             color: context.currentTheme.textNeutralPrimary,
           ),
@@ -26,7 +27,7 @@ class AccountSection extends StatelessWidget {
             ),
             borderRadius: BorderRadius.circular(12.0),
           ),
-          child: Column(children: const [PersonalDetails()]),
+          child: child,
         ),
       ],
     );
