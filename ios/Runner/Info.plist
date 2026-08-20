@@ -60,6 +60,12 @@
 		</dict>
 		<key>LSRequiresIPhoneOS</key>
 		<true/>
+		<key>NSCameraUsageDescription</key>
+		<string>iDeal needs access to your camera to take photos for your profile and chat messages.</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>iDeal needs access to your photo library to select photos for your profile and chat messages.</string>
+		<key>NSPhotoLibraryAddUsageDescription</key>
+		<string>iDeal needs access to save photos to your photo library.</string>
 		<key>NSMicrophoneUsageDescription</key>
 		<string>This app needs access to your microphone to enable voice input for searching products.</string>
 		<key>NSLocationWhenInUseUsageDescription</key>
