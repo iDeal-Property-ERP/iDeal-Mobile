@@ -61,7 +61,7 @@ class MapkitService implements YandexMapLifecycle {
       await init.initMapkit(apiKey: apiKey);
       _available = true;
     } on Object catch (error, stackTrace) {
-      debugPrint('[MapKit] Initialization warning: $error\n$stackTrace');
+      print('[MapKit] Initialization error: $error\n$stackTrace');
     }
     return _available;
   }
