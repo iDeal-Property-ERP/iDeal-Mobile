@@ -8,6 +8,7 @@ import 'package:ideal_mobile/i18n/app_localizations.dart';
 import 'package:ideal_mobile/presentation/login/bloc/login_events.dart';
 import 'package:ideal_mobile/presentation/login/bloc/login_state.dart';
 import 'package:ideal_mobile/presentation/login/data/models/auth_tokens.dart';
+import 'package:ideal_mobile/presentation/login/domain/usecases/get_otp_methods.dart';
 import 'package:ideal_mobile/presentation/login/domain/usecases/request_otp.dart';
 import 'package:ideal_mobile/presentation/login/domain/usecases/verify_otp.dart';
 import 'package:ideal_mobile/presentation/login/models/login_details.dart';
@@ -24,11 +25,15 @@ Future<void> _initializeNotificationsFromService() =>
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   LoginBloc({
     required this.localizations,
+    GetOtpMethods? getOtpMethods,
     RequestOtp? requestOtp,
     VerifyOtp? verifyOtp,
     SecureStorageService? secureStorageService,
     Future<void> Function()? initializeNotifications,
-  }) : _requestOtp =
+  }) : _getOtpMethods =
+           getOtpMethods ??
+           (sl.isRegistered<GetOtpMethods>() ? sl<GetOtpMethods>() : null),
+       _requestOtp =
            requestOtp ??
            (sl.isRegistered<RequestOtp>() ? sl<RequestOtp>() : null),
        _verifyOtp =
@@ -63,6 +68,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   }
 
   final AppLocalizations localizations;
+  final GetOtpMethods? _getOtpMethods;
   final RequestOtp? _requestOtp;
   final VerifyOtp? _verifyOtp;
   final SecureStorageService? _secureStorageService;
@@ -196,13 +202,65 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       );
       return;
     }
-    add(const RequestPhoneOtpEvent());
+
+    final getOtpMethods = _getOtpMethods;
+    if (getOtpMethods == null) {
+      await _dispatchRequestOtp(emit);
+      return;
+    }
+
+    emit(state.copyWith(isLoading: true, clearError: true));
+    try {
+      final result = await getOtpMethods();
+      await result.fold((failure) async => emit(_failure(failure.message)), (
+        channels,
+      ) async {
+        if (channels.isEmpty) {
+          emit(_failure(localizations.opps_something_went_wrong));
+          return;
+        }
+
+        if (channels.length == 1) {
+          final singleChannel = channels.first;
+          emit(
+            state.copyWith(
+              phoneNumberLoginState: _phone.copyWith(
+                channel: singleChannel,
+                availableChannels: channels,
+              ),
+            ),
+          );
+          await _dispatchRequestOtp(emit);
+        } else {
+          emit(
+            PromptOtpChannelSelectionState(
+              state.copyWith(
+                isLoading: false,
+                phoneNumberLoginState: _phone.copyWith(
+                  availableChannels: channels,
+                ),
+              ),
+              channels: channels,
+            ),
+          );
+        }
+      });
+    } catch (error) {
+      emit(_failure(error.toString()));
+    }
   }
 
   Future<void> _onRequestOtp(
     RequestPhoneOtpEvent event,
     Emitter<LoginState> emit,
   ) async {
+    await _dispatchRequestOtp(emit, isResend: event.isResend);
+  }
+
+  Future<void> _dispatchRequestOtp(
+    Emitter<LoginState> emit, {
+    bool isResend = false,
+  }) async {
     final requestOtp = _requestOtp;
     if (requestOtp == null) {
       emit(_failure(localizations.opps_something_went_wrong));
@@ -216,7 +274,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       );
       result.fold((failure) => emit(_failure(failure.message)), (_) {
         emit(state.copyWith(isLoading: false));
-        if (!event.isResend) add(const NavigateToOtpEvent());
+        if (!isResend) add(const NavigateToOtpEvent());
       });
     } catch (error) {
       emit(_failure(error.toString()));

@@ -2,9 +2,14 @@ import 'dart:async';
 
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ideal_mobile/presentation/map/domain/entities/map_config.dart';
 import 'package:ideal_mobile/presentation/map/domain/property_map_models.dart';
+import 'package:ideal_mobile/presentation/map/domain/repositories/map_config_repository.dart';
 import 'package:ideal_mobile/presentation/map/services/property_map_provider_selector.dart';
 import 'package:ideal_mobile/services/mapkit_service.dart';
+import 'package:mocktail/mocktail.dart';
+
+class _MockMapConfigRepository extends Mock implements MapConfigRepository {}
 
 void main() {
   test('selects Yandex first when initialization succeeds', () async {
@@ -154,6 +159,55 @@ void main() {
       expect(selected, isNull);
     });
   });
+
+  test(
+    'automatic selector prioritizes Yandex when backend designates it',
+    () async {
+      final mockRepo = _MockMapConfigRepository();
+      when(() => mockRepo.getMapConfig()).thenAnswer(
+        (_) async => PropertyMapConfig(
+          provider: PropertyMapProvider.yandex,
+          token: 'dynamic-yandex-token',
+          fetchedAt: DateTime.now(),
+        ),
+      );
+
+      final yandex = _FakeYandexLifecycle(available: true);
+      final selector = PropertyMapProviderSelector.automatic(
+        mapConfigRepository: mockRepo,
+        mapkitService: yandex,
+        googleApiKey: () => 'static-google-key',
+      );
+
+      expect(await selector.select(), PropertyMapProvider.yandex);
+      expect(yandex.initializeCount, 1);
+      expect(yandex.lastApiKey, 'dynamic-yandex-token');
+    },
+  );
+
+  test(
+    'automatic selector prioritizes Google when backend designates it',
+    () async {
+      final mockRepo = _MockMapConfigRepository();
+      when(() => mockRepo.getMapConfig()).thenAnswer(
+        (_) async => PropertyMapConfig(
+          provider: PropertyMapProvider.google,
+          token: 'dynamic-google-token',
+          fetchedAt: DateTime.now(),
+        ),
+      );
+
+      final yandex = _FakeYandexLifecycle(available: true);
+      final selector = PropertyMapProviderSelector.automatic(
+        mapConfigRepository: mockRepo,
+        mapkitService: yandex,
+        googleApiKey: () => '',
+      );
+
+      expect(await selector.select(), PropertyMapProvider.google);
+      expect(yandex.initializeCount, 0);
+    },
+  );
 }
 
 class _FakeYandexLifecycle implements YandexMapLifecycle {
@@ -161,13 +215,15 @@ class _FakeYandexLifecycle implements YandexMapLifecycle {
 
   final bool available;
   int initializeCount = 0;
+  String? lastApiKey;
 
   @override
   bool get isAvailable => available;
 
   @override
-  Future<bool> initialize() async {
+  Future<bool> initialize({String? apiKey}) async {
     initializeCount++;
+    lastApiKey = apiKey;
     return available;
   }
 

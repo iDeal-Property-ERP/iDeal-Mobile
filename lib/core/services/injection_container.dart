@@ -26,8 +26,12 @@ import 'package:ideal_mobile/presentation/listings/domain/usecases/get_listings_
 import 'package:ideal_mobile/presentation/login/data/datasources/auth_remote_data_source.dart';
 import 'package:ideal_mobile/presentation/login/data/repositories/auth_repository_impl.dart';
 import 'package:ideal_mobile/presentation/login/domain/repositories/auth_repository.dart';
+import 'package:ideal_mobile/presentation/login/domain/usecases/get_otp_methods.dart';
 import 'package:ideal_mobile/presentation/login/domain/usecases/request_otp.dart';
 import 'package:ideal_mobile/presentation/login/domain/usecases/verify_otp.dart';
+import 'package:ideal_mobile/presentation/map/data/datasources/map_config_remote_data_source.dart';
+import 'package:ideal_mobile/presentation/map/data/repositories/map_config_repository_impl.dart';
+import 'package:ideal_mobile/presentation/map/domain/repositories/map_config_repository.dart';
 import 'package:ideal_mobile/presentation/notifications/notifications_injection.dart';
 import 'package:ideal_mobile/presentation/profile/data/datasources/profile_remote_data_source.dart';
 import 'package:ideal_mobile/presentation/profile/data/datasources/support_remote_data_source.dart';
@@ -42,6 +46,7 @@ import 'package:ideal_mobile/services/favorites_sync_service.dart';
 import 'package:ideal_mobile/services/legacy_favorites_cleanup_service.dart';
 import 'package:ideal_mobile/services/notification_service.dart';
 import 'package:ideal_mobile/services/performance_monitoring_service.dart';
+import 'package:ideal_mobile/services/recent_searches_service.dart';
 import 'package:ideal_mobile/services/secure_storage_service.dart';
 import 'package:ideal_mobile/shared_pref/prefs.dart';
 import 'package:ideal_mobile/utils/app_flavor_env.dart';
@@ -75,6 +80,9 @@ Future<void> configureDependencies({Dio? dio}) async {
     )
     ..registerLazySingleton<AuthRemoteDataSource>(
       () => AuthRemoteDataSourceImpl(sl<Dio>()),
+    )
+    ..registerLazySingleton<GetOtpMethods>(
+      () => GetOtpMethods(sl<AuthRepository>()),
     )
     ..registerLazySingleton<RequestOtp>(() => RequestOtp(sl<AuthRepository>()))
     ..registerLazySingleton<VerifyOtp>(() => VerifyOtp(sl<AuthRepository>()))
@@ -119,9 +127,19 @@ Future<void> configureDependencies({Dio? dio}) async {
     ..registerLazySingleton<ListingMapRepository>(
       () => ListingMapRepositoryImpl(sl<ListingMapRemoteDataSource>()),
     )
+    ..registerLazySingleton<MapConfigRemoteDataSource>(
+      () => MapConfigRemoteDataSourceImpl(sl<Dio>()),
+    )
+    ..registerLazySingleton<MapConfigRepository>(
+      () => MapConfigRepositoryImpl(
+        remoteDataSource: sl<MapConfigRemoteDataSource>(),
+        storageService: sl<SecureStorageService>(),
+      ),
+    )
     ..registerLazySingleton(FavoritesSyncService.new)
     ..registerLazySingleton(LegacyFavoritesCleanupService.new)
     ..registerLazySingleton(PerformanceMonitoringService.new)
+    ..registerLazySingleton(RecentSearchesService.new)
     ..registerLazySingleton<Dio>(() => pinnedDio);
 
   registerNotificationsDependencies(sl);
@@ -204,6 +222,7 @@ InterceptorsWrapper _authHeaderInterceptor() {
 
 bool _isTokenFreeEndpoint(String path) {
   const tokenFreeEndpoints = [
+    '/mobile/auth/methods/',
     '/mobile/auth/otp/request/',
     '/mobile/auth/otp/verify/',
     '/auth/refresh/',
@@ -235,6 +254,7 @@ InterceptorsWrapper _authErrorInterceptor() => InterceptorsWrapper(
     debugPrint('[AuthErrorInterceptor] status: $statusCode');
 
     final isOtpEndpoint =
+        dioError.requestOptions.uri.path.endsWith('/mobile/auth/methods/') ||
         dioError.requestOptions.uri.path.endsWith(
           '/mobile/auth/otp/request/',
         ) ||

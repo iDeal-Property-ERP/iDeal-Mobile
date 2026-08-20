@@ -72,7 +72,7 @@ class _FakeYandexLifecycle implements YandexMapLifecycle {
   bool get isAvailable => true;
 
   @override
-  Future<bool> initialize() async => true;
+  Future<bool> initialize({String? apiKey}) async => true;
 
   @override
   void start() {

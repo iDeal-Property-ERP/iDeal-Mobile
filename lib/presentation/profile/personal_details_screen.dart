@@ -136,8 +136,11 @@ class _PersonalDetailsFormState extends State<_PersonalDetailsForm> {
                   textInputAction: TextInputAction.done,
                   keyboardType: TextInputType.emailAddress,
                   maxLength: 254,
-                  validator: (value) =>
-                      isEmailValid(value?.trim() ?? '', context),
+                  validator: (value) {
+                    final trimmed = value?.trim() ?? '';
+                    if (trimmed.isEmpty) return null;
+                    return isEmailValid(trimmed, context);
+                  },
                 ),
                 _ProfileTextField(
                   label: context.localization.mobile_number,
@@ -170,7 +173,8 @@ class _PersonalDetailsFormState extends State<_PersonalDetailsForm> {
           clearLastName: _optionalValue(_lastNameController) == null,
           patronymic: _optionalValue(_patronymicController),
           clearPatronymic: _optionalValue(_patronymicController) == null,
-          email: _emailController.text.trim(),
+          email: _optionalValue(_emailController),
+          clearEmail: _optionalValue(_emailController) == null,
         ),
       ),
     );

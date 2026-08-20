@@ -75,3 +75,19 @@ class PhoneOtpAutoFilledState extends LoginState {
         errorMessage: state.errorMessage,
       );
 }
+
+class PromptOtpChannelSelectionState extends LoginState {
+  PromptOtpChannelSelectionState(LoginState state, {required this.channels})
+    : super(
+        phoneNumberLoginState: state.phoneNumberLoginState.copyWith(
+          availableChannels: channels,
+        ),
+        isLoading: false,
+        errorMessage: state.errorMessage,
+      );
+
+  final List<String> channels;
+
+  @override
+  List<Object?> get props => [...super.props, channels];
+}

@@ -11,6 +11,7 @@ class PhoneNumberLoginState with EquatableMixin {
   final bool isResendOTPEnabled;
   final int resendOTPTimeLeft;
   final String channel;
+  final List<String> availableChannels;
 
   PhoneNumberLoginState({
     required this.phoneInputHasFocus,
@@ -23,6 +24,7 @@ class PhoneNumberLoginState with EquatableMixin {
     required this.isResendOTPEnabled,
     required this.resendOTPTimeLeft,
     required this.channel,
+    this.availableChannels = const ['telegram', 'sms'],
   });
 
   factory PhoneNumberLoginState.initial() {
@@ -52,6 +54,7 @@ class PhoneNumberLoginState with EquatableMixin {
         isResendOTPEnabled: state.isResendOTPEnabled,
         resendOTPTimeLeft: state.resendOTPTimeLeft,
         channel: state.channel,
+        availableChannels: state.availableChannels,
       );
 
   PhoneNumberLoginState copyWith({
@@ -65,6 +68,7 @@ class PhoneNumberLoginState with EquatableMixin {
     bool? isResendOTPEnabled,
     int? resendOTPTimeLeft,
     String? channel,
+    List<String>? availableChannels,
     bool canSetOTPErrorMessageToNull = false,
   }) {
     return PhoneNumberLoginState(
@@ -80,6 +84,7 @@ class PhoneNumberLoginState with EquatableMixin {
       isResendOTPEnabled: isResendOTPEnabled ?? this.isResendOTPEnabled,
       resendOTPTimeLeft: resendOTPTimeLeft ?? this.resendOTPTimeLeft,
       channel: channel ?? this.channel,
+      availableChannels: availableChannels ?? this.availableChannels,
     );
   }
 
@@ -95,6 +100,7 @@ class PhoneNumberLoginState with EquatableMixin {
     bool? isResendOTPEnabled,
     int? resendOTPTimeLeft,
     String? channel,
+    List<String>? availableChannels,
   }) {
     return PhoneNumberLoginState(
       phoneInputHasFocus: phoneInputHasFocus ?? false,
@@ -108,6 +114,7 @@ class PhoneNumberLoginState with EquatableMixin {
       resendOTPTimeLeft:
           resendOTPTimeLeft ?? PhoneNumberOTPScreen.kResendOTPMaxSeconds,
       channel: channel ?? 'telegram',
+      availableChannels: availableChannels ?? const ['telegram', 'sms'],
     );
   }
 
@@ -123,5 +130,6 @@ class PhoneNumberLoginState with EquatableMixin {
     isResendOTPEnabled,
     resendOTPTimeLeft,
     channel,
+    availableChannels,
   ];
 }

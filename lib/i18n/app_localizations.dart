@@ -2620,6 +2620,12 @@ abstract class AppLocalizations {
   /// **'Search rentals'**
   String get listings_search_placeholder;
 
+  /// No description provided for @recent_searches.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent searches'**
+  String get recent_searches;
+
   /// No description provided for @listings_view_map.
   ///
   /// In en, this message translates to:

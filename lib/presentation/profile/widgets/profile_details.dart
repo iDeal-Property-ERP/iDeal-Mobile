@@ -20,7 +20,6 @@ class ProfileDetails extends StatelessWidget {
     final String fullName = state.name.isNotEmpty
         ? state.name
         : state.profile?.phone ?? '';
-    final String email = state.email;
     final String phone = state.profile?.phone ?? '';
     final bool showPhone = phone.isNotEmpty && phone != fullName;
 
@@ -45,14 +44,6 @@ class ProfileDetails extends StatelessWidget {
                 overflow: .ellipsis,
                 maxLines: 1,
               ),
-              Text(
-                email,
-                style: AppTextStyles.p3Medium.copyWith(
-                  color: context.currentTheme.textNeutralSecondary,
-                ),
-                overflow: .ellipsis,
-                maxLines: 1,
-              ),
               if (showPhone)
                 Text(
                   phone,
@@ -70,9 +61,8 @@ class ProfileDetails extends StatelessWidget {
   }
 }
 
-// Mirrors the loaded row's geometry (avatar 18.w, 30px name line, 21px email
-// and phone lines) so the sections below don't shift when profile data
-// arrives.
+// Mirrors the loaded row's geometry (avatar 18.w, 30px name line, 21px phone
+// line) so the sections below don't shift when profile data arrives.
 class _ProfileDetailsSkeleton extends StatelessWidget {
   const _ProfileDetailsSkeleton();
 
@@ -95,10 +85,6 @@ class _ProfileDetailsSkeleton extends StatelessWidget {
                 SizedBox(
                   height: 30.0,
                   child: Center(child: ShimmerText(width: textWidth * 0.4)),
-                ),
-                SizedBox(
-                  height: 21.0,
-                  child: Center(child: ShimmerText(width: textWidth * 0.55)),
                 ),
                 SizedBox(
                   height: 21.0,

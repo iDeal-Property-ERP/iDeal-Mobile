@@ -4,14 +4,12 @@ import 'package:ideal_mobile/constants/integration_test_keys.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
 import 'package:ideal_mobile/presentation/login/bloc/login_bloc.dart';
 import 'package:ideal_mobile/presentation/login/bloc/login_events.dart';
-import 'package:ideal_mobile/presentation/login/screens/login_with_phone_number/widgets/channel_picker_sheet.dart';
 import 'package:ideal_mobile/utils/extensions/build_context_ext.dart';
 import 'package:ideal_mobile/utils/internet_connectivity_helper.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 import 'package:ideal_mobile/widgets/app_button/app_button.dart';
 import 'package:ideal_mobile/widgets/app_button/enums/app_button_size_enum.dart';
 import 'package:ideal_mobile/widgets/app_button/enums/app_button_state_enum.dart';
-import 'package:ideal_mobile/widgets/styling/app_colors.dart';
 
 class SendOTPButton extends StatelessWidget {
   const SendOTPButton({super.key});
@@ -22,10 +20,10 @@ class SendOTPButton extends StatelessWidget {
       (bloc) => bloc.state.isLoading,
     );
     final String countryCode = context.select<LoginBloc, String>(
-      (bloc) => bloc.state.phoneNumberLoginState.countryCode ?? '',
+      (bloc) => bloc.state.phoneNumberLoginState.countryCode,
     );
     final String phoneNumWithCountryCode = context.select<LoginBloc, String>(
-      (bloc) => bloc.state.phoneNumberLoginState.phoneNumber ?? '',
+      (bloc) => bloc.state.phoneNumberLoginState.phoneNumber,
     );
     String phoneNumberOnly = '';
     if (countryCode.isNotEmpty &&
@@ -58,24 +56,9 @@ class SendOTPButton extends StatelessWidget {
         }
 
         if (phoneNumberOnly.isNotEmpty) {
-          final selectedChannel = await showModalBottomSheet<String>(
-            context: context,
-            isScrollControlled: true,
-            barrierColor: AppColors.black.withOpacity(0.72),
-            backgroundColor: context.currentTheme.bgSurfaceBase2,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-            ),
-            clipBehavior: Clip.antiAlias,
-            builder: (_) =>
-                ChannelPickerSheet(phoneNumber: phoneNumWithCountryCode),
+          context.read<LoginBloc>().add(
+            LoginWithPhoneNumEvent(phoneNumWithCountryCode),
           );
-
-          if (!context.mounted || selectedChannel == null) return;
-
-          final loginBloc = context.read<LoginBloc>();
-          loginBloc.add(SelectOtpChannelEvent(channel: selectedChannel));
-          loginBloc.add(LoginWithPhoneNumEvent(phoneNumWithCountryCode));
         }
       },
     );

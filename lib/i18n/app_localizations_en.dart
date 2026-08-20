@@ -1391,6 +1391,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get listings_search_placeholder => 'Search rentals';
 
   @override
+  String get recent_searches => 'Recent searches';
+
+  @override
   String get listings_view_map => 'Map';
 
   @override

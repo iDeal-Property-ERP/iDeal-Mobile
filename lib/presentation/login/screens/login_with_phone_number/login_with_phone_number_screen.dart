@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,6 +9,7 @@ import 'package:ideal_mobile/presentation/booking/booking_intent_service.dart';
 import 'package:ideal_mobile/presentation/login/bloc/login_bloc.dart';
 import 'package:ideal_mobile/presentation/login/bloc/login_events.dart';
 import 'package:ideal_mobile/presentation/login/bloc/login_state.dart';
+import 'package:ideal_mobile/presentation/login/screens/login_with_phone_number/widgets/channel_picker_sheet.dart';
 import 'package:ideal_mobile/presentation/login/screens/login_with_phone_number/widgets/heading_welcome_widget.dart';
 import 'package:ideal_mobile/presentation/login/screens/login_with_phone_number/widgets/language_selector.dart';
 import 'package:ideal_mobile/presentation/login/screens/login_with_phone_number/widgets/phone_number_text_field.dart';
@@ -17,6 +20,8 @@ import 'package:ideal_mobile/shared_pref/pref_keys.dart';
 import 'package:ideal_mobile/shared_pref/prefs.dart';
 import 'package:ideal_mobile/utils/extensions/build_context_ext.dart';
 import 'package:ideal_mobile/utils/extensions/primitive_types_extensions.dart';
+import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
+import 'package:ideal_mobile/widgets/styling/app_colors.dart';
 
 @RoutePage()
 class LoginWithPhoneNumberScreen extends StatefulWidget {
@@ -86,13 +91,49 @@ class LoginWithPhoneNumberBody extends StatelessWidget {
                       ),
                       child: Center(
                         child: BlocListener<LoginBloc, LoginState>(
-                          listener: (context, state) {
+                          listener: (context, state) async {
                             if (state is NavigateToOTPScreenState) {
-                              context.pushRoute(
-                                PhoneNumberOTPRoute(
-                                  loginBloc: context.read<LoginBloc>(),
+                              unawaited(
+                                context.pushRoute(
+                                  PhoneNumberOTPRoute(
+                                    loginBloc: context.read<LoginBloc>(),
+                                  ),
                                 ),
                               );
+                            } else if (state
+                                is PromptOtpChannelSelectionState) {
+                              final selectedChannel =
+                                  await showModalBottomSheet<String>(
+                                    context: context,
+                                    isScrollControlled: true,
+                                    barrierColor: AppColors.black.withOpacity(
+                                      0.72,
+                                    ),
+                                    backgroundColor:
+                                        context.currentTheme.bgSurfaceBase2,
+                                    shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.vertical(
+                                        top: Radius.circular(24),
+                                      ),
+                                    ),
+                                    clipBehavior: Clip.antiAlias,
+                                    builder: (_) => ChannelPickerSheet(
+                                      phoneNumber: state
+                                          .phoneNumberLoginState
+                                          .phoneNumber,
+                                      availableChannels: state.channels,
+                                    ),
+                                  );
+
+                              if (!context.mounted || selectedChannel == null) {
+                                return;
+                              }
+
+                              final loginBloc = context.read<LoginBloc>();
+                              loginBloc.add(
+                                SelectOtpChannelEvent(channel: selectedChannel),
+                              );
+                              loginBloc.add(const RequestPhoneOtpEvent());
                             }
                           },
                           child: const Column(

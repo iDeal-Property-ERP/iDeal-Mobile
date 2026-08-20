@@ -1417,6 +1417,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get listings_search_placeholder => 'Поиск аренды';
 
   @override
+  String get recent_searches => 'Недавние поиски';
+
+  @override
   String get listings_view_map => 'Карта';
 
   @override

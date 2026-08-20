@@ -7,7 +7,7 @@ import 'package:yandex_maps_mapkit/mapkit_factory.dart' as mapkit_factory;
 abstract interface class YandexMapLifecycle {
   bool get isAvailable;
 
-  Future<bool> initialize();
+  Future<bool> initialize({String? apiKey});
 
   void start();
 
@@ -46,19 +46,19 @@ class MapkitService implements YandexMapLifecycle {
   bool get isAvailable => _available;
 
   @override
-  Future<bool> initialize() {
-    return _initialization ??= _initialize();
+  Future<bool> initialize({String? apiKey}) {
+    final key = apiKey ?? AppConfig.yandexMapKitApiKey;
+    if (_available) return Future.value(true);
+    return _initialization ??= _initialize(key);
   }
 
-  Future<bool> _initialize() async {
-    if (AppEnvironment.isTestEnvironment ||
-        kIsWeb ||
-        AppConfig.yandexMapKitApiKey.isEmpty) {
+  Future<bool> _initialize(String apiKey) async {
+    if (AppEnvironment.isTestEnvironment || kIsWeb || apiKey.isEmpty) {
       return false;
     }
 
     try {
-      await init.initMapkit(apiKey: AppConfig.yandexMapKitApiKey);
+      await init.initMapkit(apiKey: apiKey);
       _available = true;
     } on Object catch (error, stackTrace) {
       debugPrint('[MapKit] Initialization warning: $error\n$stackTrace');

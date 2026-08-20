@@ -70,6 +70,11 @@ class AppConfig {
       ? dotenv.env['GOOGLE_MAPS_API_KEY']?.trim() ?? ''
       : '';
 
+  static String get mapObfuscationSecret => dotenv.isInitialized
+      ? dotenv.env['MAP_OBFUSCATION_SECRET']?.trim() ??
+            'iDeal-Secret-Map-Seed-2025'
+      : 'iDeal-Secret-Map-Seed-2025';
+
   static String getClarityProjectId() {
     switch (appFlavor) {
       case AppFlavor.local:

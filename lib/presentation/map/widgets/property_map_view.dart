@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
+import 'package:get_it/get_it.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
 import 'package:ideal_mobile/presentation/map/domain/property_map_models.dart';
+import 'package:ideal_mobile/presentation/map/domain/repositories/map_config_repository.dart';
 import 'package:ideal_mobile/presentation/map/services/property_map_provider_selector.dart';
 import 'package:ideal_mobile/presentation/map/widgets/providers/google_property_map.dart';
 import 'package:ideal_mobile/presentation/map/widgets/providers/yandex_property_map.dart';
@@ -32,6 +34,7 @@ class PropertyMapView extends StatefulWidget {
     this.controller,
     this.providerSelector,
     this.yandexLifecycle,
+    this.mapConfigRepository,
     this.providerViewBuilder,
     this.providerStartupTimeout = const Duration(seconds: 15),
     this.onProviderReady,
@@ -53,6 +56,7 @@ class PropertyMapView extends StatefulWidget {
   /// Injectable so tests and host screens do not depend on global SDK state.
   final PropertyMapProviderSelector? providerSelector;
   final YandexMapLifecycle? yandexLifecycle;
+  final MapConfigRepository? mapConfigRepository;
 
   /// Allows provider callbacks and failure paths to be tested without a
   /// platform view. Production callers normally leave this unset.
@@ -85,9 +89,22 @@ class _PropertyMapViewState extends State<PropertyMapView> {
   YandexMapLifecycle get _yandexLifecycle =>
       widget.yandexLifecycle ?? MapkitService.instance;
 
+  MapConfigRepository? get _mapConfigRepository {
+    if (widget.mapConfigRepository != null) {
+      return widget.mapConfigRepository;
+    }
+    if (GetIt.instance.isRegistered<MapConfigRepository>()) {
+      return GetIt.instance<MapConfigRepository>();
+    }
+    return null;
+  }
+
   PropertyMapProviderSelector get _providerSelector =>
       widget.providerSelector ??
-      PropertyMapProviderSelector.automatic(mapkitService: _yandexLifecycle);
+      PropertyMapProviderSelector.automatic(
+        mapkitService: _yandexLifecycle,
+        mapConfigRepository: _mapConfigRepository,
+      );
 
   @override
   void initState() {
@@ -99,7 +116,8 @@ class _PropertyMapViewState extends State<PropertyMapView> {
   void didUpdateWidget(PropertyMapView oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.providerSelector != widget.providerSelector ||
-        oldWidget.yandexLifecycle != widget.yandexLifecycle) {
+        oldWidget.yandexLifecycle != widget.yandexLifecycle ||
+        oldWidget.mapConfigRepository != widget.mapConfigRepository) {
       _failedProviders.clear();
       _provider = _selectProvider();
     }

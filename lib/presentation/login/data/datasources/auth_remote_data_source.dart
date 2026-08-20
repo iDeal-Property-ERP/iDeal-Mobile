@@ -4,6 +4,8 @@ import 'package:ideal_mobile/presentation/login/data/models/auth_tokens.dart';
 import 'package:ideal_mobile/utils/typedef.dart';
 
 mixin AuthRemoteDataSource {
+  Future<List<String>> getOtpMethods();
+
   Future<void> requestOtp({required String phone, required String channel});
 
   Future<AuthTokens> verifyOtp({required String phone, required String code});
@@ -13,6 +15,24 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   const AuthRemoteDataSourceImpl(this._dio);
 
   final Dio _dio;
+
+  @override
+  Future<List<String>> getOtpMethods() async {
+    final response = await _get('/mobile/auth/methods/');
+    final body = _ensureSuccessfulResponse(response);
+    final data = body['data'];
+    if (data is! Map) {
+      throw APIException(
+        message: 'Invalid methods response.',
+        statusCode: response.statusCode ?? 500,
+      );
+    }
+    final rawChannels = data['channels'];
+    if (rawChannels is! List) {
+      return const [];
+    }
+    return rawChannels.whereType<String>().toList();
+  }
 
   @override
   Future<void> requestOtp({
@@ -60,6 +80,28 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         path,
         data: data,
         options: Options(validateStatus: (_) => true),
+      );
+    } on DioException catch (error) {
+      throw APIException(
+        message:
+            _messageFromData(error.response?.data) ??
+            error.message ??
+            'Request failed.',
+        statusCode: error.response?.statusCode ?? 505,
+      );
+    } catch (error) {
+      throw APIException(message: error.toString(), statusCode: 505);
+    }
+  }
+
+  Future<Response<dynamic>> _get(String path) async {
+    try {
+      return await _dio.get(
+        path,
+        options: Options(
+          validateStatus: (_) => true,
+          headers: {'Cache-Control': 'no-cache, no-store'},
+        ),
       );
     } on DioException catch (error) {
       throw APIException(

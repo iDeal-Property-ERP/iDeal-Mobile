@@ -6,7 +6,7 @@ class MobileUserProfile extends Equatable {
     required this.firstName,
     required this.lastName,
     required this.patronymic,
-    required this.email,
+    this.email,
     required this.phone,
     required this.nationality,
     required this.avatarUrl,
@@ -16,7 +16,7 @@ class MobileUserProfile extends Equatable {
   final String firstName;
   final String? lastName;
   final String? patronymic;
-  final String email;
+  final String? email;
   final String? phone;
   final String? nationality;
   final String? avatarUrl;
@@ -29,9 +29,8 @@ class MobileUserProfile extends Equatable {
   factory MobileUserProfile.fromJson(Map<String, dynamic> json) {
     final id = json['id'];
     final firstName = json['first_name'];
-    final email = json['email'];
 
-    if (id is! int || firstName is! String || email is! String) {
+    if (id is! int || firstName is! String) {
       throw const FormatException('Profile details are incomplete.');
     }
 
@@ -40,7 +39,7 @@ class MobileUserProfile extends Equatable {
       firstName: firstName,
       lastName: _nullableString(json, 'last_name'),
       patronymic: _nullableString(json, 'patronymic'),
-      email: email,
+      email: _nullableString(json, 'email'),
       phone: _nullableString(json, 'phone'),
       nationality: _nullableString(json, 'nationality'),
       avatarUrl: _nullableString(json, 'avatar_url'),
@@ -71,6 +70,7 @@ class MobileUserProfile extends Equatable {
     String? patronymic,
     bool clearPatronymic = false,
     String? email,
+    bool clearEmail = false,
     String? nationality,
     bool clearNationality = false,
     String? avatarUrl,
@@ -81,7 +81,7 @@ class MobileUserProfile extends Equatable {
       firstName: firstName ?? this.firstName,
       lastName: clearLastName ? null : lastName ?? this.lastName,
       patronymic: clearPatronymic ? null : patronymic ?? this.patronymic,
-      email: email ?? this.email,
+      email: clearEmail ? null : email ?? this.email,
       phone: phone,
       nationality: clearNationality ? null : nationality ?? this.nationality,
       avatarUrl: clearAvatarUrl ? null : avatarUrl ?? this.avatarUrl,

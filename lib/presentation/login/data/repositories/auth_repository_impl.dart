@@ -12,6 +12,16 @@ class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource _remoteDataSource;
 
   @override
+  ResultFuture<List<String>> getOtpMethods() async {
+    try {
+      final methods = await _remoteDataSource.getOtpMethods();
+      return Right(methods);
+    } on APIException catch (error) {
+      return Left(APIFailure.fromException(error));
+    }
+  }
+
+  @override
   ResultVoid requestOtp({
     required String phone,
     required String channel,

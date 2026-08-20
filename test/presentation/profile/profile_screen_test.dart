@@ -169,6 +169,50 @@ void main() {
       }
     });
 
+    testWidgets('ProfileDetails renders name and phone but not email', (
+      tester,
+    ) async {
+      final profileBloc = MockProfileBloc();
+      when(
+        () => profileBloc.state,
+      ).thenReturn(const ProfileState.test(profile: testProfile));
+
+      await tester.runWidgetTest(
+        providers: [BlocProvider<ProfileBloc>.value(value: profileBloc)],
+        child: const ProfileDetails(),
+      );
+
+      expect(find.text('Test User'), findsOneWidget);
+      expect(find.text('+998901234567'), findsOneWidget);
+      expect(find.text('test@example.com'), findsNothing);
+    });
+
+    testWidgets('ProfileDetails renders phone when name is empty', (
+      tester,
+    ) async {
+      final profileBloc = MockProfileBloc();
+      when(() => profileBloc.state).thenReturn(
+        const ProfileState.test(
+          profile: MobileUserProfile(
+            id: 1,
+            firstName: '',
+            lastName: null,
+            patronymic: null,
+            phone: '+998901234567',
+            nationality: null,
+            avatarUrl: null,
+          ),
+        ),
+      );
+
+      await tester.runWidgetTest(
+        providers: [BlocProvider<ProfileBloc>.value(value: profileBloc)],
+        child: const ProfileDetails(),
+      );
+
+      expect(find.text('+998901234567'), findsOneWidget);
+    });
+
     // Golden tests
     testExecutable(() {
       group('Profile Page UI test', () {

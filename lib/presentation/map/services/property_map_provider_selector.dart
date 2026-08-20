@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:ideal_mobile/presentation/map/domain/entities/map_config.dart';
 import 'package:ideal_mobile/presentation/map/domain/property_map_models.dart';
+import 'package:ideal_mobile/presentation/map/domain/repositories/map_config_repository.dart';
 import 'package:ideal_mobile/services/mapkit_service.dart';
 import 'package:ideal_mobile/utils/app_flavor_env.dart';
 
@@ -26,6 +28,7 @@ class PropertyMapProviderSelector {
        assert(selectionTimeout > Duration.zero);
 
   factory PropertyMapProviderSelector.automatic({
+    MapConfigRepository? mapConfigRepository,
     YandexMapLifecycle? mapkitService,
     String Function()? googleApiKey,
     Duration probeTimeout = const Duration(seconds: 4),
@@ -33,15 +36,68 @@ class PropertyMapProviderSelector {
   }) {
     final yandex = mapkitService ?? MapkitService.instance;
     final readGoogleApiKey = googleApiKey ?? () => AppConfig.googleMapsApiKey;
+
+    if (mapConfigRepository != null) {
+      return PropertyMapProviderSelector._dynamic(
+        mapConfigRepository: mapConfigRepository,
+        mapkitService: yandex,
+        readGoogleApiKey: readGoogleApiKey,
+        probeTimeout: probeTimeout,
+        selectionTimeout: selectionTimeout,
+      );
+    }
+
     return PropertyMapProviderSelector(
       candidates: [
         PropertyMapProviderCandidate(
           provider: PropertyMapProvider.yandex,
-          probe: yandex.initialize,
+          probe: () => yandex.initialize(),
         ),
         PropertyMapProviderCandidate(
           provider: PropertyMapProvider.google,
           probe: () async => readGoogleApiKey().trim().isNotEmpty,
+        ),
+      ],
+      probeTimeout: probeTimeout,
+      selectionTimeout: selectionTimeout,
+    );
+  }
+
+  factory PropertyMapProviderSelector._dynamic({
+    required MapConfigRepository mapConfigRepository,
+    required YandexMapLifecycle mapkitService,
+    required String Function() readGoogleApiKey,
+    required Duration probeTimeout,
+    required Duration selectionTimeout,
+  }) {
+    PropertyMapConfig? configCache;
+
+    Future<PropertyMapConfig> loadConfig() async {
+      return configCache ??= await mapConfigRepository.getMapConfig();
+    }
+
+    return PropertyMapProviderSelector(
+      candidates: [
+        PropertyMapProviderCandidate(
+          provider: PropertyMapProvider.yandex,
+          probe: () async {
+            final config = await loadConfig();
+            if (config.provider == PropertyMapProvider.yandex) {
+              return mapkitService.initialize(apiKey: config.token);
+            }
+            return false;
+          },
+        ),
+        PropertyMapProviderCandidate(
+          provider: PropertyMapProvider.google,
+          probe: () async {
+            final config = await loadConfig();
+            if (config.provider == PropertyMapProvider.google) {
+              return config.token.trim().isNotEmpty ||
+                  readGoogleApiKey().trim().isNotEmpty;
+            }
+            return false;
+          },
         ),
       ],
       probeTimeout: probeTimeout,

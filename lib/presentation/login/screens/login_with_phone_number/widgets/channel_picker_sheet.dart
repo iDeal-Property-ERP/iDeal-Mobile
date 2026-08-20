@@ -7,15 +7,23 @@ import 'package:ideal_mobile/widgets/app_button/enums/app_button_size_enum.dart'
 import 'package:ideal_mobile/widgets/app_button/enums/app_button_style_enum.dart';
 
 class ChannelPickerSheet extends StatelessWidget {
-  const ChannelPickerSheet({required this.phoneNumber, super.key});
+  const ChannelPickerSheet({
+    required this.phoneNumber,
+    this.availableChannels = const [telegramChannel, smsChannel],
+    super.key,
+  });
 
   static const telegramChannel = 'telegram';
   static const smsChannel = 'sms';
 
   final String phoneNumber;
+  final List<String> availableChannels;
 
   @override
   Widget build(BuildContext context) {
+    final hasTelegram = availableChannels.contains(telegramChannel);
+    final hasSms = availableChannels.contains(smsChannel);
+
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
@@ -58,21 +66,28 @@ class ChannelPickerSheet extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
-            AppButton(
-              label: context.localization.otp_channel_telegram,
-              foregroundColor: context.currentTheme.textNeutralWhite,
-              shouldSetFullWidth: true,
-              size: AppButtonSize.large,
-              onPressed: () => Navigator.of(context).pop(telegramChannel),
-            ),
-            const SizedBox(height: 12),
-            AppButton(
-              label: context.localization.otp_channel_sms,
-              style: AppButtonStyle.outline,
-              shouldSetFullWidth: true,
-              size: AppButtonSize.large,
-              onPressed: () => Navigator.of(context).pop(smsChannel),
-            ),
+            if (hasTelegram)
+              AppButton(
+                label: context.localization.otp_channel_telegram,
+                foregroundColor: context.currentTheme.textNeutralWhite,
+                shouldSetFullWidth: true,
+                size: AppButtonSize.large,
+                onPressed: () => Navigator.of(context).pop(telegramChannel),
+              ),
+            if (hasTelegram && hasSms) const SizedBox(height: 12),
+            if (hasSms)
+              AppButton(
+                label: context.localization.otp_channel_sms,
+                style: hasTelegram
+                    ? AppButtonStyle.outline
+                    : AppButtonStyle.primary,
+                foregroundColor: hasTelegram
+                    ? null
+                    : context.currentTheme.textNeutralWhite,
+                shouldSetFullWidth: true,
+                size: AppButtonSize.large,
+                onPressed: () => Navigator.of(context).pop(smsChannel),
+              ),
           ],
         ),
       ),
