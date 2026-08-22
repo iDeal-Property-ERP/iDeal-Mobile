@@ -26,6 +26,7 @@ import 'package:ideal_mobile/presentation/listings/bloc/listings_bloc.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_event.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_state.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_card.dart';
+import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filters.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/listing_card_shimmer.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/listings_empty_view.dart';
 import 'package:ideal_mobile/presentation/notifications/bloc/notification_badge_cubit.dart';
@@ -536,7 +537,7 @@ void main() {
       },
     );
 
-    testWidgets('renders recommendation rails when rails contain items', (
+    testWidgets('renders recommended rail when recommendations contain items', (
       tester,
     ) async {
       tester.view.physicalSize = const Size(411, 1400);
@@ -547,12 +548,8 @@ void main() {
       when(() => listingsBloc.state).thenReturn(
         ListingsState.test(
           items: [_homeTestListing(1)],
-          recentSearchRailListings: [
-            _homeTestListing(10, title: 'Recent Home'),
-          ],
-          recentSearchContext: 'Yunusobod',
-          selectedInspiredRailListings: [
-            _homeTestListing(20, title: 'Selected Home'),
+          recommendedListings: [
+            _homeTestListing(10, title: 'Recommended Home'),
           ],
           hasLoadedListings: true,
           hasReachedMax: true,
@@ -564,15 +561,42 @@ void main() {
         child: const Scaffold(body: HomeScreenBody()),
       );
 
-      expect(find.text('From your recent searches'), findsOneWidget);
-      expect(
-        find.text('Based on Yunusobod and your last filters'),
-        findsOneWidget,
-      );
-      expect(find.text('Recent Home'), findsOneWidget);
-      expect(find.text('From selected'), findsOneWidget);
-      expect(find.text('Selected Home'), findsOneWidget);
+      expect(find.text('Recommended for you'), findsOneWidget);
+      expect(find.text('Recommended Home'), findsOneWidget);
+      expect(find.text('Highly rated homes'), findsOneWidget);
     });
+
+    testWidgets(
+      'hides recommendation rail and highly rated heading when query or filter is active',
+      (tester) async {
+        final listingsBloc = MockListingsBloc();
+        when(() => listingsBloc.state).thenReturn(
+          ListingsState.test(
+            searchQuery: 'Yunusobod',
+            filters: const ListingFilters(
+              query: 'Yunusobod',
+              sort: 'score_desc',
+            ),
+            items: [_homeTestListing(1)],
+            recommendedListings: [
+              _homeTestListing(10, title: 'Recommended Home'),
+            ],
+            hasLoadedListings: true,
+            hasReachedMax: true,
+          ),
+        );
+
+        await tester.runWidgetTest(
+          providers: [BlocProvider<ListingsBloc>.value(value: listingsBloc)],
+          child: const Scaffold(body: HomeScreenBody()),
+        );
+
+        expect(find.text('Recommended for you'), findsNothing);
+        expect(find.text('Recommended Home'), findsNothing);
+        expect(find.text('Highly rated homes'), findsNothing);
+        expect(find.text('Listing 1'), findsOneWidget);
+      },
+    );
 
     // Golden test cases
     testExecutable(() {

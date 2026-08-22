@@ -1394,6 +1394,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get home_heading => 'Find your next home';
 
   @override
+  String get home_recommended_heading => 'Recommended for you';
+
+  @override
   String get home_recent_search_heading => 'From your recent searches';
 
   @override

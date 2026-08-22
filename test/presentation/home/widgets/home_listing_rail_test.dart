@@ -84,5 +84,23 @@ void main() {
       await tester.tap(find.byIcon(TablerIcons.heart).first);
       expect(toggledFavoriteId, 1);
     });
+
+    testWidgets('renders title without subtitle when contextSubtitle is null', (
+      tester,
+    ) async {
+      final items = [testListing(1, title: 'Sunny flat')];
+
+      await tester.runWidgetTest(
+        child: HomeListingRail(
+          title: 'Recommended for you',
+          listings: items,
+          onListingTap: (_) {},
+          onFavoriteToggle: (_) {},
+        ),
+      );
+
+      expect(find.text('Recommended for you'), findsOneWidget);
+      expect(find.text('Sunny flat'), findsOneWidget);
+    });
   });
 }

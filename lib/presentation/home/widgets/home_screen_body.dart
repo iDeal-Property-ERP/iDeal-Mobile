@@ -9,7 +9,6 @@ import 'package:ideal_mobile/constants/integration_test_keys.dart';
 import 'package:ideal_mobile/core/services/injection_container.dart';
 import 'package:ideal_mobile/gen/assets.gen.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
-import 'package:ideal_mobile/presentation/favorites/bloc/selected_bloc.dart';
 import 'package:ideal_mobile/presentation/home/widgets/home_listing_rail.dart';
 import 'package:ideal_mobile/presentation/home/widgets/home_search_sheet.dart';
 import 'package:ideal_mobile/presentation/home/widgets/tariff_filter_sheet.dart';
@@ -25,7 +24,6 @@ import 'package:ideal_mobile/presentation/listings/widgets/listings_filter_sheet
 import 'package:ideal_mobile/presentation/listings/widgets/map_pill_button.dart';
 import 'package:ideal_mobile/presentation/notifications/bloc/notification_badge_cubit.dart';
 import 'package:ideal_mobile/routes.gr.dart';
-import 'package:ideal_mobile/services/recent_searches_service.dart';
 import 'package:ideal_mobile/utils/extensions/build_context_ext.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 import 'package:ideal_mobile/widgets/app_top_bar.dart';
@@ -48,7 +46,7 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _loadRails());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadRecommendations());
   }
 
   @override
@@ -59,29 +57,8 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
     super.dispose();
   }
 
-  Future<void> _loadRails() async {
-    final recentSearchesService = sl.isRegistered<RecentSearchesService>()
-        ? sl<RecentSearchesService>()
-        : RecentSearchesService();
-    final recentSearches = await recentSearchesService.getRecentSearches();
-    final topSearch = recentSearches.isNotEmpty ? recentSearches.first : null;
-
-    List<int> favoriteIds = const [];
-    try {
-      final selectedBloc = context.read<SelectedBloc>();
-      favoriteIds = selectedBloc.state.items.map((i) => i.id).toList();
-    } catch (_) {
-      // SelectedBloc not in tree in isolated widget tests
-    }
-
-    if (mounted) {
-      context.read<ListingsBloc>().add(
-        LoadHomeRailsEvent(
-          recentSearchQuery: topSearch,
-          favoriteListingIds: favoriteIds,
-        ),
-      );
-    }
+  void _loadRecommendations() {
+    context.read<ListingsBloc>().add(const LoadHomeRecommendationsEvent());
   }
 
   void _onScroll() {
@@ -104,7 +81,7 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
 
   Future<void> _onRefresh() async {
     context.read<ListingsBloc>().add(const LoadListingsEvent());
-    await _loadRails();
+    _loadRecommendations();
   }
 
   Future<void> _openSearchSheet(String currentQuery) async {
@@ -114,7 +91,6 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
     );
     if (query != null && mounted) {
       context.read<ListingsBloc>().add(SearchListingsEvent(query));
-      unawaited(_loadRails());
     }
   }
 
@@ -306,27 +282,20 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
                         ),
                         BlocBuilder<ListingsBloc, ListingsState>(
                           builder: (context, state) {
-                            final hasRecent =
-                                state.recentSearchRailListings.isNotEmpty;
-                            if (!hasRecent) {
+                            if (!state.isBaseline ||
+                                state.recommendedListings.isEmpty) {
                               return const SliverToBoxAdapter(
                                 child: SizedBox.shrink(),
                               );
                             }
-                            final recentContext = state.recentSearchContext;
-                            final subtitle = recentContext != null
-                                ? context.localization
-                                      .home_recent_search_context(recentContext)
-                                : null;
                             return SliverToBoxAdapter(
                               child: Padding(
                                 padding: const EdgeInsets.only(top: 20),
                                 child: HomeListingRail(
                                   title: context
                                       .localization
-                                      .home_recent_search_heading,
-                                  contextSubtitle: subtitle,
-                                  listings: state.recentSearchRailListings,
+                                      .home_recommended_heading,
+                                  listings: state.recommendedListings,
                                   onListingTap: (listing) =>
                                       context.router.push(
                                         ListingDetailRoute(
@@ -344,50 +313,32 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
                         ),
                         BlocBuilder<ListingsBloc, ListingsState>(
                           builder: (context, state) {
-                            final hasSelected =
-                                state.selectedInspiredRailListings.isNotEmpty;
-                            if (!hasSelected) {
+                            if (!state.isBaseline) {
                               return const SliverToBoxAdapter(
-                                child: SizedBox.shrink(),
+                                child: SizedBox(height: 16),
                               );
                             }
                             return SliverToBoxAdapter(
                               child: Padding(
-                                padding: const EdgeInsets.only(top: 20),
-                                child: HomeListingRail(
-                                  title: context
+                                padding: const EdgeInsets.fromLTRB(
+                                  16,
+                                  20,
+                                  16,
+                                  10,
+                                ),
+                                child: Text(
+                                  context
                                       .localization
-                                      .home_selected_heading,
-                                  contextSubtitle: context
-                                      .localization
-                                      .home_selected_context,
-                                  listings: state.selectedInspiredRailListings,
-                                  onListingTap: (listing) =>
-                                      context.router.push(
-                                        ListingDetailRoute(
-                                          listingId: listing.id,
-                                          initialListing: listing,
-                                        ),
-                                      ),
-                                  onFavoriteToggle: (id) => context
-                                      .read<ListingsBloc>()
-                                      .add(ToggleFavoriteEvent(id)),
+                                      .home_highly_rated_heading,
+                                  style: AppTextStyles.h2Bold.copyWith(
+                                    color:
+                                        context.currentTheme.textNeutralPrimary,
+                                    letterSpacing: -0.5,
+                                  ),
                                 ),
                               ),
                             );
                           },
-                        ),
-                        SliverToBoxAdapter(
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(16, 20, 16, 10),
-                            child: Text(
-                              context.localization.home_highly_rated_heading,
-                              style: AppTextStyles.h2Bold.copyWith(
-                                color: context.currentTheme.textNeutralPrimary,
-                                letterSpacing: -0.5,
-                              ),
-                            ),
-                          ),
                         ),
                         const _ListingsFeedSection(),
                         const SliverToBoxAdapter(child: SizedBox(height: 96)),

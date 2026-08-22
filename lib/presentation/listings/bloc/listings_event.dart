@@ -51,6 +51,13 @@ class LoadFilterOptionsEvent extends ListingsEvent {
   List<Object> get props => [];
 }
 
+class LoadHomeRecommendationsEvent extends ListingsEvent {
+  const LoadHomeRecommendationsEvent();
+
+  @override
+  List<Object> get props => [];
+}
+
 class LoadHomeRailsEvent extends ListingsEvent {
   const LoadHomeRailsEvent({
     this.recentSearchQuery,

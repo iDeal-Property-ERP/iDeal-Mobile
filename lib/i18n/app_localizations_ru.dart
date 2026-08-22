@@ -1420,6 +1420,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get home_heading => 'Найдите свой следующий дом';
 
   @override
+  String get home_recommended_heading => 'Рекомендуем для вас';
+
+  @override
   String get home_recent_search_heading => 'На основе недавних поисков';
 
   @override

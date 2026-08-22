@@ -460,6 +460,7 @@
   "listings_chip_premium": "Премиум",
   "listings_search_placeholder": "Поиск аренды",
   "home_heading": "Найдите свой следующий дом",
+  "home_recommended_heading": "Рекомендуем для вас",
   "home_recent_search_heading": "На основе недавних поисков",
   "home_recent_search_context": "На основе запроса «{query}» и ваших фильтров",
   "@home_recent_search_context": {

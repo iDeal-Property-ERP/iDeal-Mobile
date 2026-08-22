@@ -460,6 +460,7 @@
   "listings_chip_premium": "Premium",
   "listings_search_placeholder": "Ijara qidirish",
   "home_heading": "Keyingi uyingizni toping",
+  "home_recommended_heading": "Siz uchun tavsiyalar",
   "home_recent_search_heading": "Oxirgi qidiruvlaringiz asosida",
   "home_recent_search_context": "{query} va oxirgi filtrlaringiz asosida",
   "@home_recent_search_context": {

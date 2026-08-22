@@ -23,6 +23,9 @@ import 'package:ideal_mobile/presentation/listings/domain/usecases/get_listing_f
 import 'package:ideal_mobile/presentation/listings/domain/usecases/get_listing_filter_options_cached.dart';
 import 'package:ideal_mobile/presentation/listings/domain/usecases/get_listings.dart';
 import 'package:ideal_mobile/presentation/listings/domain/usecases/get_listings_cached.dart';
+import 'package:ideal_mobile/presentation/listings/domain/usecases/get_recommended_listings.dart';
+import 'package:ideal_mobile/presentation/listings/domain/usecases/record_search_activity.dart';
+import 'package:ideal_mobile/presentation/listings/domain/usecases/record_view_activity.dart';
 import 'package:ideal_mobile/presentation/login/data/datasources/auth_remote_data_source.dart';
 import 'package:ideal_mobile/presentation/login/data/repositories/auth_repository_impl.dart';
 import 'package:ideal_mobile/presentation/login/domain/repositories/auth_repository.dart';
@@ -113,6 +116,13 @@ Future<void> configureDependencies({Dio? dio}) async {
     ..registerLazySingleton(
       () => GetListingFilterOptionsCached(sl<ListingsRepository>()),
     )
+    ..registerLazySingleton(
+      () => GetRecommendedListings(sl<ListingsRepository>()),
+    )
+    ..registerLazySingleton(
+      () => RecordSearchActivity(sl<ListingsRepository>()),
+    )
+    ..registerLazySingleton(() => RecordViewActivity(sl<ListingsRepository>()))
     ..registerLazySingleton<FavoritesRepository>(
       () => FavoritesRepositoryImpl(sl<FavoritesRemoteDataSource>()),
     )

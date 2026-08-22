@@ -1419,6 +1419,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get home_heading => 'Keyingi uyingizni toping';
 
   @override
+  String get home_recommended_heading => 'Siz uchun tavsiyalar';
+
+  @override
   String get home_recent_search_heading => 'Oxirgi qidiruvlaringiz asosida';
 
   @override

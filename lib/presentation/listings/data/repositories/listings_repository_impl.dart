@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:ideal_mobile/core/errors/exceptions.dart';
 import 'package:ideal_mobile/core/errors/failure.dart';
 import 'package:ideal_mobile/presentation/listings/data/datasources/listings_remote_data_source.dart';
+import 'package:ideal_mobile/presentation/listings/domain/entities/listing_card.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filter_options.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filters.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listings_page.dart';
@@ -70,6 +71,41 @@ class ListingsRepositoryImpl implements ListingsRepository {
       }
     } on APIException catch (error) {
       yield Left(APIFailure.fromException(error));
+    }
+  }
+
+  @override
+  ResultFuture<List<ListingCard>> getRecommendedListings() async {
+    try {
+      return Right(await _remoteDataSource.getRecommendedListings());
+    } on APIException catch (error) {
+      return Left(APIFailure.fromException(error));
+    }
+  }
+
+  @override
+  ResultFuture<void> recordSearchActivity({
+    String? query,
+    Map<String, dynamic>? filters,
+  }) async {
+    try {
+      await _remoteDataSource.recordSearchActivity(
+        query: query,
+        filters: filters,
+      );
+      return const Right(null);
+    } on APIException catch (error) {
+      return Left(APIFailure.fromException(error));
+    }
+  }
+
+  @override
+  ResultFuture<void> recordViewActivity(int listingId) async {
+    try {
+      await _remoteDataSource.recordViewActivity(listingId);
+      return const Right(null);
+    } on APIException catch (error) {
+      return Left(APIFailure.fromException(error));
     }
   }
 }

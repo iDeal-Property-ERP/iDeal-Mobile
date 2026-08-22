@@ -1,3 +1,4 @@
+import 'package:ideal_mobile/presentation/listings/domain/entities/listing_card.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filter_options.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filters.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listings_page.dart';
@@ -21,4 +22,13 @@ abstract class ListingsRepository {
 
   Stream<Result<PublicCacheResult<ListingFilterOptions>>>
   getFilterOptionsCached();
+
+  ResultFuture<List<ListingCard>> getRecommendedListings();
+
+  ResultFuture<void> recordSearchActivity({
+    String? query,
+    Map<String, dynamic>? filters,
+  });
+
+  ResultFuture<void> recordViewActivity(int listingId);
 }

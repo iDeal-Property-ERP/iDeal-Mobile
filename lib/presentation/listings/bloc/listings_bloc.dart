@@ -12,7 +12,10 @@ import 'package:ideal_mobile/presentation/listings/domain/usecases/get_listing_f
 import 'package:ideal_mobile/presentation/listings/domain/usecases/get_listing_filter_options_cached.dart';
 import 'package:ideal_mobile/presentation/listings/domain/usecases/get_listings.dart';
 import 'package:ideal_mobile/presentation/listings/domain/usecases/get_listings_cached.dart';
+import 'package:ideal_mobile/presentation/listings/domain/usecases/get_recommended_listings.dart';
+import 'package:ideal_mobile/presentation/listings/domain/usecases/record_search_activity.dart';
 import 'package:ideal_mobile/services/favorites_sync_service.dart';
+import 'package:ideal_mobile/services/guest_access_service.dart';
 import 'package:ideal_mobile/services/legacy_favorites_cleanup_service.dart';
 import 'package:ideal_mobile/services/performance_monitoring_service.dart';
 import 'package:ideal_mobile/utils/extensions/primitive_types_extensions.dart';
@@ -24,6 +27,8 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
     GetListingFilterOptions? getListingFilterOptions,
     GetListingsCached? getListingsCached,
     GetListingFilterOptionsCached? getFilterOptionsCached,
+    GetRecommendedListings? getRecommendedListings,
+    RecordSearchActivity? recordSearchActivity,
     SetListingFavorite? setListingFavorite,
     FavoritesSyncService? favoritesSyncService,
     LegacyFavoritesCleanupService? legacyFavoritesCleanupService,
@@ -42,6 +47,16 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
            getFilterOptionsCached ??
            (sl.isRegistered<GetListingFilterOptionsCached>()
                ? sl<GetListingFilterOptionsCached>()
+               : null),
+       _getRecommendedListings =
+           getRecommendedListings ??
+           (sl.isRegistered<GetRecommendedListings>()
+               ? sl<GetRecommendedListings>()
+               : null),
+       _recordSearchActivity =
+           recordSearchActivity ??
+           (sl.isRegistered<RecordSearchActivity>()
+               ? sl<RecordSearchActivity>()
                : null),
        _setListingFavorite = setListingFavorite ?? sl<SetListingFavorite>(),
        _favoritesSyncService =
@@ -70,6 +85,8 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
   final GetListingFilterOptions _getFilterOptions;
   final GetListingsCached? _getListingsCached;
   final GetListingFilterOptionsCached? _getFilterOptionsCached;
+  final GetRecommendedListings? _getRecommendedListings;
+  final RecordSearchActivity? _recordSearchActivity;
   final SetListingFavorite _setListingFavorite;
   final FavoritesSyncService _favoritesSyncService;
   final LegacyFavoritesCleanupService _legacyFavoritesCleanupService;
@@ -89,6 +106,7 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
     on<ApplyListingFiltersEvent>(_onApplyListingFiltersEvent);
     on<ClearListingFiltersEvent>(_onClearListingFiltersEvent);
     on<LoadFilterOptionsEvent>(_onLoadFilterOptionsEvent);
+    on<LoadHomeRecommendationsEvent>(_onLoadHomeRecommendationsEvent);
     on<LoadHomeRailsEvent>(_onLoadHomeRailsEvent);
     on<ToggleFavoriteEvent>(_onToggleFavoriteEvent);
     on<ClearFavoriteFeedbackEvent>(_onClearFavoriteFeedbackEvent);
@@ -107,6 +125,7 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
     Emitter<ListingsState> emit,
   ) {
     _searchDebounce?.cancel();
+    add(const LoadHomeRecommendationsEvent());
     return _loadListings(
       filters: state.filters,
       page: 1,
@@ -159,6 +178,7 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
       filters: filters,
       page: 1,
       replaceItems: true,
+      isUserAction: query.isNotEmpty,
       emit: emit,
     );
   }
@@ -168,10 +188,14 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
     Emitter<ListingsState> emit,
   ) {
     _searchDebounce?.cancel();
+    final isUserAction =
+        event.filters.activeCount > 0 ||
+        (event.filters.query?.trim().isNotEmpty ?? false);
     return _loadListings(
       filters: event.filters,
       page: 1,
       replaceItems: true,
+      isUserAction: isUserAction,
       emit: emit,
     );
   }
@@ -181,6 +205,7 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
     Emitter<ListingsState> emit,
   ) {
     _searchDebounce?.cancel();
+    add(const LoadHomeRecommendationsEvent());
     return _loadListings(
       filters: const ListingFilters(sort: 'score_desc'),
       page: 1,
@@ -242,88 +267,61 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
     LoadHomeRailsEvent event,
     Emitter<ListingsState> emit,
   ) async {
-    final recentQuery = event.recentSearchQuery?.trim();
-    final hasRecent = recentQuery != null && recentQuery.isNotEmpty;
-    final hasFavorites = event.favoriteListingIds.isNotEmpty;
+    add(const LoadHomeRecommendationsEvent());
+  }
 
-    if (!hasRecent && !hasFavorites) {
+  Future<void> _onLoadHomeRecommendationsEvent(
+    LoadHomeRecommendationsEvent event,
+    Emitter<ListingsState> emit,
+  ) async {
+    if (!await GuestAccessService.hasAuthenticatedSession()) {
       emit(
         ListingsLoadedState(
           state.copyWith(
-            recentSearchRailListings: const [],
-            clearRecentSearchContext: true,
-            isRecentSearchRailLoading: false,
-            selectedInspiredRailListings: const [],
-            isSelectedRailLoading: false,
+            recommendedListings: const [],
+            isRecommendationsLoading: false,
           ),
         ),
       );
       return;
     }
 
-    emit(
-      ListingsLoadedState(
-        state.copyWith(
-          isRecentSearchRailLoading: hasRecent,
-          isSelectedRailLoading: hasFavorites,
-        ),
-      ),
-    );
+    emit(ListingsLoadedState(state.copyWith(isRecommendationsLoading: true)));
 
-    List<ListingCard> recentItems = const [];
-    String? recentContext;
-    if (hasRecent) {
-      final recentResult = await _getListings(
-        GetListingsParams(
-          filters: ListingFilters(query: recentQuery, sort: 'score_desc'),
-          page: 1,
-          perPage: 6,
+    if (_getRecommendedListings == null) {
+      emit(
+        ListingsLoadedState(
+          state.copyWith(
+            recommendedListings: const [],
+            isRecommendationsLoading: false,
+          ),
         ),
       );
-      recentResult.fold(
-        (_) {
-          recentItems = const [];
-          recentContext = null;
-        },
-        (page) {
-          recentItems = _applyPendingFavoriteStatuses(page.items);
-          recentContext = recentQuery;
-        },
-      );
+      return;
     }
 
-    List<ListingCard> selectedItems = const [];
-    if (hasFavorites) {
-      final selectedFilters = event.favoriteDistrictId != null
-          ? ListingFilters(
-              districtId: event.favoriteDistrictId,
-              sort: 'score_desc',
-            )
-          : const ListingFilters(sort: 'score_desc');
-      final selectedResult = await _getListings(
-        GetListingsParams(filters: selectedFilters, page: 1, perPage: 6),
-      );
-      selectedResult.fold(
-        (_) {
-          selectedItems = const [];
-        },
-        (page) {
-          selectedItems = _applyPendingFavoriteStatuses(page.items);
-        },
-      );
-    }
-
-    emit(
-      ListingsLoadedState(
-        state.copyWith(
-          recentSearchRailListings: recentItems,
-          recentSearchContext: recentContext,
-          clearRecentSearchContext: recentContext == null,
-          isRecentSearchRailLoading: false,
-          selectedInspiredRailListings: selectedItems,
-          isSelectedRailLoading: false,
-        ),
-      ),
+    final result = await _getRecommendedListings();
+    result.fold(
+      (_) {
+        emit(
+          ListingsLoadedState(
+            state.copyWith(
+              recommendedListings: const [],
+              isRecommendationsLoading: false,
+            ),
+          ),
+        );
+      },
+      (items) {
+        emit(
+          ListingsLoadedState(
+            state.copyWith(
+              recommendedListings: _applyPendingFavoriteStatuses(items),
+              isRecommendationsLoading: false,
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -350,13 +348,8 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
             event.listingId,
             nextIsFavorite,
           ),
-          recentSearchRailListings: _setFavoriteStatus(
-            state.recentSearchRailListings,
-            event.listingId,
-            nextIsFavorite,
-          ),
-          selectedInspiredRailListings: _setFavoriteStatus(
-            state.selectedInspiredRailListings,
+          recommendedListings: _setFavoriteStatus(
+            state.recommendedListings,
             event.listingId,
             nextIsFavorite,
           ),
@@ -411,13 +404,8 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
                 listingId,
                 mutation.previousIsFavorite,
               ),
-              recentSearchRailListings: _setFavoriteStatus(
-                state.recentSearchRailListings,
-                listingId,
-                mutation.previousIsFavorite,
-              ),
-              selectedInspiredRailListings: _setFavoriteStatus(
-                state.selectedInspiredRailListings,
+              recommendedListings: _setFavoriteStatus(
+                state.recommendedListings,
                 listingId,
                 mutation.previousIsFavorite,
               ),
@@ -467,13 +455,8 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
       ListingsLoadedState(
         state.copyWith(
           items: _setFavoriteStatus(state.items, event.listingId, isFavorite),
-          recentSearchRailListings: _setFavoriteStatus(
-            state.recentSearchRailListings,
-            event.listingId,
-            isFavorite,
-          ),
-          selectedInspiredRailListings: _setFavoriteStatus(
-            state.selectedInspiredRailListings,
+          recommendedListings: _setFavoriteStatus(
+            state.recommendedListings,
             event.listingId,
             isFavorite,
           ),
@@ -484,8 +467,33 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
 
   ListingCard? _findAnyItem(int listingId) {
     return _itemForId(state.items, listingId) ??
-        _itemForId(state.recentSearchRailListings, listingId) ??
-        _itemForId(state.selectedInspiredRailListings, listingId);
+        _itemForId(state.recommendedListings, listingId);
+  }
+
+  void _recordSearchActivityIfAuthenticated(ListingFilters filters) {
+    final recordSearch = _recordSearchActivity;
+    if (recordSearch == null) return;
+    unawaited(
+      GuestAccessService.hasAuthenticatedSession()
+          .then((isAuthenticated) {
+            if (isAuthenticated) {
+              recordSearch(
+                    RecordSearchActivityParams(
+                      query: filters.query,
+                      filters: filters.toQueryParameters(),
+                    ),
+                  )
+                  .then((result) {
+                    result.fold(
+                      (_) {},
+                      (_) => add(const LoadHomeRecommendationsEvent()),
+                    );
+                  })
+                  .catchError((_) {});
+            }
+          })
+          .catchError((_) {}),
+    );
   }
 
   Future<void> _loadListings({
@@ -493,7 +501,14 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
     required int page,
     required bool replaceItems,
     required Emitter<ListingsState> emit,
+    bool isUserAction = false,
   }) async {
+    if (isUserAction &&
+        page == 1 &&
+        ((filters.query?.trim().isNotEmpty ?? false) ||
+            filters.activeCount > 0)) {
+      _recordSearchActivityIfAuthenticated(filters);
+    }
     if (replaceItems) {
       emit(
         ListingsLoadingState(

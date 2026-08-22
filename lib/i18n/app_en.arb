@@ -562,6 +562,7 @@
   "listings_chip_premium": "Premium",
   "listings_search_placeholder": "Search rentals",
   "home_heading": "Find your next home",
+  "home_recommended_heading": "Recommended for you",
   "home_recent_search_heading": "From your recent searches",
   "home_recent_search_context": "Based on {query} and your last filters",
   "@home_recent_search_context": {

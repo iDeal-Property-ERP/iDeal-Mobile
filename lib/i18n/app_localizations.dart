@@ -2626,6 +2626,12 @@ abstract class AppLocalizations {
   /// **'Find your next home'**
   String get home_heading;
 
+  /// No description provided for @home_recommended_heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended for you'**
+  String get home_recommended_heading;
+
   /// No description provided for @home_recent_search_heading.
   ///
   /// In en, this message translates to:

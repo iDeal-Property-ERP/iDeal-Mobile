@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 import 'package:ideal_mobile/core/errors/exceptions.dart';
+import 'package:ideal_mobile/presentation/listings/data/models/listing_card_model.dart';
 import 'package:ideal_mobile/presentation/listings/data/models/listing_filter_options_model.dart';
 import 'package:ideal_mobile/presentation/listings/data/models/listings_page_model.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filters.dart';
@@ -23,6 +24,15 @@ abstract class ListingsRemoteDataSource {
   });
 
   Stream<PublicCacheResult<ListingFilterOptionsModel>> getFilterOptionsCached();
+
+  Future<List<ListingCardModel>> getRecommendedListings();
+
+  Future<void> recordSearchActivity({
+    String? query,
+    Map<String, dynamic>? filters,
+  });
+
+  Future<void> recordViewActivity(int listingId);
 }
 
 class ListingsRemoteDataSourceImpl implements ListingsRemoteDataSource {
@@ -30,6 +40,7 @@ class ListingsRemoteDataSourceImpl implements ListingsRemoteDataSource {
 
   static const _listingsPath = '/mobile/home/listings/';
   static const _filtersPath = '/mobile/home/filters/';
+  static const _recommendedPath = '/mobile/home/listings/recommended/';
 
   final Dio _dio;
   final CacheManager _cacheManager;
@@ -135,6 +146,69 @@ class ListingsRemoteDataSourceImpl implements ListingsRemoteDataSource {
         statusCode: response.statusCode ?? 500,
       );
     }
+  }
+
+  @override
+  Future<List<ListingCardModel>> getRecommendedListings() async {
+    final response = await _request(
+      () => _dio.get(
+        _recommendedPath,
+        options: _cacheManager.noCacheOptions().toOptions(),
+      ),
+    );
+    final data = _dataFromResponse(
+      response,
+      missingDataMessage: 'Recommended listings were not returned.',
+    );
+    final items = data['items'];
+    if (items is! List) {
+      return const [];
+    }
+    try {
+      return items
+          .map(
+            (item) => ListingCardModel.fromJson(
+              Map<String, dynamic>.from(item as Map),
+            ),
+          )
+          .toList();
+    } on FormatException catch (error) {
+      throw APIException(
+        message: error.message,
+        statusCode: response.statusCode ?? 500,
+      );
+    }
+  }
+
+  @override
+  Future<void> recordSearchActivity({
+    String? query,
+    Map<String, dynamic>? filters,
+  }) async {
+    final body = <String, dynamic>{
+      'type': 'search',
+      if (query != null && query.isNotEmpty) 'query': query,
+      if (filters != null && filters.isNotEmpty) 'filters': filters,
+    };
+    await _request(
+      () => _dio.post(
+        _recommendedPath,
+        data: body,
+        options: _cacheManager.noCacheOptions().toOptions(),
+      ),
+    );
+  }
+
+  @override
+  Future<void> recordViewActivity(int listingId) async {
+    final body = <String, dynamic>{'type': 'view', 'listing_id': listingId};
+    await _request(
+      () => _dio.post(
+        _recommendedPath,
+        data: body,
+        options: _cacheManager.noCacheOptions().toOptions(),
+      ),
+    );
   }
 
   Future<Response<dynamic>> _request(
