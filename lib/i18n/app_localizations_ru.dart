@@ -1396,6 +1396,18 @@ class AppLocalizationsRu extends AppLocalizations {
   String get listings_filter_tariff => 'Тариф';
 
   @override
+  String get listings_filter_verification => 'Верификация';
+
+  @override
+  String get listings_search_district => 'Поиск района...';
+
+  @override
+  String get listings_no_districts_found => 'Районы не найдены';
+
+  @override
+  String get listings_select_district => 'Выберите район';
+
+  @override
   String get listings_range_min => 'Мин';
 
   @override
@@ -1476,6 +1488,27 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get home_quick_filter_tariff => 'Тариф';
+
+  @override
+  String get home_quick_filter_custom_range => 'Другой диапазон';
+
+  @override
+  String get home_quick_filter_no_districts => 'Нет доступных районов';
+
+  @override
+  String get home_quick_filter_no_tariffs => 'Нет доступных тарифов';
+
+  @override
+  String get home_quick_filter_clear_district_a11y => 'Сбросить фильтр района';
+
+  @override
+  String get home_quick_filter_clear_rooms_a11y => 'Сбросить фильтр комнат';
+
+  @override
+  String get home_quick_filter_clear_price_a11y => 'Сбросить фильтр цены';
+
+  @override
+  String get home_quick_filter_clear_tariff_a11y => 'Сбросить фильтр тарифа';
 
   @override
   String get recent_searches => 'Недавние поиски';

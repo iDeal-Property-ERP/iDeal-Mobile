@@ -10,11 +10,12 @@ import 'package:ideal_mobile/core/services/injection_container.dart';
 import 'package:ideal_mobile/gen/assets.gen.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
 import 'package:ideal_mobile/presentation/home/widgets/home_listing_rail.dart';
+import 'package:ideal_mobile/presentation/home/widgets/home_quick_filter_sheet.dart';
 import 'package:ideal_mobile/presentation/home/widgets/home_search_sheet.dart';
-import 'package:ideal_mobile/presentation/home/widgets/tariff_filter_sheet.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_bloc.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_event.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_state.dart';
+import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filter_options.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filters.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/listing_card_shimmer.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/listings_empty_view.dart';
@@ -94,24 +95,120 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
     }
   }
 
-  Future<void> _openTariffSheet(String? currentTariff) async {
-    final tariff = await showTariffFilterSheet(
+  Future<void> _openQuickFilterSheet(
+    HomeQuickFilterKind kind,
+    ListingFilters currentFilters,
+    ListingFilterOptions filterOptions,
+  ) async {
+    final updatedFilters = await showHomeQuickFilterSheet(
       context,
-      selectedTariff: currentTariff,
+      kind: kind,
+      filters: currentFilters,
+      filterOptions: filterOptions,
     );
-    if (mounted) {
-      final bloc = context.read<ListingsBloc>();
-      final updatedFilters = bloc.state.filters.copyWith(
-        tariff: tariff,
-        clearTariff: tariff == null || tariff.isEmpty,
+    if (updatedFilters != null && mounted) {
+      context.read<ListingsBloc>().add(
+        ApplyListingFiltersEvent(updatedFilters),
       );
-      bloc.add(ApplyListingFiltersEvent(updatedFilters));
     }
   }
 
-  String _tariffChipLabel(BuildContext context, String? tariff) {
+  void _clearDistrict(ListingFilters filters) {
+    context.read<ListingsBloc>().add(
+      ApplyListingFiltersEvent(filters.copyWith(clearDistrictId: true)),
+    );
+  }
+
+  void _clearRooms(ListingFilters filters) {
+    context.read<ListingsBloc>().add(
+      ApplyListingFiltersEvent(
+        filters.copyWith(clearRoomsMin: true, clearRoomsMax: true),
+      ),
+    );
+  }
+
+  void _clearPrice(ListingFilters filters) {
+    context.read<ListingsBloc>().add(
+      ApplyListingFiltersEvent(
+        filters.copyWith(clearPriceMin: true, clearPriceMax: true),
+      ),
+    );
+  }
+
+  void _clearTariff(ListingFilters filters) {
+    context.read<ListingsBloc>().add(
+      ApplyListingFiltersEvent(filters.copyWith(clearTariff: true)),
+    );
+  }
+
+  String _districtChipLabel(
+    BuildContext context,
+    int? districtId,
+    List<ListingDistrict> districts,
+  ) {
+    if (districtId == null) {
+      return context.localization.home_quick_filter_district;
+    }
+    for (final district in districts) {
+      if (district.id == districtId) return district.name;
+    }
+    return districtId.toString();
+  }
+
+  String _roomsChipLabel(BuildContext context, int? roomsMin, int? roomsMax) {
+    if (roomsMin == null && roomsMax == null) {
+      return context.localization.home_quick_filter_rooms;
+    }
+    if (roomsMin != null && roomsMin == roomsMax) {
+      return roomsMin.toString();
+    }
+    if (roomsMin != null && roomsMax != null) {
+      return '$roomsMin–$roomsMax';
+    }
+    if (roomsMin != null) {
+      return '$roomsMin+';
+    }
+    return '≤$roomsMax';
+  }
+
+  String _priceChipLabel(
+    BuildContext context,
+    double? priceMin,
+    double? priceMax,
+  ) {
+    if (priceMin == null && priceMax == null) {
+      return context.localization.home_quick_filter_price;
+    }
+
+    String formatPrice(double val) {
+      if (val == val.roundToDouble()) return val.toInt().toString();
+      return val.toString();
+    }
+
+    if (priceMin != null && priceMin == priceMax) {
+      return '\$${formatPrice(priceMin)}';
+    }
+    if (priceMin != null && priceMax != null) {
+      return '\$${formatPrice(priceMin)}–\$${formatPrice(priceMax)}';
+    }
+    if (priceMin != null) {
+      return '\$${formatPrice(priceMin)}+';
+    }
+    return '≤\$${formatPrice(priceMax!)}';
+  }
+
+  String _tariffChipLabel(
+    BuildContext context,
+    String? tariff,
+    List<ListingChoice> tariffs,
+  ) {
     if (tariff == null || tariff.isEmpty) {
       return context.localization.home_quick_filter_tariff;
+    }
+    for (final choice in tariffs) {
+      if (choice.value.toLowerCase() == tariff.toLowerCase()) {
+        return choice.label;
+      }
     }
     switch (tariff.toLowerCase()) {
       case 'comfort':
@@ -119,8 +216,9 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
       case 'premium':
         return context.localization.listings_tariff_premium;
       case 'standard':
-      default:
         return context.localization.listings_tariff_standard;
+      default:
+        return tariff;
     }
   }
 
@@ -185,13 +283,30 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
                                 BlocSelector<
                                   ListingsBloc,
                                   ListingsState,
-                                  ({String query, ListingFilters filters})
+                                  ({
+                                    String query,
+                                    ListingFilters filters,
+                                    ListingFilterOptions filterOptions,
+                                  })
                                 >(
                                   selector: (state) => (
                                     query: state.searchQuery,
                                     filters: state.filters,
+                                    filterOptions: state.filterOptions,
                                   ),
                                   builder: (context, value) {
+                                    final hasDistrict =
+                                        value.filters.districtId != null;
+                                    final hasRooms =
+                                        value.filters.roomsMin != null ||
+                                        value.filters.roomsMax != null;
+                                    final hasPrice =
+                                        value.filters.priceMin != null ||
+                                        value.filters.priceMax != null;
+                                    final hasTariff =
+                                        value.filters.tariff != null &&
+                                        value.filters.tariff!.isNotEmpty;
+
                                     return Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.stretch,
@@ -213,63 +328,97 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
                                           child: Row(
                                             children: [
                                               _QuickFilterChip(
-                                                label: context
-                                                    .localization
-                                                    .home_quick_filter_district,
-                                                isActive:
-                                                    value.filters.districtId !=
-                                                    null,
+                                                label: _districtChipLabel(
+                                                  context,
+                                                  value.filters.districtId,
+                                                  value.filterOptions.districts,
+                                                ),
+                                                isActive: hasDistrict,
                                                 onTap: () =>
-                                                    showListingsFilterSheet(
-                                                      context,
+                                                    _openQuickFilterSheet(
+                                                      HomeQuickFilterKind
+                                                          .district,
+                                                      value.filters,
+                                                      value.filterOptions,
                                                     ),
+                                                onClear: hasDistrict
+                                                    ? () => _clearDistrict(
+                                                        value.filters,
+                                                      )
+                                                    : null,
+                                                clearSemanticLabel: context
+                                                    .localization
+                                                    .home_quick_filter_clear_district_a11y,
                                               ),
                                               const SizedBox(width: 8),
                                               _QuickFilterChip(
-                                                label: context
-                                                    .localization
-                                                    .home_quick_filter_rooms,
-                                                isActive:
-                                                    value.filters.roomsMin !=
-                                                        null ||
-                                                    value.filters.roomsMax !=
-                                                        null,
+                                                label: _roomsChipLabel(
+                                                  context,
+                                                  value.filters.roomsMin,
+                                                  value.filters.roomsMax,
+                                                ),
+                                                isActive: hasRooms,
                                                 onTap: () =>
-                                                    showListingsFilterSheet(
-                                                      context,
+                                                    _openQuickFilterSheet(
+                                                      HomeQuickFilterKind.rooms,
+                                                      value.filters,
+                                                      value.filterOptions,
                                                     ),
+                                                onClear: hasRooms
+                                                    ? () => _clearRooms(
+                                                        value.filters,
+                                                      )
+                                                    : null,
+                                                clearSemanticLabel: context
+                                                    .localization
+                                                    .home_quick_filter_clear_rooms_a11y,
                                               ),
                                               const SizedBox(width: 8),
                                               _QuickFilterChip(
-                                                label: context
-                                                    .localization
-                                                    .home_quick_filter_price,
-                                                isActive:
-                                                    value.filters.priceMin !=
-                                                        null ||
-                                                    value.filters.priceMax !=
-                                                        null,
+                                                label: _priceChipLabel(
+                                                  context,
+                                                  value.filters.priceMin,
+                                                  value.filters.priceMax,
+                                                ),
+                                                isActive: hasPrice,
                                                 onTap: () =>
-                                                    showListingsFilterSheet(
-                                                      context,
+                                                    _openQuickFilterSheet(
+                                                      HomeQuickFilterKind.price,
+                                                      value.filters,
+                                                      value.filterOptions,
                                                     ),
+                                                onClear: hasPrice
+                                                    ? () => _clearPrice(
+                                                        value.filters,
+                                                      )
+                                                    : null,
+                                                clearSemanticLabel: context
+                                                    .localization
+                                                    .home_quick_filter_clear_price_a11y,
                                               ),
                                               const SizedBox(width: 8),
                                               _QuickFilterChip(
                                                 label: _tariffChipLabel(
                                                   context,
                                                   value.filters.tariff,
+                                                  value.filterOptions.tariffs,
                                                 ),
-                                                isActive:
-                                                    value.filters.tariff !=
-                                                        null &&
-                                                    value
-                                                        .filters
-                                                        .tariff!
-                                                        .isNotEmpty,
-                                                onTap: () => _openTariffSheet(
-                                                  value.filters.tariff,
-                                                ),
+                                                isActive: hasTariff,
+                                                onTap: () =>
+                                                    _openQuickFilterSheet(
+                                                      HomeQuickFilterKind
+                                                          .tariff,
+                                                      value.filters,
+                                                      value.filterOptions,
+                                                    ),
+                                                onClear: hasTariff
+                                                    ? () => _clearTariff(
+                                                        value.filters,
+                                                      )
+                                                    : null,
+                                                clearSemanticLabel: context
+                                                    .localization
+                                                    .home_quick_filter_clear_tariff_a11y,
                                               ),
                                             ],
                                           ),
@@ -527,53 +676,89 @@ class _QuickFilterChip extends StatelessWidget {
     required this.label,
     required this.isActive,
     required this.onTap,
+    this.onClear,
+    this.clearSemanticLabel,
   });
 
   final String label;
   final bool isActive;
   final VoidCallback onTap;
+  final VoidCallback? onClear;
+  final String? clearSemanticLabel;
 
   @override
   Widget build(BuildContext context) {
+    final backgroundColor = isActive
+        ? context.currentTheme.textNeutralPrimary
+        : context.currentTheme.bgSurfaceBase2;
+    final borderColor = isActive
+        ? context.currentTheme.textNeutralPrimary
+        : context.currentTheme.strokeNeutralLight100;
+    final textColor = isActive
+        ? context.currentTheme.bgSurfaceBase2
+        : context.currentTheme.textNeutralPrimary;
+
     return Material(
-      color: isActive
-          ? context.currentTheme.textNeutralPrimary
-          : context.currentTheme.bgSurfaceBase2,
-      shape: StadiumBorder(
-        side: BorderSide(
-          color: isActive
-              ? context.currentTheme.textNeutralPrimary
-              : context.currentTheme.strokeNeutralLight100,
-        ),
-      ),
-      child: InkWell(
-        customBorder: const StadiumBorder(),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                label,
-                style: AppTextStyles.p3Medium.copyWith(
-                  color: isActive
-                      ? context.currentTheme.bgSurfaceBase2
-                      : context.currentTheme.textNeutralPrimary,
+      color: backgroundColor,
+      shape: StadiumBorder(side: BorderSide(color: borderColor)),
+      child: isActive && onClear != null
+          ? Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                InkWell(
+                  customBorder: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.horizontal(
+                      left: Radius.circular(999),
+                    ),
+                  ),
+                  onTap: onTap,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(14, 8, 4, 8),
+                    child: Text(
+                      label,
+                      style: AppTextStyles.p3Medium.copyWith(color: textColor),
+                    ),
+                  ),
+                ),
+                Semantics(
+                  button: true,
+                  label: clearSemanticLabel,
+                  child: InkResponse(
+                    customBorder: const CircleBorder(),
+                    onTap: onClear,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(2, 8, 12, 8),
+                      child: Icon(TablerIcons.x, size: 14, color: textColor),
+                    ),
+                  ),
+                ),
+              ],
+            )
+          : InkWell(
+              customBorder: const StadiumBorder(),
+              onTap: onTap,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 8,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      label,
+                      style: AppTextStyles.p3Medium.copyWith(color: textColor),
+                    ),
+                    const SizedBox(width: 4),
+                    Icon(
+                      TablerIcons.chevron_down,
+                      size: 14,
+                      color: context.currentTheme.iconNeutralDefault,
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(width: 4),
-              Icon(
-                TablerIcons.chevron_down,
-                size: 14,
-                color: isActive
-                    ? context.currentTheme.bgSurfaceBase2
-                    : context.currentTheme.iconNeutralDefault,
-              ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 }

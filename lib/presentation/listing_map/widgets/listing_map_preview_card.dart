@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
 import 'package:ideal_mobile/presentation/listing_map/widgets/listing_map_price_formatter.dart';
@@ -13,13 +12,11 @@ class ListingMapPreviewCard extends StatelessWidget {
     required this.listing,
     required this.propertyTypeLabel,
     required this.onTap,
-    this.onCall,
   });
 
   final ListingCard listing;
   final String propertyTypeLabel;
   final VoidCallback onTap;
-  final VoidCallback? onCall;
 
   @override
   Widget build(BuildContext context) {
@@ -88,24 +85,6 @@ class ListingMapPreviewCard extends StatelessWidget {
                         color: context.currentTheme.textNeutralSecondary,
                       ),
                     ),
-                    if (onCall != null) ...[
-                      const SizedBox(height: 6),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: OutlinedButton.icon(
-                          style: OutlinedButton.styleFrom(
-                            minimumSize: const Size(0, 36),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 6,
-                            ),
-                          ),
-                          onPressed: onCall,
-                          icon: const Icon(TablerIcons.phone, size: 16),
-                          label: Text(context.localization.listing_map_call),
-                        ),
-                      ),
-                    ],
                   ],
                 ),
               ),

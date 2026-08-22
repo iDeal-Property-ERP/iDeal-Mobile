@@ -73,13 +73,14 @@ class ListingsFilterSheet extends StatefulWidget {
 }
 
 class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
-  static const _anyDistrictValue = '__any_district__';
-
   late ListingFilters _draft;
   late final TextEditingController _priceMinController;
   late final TextEditingController _priceMaxController;
   late final TextEditingController _roomsMinController;
   late final TextEditingController _roomsMaxController;
+  late final TextEditingController _districtSearchController;
+  late final FocusNode _districtSearchFocusNode;
+  bool _isDistrictDropdownOpen = false;
 
   @override
   void initState() {
@@ -97,6 +98,8 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
     _roomsMaxController = TextEditingController(
       text: _formatNumber(_draft.roomsMax),
     );
+    _districtSearchController = TextEditingController();
+    _districtSearchFocusNode = FocusNode();
   }
 
   @override
@@ -105,6 +108,8 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
     _priceMaxController.dispose();
     _roomsMinController.dispose();
     _roomsMaxController.dispose();
+    _districtSearchController.dispose();
+    _districtSearchFocusNode.dispose();
     super.dispose();
   }
 
@@ -196,25 +201,7 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
         onMaxChanged: _onRoomsMaxChanged,
       ),
       const SizedBox(height: 12),
-      _buildSectionTitle(context, context.localization.listings_chip_verified),
-      Wrap(
-        spacing: 8,
-        runSpacing: 8,
-        children: [
-          _buildChoice(
-            context,
-            label: context.localization.listings_any,
-            selected: _draft.verified == null,
-            onTap: () => _onVerifiedChanged(null),
-          ),
-          _buildChoice(
-            context,
-            label: context.localization.listings_chip_verified,
-            selected: _draft.verified ?? false,
-            onTap: () => _onVerifiedChanged(true),
-          ),
-        ],
-      ),
+      _buildVerificationSection(context),
       const SizedBox(height: 12),
     ]);
 
@@ -261,55 +248,303 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
     );
   }
 
+  Widget _buildVerificationSection(BuildContext context) {
+    final isChecked = _draft.verified ?? false;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _buildSectionTitle(
+          context,
+          context.localization.listings_filter_verification,
+        ),
+        InkWell(
+          onTap: () => _onVerifiedChanged(isChecked ? null : true),
+          borderRadius: BorderRadius.circular(AppRadius.input),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: Checkbox(
+                    value: isChecked,
+                    activeColor: context.currentTheme.bgBrandDefault,
+                    checkColor: context.currentTheme.textNeutralWhite,
+                    side: BorderSide(
+                      color: context.currentTheme.strokeNeutralLight200,
+                      width: 1.5,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    onChanged: (value) {
+                      _onVerifiedChanged((value ?? false) ? true : null);
+                    },
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    context.localization.listings_chip_verified,
+                    style: AppTextStyles.p3Medium.copyWith(
+                      color: context.currentTheme.textNeutralPrimary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildDistrictDropdown(
     BuildContext context,
     List<ListingDistrict> districts,
   ) {
-    final hasSelectedDistrict = districts.any(
-      (district) => district.id == _draft.districtId,
-    );
-    final selectedValue = hasSelectedDistrict
-        ? _draft.districtId!.toString()
-        : _anyDistrictValue;
+    final selectedDistrict = districts
+        .where((district) => district.id == _draft.districtId)
+        .firstOrNull;
 
-    return DropdownButtonFormField<String>(
-      value: selectedValue,
-      isExpanded: true,
-      dropdownColor: context.currentTheme.bgNeutralLight200,
-      icon: Icon(
-        TablerIcons.chevron_down,
-        color: context.currentTheme.iconNeutralDefault,
-      ),
-      decoration: _fieldDecoration(context, null),
-      items: [
-        DropdownMenuItem<String>(
-          value: _anyDistrictValue,
-          child: _dropdownText(context, context.localization.listings_anywhere),
-        ),
-        ...districts.map(
-          (district) => DropdownMenuItem<String>(
-            value: district.id.toString(),
-            child: _dropdownText(context, district.name),
+    final query = _districtSearchController.text.trim().toLowerCase();
+    final filteredDistricts =
+        (query.isEmpty
+                ? districts
+                : districts.where((d) => d.name.toLowerCase().contains(query)))
+            .take(3)
+            .toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        InkWell(
+          onTap: () {
+            setState(() {
+              _isDistrictDropdownOpen = !_isDistrictDropdownOpen;
+              if (_isDistrictDropdownOpen) {
+                Future.microtask(() {
+                  if (mounted) {
+                    _districtSearchFocusNode.requestFocus();
+                  }
+                });
+              }
+            });
+          },
+          borderRadius: BorderRadius.circular(AppRadius.input),
+          child: Container(
+            constraints: const BoxConstraints(minHeight: 44),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: context.currentTheme.bgSurfaceBase2,
+              borderRadius: BorderRadius.circular(AppRadius.input),
+              border: Border.all(
+                color: _isDistrictDropdownOpen
+                    ? context.currentTheme.strokeBrandHover
+                    : context.currentTheme.strokeNeutralLight100,
+              ),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    selectedDistrict?.name ??
+                        context.localization.listings_select_district,
+                    style: AppTextStyles.p3Regular.copyWith(
+                      color: selectedDistrict != null
+                          ? context.currentTheme.textNeutralPrimary
+                          : context.currentTheme.textNeutralDisable,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                if (selectedDistrict != null)
+                  GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      setState(() {
+                        _draft = _draft.copyWith(clearDistrictId: true);
+                      });
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 6),
+                      child: Icon(
+                        TablerIcons.x,
+                        size: 16,
+                        color: context.currentTheme.iconNeutralDefault,
+                      ),
+                    ),
+                  ),
+                Icon(
+                  _isDistrictDropdownOpen
+                      ? TablerIcons.chevron_up
+                      : TablerIcons.chevron_down,
+                  size: 18,
+                  color: context.currentTheme.iconNeutralDefault,
+                ),
+              ],
+            ),
           ),
         ),
+        if (_isDistrictDropdownOpen) ...[
+          const SizedBox(height: 6),
+          Container(
+            decoration: BoxDecoration(
+              color: context.currentTheme.bgSurfaceBase2,
+              borderRadius: BorderRadius.circular(AppRadius.input),
+              border: Border.all(
+                color: context.currentTheme.strokeNeutralLight200,
+              ),
+            ),
+            padding: const EdgeInsets.all(8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                TextField(
+                  controller: _districtSearchController,
+                  focusNode: _districtSearchFocusNode,
+                  style: AppTextStyles.p3Regular.copyWith(
+                    color: context.currentTheme.textNeutralPrimary,
+                  ),
+                  decoration: InputDecoration(
+                    isDense: true,
+                    hintText: context.localization.listings_search_district,
+                    hintStyle: AppTextStyles.p3Regular.copyWith(
+                      color: context.currentTheme.textNeutralDisable,
+                    ),
+                    prefixIcon: Icon(
+                      TablerIcons.search,
+                      size: 18,
+                      color: context.currentTheme.iconNeutralDefault,
+                    ),
+                    prefixIconConstraints: const BoxConstraints(
+                      minWidth: 32,
+                      minHeight: 32,
+                    ),
+                    suffixIcon: _districtSearchController.text.isNotEmpty
+                        ? GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: () {
+                              setState(() {
+                                _districtSearchController.clear();
+                              });
+                            },
+                            child: Icon(
+                              TablerIcons.x,
+                              size: 16,
+                              color: context.currentTheme.iconNeutralDefault,
+                            ),
+                          )
+                        : null,
+                    suffixIconConstraints: const BoxConstraints(
+                      minWidth: 32,
+                      minHeight: 32,
+                    ),
+                    filled: true,
+                    fillColor: context.currentTheme.bgSurfaceSheet,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 8,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(
+                        AppRadius.input / 1.5,
+                      ),
+                      borderSide: BorderSide(
+                        color: context.currentTheme.strokeNeutralLight100,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(
+                        AppRadius.input / 1.5,
+                      ),
+                      borderSide: BorderSide(
+                        color: context.currentTheme.strokeNeutralLight100,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(
+                        AppRadius.input / 1.5,
+                      ),
+                      borderSide: BorderSide(
+                        color: context.currentTheme.strokeBrandHover,
+                      ),
+                    ),
+                  ),
+                  onChanged: (value) => setState(() {}),
+                ),
+                const SizedBox(height: 6),
+                if (filteredDistricts.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    child: Center(
+                      child: Text(
+                        context.localization.listings_no_districts_found,
+                        style: AppTextStyles.p3Regular.copyWith(
+                          color: context.currentTheme.textNeutralSecondary,
+                        ),
+                      ),
+                    ),
+                  )
+                else
+                  ...filteredDistricts.map((district) {
+                    final isSelected = _draft.districtId == district.id;
+                    return Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            _draft = isSelected
+                                ? _draft.copyWith(clearDistrictId: true)
+                                : _draft.copyWith(districtId: district.id);
+                            _isDistrictDropdownOpen = false;
+                            _districtSearchController.clear();
+                          });
+                        },
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? context.currentTheme.bgBrandLight100
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  district.name,
+                                  style: AppTextStyles.p3Medium.copyWith(
+                                    color: isSelected
+                                        ? context.currentTheme.textBrandPrimary
+                                        : context
+                                              .currentTheme
+                                              .textNeutralPrimary,
+                                  ),
+                                ),
+                              ),
+                              if (isSelected)
+                                Icon(
+                                  TablerIcons.check,
+                                  size: 16,
+                                  color: context.currentTheme.iconBrandPrimary,
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+              ],
+            ),
+          ),
+        ],
       ],
-      onChanged: (value) {
-        setState(() {
-          _draft = value == null || value == _anyDistrictValue
-              ? _draft.copyWith(clearDistrictId: true)
-              : _draft.copyWith(districtId: int.tryParse(value));
-        });
-      },
-    );
-  }
-
-  Widget _dropdownText(BuildContext context, String text) {
-    return Text(
-      text,
-      overflow: TextOverflow.ellipsis,
-      style: AppTextStyles.p3Regular.copyWith(
-        color: context.currentTheme.textNeutralPrimary,
-      ),
     );
   }
 
@@ -384,7 +619,7 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
       ),
       isDense: true,
       filled: true,
-      fillColor: context.currentTheme.bgNeutralLight200,
+      fillColor: context.currentTheme.bgSurfaceBase2,
       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
       border: _buildOutlineInputBorder(context),
       enabledBorder: _buildOutlineInputBorder(context),
@@ -401,7 +636,7 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
       borderSide: BorderSide(
         color: hasFocus
             ? context.currentTheme.strokeBrandHover
-            : context.currentTheme.strokeNeutralLight200,
+            : context.currentTheme.strokeNeutralLight100,
       ),
     );
   }
@@ -421,18 +656,14 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
           spacing: 8,
           runSpacing: 8,
           children: [
-            _buildChoice(
-              context,
-              label: context.localization.listings_any,
-              selected: selectedValue == null,
-              onTap: () => onChanged(null),
-            ),
             ...choices.map(
               (choice) => _buildChoice(
                 context,
                 label: choice.label,
                 selected: selectedValue == choice.value,
-                onTap: () => onChanged(choice.value),
+                onTap: () => onChanged(
+                  selectedValue == choice.value ? null : choice.value,
+                ),
               ),
             ),
           ],
@@ -462,11 +693,11 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
           decoration: BoxDecoration(
             color: selected
                 ? context.currentTheme.bgBrandLight100
-                : context.currentTheme.bgNeutralLight200,
+                : context.currentTheme.bgSurfaceBase2,
             border: Border.all(
               color: selected
                   ? context.currentTheme.iconBrandPrimary
-                  : context.currentTheme.strokeNeutralLight200,
+                  : context.currentTheme.strokeNeutralLight100,
             ),
             borderRadius: BorderRadius.circular(999),
           ),
@@ -492,11 +723,12 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
         children: [
           Expanded(
             child: AppButton(
-              style: AppButtonStyle.secondary,
+              style: AppButtonStyle.outline,
               size: AppButtonSize.medium,
               label: context.localization.listings_clear_all,
               foregroundColor: context.currentTheme.textNeutralPrimary,
-              backgroundColor: context.currentTheme.bgNeutralLight200,
+              backgroundColor: context.currentTheme.bgSurfaceBase2,
+              borderColor: context.currentTheme.strokeNeutralLight200,
               shouldSetFullWidth: true,
               onPressed: _clearDraft,
             ),
@@ -594,6 +826,8 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
       _priceMaxController.clear();
       _roomsMinController.clear();
       _roomsMaxController.clear();
+      _districtSearchController.clear();
+      _isDistrictDropdownOpen = false;
     });
   }
 

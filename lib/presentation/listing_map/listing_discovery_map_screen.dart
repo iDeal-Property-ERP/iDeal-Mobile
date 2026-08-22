@@ -22,7 +22,6 @@ import 'package:ideal_mobile/presentation/map/services/property_map_location_ser
 import 'package:ideal_mobile/presentation/map/widgets/property_map_view.dart';
 import 'package:ideal_mobile/routes.gr.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 typedef ListingMapUriLauncher = Future<bool> Function(Uri uri);
 
@@ -371,9 +370,6 @@ class _ListingDiscoveryMapScreenState extends State<ListingDiscoveryMapScreen> {
                     initialListing: listing,
                   ),
                 ),
-                onCall: listing.contactPhone == null
-                    ? null
-                    : () => _call(listing.contactPhone!),
               ),
             );
           },
@@ -449,16 +445,6 @@ class _ListingDiscoveryMapScreenState extends State<ListingDiscoveryMapScreen> {
     });
   }
 
-  Future<void> _call(String phone) async {
-    try {
-      final uri = Uri(scheme: 'tel', path: phone);
-      final launched = await (widget.uriLauncher?.call(uri) ?? launchUrl(uri));
-      if (!launched && mounted) _showCallFailure();
-    } on Object {
-      if (mounted) _showCallFailure();
-    }
-  }
-
   Future<void> _recenterOnUser() async {
     if (_isLocating) return;
     setState(() => _isLocating = true);
@@ -488,12 +474,6 @@ class _ListingDiscoveryMapScreenState extends State<ListingDiscoveryMapScreen> {
       SnackBar(
         content: Text(context.localization.listing_map_location_unavailable),
       ),
-    );
-  }
-
-  void _showCallFailure() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(context.localization.listing_map_call_failed)),
     );
   }
 

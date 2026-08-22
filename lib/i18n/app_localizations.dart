@@ -2578,6 +2578,30 @@ abstract class AppLocalizations {
   /// **'Tariff'**
   String get listings_filter_tariff;
 
+  /// No description provided for @listings_filter_verification.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification'**
+  String get listings_filter_verification;
+
+  /// No description provided for @listings_search_district.
+  ///
+  /// In en, this message translates to:
+  /// **'Search district...'**
+  String get listings_search_district;
+
+  /// No description provided for @listings_no_districts_found.
+  ///
+  /// In en, this message translates to:
+  /// **'No districts found'**
+  String get listings_no_districts_found;
+
+  /// No description provided for @listings_select_district.
+  ///
+  /// In en, this message translates to:
+  /// **'Select district'**
+  String get listings_select_district;
+
   /// No description provided for @listings_range_min.
   ///
   /// In en, this message translates to:
@@ -2733,6 +2757,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tariff'**
   String get home_quick_filter_tariff;
+
+  /// No description provided for @home_quick_filter_custom_range.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom range'**
+  String get home_quick_filter_custom_range;
+
+  /// No description provided for @home_quick_filter_no_districts.
+  ///
+  /// In en, this message translates to:
+  /// **'No districts available'**
+  String get home_quick_filter_no_districts;
+
+  /// No description provided for @home_quick_filter_no_tariffs.
+  ///
+  /// In en, this message translates to:
+  /// **'No tariffs available'**
+  String get home_quick_filter_no_tariffs;
+
+  /// No description provided for @home_quick_filter_clear_district_a11y.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear district filter'**
+  String get home_quick_filter_clear_district_a11y;
+
+  /// No description provided for @home_quick_filter_clear_rooms_a11y.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear rooms filter'**
+  String get home_quick_filter_clear_rooms_a11y;
+
+  /// No description provided for @home_quick_filter_clear_price_a11y.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear price filter'**
+  String get home_quick_filter_clear_price_a11y;
+
+  /// No description provided for @home_quick_filter_clear_tariff_a11y.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear tariff filter'**
+  String get home_quick_filter_clear_tariff_a11y;
 
   /// No description provided for @recent_searches.
   ///

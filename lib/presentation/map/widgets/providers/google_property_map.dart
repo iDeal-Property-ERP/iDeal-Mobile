@@ -87,6 +87,10 @@ class _GooglePropertyMapState extends State<GooglePropertyMap>
       ),
       markers: widget.markers.map((marker) {
         final label = marker.priceLabel?.trim();
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        final glyphColor = marker.isSelected && !isDark
+            ? theme.textNeutralWhite
+            : theme.iconBrandPrimary;
         return google.Marker(
           markerId: google.MarkerId('${marker.id}'),
           position: _latLng(marker.coordinate),
@@ -99,11 +103,8 @@ class _GooglePropertyMapState extends State<GooglePropertyMap>
                 : theme.bgSurfaceBase,
             borderColor: theme.bgBrandDefault,
             glyph: label == null || label.isEmpty
-                ? google.CircleGlyph(color: theme.iconBrandPrimary)
-                : google.TextGlyph(
-                    text: label,
-                    textColor: theme.iconBrandPrimary,
-                  ),
+                ? google.CircleGlyph(color: glyphColor)
+                : google.TextGlyph(text: label, textColor: glyphColor),
           ),
           infoWindow: google.InfoWindow(
             // Best native marker metadata exposed by google_maps_flutter.

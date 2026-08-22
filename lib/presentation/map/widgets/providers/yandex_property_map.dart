@@ -263,7 +263,9 @@ class _YandexPropertyMapState extends State<YandexPropertyMap>
               label: marker.priceLabel,
               isSelected: marker.isSelected,
               backgroundColor: context.currentTheme.bgBrandDefault,
-              iconColor: context.currentTheme.iconBrandPrimary,
+              iconColor: Theme.of(context).brightness == Brightness.dark
+                  ? context.currentTheme.iconBrandPrimary
+                  : context.currentTheme.textNeutralWhite,
             ),
           ),
         ),
@@ -301,7 +303,9 @@ class _YandexPropertyMapState extends State<YandexPropertyMap>
           child: PropertyMapClusterPin(
             count: cluster.size,
             backgroundColor: context.currentTheme.bgBrandDefault,
-            textColor: context.currentTheme.iconBrandPrimary,
+            textColor: Theme.of(context).brightness == Brightness.dark
+                ? context.currentTheme.iconBrandPrimary
+                : context.currentTheme.textNeutralWhite,
           ),
         ),
       ),

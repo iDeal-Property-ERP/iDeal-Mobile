@@ -7,6 +7,7 @@ import 'package:firebase_core_platform_interface/test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ideal_mobile/core/services/injection_container.dart';
 import 'package:ideal_mobile/i18n/app_localizations.dart';
@@ -21,11 +22,13 @@ import 'package:ideal_mobile/presentation/home/bloc/home_bloc.dart';
 import 'package:ideal_mobile/presentation/home/bloc/home_event.dart';
 import 'package:ideal_mobile/presentation/home/bloc/home_state.dart';
 import 'package:ideal_mobile/presentation/home/home_screen.dart';
+import 'package:ideal_mobile/presentation/home/widgets/home_quick_filter_sheet.dart';
 import 'package:ideal_mobile/presentation/home/widgets/home_screen_body.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_bloc.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_event.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_state.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_card.dart';
+import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filter_options.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filters.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/listing_card_shimmer.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/listings_empty_view.dart';
@@ -597,6 +600,243 @@ void main() {
         expect(find.text('Listing 1'), findsOneWidget);
       },
     );
+
+    testWidgets('renders active quick filter chips with resolved values '
+        'and X clear buttons', (tester) async {
+      final listingsBloc = MockListingsBloc();
+      when(() => listingsBloc.state).thenReturn(
+        ListingsState.test(
+          filters: const ListingFilters(
+            districtId: 2,
+            roomsMin: 2,
+            roomsMax: 4,
+            priceMin: 300,
+            priceMax: 600,
+            tariff: 'comfort',
+          ),
+          filterOptions: const ListingFilterOptions(
+            districts: [
+              ListingDistrict(id: 1, name: 'Chilanzar'),
+              ListingDistrict(id: 2, name: 'Yunusobod'),
+            ],
+            tariffs: [
+              ListingChoice(value: 'standard', label: 'Standard'),
+              ListingChoice(value: 'comfort', label: 'Comfort'),
+            ],
+          ),
+          items: [_homeTestListing(1)],
+          hasLoadedListings: true,
+          hasReachedMax: true,
+        ),
+      );
+
+      await tester.runWidgetTest(
+        providers: [BlocProvider<ListingsBloc>.value(value: listingsBloc)],
+        child: const Scaffold(body: HomeScreenBody()),
+      );
+
+      expect(
+        find.descendant(
+          of: find.byType(HomeScreenBody),
+          matching: find.text('Yunusobod'),
+        ),
+        findsNWidgets(2), // Chip + listing card
+      );
+      expect(find.text('2–4'), findsOneWidget);
+      expect(find.text('\$300–\$600'), findsOneWidget);
+      expect(find.text('Comfort'), findsOneWidget);
+      expect(find.byIcon(TablerIcons.x), findsNWidgets(4));
+    });
+
+    testWidgets('falls back to stored identifier/value when option not found', (
+      tester,
+    ) async {
+      final listingsBloc = MockListingsBloc();
+      when(() => listingsBloc.state).thenReturn(
+        ListingsState.test(
+          filters: const ListingFilters(
+            districtId: 999,
+            tariff: 'custom_tariff',
+          ),
+          filterOptions: const ListingFilterOptions(
+            districts: [ListingDistrict(id: 1, name: 'Chilanzar')],
+            tariffs: [ListingChoice(value: 'standard', label: 'Standard')],
+          ),
+          items: [_homeTestListing(1)],
+          hasLoadedListings: true,
+          hasReachedMax: true,
+        ),
+      );
+
+      await tester.runWidgetTest(
+        providers: [BlocProvider<ListingsBloc>.value(value: listingsBloc)],
+        child: const Scaffold(body: HomeScreenBody()),
+      );
+
+      expect(find.text('999'), findsOneWidget);
+      expect(find.text('custom_tariff'), findsOneWidget);
+    });
+
+    testWidgets(
+      'tapping X clears only that filter and preserves other filters',
+      (tester) async {
+        final listingsBloc = MockListingsBloc();
+        const currentFilters = ListingFilters(
+          districtId: 2,
+          roomsMin: 2,
+          roomsMax: 4,
+          priceMin: 300,
+          priceMax: 600,
+          tariff: 'comfort',
+        );
+        when(() => listingsBloc.state).thenReturn(
+          ListingsState.test(
+            filters: currentFilters,
+            filterOptions: const ListingFilterOptions(
+              districts: [ListingDistrict(id: 2, name: 'Yunusobod')],
+              tariffs: [ListingChoice(value: 'comfort', label: 'Comfort')],
+            ),
+            items: [_homeTestListing(1)],
+            hasLoadedListings: true,
+            hasReachedMax: true,
+          ),
+        );
+
+        await tester.runWidgetTest(
+          providers: [BlocProvider<ListingsBloc>.value(value: listingsBloc)],
+          child: const Scaffold(body: HomeScreenBody()),
+        );
+
+        // Tap X on district filter
+        await tester.tap(find.bySemanticsLabel('Clear district filter'));
+        await tester.pump();
+
+        verify(
+          () => listingsBloc.add(
+            ApplyListingFiltersEvent(
+              currentFilters.copyWith(clearDistrictId: true),
+            ),
+          ),
+        ).called(1);
+
+        // Tap X on rooms filter
+        await tester.tap(find.bySemanticsLabel('Clear rooms filter'));
+        await tester.pump();
+
+        verify(
+          () => listingsBloc.add(
+            ApplyListingFiltersEvent(
+              currentFilters.copyWith(clearRoomsMin: true, clearRoomsMax: true),
+            ),
+          ),
+        ).called(1);
+
+        // Tap X on price filter
+        await tester.tap(find.bySemanticsLabel('Clear price filter'));
+        await tester.pump();
+
+        verify(
+          () => listingsBloc.add(
+            ApplyListingFiltersEvent(
+              currentFilters.copyWith(clearPriceMin: true, clearPriceMax: true),
+            ),
+          ),
+        ).called(1);
+
+        // Tap X on tariff filter
+        await tester.tap(find.bySemanticsLabel('Clear tariff filter'));
+        await tester.pump();
+
+        verify(
+          () => listingsBloc.add(
+            ApplyListingFiltersEvent(
+              currentFilters.copyWith(clearTariff: true),
+            ),
+          ),
+        ).called(1);
+      },
+    );
+
+    testWidgets('tapping active chip body opens quick filter bottom sheet', (
+      tester,
+    ) async {
+      final listingsBloc = MockListingsBloc();
+      when(() => listingsBloc.state).thenReturn(
+        ListingsState.test(
+          filters: const ListingFilters(districtId: 2),
+          filterOptions: const ListingFilterOptions(
+            districts: [
+              ListingDistrict(id: 1, name: 'Chilanzar'),
+              ListingDistrict(id: 2, name: 'Yunusobod'),
+            ],
+          ),
+          items: [_homeTestListing(1)],
+          hasLoadedListings: true,
+          hasReachedMax: true,
+        ),
+      );
+
+      await tester.runWidgetTest(
+        providers: [BlocProvider<ListingsBloc>.value(value: listingsBloc)],
+        child: const Scaffold(body: HomeScreenBody()),
+      );
+
+      // Tap chip body with text 'Yunusobod'
+      final chipFinder = find.ancestor(
+        of: find.text('Yunusobod'),
+        matching: find.byType(InkWell),
+      );
+      await tester.tap(chipFinder.first);
+      await tester.pumpAndSettle();
+
+      // Bottom sheet opened
+      expect(find.byType(HomeQuickFilterSheet), findsOneWidget);
+      expect(find.text('Chilanzar'), findsOneWidget);
+    });
+
+    testWidgets('narrow layout renders without overflow', (tester) async {
+      tester.view.physicalSize = const Size(320, 600);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+
+      final listingsBloc = MockListingsBloc();
+      when(() => listingsBloc.state).thenReturn(
+        ListingsState.test(
+          filters: const ListingFilters(
+            districtId: 1,
+            roomsMin: 10,
+            roomsMax: 20,
+            priceMin: 5000,
+            priceMax: 10000,
+            tariff: 'extremely_long_tariff_name',
+          ),
+          filterOptions: const ListingFilterOptions(
+            districts: [
+              ListingDistrict(
+                id: 1,
+                name: 'Very Long District Name That Might Overflow',
+              ),
+            ],
+          ),
+          items: [_homeTestListing(1)],
+          hasLoadedListings: true,
+          hasReachedMax: true,
+        ),
+      );
+
+      await tester.runWidgetTest(
+        providers: [BlocProvider<ListingsBloc>.value(value: listingsBloc)],
+        child: const Scaffold(body: HomeScreenBody()),
+      );
+
+      expect(
+        find.text('Very Long District Name That Might Overflow'),
+        findsOneWidget,
+      );
+      expect(find.text('10–20'), findsOneWidget);
+      expect(find.text('\$5000–\$10000'), findsOneWidget);
+      expect(find.text('extremely_long_tariff_name'), findsOneWidget);
+    });
 
     // Golden test cases
     testExecutable(() {

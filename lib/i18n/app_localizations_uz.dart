@@ -1395,6 +1395,18 @@ class AppLocalizationsUz extends AppLocalizations {
   String get listings_filter_tariff => 'Tarif';
 
   @override
+  String get listings_filter_verification => 'Tasdiqlash';
+
+  @override
+  String get listings_search_district => 'Tumanni qidirish...';
+
+  @override
+  String get listings_no_districts_found => 'Tumanlar topilmadi';
+
+  @override
+  String get listings_select_district => 'Tumanni tanlang';
+
+  @override
   String get listings_range_min => 'Min';
 
   @override
@@ -1475,6 +1487,27 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get home_quick_filter_tariff => 'Tarif';
+
+  @override
+  String get home_quick_filter_custom_range => 'Boshqa oraliq';
+
+  @override
+  String get home_quick_filter_no_districts => 'Tumanlar mavjud emas';
+
+  @override
+  String get home_quick_filter_no_tariffs => 'Tariflar mavjud emas';
+
+  @override
+  String get home_quick_filter_clear_district_a11y => 'Tuman filtrini tozalash';
+
+  @override
+  String get home_quick_filter_clear_rooms_a11y => 'Xonalar filtrini tozalash';
+
+  @override
+  String get home_quick_filter_clear_price_a11y => 'Narx filtrini tozalash';
+
+  @override
+  String get home_quick_filter_clear_tariff_a11y => 'Tarif filtrini tozalash';
 
   @override
   String get recent_searches => 'Oxirgi qidiruvlar';

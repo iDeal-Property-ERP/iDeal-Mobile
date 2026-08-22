@@ -1370,6 +1370,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get listings_filter_tariff => 'Tariff';
 
   @override
+  String get listings_filter_verification => 'Verification';
+
+  @override
+  String get listings_search_district => 'Search district...';
+
+  @override
+  String get listings_no_districts_found => 'No districts found';
+
+  @override
+  String get listings_select_district => 'Select district';
+
+  @override
   String get listings_range_min => 'Min';
 
   @override
@@ -1450,6 +1462,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get home_quick_filter_tariff => 'Tariff';
+
+  @override
+  String get home_quick_filter_custom_range => 'Custom range';
+
+  @override
+  String get home_quick_filter_no_districts => 'No districts available';
+
+  @override
+  String get home_quick_filter_no_tariffs => 'No tariffs available';
+
+  @override
+  String get home_quick_filter_clear_district_a11y => 'Clear district filter';
+
+  @override
+  String get home_quick_filter_clear_rooms_a11y => 'Clear rooms filter';
+
+  @override
+  String get home_quick_filter_clear_price_a11y => 'Clear price filter';
+
+  @override
+  String get home_quick_filter_clear_tariff_a11y => 'Clear tariff filter';
 
   @override
   String get recent_searches => 'Recent searches';

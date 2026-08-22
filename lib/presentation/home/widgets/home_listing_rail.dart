@@ -6,7 +6,7 @@ import 'package:ideal_mobile/presentation/listings/widgets/listing_card.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 
 const double kHomeRailCardWidth = 168.0;
-const double kHomeRailHeight = 272.0;
+const double kHomeRailHeight = 280.0;
 const double kHomeRailSpacing = 10.0;
 
 class HomeListingRail extends StatelessWidget {
@@ -64,7 +64,8 @@ class HomeListingRail extends StatelessWidget {
         SizedBox(
           height: kHomeRailHeight,
           child: ListView.separated(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.fromLTRB(16, 2, 16, 8),
+            clipBehavior: Clip.none,
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
             itemCount: listings.length,

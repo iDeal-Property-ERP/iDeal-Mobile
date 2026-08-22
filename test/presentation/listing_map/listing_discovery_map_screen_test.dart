@@ -170,17 +170,16 @@ void main() {
     expect(tester.getSize(preview).width, 328);
     expect(find.text(r'$500'), findsOneWidget);
     expect(find.text('Full info'), findsNothing);
-    expect(find.text('Call'), findsOneWidget);
+    expect(find.text('Call'), findsNothing);
     expect(
       find.byKey(const ValueKey('listing_map_near_me_button')),
       findsNothing,
     );
   });
 
-  testWidgets('preview card opens detail and keeps its call action', (
+  testWidgets('preview card opens detail on tap without call button', (
     tester,
   ) async {
-    var calls = 0;
     var opened = 0;
     await tester.pumpWidget(
       _app(
@@ -188,7 +187,6 @@ void main() {
           body: ListingMapPreviewCard(
             listing: _listing,
             propertyTypeLabel: 'Apartment',
-            onCall: () => calls++,
             onTap: () => opened++,
           ),
         ),
@@ -196,9 +194,8 @@ void main() {
     );
 
     await tester.tap(find.byType(ListingMapPreviewCard));
-    await tester.tap(find.text('Call'));
     expect(opened, 1);
-    expect(calls, 1);
+    expect(find.text('Call'), findsNothing);
 
     await tester.pumpWidget(
       _app(
@@ -419,9 +416,7 @@ void main() {
     });
   }
 
-  testWidgets('shows empty, provider-unavailable, and call-failure feedback', (
-    tester,
-  ) async {
+  testWidgets('shows empty and provider-unavailable feedback', (tester) async {
     final repository = _MockRepository();
     when(
       () => repository.getListings(
@@ -450,7 +445,6 @@ void main() {
           bloc: bloc,
           providerSelector: unavailable,
           seedListings: const [_listing],
-          uriLauncher: (_) async => false,
           filterOptions: const ListingFilterOptions(
             propertyTypes: [
               ListingChoice(value: 'apartment', label: 'Localized apartment'),
@@ -486,14 +480,7 @@ void main() {
     bloc.add(const SelectListingMapItem(1));
     await tester.pumpAndSettle();
     expect(find.textContaining('Localized apartment'), findsOneWidget);
-    await tester.tap(find.text('Call'));
-    await tester.pumpAndSettle();
-    expect(
-      find.text(
-        "Couldn't start the call. Check your phone settings and try again.",
-      ),
-      findsOneWidget,
-    );
+    expect(find.text('Call'), findsNothing);
   });
 
   testWidgets('returns current bloc filters even before the next rebuild', (
