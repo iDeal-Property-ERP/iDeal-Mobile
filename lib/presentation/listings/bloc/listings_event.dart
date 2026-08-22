@@ -51,6 +51,25 @@ class LoadFilterOptionsEvent extends ListingsEvent {
   List<Object> get props => [];
 }
 
+class LoadHomeRailsEvent extends ListingsEvent {
+  const LoadHomeRailsEvent({
+    this.recentSearchQuery,
+    this.favoriteListingIds = const [],
+    this.favoriteDistrictId,
+  });
+
+  final String? recentSearchQuery;
+  final List<int> favoriteListingIds;
+  final int? favoriteDistrictId;
+
+  @override
+  List<Object?> get props => [
+    recentSearchQuery,
+    favoriteListingIds,
+    favoriteDistrictId,
+  ];
+}
+
 class ToggleFavoriteEvent extends ListingsEvent {
   const ToggleFavoriteEvent(this.listingId);
 

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
-import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
+import 'package:ideal_mobile/gen/fonts.gen.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
+import 'package:ideal_mobile/presentation/home/widgets/home_listing_rail.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_card.dart'
     as domain;
 import 'package:ideal_mobile/presentation/listings/widgets/listing_card_image.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 import 'package:ideal_mobile/widgets/images/prioritized_image_scheduler.dart';
 import 'package:ideal_mobile/widgets/styling/app_colors.dart';
-import 'package:ideal_mobile/widgets/styling/app_radius.dart';
 
 class ListingCardTile extends StatelessWidget {
   const ListingCardTile({
@@ -18,6 +18,8 @@ class ListingCardTile extends StatelessWidget {
     required this.onFavoriteToggle,
     this.imagePriority = ImageLoadPriority.normal,
     this.onTap,
+    this.width,
+    this.isRail = false,
   });
 
   final domain.ListingCard listing;
@@ -25,16 +27,19 @@ class ListingCardTile extends StatelessWidget {
   final VoidCallback onFavoriteToggle;
   final ImageLoadPriority imagePriority;
   final VoidCallback? onTap;
+  final double? width;
+  final bool isRail;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    Widget card = GestureDetector(
       onTap: onTap,
       child: Container(
         clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
           color: context.currentTheme.bgSurfaceBase2,
-          borderRadius: BorderRadius.circular(AppRadius.card),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: context.currentTheme.strokeNeutralLight100),
           boxShadow: const [
             BoxShadow(
               color: AppColors.shadowColor3,
@@ -45,15 +50,24 @@ class ListingCardTile extends StatelessWidget {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [_buildImageBlock(context), _buildInfoBlock(context)],
+          children: [
+            _buildImageBlock(context),
+            Expanded(child: _buildInfoBlock(context)),
+          ],
         ),
       ),
     );
+
+    if (width != null || isRail) {
+      final cardWidth = width ?? kHomeRailCardWidth;
+      card = SizedBox(width: cardWidth, child: card);
+    }
+    return card;
   }
 
   Widget _buildImageBlock(BuildContext context) {
     return AspectRatio(
-      aspectRatio: 388 / 210,
+      aspectRatio: 1,
       child: Stack(
         fit: StackFit.expand,
         children: [
@@ -64,8 +78,8 @@ class ListingCardTile extends StatelessWidget {
             priority: imagePriority,
           ),
           Positioned(
-            top: 12,
-            right: 12,
+            top: 7,
+            right: 7,
             child: _FavoriteButton(
               isFavorite: isFavorite,
               label: context.localization.listings_save,
@@ -79,62 +93,25 @@ class ListingCardTile extends StatelessWidget {
 
   Widget _buildInfoBlock(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              Expanded(child: _buildPriceRow(context)),
-              const SizedBox(width: 8),
-              _buildTariffPill(context),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  listing.title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.p2SemiBold.copyWith(
-                    color: context.currentTheme.textNeutralPrimary,
-                  ),
-                ),
-              ),
-              if (listing.score > 0) ...[
-                const SizedBox(width: 8),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      TablerIcons.star_filled,
-                      color: context.currentTheme.textWarningPrimary,
-                      size: 14,
-                    ),
-                    const SizedBox(width: 3),
-                    Text(
-                      listing.score.toString(),
-                      style: AppTextStyles.p3Medium.copyWith(
-                        color: context.currentTheme.textNeutralPrimary,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ],
-          ),
-          const SizedBox(height: 4),
           Text(
-            _metaLine(context),
-            maxLines: 1,
+            listing.title,
+            maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: AppTextStyles.p3Regular.copyWith(
-              color: context.currentTheme.textNeutralSecondary,
-            ),
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              fontFamily: FontFamily.inter,
+              height: 1.25,
+              letterSpacing: -0.15,
+            ).copyWith(color: context.currentTheme.textNeutralPrimary),
           ),
+          _buildPriceRow(context),
+          _buildFooterRow(context),
         ],
       ),
     );
@@ -148,73 +125,69 @@ class ListingCardTile extends StatelessWidget {
       children: [
         Text(
           _formatPrice(listing.price, listing.currency),
-          style: AppTextStyles.h5Bold.copyWith(
-            color: context.currentTheme.textNeutralPrimary,
-          ),
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            fontFamily: FontFamily.inter,
+            height: 1.1,
+          ).copyWith(color: context.currentTheme.textNeutralPrimary),
         ),
-        const SizedBox(width: 4),
+        const SizedBox(width: 3),
         Text(
           context.localization.listings_per_month,
-          style: AppTextStyles.p3Regular.copyWith(
-            color: context.currentTheme.textNeutralSecondary,
-          ),
+          style: const TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w400,
+            fontFamily: FontFamily.inter,
+            height: 1.2,
+          ).copyWith(color: context.currentTheme.textNeutralSecondary),
         ),
       ],
     );
   }
 
-  Widget _buildTariffPill(BuildContext context) {
-    return DecoratedBox(
-      decoration: ShapeDecoration(
-        color: context.currentTheme.bgNeutralLight100,
-        shape: const StadiumBorder(),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-        child: Text(
-          _tariffLabel(context),
-          style: AppTextStyles.c2Medium.copyWith(
-            color: context.currentTheme.textNeutralSecondary,
+  Widget _buildFooterRow(BuildContext context) {
+    final districtName = listing.district ?? listing.address;
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            districtName,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w400,
+              fontFamily: FontFamily.inter,
+              height: 1.2,
+            ).copyWith(color: context.currentTheme.textNeutralSecondary),
           ),
         ),
-      ),
+        if (listing.score > 0) ...[
+          const SizedBox(width: 4),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                TablerIcons.star_filled,
+                color: context.currentTheme.textWarningPrimary,
+                size: 12,
+              ),
+              const SizedBox(width: 2),
+              Text(
+                listing.score.toStringAsFixed(1),
+                style: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: FontFamily.inter,
+                  height: 1.2,
+                ).copyWith(color: context.currentTheme.textNeutralPrimary),
+              ),
+            ],
+          ),
+        ],
+      ],
     );
-  }
-
-  String _metaLine(BuildContext context) {
-    final segments = <String>[
-      listing.district ?? listing.address,
-      if (listing.rooms != null)
-        context.localization.listings_rooms_count(listing.rooms!),
-      if (listing.areaSqm != null)
-        context.localization.listings_area_sqm(listing.areaSqm!),
-      if (listing.floor != null)
-        _floorLabel(context, listing.floor!, listing.totalFloors),
-    ];
-
-    return segments.join(' · ');
-  }
-
-  String _floorLabel(BuildContext context, int floor, int? totalFloors) {
-    // A dedicated string rather than substituting into listings_floor_of: in
-    // Uzbek the total precedes the floor ('{total} dan {floor}-qavat'), so
-    // patching the rendered string corrupts the floor number instead.
-    if (totalFloors == null) {
-      return context.localization.listings_floor_only(floor);
-    }
-    return context.localization.listings_floor_of(floor, totalFloors);
-  }
-
-  String _tariffLabel(BuildContext context) {
-    switch (listing.tariff.toLowerCase()) {
-      case 'comfort':
-        return context.localization.listings_tariff_comfort;
-      case 'premium':
-        return context.localization.listings_tariff_premium;
-      case 'standard':
-      default:
-        return context.localization.listings_tariff_standard;
-    }
   }
 }
 
@@ -234,33 +207,46 @@ class _FavoriteButton extends StatelessWidget {
     return Semantics(
       button: true,
       label: label,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: context.currentTheme.bgSurfaceBase2,
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.shadowColor3.withOpacity(0.16),
-              blurRadius: 2,
-              offset: const Offset(0, 1),
-            ),
-          ],
-        ),
-        child: Material(
-          type: MaterialType.transparency,
-          shape: const CircleBorder(),
-          child: InkWell(
-            customBorder: const CircleBorder(),
-            onTap: onPressed,
-            child: SizedBox(
-              width: 40,
-              height: 40,
+      child: Material(
+        type: MaterialType.transparency,
+        shape: const CircleBorder(),
+        child: InkWell(
+          customBorder: const CircleBorder(),
+          onTap: onPressed,
+          child: SizedBox(
+            width: 44,
+            height: 44,
+            child: Center(
               child: Icon(
                 isFavorite ? TablerIcons.heart_filled : TablerIcons.heart,
-                color: isFavorite
-                    ? context.currentTheme.iconBrandPrimary
-                    : context.currentTheme.textNeutralPrimary,
-                size: 20,
+                color: isFavorite ? AppColors.heartFavorite : Colors.white,
+                size: 22,
+                shadows: isFavorite
+                    ? const [
+                        Shadow(
+                          color: Color(0x80000000),
+                          blurRadius: 3,
+                          offset: Offset(0, 1),
+                        ),
+                        Shadow(
+                          color: Color(0x4D000000),
+                          blurRadius: 6,
+                          offset: Offset(0, 2),
+                        ),
+                      ]
+                    : const [
+                        Shadow(
+                          color: Color(0xCC000000),
+                          blurRadius: 2,
+                          offset: Offset(0, 1),
+                        ),
+                        Shadow(color: Color(0x80000000), blurRadius: 4),
+                        Shadow(
+                          color: Color(0x66000000),
+                          blurRadius: 8,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
               ),
             ),
           ),

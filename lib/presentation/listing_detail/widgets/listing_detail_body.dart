@@ -131,17 +131,6 @@ class ListingDetailBody extends StatelessWidget {
       ListingDetailSpecChips(detail: detail),
     ];
 
-    if (!context.read<ListingDetailBloc>().state.isFreshDetail) {
-      // Feed cards intentionally lack these detail-only fields. Keep their
-      // space stable while an authoritative response is pending.
-      sections.addAll(const [
-        SizedBox(height: 14),
-        _PreviewSectionPlaceholder(),
-        SizedBox(height: 14),
-        _PreviewSectionPlaceholder(lines: 2),
-      ]);
-    }
-
     if (detail.verificationIsVerified &&
         detail.verificationChecklist.isNotEmpty) {
       sections.add(const SizedBox(height: 14));
@@ -306,19 +295,4 @@ class ListingDetailBody extends StatelessWidget {
       booking: const BookingEligibility.ineligible(),
     );
   }
-}
-
-class _PreviewSectionPlaceholder extends StatelessWidget {
-  const _PreviewSectionPlaceholder({this.lines = 3});
-
-  final int lines;
-
-  @override
-  Widget build(BuildContext context) => DecoratedBox(
-    decoration: BoxDecoration(
-      color: context.currentTheme.bgSurfaceBase2,
-      borderRadius: BorderRadius.circular(12),
-    ),
-    child: SizedBox(height: 18.0 * lines + 22),
-  );
 }

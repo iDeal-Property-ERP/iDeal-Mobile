@@ -36,12 +36,10 @@ class ListingMapPreviewCard extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           borderRadius: borderRadius,
-          child: SizedBox(
-            height: 360,
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 160,
+          child: Column(
+            children: [
+              Expanded(
+                child: SizedBox(
                   width: double.infinity,
                   child: ListingCardImage(
                     imageUrl: listing.coverImageUrl,
@@ -49,70 +47,69 @@ class ListingMapPreviewCard extends StatelessWidget {
                     displayUrl: listing.coverDisplayUrl,
                   ),
                 ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text(
-                          formatListingMapPrice(
-                            listing.price,
-                            listing.currency,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTextStyles.h5Bold.copyWith(
-                            color: context.currentTheme.textNeutralPrimary,
-                          ),
-                        ),
-                        const SizedBox(height: 3),
-                        Text(
-                          listing.title,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTextStyles.p2SemiBold.copyWith(
-                            color: context.currentTheme.textNeutralPrimary,
-                          ),
-                        ),
-                        Text(
-                          listing.address,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTextStyles.p3Regular.copyWith(
-                            color: context.currentTheme.textNeutralSecondary,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          _facts(context),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTextStyles.c2Medium.copyWith(
-                            color: context.currentTheme.textNeutralSecondary,
-                          ),
-                        ),
-                        const Spacer(),
-                        if (onCall != null)
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: OutlinedButton.icon(
-                              style: OutlinedButton.styleFrom(
-                                minimumSize: const Size(0, 44),
-                              ),
-                              onPressed: onCall,
-                              icon: const Icon(TablerIcons.phone, size: 17),
-                              label: Text(
-                                context.localization.listing_map_call,
-                              ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(14, 8, 14, 10),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      formatListingMapPrice(listing.price, listing.currency),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.h5Bold.copyWith(
+                        color: context.currentTheme.textNeutralPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      listing.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.p2SemiBold.copyWith(
+                        color: context.currentTheme.textNeutralPrimary,
+                      ),
+                    ),
+                    Text(
+                      listing.address,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.p3Regular.copyWith(
+                        color: context.currentTheme.textNeutralSecondary,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      _facts(context),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.c2Medium.copyWith(
+                        color: context.currentTheme.textNeutralSecondary,
+                      ),
+                    ),
+                    if (onCall != null) ...[
+                      const SizedBox(height: 6),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: OutlinedButton.icon(
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size(0, 36),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
                             ),
                           ),
-                      ],
-                    ),
-                  ),
+                          onPressed: onCall,
+                          icon: const Icon(TablerIcons.phone, size: 16),
+                          label: Text(context.localization.listing_map_call),
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

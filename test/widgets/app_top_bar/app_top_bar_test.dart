@@ -232,6 +232,7 @@ void main() {
       var neutralTaps = 0;
       var brandTaps = 0;
       var overlayTaps = 0;
+      var surfaceTaps = 0;
       await tester.pumpWidget(
         _testApp(
           Scaffold(
@@ -257,6 +258,13 @@ void main() {
                   tooltip: 'Overlay action',
                   onPressed: () => overlayTaps++,
                   style: AppTopBarActionStyle.overlay,
+                ),
+                AppTopBarAction(
+                  key: const ValueKey('surface-action'),
+                  icon: Icons.map_outlined,
+                  tooltip: 'Surface action',
+                  onPressed: () => surfaceTaps++,
+                  style: AppTopBarActionStyle.surface,
                 ),
                 const AppTopBarAction(
                   key: ValueKey('disabled-action'),
@@ -291,7 +299,12 @@ void main() {
         styleFor('Overlay action').backgroundColor!.resolve(const {}),
         Colors.white.withValues(alpha: 0.18),
       );
+      expect(
+        styleFor('Surface action').backgroundColor!.resolve(const {}),
+        AppColors.bgSurfaceBase2,
+      );
       expect(tester.widget<Icon>(find.byIcon(Icons.image_outlined)).size, 20);
+      expect(tester.widget<Icon>(find.byIcon(Icons.map_outlined)).size, 22);
       expect(
         styleFor(
           'Disabled action',
@@ -318,10 +331,12 @@ void main() {
       await tester.tap(find.byTooltip('Neutral action'));
       await tester.tap(find.byTooltip('Brand action'));
       await tester.tap(find.byTooltip('Overlay action'));
+      await tester.tap(find.byTooltip('Surface action'));
       await tester.tap(find.byTooltip('Disabled action'));
       expect(neutralTaps, 1);
       expect(brandTaps, 1);
       expect(overlayTaps, 1);
+      expect(surfaceTaps, 1);
     });
 
     testWidgets('long titles remain bounded at narrow widths and 200% scale', (

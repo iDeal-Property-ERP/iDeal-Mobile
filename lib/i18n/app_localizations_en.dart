@@ -1391,6 +1391,64 @@ class AppLocalizationsEn extends AppLocalizations {
   String get listings_search_placeholder => 'Search rentals';
 
   @override
+  String get home_heading => 'Find your next home';
+
+  @override
+  String get home_recent_search_heading => 'From your recent searches';
+
+  @override
+  String home_recent_search_context(String query) {
+    return 'Based on $query and your last filters';
+  }
+
+  @override
+  String get home_selected_heading => 'From selected';
+
+  @override
+  String get home_selected_context => 'More homes like the ones you saved';
+
+  @override
+  String get home_highly_rated_heading => 'Highly rated homes';
+
+  @override
+  String get home_search_sheet_title => 'Search homes';
+
+  @override
+  String get home_search_sheet_placeholder => 'Try Yunusobod';
+
+  @override
+  String get home_search_sheet_field_label => 'District, address, or landmark';
+
+  @override
+  String get home_search_sheet_example_recent => 'Example recent searches';
+
+  @override
+  String get home_search_sheet_action => 'Show matching homes';
+
+  @override
+  String get home_tariff_sheet_subtitle =>
+      'Choose the service level that fits your rental search.';
+
+  @override
+  String get home_tariff_sheet_clear_hint =>
+      'Tap the selected tariff again to clear it.';
+
+  @override
+  String get home_feed_status_loading => 'Loading more highly rated homes';
+
+  @override
+  String get home_quick_filter_district => 'District';
+
+  @override
+  String get home_quick_filter_rooms => 'Rooms';
+
+  @override
+  String get home_quick_filter_price => 'Price';
+
+  @override
+  String get home_quick_filter_tariff => 'Tariff';
+
+  @override
   String get recent_searches => 'Recent searches';
 
   @override

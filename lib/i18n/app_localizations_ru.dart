@@ -1417,6 +1417,64 @@ class AppLocalizationsRu extends AppLocalizations {
   String get listings_search_placeholder => 'Поиск аренды';
 
   @override
+  String get home_heading => 'Найдите свой следующий дом';
+
+  @override
+  String get home_recent_search_heading => 'На основе недавних поисков';
+
+  @override
+  String home_recent_search_context(String query) {
+    return 'На основе запроса «$query» и ваших фильтров';
+  }
+
+  @override
+  String get home_selected_heading => 'Из избранного';
+
+  @override
+  String get home_selected_context => 'Похожие на сохраненные вами дома';
+
+  @override
+  String get home_highly_rated_heading => 'Дома с высоким рейтингом';
+
+  @override
+  String get home_search_sheet_title => 'Поиск жилья';
+
+  @override
+  String get home_search_sheet_placeholder => 'Например, Юнусабад';
+
+  @override
+  String get home_search_sheet_field_label => 'Район, адрес или ориентир';
+
+  @override
+  String get home_search_sheet_example_recent => 'Примеры недавних поисков';
+
+  @override
+  String get home_search_sheet_action => 'Показать подходящие дома';
+
+  @override
+  String get home_tariff_sheet_subtitle =>
+      'Выберите уровень сервиса, подходящий для вашего поиска.';
+
+  @override
+  String get home_tariff_sheet_clear_hint =>
+      'Нажмите на выбранный тариф еще раз, чтобы сбросить его.';
+
+  @override
+  String get home_feed_status_loading => 'Загрузка жилья с высоким рейтингом';
+
+  @override
+  String get home_quick_filter_district => 'Район';
+
+  @override
+  String get home_quick_filter_rooms => 'Комнаты';
+
+  @override
+  String get home_quick_filter_price => 'Цена';
+
+  @override
+  String get home_quick_filter_tariff => 'Тариф';
+
+  @override
   String get recent_searches => 'Недавние поиски';
 
   @override

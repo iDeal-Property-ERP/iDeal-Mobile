@@ -11,7 +11,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:ideal_mobile/core/services/injection_container.dart';
 import 'package:ideal_mobile/firebase_options_dev.dart' as dev;
 import 'package:ideal_mobile/firebase_options_prod.dart' as prod;
-import 'package:ideal_mobile/services/mapkit_service.dart';
 import 'package:ideal_mobile/services/notification_service.dart';
 import 'package:ideal_mobile/utils/app_environment.dart';
 import 'package:ideal_mobile/utils/app_flavor_env.dart';
@@ -47,8 +46,6 @@ Future<void> initializeApp({Dio? dio}) async {
   await SystemChrome.setPreferredOrientations([.portraitUp, .portraitDown]);
 
   await dotenv.load();
-
-  await MapkitService.instance.initialize();
 
   await configureDependencies(dio: dio);
 }

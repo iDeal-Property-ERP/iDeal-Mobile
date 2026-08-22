@@ -392,7 +392,7 @@ class _SelectedBody extends StatelessWidget {
                   (availableWidth -
                       kListingsGridSpacing * (crossAxisCount - 1)) /
                   crossAxisCount;
-              final mainAxisExtent = tileWidth * 210 / 388 + kListingInfoExtent;
+              final mainAxisExtent = tileWidth + kListingInfoExtent;
 
               return SliverGrid(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

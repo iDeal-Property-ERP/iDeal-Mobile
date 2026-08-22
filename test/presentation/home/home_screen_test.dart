@@ -508,6 +508,72 @@ void main() {
       expect(find.byType(HomeScreenBody), findsOneWidget);
     });
 
+    testWidgets(
+      'renders Find your next home, search trigger, chips, and feed heading',
+      (tester) async {
+        final listingsBloc = MockListingsBloc();
+        when(() => listingsBloc.state).thenReturn(
+          ListingsState.test(
+            items: [_homeTestListing(1)],
+            hasLoadedListings: true,
+            hasReachedMax: true,
+          ),
+        );
+
+        await tester.runWidgetTest(
+          providers: [BlocProvider<ListingsBloc>.value(value: listingsBloc)],
+          child: const Scaffold(body: HomeScreenBody()),
+        );
+
+        expect(find.text('Find your next home'), findsOneWidget);
+        expect(find.text('Search rentals'), findsOneWidget);
+        expect(find.text('District'), findsOneWidget);
+        expect(find.text('Rooms'), findsOneWidget);
+        expect(find.text('Price'), findsOneWidget);
+        expect(find.text('Tariff'), findsOneWidget);
+        expect(find.text('Highly rated homes'), findsOneWidget);
+        expect(find.text('Map'), findsOneWidget);
+      },
+    );
+
+    testWidgets('renders recommendation rails when rails contain items', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(411, 1400);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+
+      final listingsBloc = MockListingsBloc();
+      when(() => listingsBloc.state).thenReturn(
+        ListingsState.test(
+          items: [_homeTestListing(1)],
+          recentSearchRailListings: [
+            _homeTestListing(10, title: 'Recent Home'),
+          ],
+          recentSearchContext: 'Yunusobod',
+          selectedInspiredRailListings: [
+            _homeTestListing(20, title: 'Selected Home'),
+          ],
+          hasLoadedListings: true,
+          hasReachedMax: true,
+        ),
+      );
+
+      await tester.runWidgetTest(
+        providers: [BlocProvider<ListingsBloc>.value(value: listingsBloc)],
+        child: const Scaffold(body: HomeScreenBody()),
+      );
+
+      expect(find.text('From your recent searches'), findsOneWidget);
+      expect(
+        find.text('Based on Yunusobod and your last filters'),
+        findsOneWidget,
+      );
+      expect(find.text('Recent Home'), findsOneWidget);
+      expect(find.text('From selected'), findsOneWidget);
+      expect(find.text('Selected Home'), findsOneWidget);
+    });
+
     // Golden test cases
     testExecutable(() {
       goldenTest(
@@ -567,10 +633,10 @@ void main() {
   });
 }
 
-ListingCard _homeTestListing(int id) => ListingCard(
+ListingCard _homeTestListing(int id, {String? title}) => ListingCard(
   id: id,
   propertyId: id + 100,
-  title: 'Listing $id',
+  title: title ?? 'Listing $id',
   district: 'Yunusobod',
   address: 'Address $id',
   propertyType: 'apartment',

@@ -561,6 +561,33 @@
   "listings_chip_comfort": "Comfort",
   "listings_chip_premium": "Premium",
   "listings_search_placeholder": "Search rentals",
+  "home_heading": "Find your next home",
+  "home_recent_search_heading": "From your recent searches",
+  "home_recent_search_context": "Based on {query} and your last filters",
+  "@home_recent_search_context": {
+    "description": "Subtitle showing recent search query and filter context.",
+    "placeholders": {
+      "query": {
+        "example": "Yunusobod",
+        "type": "String"
+      }
+    }
+  },
+  "home_selected_heading": "From selected",
+  "home_selected_context": "More homes like the ones you saved",
+  "home_highly_rated_heading": "Highly rated homes",
+  "home_search_sheet_title": "Search homes",
+  "home_search_sheet_placeholder": "Try Yunusobod",
+  "home_search_sheet_field_label": "District, address, or landmark",
+  "home_search_sheet_example_recent": "Example recent searches",
+  "home_search_sheet_action": "Show matching homes",
+  "home_tariff_sheet_subtitle": "Choose the service level that fits your rental search.",
+  "home_tariff_sheet_clear_hint": "Tap the selected tariff again to clear it.",
+  "home_feed_status_loading": "Loading more highly rated homes",
+  "home_quick_filter_district": "District",
+  "home_quick_filter_rooms": "Rooms",
+  "home_quick_filter_price": "Price",
+  "home_quick_filter_tariff": "Tariff",
   "recent_searches": "Recent searches",
   "listings_view_map": "Map",
   "listing_map_search_hint": "Search homes",

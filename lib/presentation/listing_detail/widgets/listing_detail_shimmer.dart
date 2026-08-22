@@ -48,11 +48,7 @@ class ListingDetailShimmer extends StatelessWidget {
                           children: [
                             ShimmerText(width: 160),
                             Spacer(),
-                            ShimmerContent(
-                              width: 82,
-                              height: 28,
-                              radius: 999,
-                            ),
+                            ShimmerContent(width: 82, height: 28, radius: 999),
                           ],
                         ),
                         SizedBox(height: 9),
@@ -64,26 +60,10 @@ class ListingDetailShimmer extends StatelessWidget {
                           spacing: 8,
                           runSpacing: 8,
                           children: [
-                            ShimmerContent(
-                              width: 92,
-                              height: 38,
-                              radius: 8,
-                            ),
-                            ShimmerContent(
-                              width: 88,
-                              height: 38,
-                              radius: 8,
-                            ),
-                            ShimmerContent(
-                              width: 105,
-                              height: 38,
-                              radius: 8,
-                            ),
-                            ShimmerContent(
-                              width: 98,
-                              height: 38,
-                              radius: 8,
-                            ),
+                            ShimmerContent(width: 92, height: 38, radius: 8),
+                            ShimmerContent(width: 88, height: 38, radius: 8),
+                            ShimmerContent(width: 105, height: 38, radius: 8),
+                            ShimmerContent(width: 98, height: 38, radius: 8),
                           ],
                         ),
                         SizedBox(height: 14),
@@ -146,9 +126,7 @@ class ListingDetailShimmer extends StatelessWidget {
                     SizedBox(height: 16),
                     Row(
                       children: [
-                        Expanded(
-                          child: ShimmerButton(height: 48, radius: 12),
-                        ),
+                        Expanded(child: ShimmerButton(height: 48, radius: 12)),
                         SizedBox(width: 12),
                         ShimmerButton(width: 48, height: 48, radius: 12),
                       ],

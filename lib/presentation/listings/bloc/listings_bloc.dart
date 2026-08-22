@@ -89,6 +89,7 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
     on<ApplyListingFiltersEvent>(_onApplyListingFiltersEvent);
     on<ClearListingFiltersEvent>(_onClearListingFiltersEvent);
     on<LoadFilterOptionsEvent>(_onLoadFilterOptionsEvent);
+    on<LoadHomeRailsEvent>(_onLoadHomeRailsEvent);
     on<ToggleFavoriteEvent>(_onToggleFavoriteEvent);
     on<ClearFavoriteFeedbackEvent>(_onClearFavoriteFeedbackEvent);
     on<SyncFavoriteStatusEvent>(_onSyncFavoriteStatusEvent);
@@ -181,7 +182,7 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
   ) {
     _searchDebounce?.cancel();
     return _loadListings(
-      filters: const ListingFilters.empty(),
+      filters: const ListingFilters(sort: 'score_desc'),
       page: 1,
       replaceItems: true,
       emit: emit,
@@ -237,11 +238,100 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
     _performanceService.stopTrace(kTraceApiGetListings);
   }
 
+  Future<void> _onLoadHomeRailsEvent(
+    LoadHomeRailsEvent event,
+    Emitter<ListingsState> emit,
+  ) async {
+    final recentQuery = event.recentSearchQuery?.trim();
+    final hasRecent = recentQuery != null && recentQuery.isNotEmpty;
+    final hasFavorites = event.favoriteListingIds.isNotEmpty;
+
+    if (!hasRecent && !hasFavorites) {
+      emit(
+        ListingsLoadedState(
+          state.copyWith(
+            recentSearchRailListings: const [],
+            clearRecentSearchContext: true,
+            isRecentSearchRailLoading: false,
+            selectedInspiredRailListings: const [],
+            isSelectedRailLoading: false,
+          ),
+        ),
+      );
+      return;
+    }
+
+    emit(
+      ListingsLoadedState(
+        state.copyWith(
+          isRecentSearchRailLoading: hasRecent,
+          isSelectedRailLoading: hasFavorites,
+        ),
+      ),
+    );
+
+    List<ListingCard> recentItems = const [];
+    String? recentContext;
+    if (hasRecent) {
+      final recentResult = await _getListings(
+        GetListingsParams(
+          filters: ListingFilters(query: recentQuery, sort: 'score_desc'),
+          page: 1,
+          perPage: 6,
+        ),
+      );
+      recentResult.fold(
+        (_) {
+          recentItems = const [];
+          recentContext = null;
+        },
+        (page) {
+          recentItems = _applyPendingFavoriteStatuses(page.items);
+          recentContext = recentQuery;
+        },
+      );
+    }
+
+    List<ListingCard> selectedItems = const [];
+    if (hasFavorites) {
+      final selectedFilters = event.favoriteDistrictId != null
+          ? ListingFilters(
+              districtId: event.favoriteDistrictId,
+              sort: 'score_desc',
+            )
+          : const ListingFilters(sort: 'score_desc');
+      final selectedResult = await _getListings(
+        GetListingsParams(filters: selectedFilters, page: 1, perPage: 6),
+      );
+      selectedResult.fold(
+        (_) {
+          selectedItems = const [];
+        },
+        (page) {
+          selectedItems = _applyPendingFavoriteStatuses(page.items);
+        },
+      );
+    }
+
+    emit(
+      ListingsLoadedState(
+        state.copyWith(
+          recentSearchRailListings: recentItems,
+          recentSearchContext: recentContext,
+          clearRecentSearchContext: recentContext == null,
+          isRecentSearchRailLoading: false,
+          selectedInspiredRailListings: selectedItems,
+          isSelectedRailLoading: false,
+        ),
+      ),
+    );
+  }
+
   Future<void> _onToggleFavoriteEvent(
     ToggleFavoriteEvent event,
     Emitter<ListingsState> emit,
   ) async {
-    final currentItem = _itemForId(state.items, event.listingId);
+    final currentItem = _findAnyItem(event.listingId);
     if (currentItem == null) return;
 
     final nextIsFavorite = !currentItem.isFavorite;
@@ -257,6 +347,16 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
         state.copyWith(
           items: _setFavoriteStatus(
             state.items,
+            event.listingId,
+            nextIsFavorite,
+          ),
+          recentSearchRailListings: _setFavoriteStatus(
+            state.recentSearchRailListings,
+            event.listingId,
+            nextIsFavorite,
+          ),
+          selectedInspiredRailListings: _setFavoriteStatus(
+            state.selectedInspiredRailListings,
             event.listingId,
             nextIsFavorite,
           ),
@@ -311,6 +411,16 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
                 listingId,
                 mutation.previousIsFavorite,
               ),
+              recentSearchRailListings: _setFavoriteStatus(
+                state.recentSearchRailListings,
+                listingId,
+                mutation.previousIsFavorite,
+              ),
+              selectedInspiredRailListings: _setFavoriteStatus(
+                state.selectedInspiredRailListings,
+                listingId,
+                mutation.previousIsFavorite,
+              ),
               favoriteMutationErrorMessage: failure.message,
             ),
           ),
@@ -344,7 +454,7 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
     SyncFavoriteStatusEvent event,
     Emitter<ListingsState> emit,
   ) {
-    final item = _itemForId(state.items, event.listingId);
+    final item = _findAnyItem(event.listingId);
     if (item == null) return;
 
     final pendingMutation = _favoriteMutations[event.listingId];
@@ -357,9 +467,25 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
       ListingsLoadedState(
         state.copyWith(
           items: _setFavoriteStatus(state.items, event.listingId, isFavorite),
+          recentSearchRailListings: _setFavoriteStatus(
+            state.recentSearchRailListings,
+            event.listingId,
+            isFavorite,
+          ),
+          selectedInspiredRailListings: _setFavoriteStatus(
+            state.selectedInspiredRailListings,
+            event.listingId,
+            isFavorite,
+          ),
         ),
       ),
     );
+  }
+
+  ListingCard? _findAnyItem(int listingId) {
+    return _itemForId(state.items, listingId) ??
+        _itemForId(state.recentSearchRailListings, listingId) ??
+        _itemForId(state.selectedInspiredRailListings, listingId);
   }
 
   Future<void> _loadListings({

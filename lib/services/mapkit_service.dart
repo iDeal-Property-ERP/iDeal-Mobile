@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:ideal_mobile/utils/app_environment.dart';
-import 'package:ideal_mobile/utils/app_flavor_env.dart';
 import 'package:yandex_maps_mapkit/init.dart' as init;
 import 'package:yandex_maps_mapkit/mapkit_factory.dart' as mapkit_factory;
 
@@ -47,8 +46,9 @@ class MapkitService implements YandexMapLifecycle {
 
   @override
   Future<bool> initialize({String? apiKey}) {
-    final key = apiKey ?? AppConfig.yandexMapKitApiKey;
     if (_available) return Future.value(true);
+    final key = apiKey?.trim() ?? '';
+    if (key.isEmpty) return Future.value(false);
     return _initialization ??= _initialize(key);
   }
 
@@ -61,7 +61,9 @@ class MapkitService implements YandexMapLifecycle {
       await init.initMapkit(apiKey: apiKey);
       _available = true;
     } on Object catch (error, stackTrace) {
-      print('[MapKit] Initialization error: $error\n$stackTrace');
+      debugPrint('[MapKit] Initialization error: $error\n$stackTrace');
+      _available = false;
+      _initialization = null;
     }
     return _available;
   }

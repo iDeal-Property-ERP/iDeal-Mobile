@@ -71,7 +71,7 @@ class ListingDiscoveryMapScreen extends StatefulWidget {
 }
 
 class _ListingDiscoveryMapScreenState extends State<ListingDiscoveryMapScreen> {
-  static const _previewHeight = 360.0;
+  static const _previewHeight = 280.0;
   static const _tashkentCamera = CameraTarget(
     latitude: 41.311081,
     longitude: 69.240562,
@@ -349,30 +349,35 @@ class _ListingDiscoveryMapScreenState extends State<ListingDiscoveryMapScreen> {
       bottom: MediaQuery.paddingOf(context).bottom + 16,
       left: 16,
       height: _previewHeight,
-      child: PageView.builder(
-        key: const ValueKey('listing_map_previews'),
-        controller: _previewController,
-        itemCount: state.items.length,
-        onPageChanged: (index) => context.read<ListingMapBloc>().add(
-          SelectListingMapItem(state.items[index].id),
-        ),
-        itemBuilder: (context, index) {
-          final listing = state.items[index];
-          return ListingMapPreviewCard(
-            key: ValueKey('listing_map_preview_${listing.id}'),
-            listing: listing,
-            propertyTypeLabel: _propertyTypeLabel(listing.propertyType),
-            onTap: () => context.router.push(
-              ListingDetailRoute(
-                listingId: listing.id,
-                initialListing: listing,
+      child: _SlideInUp(
+        child: PageView.builder(
+          key: const ValueKey('listing_map_previews'),
+          controller: _previewController,
+          itemCount: state.items.length,
+          onPageChanged: (index) => context.read<ListingMapBloc>().add(
+            SelectListingMapItem(state.items[index].id),
+          ),
+          itemBuilder: (context, index) {
+            final listing = state.items[index];
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: ListingMapPreviewCard(
+                key: ValueKey('listing_map_preview_${listing.id}'),
+                listing: listing,
+                propertyTypeLabel: _propertyTypeLabel(listing.propertyType),
+                onTap: () => context.router.push(
+                  ListingDetailRoute(
+                    listingId: listing.id,
+                    initialListing: listing,
+                  ),
+                ),
+                onCall: listing.contactPhone == null
+                    ? null
+                    : () => _call(listing.contactPhone!),
               ),
-            ),
-            onCall: listing.contactPhone == null
-                ? null
-                : () => _call(listing.contactPhone!),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
@@ -428,10 +433,14 @@ class _ListingDiscoveryMapScreenState extends State<ListingDiscoveryMapScreen> {
           _lastSyncedPreviewId == currentSelectedId) {
         _previewController.jumpToPage(index);
       } else {
+        if (currentPage != null && (index - currentPage).abs() > 1) {
+          final intermediatePage = index > currentPage ? index - 1 : index + 1;
+          _previewController.jumpToPage(intermediatePage);
+        }
         unawaited(
           _previewController.animateToPage(
             index,
-            duration: const Duration(milliseconds: 240),
+            duration: const Duration(milliseconds: 280),
             curve: Curves.easeOutCubic,
           ),
         );
@@ -510,6 +519,54 @@ class _ListingDiscoveryMapScreenState extends State<ListingDiscoveryMapScreen> {
         .where((part) => part.isNotEmpty)
         .map((part) => '${part[0].toUpperCase()}${part.substring(1)}')
         .join(' ');
+  }
+}
+
+class _SlideInUp extends StatefulWidget {
+  const _SlideInUp({required this.child});
+
+  final Widget child;
+
+  @override
+  State<_SlideInUp> createState() => _SlideInUpState();
+}
+
+class _SlideInUpState extends State<_SlideInUp>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<Offset> _offsetAnimation;
+  late final Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 280),
+    );
+    _offsetAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.4),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
+    _fadeAnimation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOutCubic,
+    );
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SlideTransition(
+      position: _offsetAnimation,
+      child: FadeTransition(opacity: _fadeAnimation, child: widget.child),
+    );
   }
 }
 

@@ -98,9 +98,8 @@ class ListingChatConversationBloc
        _reportConversation = reportConversation ?? sl<ReportConversation>(),
        super(
          initialConversation?.id == conversationId
-             ? const ListingChatConversationState.initial().withConversationSeed(
-                 initialConversation!,
-               )
+             ? const ListingChatConversationState.initial()
+                   .withConversationSeed(initialConversation!)
              : const ListingChatConversationState.initial().copyWith(
                  conversationId: conversationId,
                ),
@@ -332,10 +331,7 @@ class ListingChatConversationBloc
     if (oldestId == null) return;
     emit(state.copyWith(isLoadingOlder: true, clearErrorMessage: true));
     final result = await _getMessages(
-      GetMessagesParams(
-        conversationId: _conversationId,
-        beforeId: oldestId,
-      ),
+      GetMessagesParams(conversationId: _conversationId, beforeId: oldestId),
     );
     if (isClosed) return;
     result.fold(

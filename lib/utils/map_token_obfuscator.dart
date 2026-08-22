@@ -108,6 +108,7 @@ class MapTokenObfuscator {
     if (token.isEmpty) return '';
 
     final effectiveSecret = secret ?? AppConfig.mapObfuscationSecret;
+    if (effectiveSecret.isEmpty) return '';
     final effectiveNonce = nonce ?? _randomNonce();
     if (effectiveNonce.length != nonceSize) {
       throw ArgumentError('Nonce must be exactly $nonceSize bytes');
@@ -156,6 +157,7 @@ class MapTokenObfuscator {
     if (payload.trim().isEmpty) return '';
 
     final effectiveSecret = secret ?? AppConfig.mapObfuscationSecret;
+    if (effectiveSecret.isEmpty) return '';
     final rawData = customBaseDecode(payload);
     if (rawData.length < nonceSize + 4) {
       throw const FormatException('Payload is too short to be valid');

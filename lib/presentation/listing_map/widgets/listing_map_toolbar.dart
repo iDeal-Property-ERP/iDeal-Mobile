@@ -73,7 +73,7 @@ class _ListingMapToolbarState extends State<ListingMapToolbar> {
                   icon: TablerIcons.arrow_left,
                   tooltip: MaterialLocalizations.of(context).backButtonTooltip,
                   onPressed: widget.onBack,
-                  style: AppTopBarActionStyle.overlay,
+                  style: AppTopBarActionStyle.surface,
                 ),
                 const SizedBox(width: 6),
                 Expanded(child: _buildSearch(context)),
@@ -85,7 +85,7 @@ class _ListingMapToolbarState extends State<ListingMapToolbar> {
                       ? '${widget.filters.activeCount}'
                       : null,
                   onPressed: widget.onOpenFullFilters,
-                  style: AppTopBarActionStyle.overlay,
+                  style: AppTopBarActionStyle.surface,
                 ),
               ],
             ),

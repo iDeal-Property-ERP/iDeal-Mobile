@@ -459,6 +459,33 @@
   "listings_chip_comfort": "Komfort",
   "listings_chip_premium": "Premium",
   "listings_search_placeholder": "Ijara qidirish",
+  "home_heading": "Keyingi uyingizni toping",
+  "home_recent_search_heading": "Oxirgi qidiruvlaringiz asosida",
+  "home_recent_search_context": "{query} va oxirgi filtrlaringiz asosida",
+  "@home_recent_search_context": {
+    "description": "Oxirgi qidiruv konteksti sarlavhasi.",
+    "placeholders": {
+      "query": {
+        "example": "Yunusobod",
+        "type": "String"
+      }
+    }
+  },
+  "home_selected_heading": "Tanlanganlardan",
+  "home_selected_context": "Siz saqlagan uylarga o'xshash uylar",
+  "home_highly_rated_heading": "Yuqori baholangan uylar",
+  "home_search_sheet_title": "Uylarni qidirish",
+  "home_search_sheet_placeholder": "Masalan, Yunusobod",
+  "home_search_sheet_field_label": "Tuman, manzil yoki mo'ljal",
+  "home_search_sheet_example_recent": "Oxirgi qidiruvlar namunalari",
+  "home_search_sheet_action": "Mos uylarni ko'rsatish",
+  "home_tariff_sheet_subtitle": "Qidiruvingizga mos xizmat darajasini tanlang.",
+  "home_tariff_sheet_clear_hint": "Tanlangan tarifni bekor qilish uchun ustiga qayta bosing.",
+  "home_feed_status_loading": "Yuqori baholangan uylar yuklanmoqda",
+  "home_quick_filter_district": "Tuman",
+  "home_quick_filter_rooms": "Xonalar",
+  "home_quick_filter_price": "Narx",
+  "home_quick_filter_tariff": "Tarif",
   "recent_searches": "Oxirgi qidiruvlar",
   "listings_view_map": "Xarita",
   "listing_map_search_hint": "Uylarni qidirish",

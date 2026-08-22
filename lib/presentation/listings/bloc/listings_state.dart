@@ -8,7 +8,7 @@ import 'package:ideal_mobile/utils/cache_manager.dart';
 class ListingsState with EquatableMixin {
   ListingsState({
     this.items = const [],
-    this.filters = const ListingFilters.empty(),
+    this.filters = const ListingFilters(sort: 'score_desc'),
     this.searchQuery = '',
     this.page = 1,
     this.numPages = 0,
@@ -23,6 +23,11 @@ class ListingsState with EquatableMixin {
     this.isStale = false,
     this.listingRefreshError,
     this.favoriteMutationErrorMessage,
+    this.recentSearchRailListings = const [],
+    this.recentSearchContext,
+    this.isRecentSearchRailLoading = false,
+    this.selectedInspiredRailListings = const [],
+    this.isSelectedRailLoading = false,
   });
 
   ListingsState.initial() : this();
@@ -43,7 +48,12 @@ class ListingsState with EquatableMixin {
       dataOrigin = state.dataOrigin,
       isStale = state.isStale,
       listingRefreshError = state.listingRefreshError,
-      favoriteMutationErrorMessage = state.favoriteMutationErrorMessage;
+      favoriteMutationErrorMessage = state.favoriteMutationErrorMessage,
+      recentSearchRailListings = state.recentSearchRailListings,
+      recentSearchContext = state.recentSearchContext,
+      isRecentSearchRailLoading = state.isRecentSearchRailLoading,
+      selectedInspiredRailListings = state.selectedInspiredRailListings,
+      isSelectedRailLoading = state.isSelectedRailLoading;
 
   final List<ListingCard> items;
   final ListingFilters filters;
@@ -61,6 +71,11 @@ class ListingsState with EquatableMixin {
   final bool isStale;
   final String? listingRefreshError;
   final String? favoriteMutationErrorMessage;
+  final List<ListingCard> recentSearchRailListings;
+  final String? recentSearchContext;
+  final bool isRecentSearchRailLoading;
+  final List<ListingCard> selectedInspiredRailListings;
+  final bool isSelectedRailLoading;
 
   ListingsState copyWith({
     List<ListingCard>? items,
@@ -79,9 +94,15 @@ class ListingsState with EquatableMixin {
     bool? isStale,
     String? listingRefreshError,
     String? favoriteMutationErrorMessage,
+    List<ListingCard>? recentSearchRailListings,
+    String? recentSearchContext,
+    bool? isRecentSearchRailLoading,
+    List<ListingCard>? selectedInspiredRailListings,
+    bool? isSelectedRailLoading,
     bool clearErrorMessage = false,
     bool clearListingRefreshError = false,
     bool clearFavoriteMutationErrorMessage = false,
+    bool clearRecentSearchContext = false,
   }) {
     return ListingsState(
       items: items ?? this.items,
@@ -106,6 +127,17 @@ class ListingsState with EquatableMixin {
       favoriteMutationErrorMessage: clearFavoriteMutationErrorMessage
           ? null
           : favoriteMutationErrorMessage ?? this.favoriteMutationErrorMessage,
+      recentSearchRailListings:
+          recentSearchRailListings ?? this.recentSearchRailListings,
+      recentSearchContext: clearRecentSearchContext
+          ? null
+          : recentSearchContext ?? this.recentSearchContext,
+      isRecentSearchRailLoading:
+          isRecentSearchRailLoading ?? this.isRecentSearchRailLoading,
+      selectedInspiredRailListings:
+          selectedInspiredRailListings ?? this.selectedInspiredRailListings,
+      isSelectedRailLoading:
+          isSelectedRailLoading ?? this.isSelectedRailLoading,
     );
   }
 
@@ -127,8 +159,13 @@ class ListingsState with EquatableMixin {
     this.listingRefreshError,
     this.errorMessage,
     this.favoriteMutationErrorMessage,
+    List<ListingCard>? recentSearchRailListings,
+    this.recentSearchContext,
+    this.isRecentSearchRailLoading = false,
+    List<ListingCard>? selectedInspiredRailListings,
+    this.isSelectedRailLoading = false,
   }) : items = items ?? const [],
-       filters = filters ?? const ListingFilters.empty(),
+       filters = filters ?? const ListingFilters(sort: 'score_desc'),
        searchQuery = searchQuery ?? '',
        page = page ?? 1,
        numPages = numPages ?? 0,
@@ -137,7 +174,9 @@ class ListingsState with EquatableMixin {
        isLoadingMore = isLoadingMore ?? false,
        isListingsLoading = isListingsLoading ?? false,
        hasLoadedListings = hasLoadedListings ?? false,
-       filterOptions = filterOptions ?? const ListingFilterOptions.empty();
+       filterOptions = filterOptions ?? const ListingFilterOptions.empty(),
+       recentSearchRailListings = recentSearchRailListings ?? const [],
+       selectedInspiredRailListings = selectedInspiredRailListings ?? const [];
 
   @override
   List<Object?> get props => [
@@ -157,6 +196,11 @@ class ListingsState with EquatableMixin {
     isStale,
     listingRefreshError,
     favoriteMutationErrorMessage,
+    recentSearchRailListings,
+    recentSearchContext,
+    isRecentSearchRailLoading,
+    selectedInspiredRailListings,
+    isSelectedRailLoading,
   ];
 }
 

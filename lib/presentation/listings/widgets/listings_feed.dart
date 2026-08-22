@@ -20,9 +20,9 @@ import 'package:ideal_mobile/widgets/images/prioritized_image_scheduler.dart';
 /// At the 379 px Pixel-5 feed tile width, the image is about 205 px and the
 /// three info rows plus padding measure about 109 px. This 116 px extent
 /// leaves a small buffer for either theme's font metrics without overflowing.
-const kListingInfoExtent = 116.0;
+const kListingInfoExtent = 104.0;
 
-const kListingsGridSpacing = 16.0;
+const kListingsGridSpacing = 10.0;
 const kListingsFeedHorizontalPadding = 16.0;
 
 typedef _ListingsFeedSelection = ({
@@ -56,7 +56,7 @@ class ListingsFeedSliver extends StatelessWidget {
           final count = listingColumns(availableWidth);
           final tileWidth =
               (availableWidth - kListingsGridSpacing * (count - 1)) / count;
-          final mainAxisExtent = tileWidth * 210 / 388 + kListingInfoExtent;
+          final mainAxisExtent = tileWidth + kListingInfoExtent;
 
           return SliverGrid(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

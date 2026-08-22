@@ -130,7 +130,7 @@ void main() {
     expect(overlayActions, hasLength(2));
     expect(
       overlayActions.every(
-        (action) => action.style == AppTopBarActionStyle.overlay,
+        (action) => action.style == AppTopBarActionStyle.surface,
       ),
       isTrue,
     );
@@ -525,6 +525,79 @@ void main() {
     await tester.pumpWidget(_app(const SizedBox.shrink()));
 
     expect(returned, const ListingFilters(propertyType: 'apartment'));
+  });
+
+  testWidgets('animates smoothly between non-adjacent listing selections', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(360, 800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final repository = _MockRepository();
+    const listing3 = ListingCard(
+      id: 3,
+      propertyId: 4,
+      title: 'Listing 3',
+      district: null,
+      address: 'Address 3',
+      propertyType: 'apartment',
+      rooms: 1,
+      areaSqm: 45,
+      floor: 1,
+      totalFloors: 5,
+      furnishing: 'unfurnished',
+      price: 300,
+      currency: 'USD',
+      tariff: 'standard',
+      isVerified: false,
+      isFeatured: false,
+      score: 7,
+      reviewCount: 0,
+      coverImageUrl: null,
+      mapLat: 41.33,
+      mapLon: 69.29,
+    );
+    when(
+      () => repository.getListings(
+        bounds: any(named: 'bounds'),
+        filters: any(named: 'filters'),
+        cancelToken: any(named: 'cancelToken'),
+      ),
+    ).thenAnswer(
+      (_) async => const Right(
+        ListingMapResult(
+          items: [_listing, _secondListing, listing3],
+          count: 3,
+          truncated: false,
+        ),
+      ),
+    );
+    final bloc = ListingMapBloc(repository: repository);
+    addTearDown(bloc.close);
+
+    await tester.pumpWidget(
+      _app(
+        ListingDiscoveryMapScreen(
+          bloc: bloc,
+          providerSelector: _availableSelector,
+          providerViewBuilder: _markerProviderBuilder(),
+          seedListings: const [_listing, _secondListing, listing3],
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // Select listing 1
+    bloc.add(const SelectListingMapItem(1));
+    await tester.pumpAndSettle();
+    expect(_isHorizontallyVisible(tester, 1), isTrue);
+
+    // Select distant listing 3 (skipping listing 2)
+    bloc.add(const SelectListingMapItem(3));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 140));
+    await tester.pumpAndSettle();
+    expect(_isHorizontallyVisible(tester, 3), isTrue);
   });
 }
 

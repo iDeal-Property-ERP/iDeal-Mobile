@@ -1416,6 +1416,64 @@ class AppLocalizationsUz extends AppLocalizations {
   String get listings_search_placeholder => 'Ijara qidirish';
 
   @override
+  String get home_heading => 'Keyingi uyingizni toping';
+
+  @override
+  String get home_recent_search_heading => 'Oxirgi qidiruvlaringiz asosida';
+
+  @override
+  String home_recent_search_context(String query) {
+    return '$query va oxirgi filtrlaringiz asosida';
+  }
+
+  @override
+  String get home_selected_heading => 'Tanlanganlardan';
+
+  @override
+  String get home_selected_context => 'Siz saqlagan uylarga o\'xshash uylar';
+
+  @override
+  String get home_highly_rated_heading => 'Yuqori baholangan uylar';
+
+  @override
+  String get home_search_sheet_title => 'Uylarni qidirish';
+
+  @override
+  String get home_search_sheet_placeholder => 'Masalan, Yunusobod';
+
+  @override
+  String get home_search_sheet_field_label => 'Tuman, manzil yoki mo\'ljal';
+
+  @override
+  String get home_search_sheet_example_recent => 'Oxirgi qidiruvlar namunalari';
+
+  @override
+  String get home_search_sheet_action => 'Mos uylarni ko\'rsatish';
+
+  @override
+  String get home_tariff_sheet_subtitle =>
+      'Qidiruvingizga mos xizmat darajasini tanlang.';
+
+  @override
+  String get home_tariff_sheet_clear_hint =>
+      'Tanlangan tarifni bekor qilish uchun ustiga qayta bosing.';
+
+  @override
+  String get home_feed_status_loading => 'Yuqori baholangan uylar yuklanmoqda';
+
+  @override
+  String get home_quick_filter_district => 'Tuman';
+
+  @override
+  String get home_quick_filter_rooms => 'Xonalar';
+
+  @override
+  String get home_quick_filter_price => 'Narx';
+
+  @override
+  String get home_quick_filter_tariff => 'Tarif';
+
+  @override
   String get recent_searches => 'Oxirgi qidiruvlar';
 
   @override

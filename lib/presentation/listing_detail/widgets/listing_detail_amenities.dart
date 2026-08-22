@@ -43,6 +43,7 @@ class ListingDetailAmenities extends StatelessWidget {
         ),
         const SizedBox(height: 13),
         GridView.builder(
+          padding: const EdgeInsets.all(5),
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: amenities.length,

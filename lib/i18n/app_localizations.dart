@@ -2620,6 +2620,114 @@ abstract class AppLocalizations {
   /// **'Search rentals'**
   String get listings_search_placeholder;
 
+  /// No description provided for @home_heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Find your next home'**
+  String get home_heading;
+
+  /// No description provided for @home_recent_search_heading.
+  ///
+  /// In en, this message translates to:
+  /// **'From your recent searches'**
+  String get home_recent_search_heading;
+
+  /// Subtitle showing recent search query and filter context.
+  ///
+  /// In en, this message translates to:
+  /// **'Based on {query} and your last filters'**
+  String home_recent_search_context(String query);
+
+  /// No description provided for @home_selected_heading.
+  ///
+  /// In en, this message translates to:
+  /// **'From selected'**
+  String get home_selected_heading;
+
+  /// No description provided for @home_selected_context.
+  ///
+  /// In en, this message translates to:
+  /// **'More homes like the ones you saved'**
+  String get home_selected_context;
+
+  /// No description provided for @home_highly_rated_heading.
+  ///
+  /// In en, this message translates to:
+  /// **'Highly rated homes'**
+  String get home_highly_rated_heading;
+
+  /// No description provided for @home_search_sheet_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Search homes'**
+  String get home_search_sheet_title;
+
+  /// No description provided for @home_search_sheet_placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Try Yunusobod'**
+  String get home_search_sheet_placeholder;
+
+  /// No description provided for @home_search_sheet_field_label.
+  ///
+  /// In en, this message translates to:
+  /// **'District, address, or landmark'**
+  String get home_search_sheet_field_label;
+
+  /// No description provided for @home_search_sheet_example_recent.
+  ///
+  /// In en, this message translates to:
+  /// **'Example recent searches'**
+  String get home_search_sheet_example_recent;
+
+  /// No description provided for @home_search_sheet_action.
+  ///
+  /// In en, this message translates to:
+  /// **'Show matching homes'**
+  String get home_search_sheet_action;
+
+  /// No description provided for @home_tariff_sheet_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the service level that fits your rental search.'**
+  String get home_tariff_sheet_subtitle;
+
+  /// No description provided for @home_tariff_sheet_clear_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the selected tariff again to clear it.'**
+  String get home_tariff_sheet_clear_hint;
+
+  /// No description provided for @home_feed_status_loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading more highly rated homes'**
+  String get home_feed_status_loading;
+
+  /// No description provided for @home_quick_filter_district.
+  ///
+  /// In en, this message translates to:
+  /// **'District'**
+  String get home_quick_filter_district;
+
+  /// No description provided for @home_quick_filter_rooms.
+  ///
+  /// In en, this message translates to:
+  /// **'Rooms'**
+  String get home_quick_filter_rooms;
+
+  /// No description provided for @home_quick_filter_price.
+  ///
+  /// In en, this message translates to:
+  /// **'Price'**
+  String get home_quick_filter_price;
+
+  /// No description provided for @home_quick_filter_tariff.
+  ///
+  /// In en, this message translates to:
+  /// **'Tariff'**
+  String get home_quick_filter_tariff;
+
   /// No description provided for @recent_searches.
   ///
   /// In en, this message translates to:

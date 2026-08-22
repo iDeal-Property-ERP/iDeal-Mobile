@@ -13,6 +13,7 @@ class _MockMapConfigRemoteDataSource extends Mock
 class _MockSecureStorageService extends Mock implements SecureStorageService {}
 
 void main() {
+  const testSecret = 'test-secret-12345';
   late _MockMapConfigRemoteDataSource mockRemoteDataSource;
   late _MockSecureStorageService mockStorageService;
   late MapConfigRepositoryImpl repository;
@@ -44,13 +45,17 @@ void main() {
       remoteDataSource: mockRemoteDataSource,
       storageService: mockStorageService,
       cacheTtl: const Duration(hours: 1),
+      secret: testSecret,
     );
   });
 
   group('MapConfigRepositoryImpl', () {
     test('fetches from remote, deobfuscates, and caches in storage', () async {
       const rawToken = 'test-yandex-token-12345';
-      final obfuscated = MapTokenObfuscator.obfuscate(rawToken);
+      final obfuscated = MapTokenObfuscator.obfuscate(
+        rawToken,
+        secret: testSecret,
+      );
 
       when(() => mockRemoteDataSource.getMapConfig()).thenAnswer(
         (_) async => MapConfigResponseModel(
@@ -72,7 +77,10 @@ void main() {
 
     test('returns in-memory cache without hitting remote when valid', () async {
       const rawToken = 'test-token';
-      final obfuscated = MapTokenObfuscator.obfuscate(rawToken);
+      final obfuscated = MapTokenObfuscator.obfuscate(
+        rawToken,
+        secret: testSecret,
+      );
 
       when(() => mockRemoteDataSource.getMapConfig()).thenAnswer(
         (_) async => MapConfigResponseModel(
@@ -90,7 +98,10 @@ void main() {
 
     test('forceRefresh bypasses in-memory cache', () async {
       const rawToken = 'test-token';
-      final obfuscated = MapTokenObfuscator.obfuscate(rawToken);
+      final obfuscated = MapTokenObfuscator.obfuscate(
+        rawToken,
+        secret: testSecret,
+      );
 
       when(() => mockRemoteDataSource.getMapConfig()).thenAnswer(
         (_) async => MapConfigResponseModel(

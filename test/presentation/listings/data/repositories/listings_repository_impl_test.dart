@@ -27,7 +27,8 @@ void main() {
   const options = ListingFilterOptionsModel();
 
   setUpAll(() {
-    // mocktail needs a fallback instance for non-primitive types used with any().
+    // mocktail needs a fallback instance for non-primitive types used with
+    // any().
     registerFallbackValue(const ListingFilters.empty());
   });
 

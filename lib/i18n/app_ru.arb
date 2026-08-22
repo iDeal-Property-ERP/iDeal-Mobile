@@ -459,6 +459,33 @@
   "listings_chip_comfort": "Комфорт",
   "listings_chip_premium": "Премиум",
   "listings_search_placeholder": "Поиск аренды",
+  "home_heading": "Найдите свой следующий дом",
+  "home_recent_search_heading": "На основе недавних поисков",
+  "home_recent_search_context": "На основе запроса «{query}» и ваших фильтров",
+  "@home_recent_search_context": {
+    "description": "Подзаголовок контекста недавнего поиска.",
+    "placeholders": {
+      "query": {
+        "example": "Юнусабад",
+        "type": "String"
+      }
+    }
+  },
+  "home_selected_heading": "Из избранного",
+  "home_selected_context": "Похожие на сохраненные вами дома",
+  "home_highly_rated_heading": "Дома с высоким рейтингом",
+  "home_search_sheet_title": "Поиск жилья",
+  "home_search_sheet_placeholder": "Например, Юнусабад",
+  "home_search_sheet_field_label": "Район, адрес или ориентир",
+  "home_search_sheet_example_recent": "Примеры недавних поисков",
+  "home_search_sheet_action": "Показать подходящие дома",
+  "home_tariff_sheet_subtitle": "Выберите уровень сервиса, подходящий для вашего поиска.",
+  "home_tariff_sheet_clear_hint": "Нажмите на выбранный тариф еще раз, чтобы сбросить его.",
+  "home_feed_status_loading": "Загрузка жилья с высоким рейтингом",
+  "home_quick_filter_district": "Район",
+  "home_quick_filter_rooms": "Комнаты",
+  "home_quick_filter_price": "Цена",
+  "home_quick_filter_tariff": "Тариф",
   "recent_searches": "Недавние поиски",
   "listings_view_map": "Карта",
   "listing_map_search_hint": "Поиск жилья",

@@ -178,7 +178,10 @@ void main() {
       ],
       verify: (_) => verify(
         () => getListings(
-          const GetListingsParams(filters: ListingFilters.empty(), page: 2),
+          const GetListingsParams(
+            filters: ListingFilters(sort: 'score_desc'),
+            page: 2,
+          ),
         ),
       ).called(1),
     );
@@ -539,6 +542,93 @@ void main() {
               (state) => state.listingRefreshError,
               'listing retry',
               'offline',
+            ),
+      ],
+    );
+
+    blocTest<ListingsBloc, ListingsState>(
+      'loads recent search rail and selected rail when queries/favorites exist',
+      build: () {
+        when(
+          () => getListings(
+            const GetListingsParams(
+              filters: ListingFilters(query: 'Yunusobod', sort: 'score_desc'),
+              page: 1,
+              perPage: 6,
+            ),
+          ),
+        ).thenAnswer(
+          (_) async => Right(
+            ListingsPage(
+              items: [listing(10)],
+              count: 1,
+              numPages: 1,
+              perPage: 6,
+              pageNumber: 1,
+            ),
+          ),
+        );
+        when(
+          () => getListings(
+            const GetListingsParams(
+              filters: ListingFilters(sort: 'score_desc'),
+              page: 1,
+              perPage: 6,
+            ),
+          ),
+        ).thenAnswer(
+          (_) async => Right(
+            ListingsPage(
+              items: [listing(20)],
+              count: 1,
+              numPages: 1,
+              perPage: 6,
+              pageNumber: 1,
+            ),
+          ),
+        );
+        return listingsBloc;
+      },
+      act: (bloc) => bloc.add(
+        const LoadHomeRailsEvent(
+          recentSearchQuery: 'Yunusobod',
+          favoriteListingIds: [99],
+        ),
+      ),
+      expect: () => [
+        isA<ListingsLoadedState>()
+            .having(
+              (s) => s.isRecentSearchRailLoading,
+              'recent loading',
+              isTrue,
+            )
+            .having((s) => s.isSelectedRailLoading, 'selected loading', isTrue),
+        isA<ListingsLoadedState>()
+            .having(
+              (s) => s.recentSearchRailListings.map((i) => i.id).toList(),
+              'recent items',
+              [10],
+            )
+            .having((s) => s.recentSearchContext, 'recent context', 'Yunusobod')
+            .having(
+              (s) => s.selectedInspiredRailListings.map((i) => i.id).toList(),
+              'selected items',
+              [20],
+            ),
+      ],
+    );
+
+    blocTest<ListingsBloc, ListingsState>(
+      'leaves rails empty when no query or favorites exist',
+      build: () => listingsBloc,
+      act: (bloc) => bloc.add(const LoadHomeRailsEvent()),
+      expect: () => [
+        isA<ListingsLoadedState>()
+            .having((s) => s.recentSearchRailListings, 'recent items', isEmpty)
+            .having(
+              (s) => s.selectedInspiredRailListings,
+              'selected items',
+              isEmpty,
             ),
       ],
     );

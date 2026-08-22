@@ -138,6 +138,7 @@ class AppColors {
 
   // Reaction (Emoji) background colors
   static const Color heartReactionBG = Color(0xFFFFC7D4);
+  static const Color heartFavorite = Color(0xFFFF385C);
   static const Color laughReactionBG = Color(0xFFD6E3F3);
   static const Color cryingReactionBG = Color(0xFFEED6EA);
   static const Color clapReactionBG = Color(0xFFD6F3D9);

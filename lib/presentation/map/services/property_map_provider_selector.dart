@@ -82,8 +82,9 @@ class PropertyMapProviderSelector {
           provider: PropertyMapProvider.yandex,
           probe: () async {
             final config = await loadConfig();
-            if (config.provider == PropertyMapProvider.yandex) {
-              return mapkitService.initialize(apiKey: config.token);
+            if (config.provider == PropertyMapProvider.yandex &&
+                config.token.trim().isNotEmpty) {
+              return mapkitService.initialize(apiKey: config.token.trim());
             }
             return false;
           },
@@ -92,9 +93,9 @@ class PropertyMapProviderSelector {
           provider: PropertyMapProvider.google,
           probe: () async {
             final config = await loadConfig();
-            if (config.provider == PropertyMapProvider.google) {
-              return config.token.trim().isNotEmpty ||
-                  readGoogleApiKey().trim().isNotEmpty;
+            if (config.provider == PropertyMapProvider.google &&
+                config.token.trim().isNotEmpty) {
+              return true;
             }
             return false;
           },

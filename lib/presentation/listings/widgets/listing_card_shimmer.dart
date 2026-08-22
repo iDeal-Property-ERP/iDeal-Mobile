@@ -33,44 +33,29 @@ class ListingCardShimmer extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             AspectRatio(
-              aspectRatio: 388 / 210,
+              aspectRatio: 1,
               child: ShimmerImage(
                 width: double.infinity,
                 height: double.infinity,
               ),
             ),
-            SizedBox(
-              height: kListingInfoExtent,
+            Expanded(
               child: Padding(
-                padding: EdgeInsets.all(12),
+                padding: EdgeInsets.all(10),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    SizedBox(
-                      height: 32,
-                      child: Row(
-                        children: [
-                          ShimmerText(width: 80),
-                          Spacer(),
-                          ShimmerText(width: 62),
-                        ],
-                      ),
-                    ),
+                    ShimmerText(width: 140),
                     SizedBox(height: 4),
-                    SizedBox(
-                      height: 24,
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: ShimmerText(width: 180),
-                      ),
-                    ),
+                    ShimmerText(width: 80),
                     SizedBox(height: 4),
-                    SizedBox(
-                      height: 21,
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: ShimmerText(width: 260),
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        ShimmerText(width: 60),
+                        ShimmerText(width: 30),
+                      ],
                     ),
                   ],
                 ),
@@ -100,7 +85,7 @@ class ListingCardShimmerGrid extends StatelessWidget {
           final count = listingColumns(availableWidth);
           final tileWidth =
               (availableWidth - kListingsGridSpacing * (count - 1)) / count;
-          final mainAxisExtent = tileWidth * 210 / 388 + kListingInfoExtent;
+          final mainAxisExtent = tileWidth + kListingInfoExtent;
 
           return SliverGrid(
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

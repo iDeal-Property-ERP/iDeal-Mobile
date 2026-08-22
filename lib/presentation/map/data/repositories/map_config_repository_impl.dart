@@ -4,7 +4,6 @@ import 'package:ideal_mobile/presentation/map/domain/entities/map_config.dart';
 import 'package:ideal_mobile/presentation/map/domain/property_map_models.dart';
 import 'package:ideal_mobile/presentation/map/domain/repositories/map_config_repository.dart';
 import 'package:ideal_mobile/services/secure_storage_service.dart';
-import 'package:ideal_mobile/utils/app_flavor_env.dart';
 import 'package:ideal_mobile/utils/map_token_obfuscator.dart';
 
 class MapConfigRepositoryImpl implements MapConfigRepository {
@@ -12,6 +11,7 @@ class MapConfigRepositoryImpl implements MapConfigRepository {
     required MapConfigRemoteDataSource remoteDataSource,
     SecureStorageService? storageService,
     this.cacheTtl = const Duration(hours: 24),
+    this.secret,
   }) : _remoteDataSource = remoteDataSource,
        _storageService = storageService ?? SecureStorageService();
 
@@ -22,6 +22,7 @@ class MapConfigRepositoryImpl implements MapConfigRepository {
   final MapConfigRemoteDataSource _remoteDataSource;
   final SecureStorageService _storageService;
   final Duration cacheTtl;
+  final String? secret;
 
   PropertyMapConfig? _memoryCache;
 
@@ -41,7 +42,7 @@ class MapConfigRepositoryImpl implements MapConfigRepository {
     try {
       final remote = await _remoteDataSource.getMapConfig();
       final deobfuscatedToken = remote.token.isNotEmpty
-          ? MapTokenObfuscator.deobfuscate(remote.token)
+          ? MapTokenObfuscator.deobfuscate(remote.token, secret: secret)
           : '';
 
       final now = DateTime.now();
@@ -52,18 +53,24 @@ class MapConfigRepositoryImpl implements MapConfigRepository {
       );
 
       _memoryCache = config;
-      await _persistToStorage(config);
+      if (deobfuscatedToken.isNotEmpty) {
+        await _persistToStorage(config);
+      }
       return config;
     } catch (error, stackTrace) {
       debugPrint('[MapConfig] Remote fetch failed: $error\n$stackTrace');
 
       final fromStorage = await _loadFromStorage();
-      if (fromStorage != null) {
+      if (fromStorage != null && fromStorage.token.isNotEmpty) {
         _memoryCache = fromStorage;
         return fromStorage;
       }
 
-      return _localEnvFallback();
+      return PropertyMapConfig(
+        provider: PropertyMapProvider.yandex,
+        token: '',
+        fetchedAt: DateTime.now(),
+      );
     }
   }
 
@@ -112,24 +119,5 @@ class MapConfigRepositoryImpl implements MapConfigRepository {
       debugPrint('[MapConfig] Load from storage failed: $error\n$stackTrace');
       return null;
     }
-  }
-
-  PropertyMapConfig _localEnvFallback() {
-    final yandexKey = AppConfig.yandexMapKitApiKey;
-    final googleKey = AppConfig.googleMapsApiKey;
-
-    final provider = yandexKey.isNotEmpty
-        ? PropertyMapProvider.yandex
-        : PropertyMapProvider.google;
-
-    final token = provider == PropertyMapProvider.yandex
-        ? yandexKey
-        : googleKey;
-
-    return PropertyMapConfig(
-      provider: provider,
-      token: token,
-      fetchedAt: DateTime.now(),
-    );
   }
 }

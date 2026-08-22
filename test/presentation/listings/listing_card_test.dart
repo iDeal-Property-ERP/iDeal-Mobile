@@ -35,44 +35,15 @@ void main() {
       expect(find.text('9.2'), findsOneWidget);
     });
 
-    testWidgets('omits the floor segment when floor is null', (tester) async {
-      await _pumpCard(tester, _listing(floor: null));
+    testWidgets('renders district or falls back to address', (tester) async {
+      await _pumpCard(tester, _listing());
+      expect(find.text('Yunusobod'), findsOneWidget);
 
-      expect(find.text('Yunusobod · 2 rooms · 68 m²'), findsOneWidget);
-      expect(find.textContaining('Floor'), findsNothing);
-    });
-
-    testWidgets('shows the floor alone when total floors are unknown', (
-      tester,
-    ) async {
-      await _pumpCard(tester, _listing(totalFloors: null));
-
-      // A dedicated l10n string, not a patched listings_floor_of: Uzbek renders
-      // the total before the floor, so string surgery corrupts the number.
-      expect(
-        find.text('Yunusobod · 2 rooms · 68 m² · Floor 4'),
-        findsOneWidget,
-      );
-    });
-
-    testWidgets('renders a clean meta line when optional facts are null', (
-      tester,
-    ) async {
       await _pumpCard(
         tester,
-        _listing(rooms: null, areaSqm: null, floor: null, totalFloors: null),
+        _listing(district: null, address: 'Amir Temur 42'),
       );
-
-      expect(find.text('Yunusobod'), findsOneWidget);
-      expect(find.textContaining('·'), findsNothing);
-      expect(find.textContaining('null'), findsNothing);
-    });
-
-    testWidgets('localizes tariff labels', (tester) async {
-      await _pumpCard(tester, _listing());
-
-      expect(find.text('Comfort'), findsOneWidget);
-      expect(find.text('comfort'), findsNothing);
+      expect(find.text('Amir Temur 42'), findsOneWidget);
     });
 
     testWidgets('fires favorite callback and renders the filled icon', (
@@ -82,20 +53,22 @@ void main() {
       var isFavorite = false;
 
       await tester.runWidgetTest(
-        child: StatefulBuilder(
-          builder: (context, setState) {
-            return SizedBox(
-              width: 388,
-              child: ListingCardTile(
-                listing: _listing(),
-                isFavorite: isFavorite,
-                onFavoriteToggle: () {
-                  callbackCount++;
-                  setState(() => isFavorite = !isFavorite);
-                },
-              ),
-            );
-          },
+        child: Center(
+          child: StatefulBuilder(
+            builder: (context, setState) {
+              return SizedBox(
+                width: 388,
+                child: ListingCardTile(
+                  listing: _listing(),
+                  isFavorite: isFavorite,
+                  onFavoriteToggle: () {
+                    callbackCount++;
+                    setState(() => isFavorite = !isFavorite);
+                  },
+                ),
+              );
+            },
+          ),
         ),
       );
 

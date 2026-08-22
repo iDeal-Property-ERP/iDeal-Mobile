@@ -53,8 +53,7 @@ class _OTPCodeInputFieldState extends State<OTPCodeInputField>
   @override
   Widget build(BuildContext context) {
     final String? errorText = context.select<LoginBloc, String?>(
-      (LoginBloc bloc) =>
-          bloc.state.phoneNumberLoginState.phoneOTPErrorMessage,
+      (LoginBloc bloc) => bloc.state.phoneNumberLoginState.phoneOTPErrorMessage,
     );
     return BlocListener<LoginBloc, LoginState>(
       listener: (context, state) {
@@ -65,7 +64,9 @@ class _OTPCodeInputFieldState extends State<OTPCodeInputField>
       child: PopScope(
         onPopInvokedWithResult: (didPop, result) {
           if (errorText.haveContent()) {
-            context.read<LoginBloc>().add(const PhoneOtpErrorEvent(errorMessage: ''));
+            context.read<LoginBloc>().add(
+              const PhoneOtpErrorEvent(errorMessage: ''),
+            );
           }
           if (_pinController.text.isNotEmpty) {
             _pinController.text = '';

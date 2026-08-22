@@ -13,6 +13,7 @@ class ListingFilters extends Equatable {
     this.verified,
     this.furnishing,
     this.tariff,
+    this.sort,
   });
 
   const ListingFilters.empty()
@@ -25,7 +26,8 @@ class ListingFilters extends Equatable {
       roomsMax = null,
       verified = null,
       furnishing = null,
-      tariff = null;
+      tariff = null,
+      sort = null;
 
   final String? query;
   final int? districtId;
@@ -37,6 +39,7 @@ class ListingFilters extends Equatable {
   final bool? verified;
   final String? furnishing;
   final String? tariff;
+  final String? sort;
 
   /// A nullable value keeps its current value unless its matching clear flag
   /// is true. Clear flags take precedence over a value passed in the same call.
@@ -51,6 +54,7 @@ class ListingFilters extends Equatable {
     bool? verified,
     String? furnishing,
     String? tariff,
+    String? sort,
     bool clearQuery = false,
     bool clearDistrictId = false,
     bool clearPropertyType = false,
@@ -61,6 +65,7 @@ class ListingFilters extends Equatable {
     bool clearVerified = false,
     bool clearFurnishing = false,
     bool clearTariff = false,
+    bool clearSort = false,
   }) {
     return ListingFilters(
       query: clearQuery ? null : query ?? this.query,
@@ -75,6 +80,7 @@ class ListingFilters extends Equatable {
       verified: clearVerified ? null : verified ?? this.verified,
       furnishing: clearFurnishing ? null : furnishing ?? this.furnishing,
       tariff: clearTariff ? null : tariff ?? this.tariff,
+      sort: clearSort ? null : sort ?? this.sort,
     );
   }
 
@@ -97,6 +103,7 @@ class ListingFilters extends Equatable {
     addParameter('verified', verified);
     addParameter('furnishing', furnishing);
     addParameter('tariff', tariff);
+    addParameter('sort', sort);
 
     return parameters;
   }
@@ -129,5 +136,6 @@ class ListingFilters extends Equatable {
     verified,
     furnishing,
     tariff,
+    sort,
   ];
 }

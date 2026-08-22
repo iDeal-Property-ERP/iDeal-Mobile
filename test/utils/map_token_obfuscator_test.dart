@@ -107,5 +107,21 @@ void main() {
       expect(MapTokenObfuscator.obfuscate('', secret: secret), '');
       expect(MapTokenObfuscator.deobfuscate('', secret: secret), '');
     });
+
+    test('deobfuscates correctly with 128-char dollar-containing secret', () {
+      const dummySecret =
+          r'TestSecret123$var*Foo!Bar1234567890abcdefghijklmnopqrstuvwxyz'
+          r'$Special$chars$test$dollar$string$here$1234567890abcdefghijklm';
+      const dummyToken = 'mock-api-key-value-12345-abcdef';
+      final obfuscated = MapTokenObfuscator.obfuscate(
+        dummyToken,
+        secret: dummySecret,
+      );
+      final deobfuscated = MapTokenObfuscator.deobfuscate(
+        obfuscated,
+        secret: dummySecret,
+      );
+      expect(deobfuscated, dummyToken);
+    });
   });
 }
