@@ -14,6 +14,7 @@ import 'package:ideal_mobile/presentation/favorites/data/repositories/favorites_
 import 'package:ideal_mobile/presentation/favorites/domain/repositories/favorites_repository.dart';
 import 'package:ideal_mobile/presentation/favorites/domain/usecases/get_favorites.dart';
 import 'package:ideal_mobile/presentation/favorites/domain/usecases/set_listing_favorite.dart';
+import 'package:ideal_mobile/presentation/force_update/services/app_update_service.dart';
 import 'package:ideal_mobile/presentation/listing_detail/listing_detail_injection.dart';
 import 'package:ideal_mobile/presentation/listing_map/data/datasources/listing_map_remote_data_source.dart';
 import 'package:ideal_mobile/presentation/listing_map/data/repositories/listing_map_repository_impl.dart';
@@ -152,6 +153,9 @@ Future<void> configureDependencies({Dio? dio}) async {
     ..registerLazySingleton(LegacyFavoritesCleanupService.new)
     ..registerLazySingleton(PerformanceMonitoringService.new)
     ..registerLazySingleton(RecentSearchesService.new)
+    ..registerLazySingleton<AppUpdateService>(
+      () => AppUpdateService(dio: sl<Dio>()),
+    )
     ..registerLazySingleton<Dio>(() => pinnedDio);
 
   registerNotificationsDependencies(sl);

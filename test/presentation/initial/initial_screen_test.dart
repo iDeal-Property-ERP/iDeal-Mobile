@@ -6,6 +6,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ideal_mobile/core/services/injection_container.dart';
 import 'package:ideal_mobile/gen/assets.gen.dart';
 import 'package:ideal_mobile/initialize_app.dart';
+import 'package:ideal_mobile/presentation/force_update/models/app_update_info.dart';
+import 'package:ideal_mobile/presentation/force_update/services/app_update_service.dart';
+import 'package:ideal_mobile/presentation/force_update/widget/app_update_dialog.dart';
 import 'package:ideal_mobile/presentation/initial/initial_screen.dart';
 import 'package:ideal_mobile/routes.gr.dart';
 import 'package:ideal_mobile/shared_pref/pref_keys.dart';
@@ -19,9 +22,17 @@ import '../../test_helpers.dart';
 
 class MockStackRouter extends Mock implements StackRouter {}
 
+class MockAppUpdateService extends Mock implements AppUpdateService {}
+
 void main() {
   setUpAll(() {
     registerFallbackValue(const LoginWithPhoneNumberRoute());
+    registerFallbackValue(
+      const AppUpdateInfo(
+        updateType: AppUpdateType.none,
+        currentVersion: '0.1.0',
+      ),
+    );
   });
 
   group('Initial screen body', () {
@@ -64,9 +75,25 @@ void main() {
 
   group('Initial startup routing', () {
     late MockStackRouter router;
+    late MockAppUpdateService mockUpdateService;
+
     setUp(() async {
       _setMockPreferences({});
       await sl.reset();
+
+      mockUpdateService = MockAppUpdateService();
+      when(
+        () => mockUpdateService.checkUpdate(
+          packageInfo: any(named: 'packageInfo'),
+          platformOverride: any(named: 'platformOverride'),
+        ),
+      ).thenAnswer(
+        (_) async => const AppUpdateInfo(
+          updateType: AppUpdateType.none,
+          currentVersion: '0.1.0',
+        ),
+      );
+      sl.registerLazySingleton<AppUpdateService>(() => mockUpdateService);
 
       router = MockStackRouter();
       when(() => router.replace(any())).thenAnswer((_) async => null);
@@ -76,14 +103,21 @@ void main() {
       await sl.reset();
     });
 
-    testWidgets('unauthenticated user routes to Login once', (tester) async {
-      await _pumpRoutableInitialScreen(tester, router);
+    testWidgets(
+      'unauthenticated user routes to Login once when no update needed',
+      (tester) async {
+        await _pumpRoutableInitialScreen(tester, router);
 
-      final route = verify(() => router.replace(captureAny())).captured.single;
-      expect(route, isA<LoginWithPhoneNumberRoute>());
-    });
+        final route = verify(
+          () => router.replace(captureAny()),
+        ).captured.single;
+        expect(route, isA<LoginWithPhoneNumberRoute>());
+      },
+    );
 
-    testWidgets('skipped login routes to Home once', (tester) async {
+    testWidgets('skipped login routes to Home once when no update needed', (
+      tester,
+    ) async {
       _setMockPreferences({PrefKeys.kSkippedLogin: true});
 
       await _pumpRoutableInitialScreen(tester, router);
@@ -92,15 +126,125 @@ void main() {
       expect(route, isA<HomeRoute>());
     });
 
-    testWidgets('authenticated user routes to Home once', (tester) async {
-      _setMockPreferences({
-        PrefKeys.kUserDetails: '{"accessToken":"backend-session"}',
-      });
+    testWidgets(
+      'authenticated user routes to Home once when no update needed',
+      (tester) async {
+        _setMockPreferences({
+          PrefKeys.kUserDetails: '{"accessToken":"backend-session"}',
+        });
+
+        await _pumpRoutableInitialScreen(tester, router);
+
+        final route = verify(
+          () => router.replace(captureAny()),
+        ).captured.single;
+        expect(route, isA<HomeRoute>());
+      },
+    );
+
+    testWidgets('critical update displays modal and blocks navigation', (
+      tester,
+    ) async {
+      when(
+        () => mockUpdateService.checkUpdate(
+          packageInfo: any(named: 'packageInfo'),
+          platformOverride: any(named: 'platformOverride'),
+        ),
+      ).thenAnswer(
+        (_) async => const AppUpdateInfo(
+          updateType: AppUpdateType.critical,
+          currentVersion: '0.1.0',
+          latestVersion: '1.0.0',
+          storeUrl: 'https://store.url',
+        ),
+      );
 
       await _pumpRoutableInitialScreen(tester, router);
 
+      expect(find.byType(AppUpdateDialog), findsOneWidget);
+      expect(find.text('Update Now'), findsOneWidget);
+      expect(find.text('Skip Update'), findsNothing);
+
+      // Router should never be called!
+      verifyNever(() => router.replace(any()));
+    });
+
+    testWidgets('normal update displays modal; skipping continues routing', (
+      tester,
+    ) async {
+      when(
+        () => mockUpdateService.checkUpdate(
+          packageInfo: any(named: 'packageInfo'),
+          platformOverride: any(named: 'platformOverride'),
+        ),
+      ).thenAnswer(
+        (_) async => const AppUpdateInfo(
+          updateType: AppUpdateType.normal,
+          currentVersion: '0.1.0',
+          latestVersion: '1.0.0',
+          storeUrl: 'https://store.url',
+        ),
+      );
+      when(
+        () => mockUpdateService.shouldShowUpdateNotice(
+          any(),
+          platformOverride: any(named: 'platformOverride'),
+          now: any(named: 'now'),
+        ),
+      ).thenAnswer((_) async => true);
+      when(
+        () => mockUpdateService.recordNormalNoticeShown(
+          any(),
+          platformOverride: any(named: 'platformOverride'),
+          now: any(named: 'now'),
+        ),
+      ).thenAnswer((_) async {});
+
+      await _pumpRoutableInitialScreen(tester, router);
+
+      expect(find.byType(AppUpdateDialog), findsOneWidget);
+      expect(find.text('Skip Update'), findsOneWidget);
+      verifyNever(() => router.replace(any()));
+
+      // Tap Skip Update
+      await tester.tap(find.text('Skip Update'));
+      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pump();
+
+      expect(find.byType(AppUpdateDialog), findsNothing);
       final route = verify(() => router.replace(captureAny())).captured.single;
-      expect(route, isA<HomeRoute>());
+      expect(route, isA<LoginWithPhoneNumberRoute>());
+    });
+
+    testWidgets('normal update suppressed by TTL continues routing directly', (
+      tester,
+    ) async {
+      when(
+        () => mockUpdateService.checkUpdate(
+          packageInfo: any(named: 'packageInfo'),
+          platformOverride: any(named: 'platformOverride'),
+        ),
+      ).thenAnswer(
+        (_) async => const AppUpdateInfo(
+          updateType: AppUpdateType.normal,
+          currentVersion: '0.1.0',
+          latestVersion: '1.0.0',
+          storeUrl: 'https://store.url',
+        ),
+      );
+      when(
+        () => mockUpdateService.shouldShowUpdateNotice(
+          any(),
+          platformOverride: any(named: 'platformOverride'),
+          now: any(named: 'now'),
+        ),
+      ).thenAnswer((_) async => false); // Suppressed!
+
+      await _pumpRoutableInitialScreen(tester, router);
+
+      expect(find.byType(AppUpdateDialog), findsNothing);
+      final route = verify(() => router.replace(captureAny())).captured.single;
+      expect(route, isA<LoginWithPhoneNumberRoute>());
     });
   });
 }

@@ -7,6 +7,8 @@ import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
 import 'package:ideal_mobile/core/services/injection_container.dart';
 import 'package:ideal_mobile/gen/assets.gen.dart';
 import 'package:ideal_mobile/initialize_app.dart';
+import 'package:ideal_mobile/presentation/force_update/services/app_update_service.dart';
+import 'package:ideal_mobile/presentation/force_update/widget/app_update_dialog.dart';
 import 'package:ideal_mobile/presentation/login/models/login_details.dart';
 import 'package:ideal_mobile/routes.gr.dart';
 import 'package:ideal_mobile/services/secure_storage_service.dart';
@@ -34,7 +36,44 @@ class _InitialScreenState extends State<InitialScreen> {
     await startupFuture;
 
     if (!mounted) return;
+
+    final shouldProceed = await _checkAppUpdate();
+    if (!shouldProceed || !mounted) return;
+
     await _checkAuthAndHandleDeepLink();
+  }
+
+  Future<bool> _checkAppUpdate() async {
+    try {
+      final updateService = sl.isRegistered<AppUpdateService>()
+          ? sl<AppUpdateService>()
+          : const AppUpdateService();
+      final updateInfo = await updateService.checkUpdate();
+      if (!mounted) return false;
+
+      if (updateInfo.isCritical) {
+        await AppUpdateDialog.show(context, updateInfo: updateInfo);
+        return false;
+      }
+
+      if (updateInfo.isNormal) {
+        final shouldShow = await updateService.shouldShowUpdateNotice(
+          updateInfo,
+        );
+        if (!shouldShow || !mounted) {
+          return true;
+        }
+
+        await updateService.recordNormalNoticeShown(updateInfo);
+        if (!mounted) return false;
+
+        await AppUpdateDialog.show(context, updateInfo: updateInfo);
+        return mounted;
+      }
+    } catch (e) {
+      debugPrint('[InitialScreen] App update check failed: $e');
+    }
+    return true;
   }
 
   Future<void> _checkAuthAndHandleDeepLink() async {
