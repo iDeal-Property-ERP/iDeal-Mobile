@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -166,7 +168,7 @@ void _registerDioInterceptor(Dio dio) {
 
   if (AppConfig.appFlavor == AppFlavor.local ||
       AppConfig.appFlavor == AppFlavor.dev) {
-    dio.interceptors.add(_authErrorInterceptor());
+    dio.interceptors.add(authErrorInterceptor(dio));
     debugPrint(
       '[HTTP] ${AppConfig.appFlavor.name} API mode: '
       'certificate pinning disabled',
@@ -181,7 +183,7 @@ void _registerDioInterceptor(Dio dio) {
       callFollowingErrorInterceptor: true,
     ),
     _sslPinningErrorInterceptor,
-    _authErrorInterceptor(),
+    authErrorInterceptor(dio),
   ]);
 }
 
@@ -256,12 +258,82 @@ InterceptorsWrapper get _sslPinningErrorInterceptor {
   );
 }
 
-InterceptorsWrapper _authErrorInterceptor() => InterceptorsWrapper(
+Future<bool>? _refreshTokensFuture;
+
+Future<bool> _refreshTokens(Dio dio) {
+  if (_refreshTokensFuture != null) {
+    return _refreshTokensFuture!;
+  }
+
+  final completer = Completer<bool>();
+  _refreshTokensFuture = completer.future;
+
+  () async {
+    try {
+      final result = await _executeTokenRefresh(dio);
+      completer.complete(result);
+    } catch (_) {
+      completer.complete(false);
+    } finally {
+      _refreshTokensFuture = null;
+    }
+  }();
+
+  return completer.future;
+}
+
+Future<bool> _executeTokenRefresh(Dio dio) async {
+  if (!sl.isRegistered<SecureStorageService>()) {
+    return false;
+  }
+  final storage = sl<SecureStorageService>();
+  final refreshToken = await storage.getRefreshToken();
+  if (refreshToken == null || refreshToken.trim().isEmpty) {
+    return false;
+  }
+
+  try {
+    final response = await dio.post<dynamic>(
+      '/auth/refresh/',
+      data: {'refresh_token': refreshToken},
+      options: Options(
+        headers: {'Content-Type': 'application/json'},
+        extra: {'skip_forced_logout': true},
+      ),
+    );
+
+    if (response.statusCode == 200 && response.data != null) {
+      final body = response.data is Map ? response.data as Map : null;
+      if (body != null) {
+        final data = body['data'];
+        if (data is Map) {
+          final newAccess = data['access_token'] as String?;
+          final newRefresh = data['refresh_token'] as String?;
+          if (newAccess != null &&
+              newAccess.trim().isNotEmpty &&
+              newRefresh != null &&
+              newRefresh.trim().isNotEmpty) {
+            await storage.writeAuthTokens(
+              accessToken: newAccess,
+              refreshToken: newRefresh,
+            );
+            return true;
+          }
+        }
+      }
+    }
+  } catch (e) {
+    debugPrint('[AuthErrorInterceptor] Token refresh request failed: $e');
+  }
+
+  return false;
+}
+
+@visibleForTesting
+InterceptorsWrapper authErrorInterceptor(Dio dio) => InterceptorsWrapper(
   onError: (DioException dioError, ErrorInterceptorHandler handler) async {
     final statusCode = dioError.response?.statusCode ?? 0;
     final failedAccessToken = _bearerAccessToken(dioError.requestOptions);
-
-    debugPrint('[AuthErrorInterceptor] status: $statusCode');
 
     final isOtpEndpoint =
         dioError.requestOptions.uri.path.endsWith('/mobile/auth/methods/') ||
@@ -269,8 +341,52 @@ InterceptorsWrapper _authErrorInterceptor() => InterceptorsWrapper(
           '/mobile/auth/otp/request/',
         ) ||
         dioError.requestOptions.uri.path.endsWith('/mobile/auth/otp/verify/');
+    final isRefreshEndpoint = dioError.requestOptions.uri.path.endsWith(
+      '/auth/refresh/',
+    );
     final skipsForcedLogout =
         dioError.requestOptions.extra['skip_forced_logout'] == true;
+    final isRetry = dioError.requestOptions.extra['is_auth_retry'] == true;
+
+    debugPrint(
+      '[AuthErrorInterceptor] status: $statusCode '
+      'failedToken: $failedAccessToken',
+    );
+
+    if (statusCode == 401 &&
+        !isOtpEndpoint &&
+        !isRefreshEndpoint &&
+        !skipsForcedLogout &&
+        !isRetry &&
+        failedAccessToken != null) {
+      final refreshed = await _refreshTokens(dio);
+      if (refreshed) {
+        try {
+          final newAccessToken = await sl<SecureStorageService>()
+              .getAccessToken();
+          final requestOptions = dioError.requestOptions;
+          final headers = Map<String, dynamic>.from(requestOptions.headers);
+          if (newAccessToken != null && newAccessToken.trim().isNotEmpty) {
+            headers['Authorization'] = 'Bearer $newAccessToken';
+          }
+          final extra = Map<String, dynamic>.from(requestOptions.extra);
+          extra['is_auth_retry'] = true;
+
+          final response = await dio.fetch<dynamic>(
+            requestOptions.copyWith(headers: headers, extra: extra),
+          );
+          return handler.resolve(response);
+        } catch (e) {
+          if (e is DioException) {
+            return handler.next(e);
+          }
+          return handler.next(
+            DioException(requestOptions: dioError.requestOptions, error: e),
+          );
+        }
+      }
+    }
+
     final shouldLogout =
         !_isForceLoggingOutUser &&
         !isOtpEndpoint &&
