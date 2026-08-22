@@ -15,6 +15,8 @@ class ListingsSearchBar extends StatefulWidget {
     super.key,
     this.query = '',
     this.onQueryChanged,
+    this.onFiltersTap,
+    this.activeFiltersCount = 0,
     this.enableRecentSearches = true,
     this.recentSearchesService,
   });
@@ -23,6 +25,8 @@ class ListingsSearchBar extends StatefulWidget {
   /// field text without emitting another [onQueryChanged].
   final String query;
   final ValueChanged<String>? onQueryChanged;
+  final VoidCallback? onFiltersTap;
+  final int activeFiltersCount;
   final bool enableRecentSearches;
   final RecentSearchesService? recentSearchesService;
 
@@ -236,13 +240,73 @@ class _ListingsSearchBarState extends State<ListingsSearchBar> {
                 ),
                 filled: true,
                 fillColor: context.currentTheme.bgSurfaceBase2,
-                suffixIcon: hasSearchText
-                    ? IconButton(
-                        onPressed: _clearSearch,
-                        icon: Icon(
-                          TablerIcons.x,
-                          color: context.currentTheme.iconNeutralDefault,
-                        ),
+                suffixIcon: (hasSearchText || widget.onFiltersTap != null)
+                    ? Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (hasSearchText)
+                            IconButton(
+                              onPressed: _clearSearch,
+                              icon: Icon(
+                                TablerIcons.x,
+                                color: context.currentTheme.iconNeutralDefault,
+                              ),
+                            ),
+                          if (widget.onFiltersTap != null)
+                            IconButton(
+                              onPressed: widget.onFiltersTap,
+                              tooltip:
+                                  context.localization.listings_all_filters,
+                              icon: Stack(
+                                alignment: Alignment.center,
+                                clipBehavior: Clip.none,
+                                children: [
+                                  Icon(
+                                    TablerIcons.adjustments_horizontal,
+                                    size: 20,
+                                    color: widget.activeFiltersCount > 0
+                                        ? context.currentTheme.iconBrandPrimary
+                                        : context
+                                              .currentTheme
+                                              .iconNeutralDefault,
+                                  ),
+                                  if (widget.activeFiltersCount > 0)
+                                    Positioned(
+                                      top: -4,
+                                      right: -6,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 4,
+                                          vertical: 1,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: context
+                                              .currentTheme
+                                              .bgBrandDefault,
+                                          shape: BoxShape.circle,
+                                        ),
+                                        constraints: const BoxConstraints(
+                                          minWidth: 16,
+                                          minHeight: 16,
+                                        ),
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          widget.activeFiltersCount.toString(),
+                                          style: AppTextStyles.c2SemiBold
+                                              .copyWith(
+                                                color: context
+                                                    .currentTheme
+                                                    .textNeutralWhite,
+                                                fontSize: 9,
+                                              ),
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          const SizedBox(width: 4),
+                        ],
                       )
                     : null,
                 border: _buildOutlineInputBorder(context),

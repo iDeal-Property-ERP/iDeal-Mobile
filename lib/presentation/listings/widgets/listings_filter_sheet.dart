@@ -26,6 +26,8 @@ Future<ListingFilters?> showListingsFilterSheet(
   final currentOptions = filterOptions ?? bloc?.state.filterOptions;
   assert(currentFilters != null && currentOptions != null);
 
+  final draggableController = DraggableScrollableController();
+
   final result = await showModalBottomSheet<ListingFilters>(
     context: context,
     isScrollControlled: true,
@@ -37,16 +39,18 @@ Future<ListingFilters?> showListingsFilterSheet(
     ),
     clipBehavior: Clip.antiAlias,
     builder: (_) => DraggableScrollableSheet(
+      controller: draggableController,
       expand: false,
-      initialChildSize: 0.48,
-      minChildSize: 0.28,
-      maxChildSize: 0.9,
+      initialChildSize: 0.85,
+      minChildSize: 0.45,
+      maxChildSize: 0.95,
       snap: true,
-      snapSizes: const [0.48, 0.9],
+      snapSizes: const [0.45, 0.85, 0.95],
       builder: (context, scrollController) => ListingsFilterSheet(
         initialFilters: currentFilters!,
         filterOptions: currentOptions!,
         scrollController: scrollController,
+        draggableController: draggableController,
       ),
     ),
   );
@@ -62,11 +66,13 @@ class ListingsFilterSheet extends StatefulWidget {
     required this.initialFilters,
     required this.filterOptions,
     this.scrollController,
+    this.draggableController,
   });
 
   final ListingFilters initialFilters;
   final ListingFilterOptions filterOptions;
   final ScrollController? scrollController;
+  final DraggableScrollableController? draggableController;
 
   @override
   State<ListingsFilterSheet> createState() => _ListingsFilterSheetState();
@@ -100,10 +106,12 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
     );
     _districtSearchController = TextEditingController();
     _districtSearchFocusNode = FocusNode();
+    _districtSearchFocusNode.addListener(_onDistrictSearchFocusChanged);
   }
 
   @override
   void dispose() {
+    _districtSearchFocusNode.removeListener(_onDistrictSearchFocusChanged);
     _priceMinController.dispose();
     _priceMaxController.dispose();
     _roomsMinController.dispose();
@@ -113,9 +121,34 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
     super.dispose();
   }
 
+  void _onDistrictSearchFocusChanged() {
+    if (_districtSearchFocusNode.hasFocus) {
+      _expandSheetIfNeeded();
+    }
+  }
+
+  void _expandSheetIfNeeded() {
+    if (widget.draggableController != null &&
+        widget.draggableController!.isAttached) {
+      final currentSize = widget.draggableController!.size;
+      if (currentSize < 0.95) {
+        widget.draggableController!.animateTo(
+          0.95,
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOutCubic,
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
+    if (keyboardInset > 0) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _expandSheetIfNeeded();
+      });
+    }
 
     return SafeArea(
       top: false,
@@ -324,6 +357,7 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
             setState(() {
               _isDistrictDropdownOpen = !_isDistrictDropdownOpen;
               if (_isDistrictDropdownOpen) {
+                _expandSheetIfNeeded();
                 Future.microtask(() {
                   if (mounted) {
                     _districtSearchFocusNode.requestFocus();

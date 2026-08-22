@@ -1319,13 +1319,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get selected_sort => 'Сортировка';
 
   @override
-  String get selected_sort_recent => 'Недавно добавленные';
+  String get selected_sort_recent => 'Новые';
 
   @override
-  String get selected_sort_price_asc => 'Цена: по возрастанию';
+  String get selected_sort_price_asc => 'Цена ↑';
 
   @override
-  String get selected_sort_price_desc => 'Цена: по убыванию';
+  String get selected_sort_price_desc => 'Цена ↓';
 
   @override
   String get selected_no_matches_title =>

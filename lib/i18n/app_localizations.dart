@@ -2431,19 +2431,19 @@ abstract class AppLocalizations {
   /// No description provided for @selected_sort_recent.
   ///
   /// In en, this message translates to:
-  /// **'Recently selected'**
+  /// **'Newest'**
   String get selected_sort_recent;
 
   /// No description provided for @selected_sort_price_asc.
   ///
   /// In en, this message translates to:
-  /// **'Price: low to high'**
+  /// **'Price ↑'**
   String get selected_sort_price_asc;
 
   /// No description provided for @selected_sort_price_desc.
   ///
   /// In en, this message translates to:
-  /// **'Price: high to low'**
+  /// **'Price ↓'**
   String get selected_sort_price_desc;
 
   /// No description provided for @selected_no_matches_title.

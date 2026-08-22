@@ -529,9 +529,9 @@
     }
   },
   "selected_sort": "Sort",
-  "selected_sort_recent": "Recently selected",
-  "selected_sort_price_asc": "Price: low to high",
-  "selected_sort_price_desc": "Price: high to low",
+  "selected_sort_recent": "Newest",
+  "selected_sort_price_asc": "Price ↑",
+  "selected_sort_price_desc": "Price ↓",
   "selected_no_matches_title": "No matching selected homes",
   "selected_no_matches_subtitle": "Try widening your search or clearing some filters.",
   "selected_clear_filters": "Clear filters",

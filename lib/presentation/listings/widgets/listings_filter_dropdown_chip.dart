@@ -23,6 +23,7 @@ class ListingsFilterPillChip extends StatelessWidget {
     this.badge,
     this.trailingIcon,
     this.compact = false,
+    this.borderless = false,
   });
 
   final String label;
@@ -32,12 +33,15 @@ class ListingsFilterPillChip extends StatelessWidget {
   final int? badge;
   final IconData? trailingIcon;
   final bool compact;
+  final bool borderless;
 
   @override
   Widget build(BuildContext context) {
-    final foregroundColor = selected
-        ? context.currentTheme.textBrandPrimary
-        : context.currentTheme.textNeutralPrimary;
+    final foregroundColor = borderless
+        ? context.currentTheme.textNeutralSecondary
+        : (selected
+              ? context.currentTheme.textBrandPrimary
+              : context.currentTheme.textNeutralPrimary);
 
     return Material(
       color: Colors.transparent,
@@ -45,22 +49,26 @@ class ListingsFilterPillChip extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(999),
         child: Container(
-          constraints: BoxConstraints(minHeight: compact ? 36 : 44),
+          constraints: BoxConstraints(
+            minHeight: compact ? 36 : (borderless ? 32 : 44),
+          ),
           padding: EdgeInsets.symmetric(
-            horizontal: compact ? 11 : 14,
-            vertical: compact ? 6 : 8,
+            horizontal: borderless ? 6 : (compact ? 11 : 14),
+            vertical: borderless ? 4 : (compact ? 6 : 8),
           ),
-          decoration: BoxDecoration(
-            color: selected
-                ? context.currentTheme.bgBrandLight100
-                : context.currentTheme.bgSurfaceBase2,
-            border: Border.all(
-              color: selected
-                  ? context.currentTheme.iconBrandPrimary
-                  : context.currentTheme.bgNeutralLight100,
-            ),
-            borderRadius: BorderRadius.circular(999),
-          ),
+          decoration: borderless
+              ? null
+              : BoxDecoration(
+                  color: selected
+                      ? context.currentTheme.bgBrandLight100
+                      : context.currentTheme.bgSurfaceBase2,
+                  border: Border.all(
+                    color: selected
+                        ? context.currentTheme.iconBrandPrimary
+                        : context.currentTheme.bgNeutralLight100,
+                  ),
+                  borderRadius: BorderRadius.circular(999),
+                ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -70,7 +78,11 @@ class ListingsFilterPillChip extends StatelessWidget {
               ],
               Text(
                 label,
-                style: AppTextStyles.p3Medium.copyWith(color: foregroundColor),
+                style:
+                    (borderless
+                            ? AppTextStyles.p3Medium
+                            : AppTextStyles.p3Medium)
+                        .copyWith(color: foregroundColor),
               ),
               if (badge != null) ...[
                 const SizedBox(width: 6),
@@ -112,6 +124,7 @@ class ListingsFilterDropdownChip<T> extends StatelessWidget {
     required this.onSelected,
     this.selectedLabel,
     this.compact = false,
+    this.borderless = false,
   });
 
   final String label;
@@ -119,6 +132,7 @@ class ListingsFilterDropdownChip<T> extends StatelessWidget {
   final T? selected;
   final String? selectedLabel;
   final bool compact;
+  final bool borderless;
   final ValueChanged<T?> onSelected;
 
   @override
@@ -126,15 +140,21 @@ class ListingsFilterDropdownChip<T> extends StatelessWidget {
     return MenuAnchor(
       style: MenuStyle(
         backgroundColor: WidgetStatePropertyAll(
-          context.currentTheme.bgNeutralLight50,
+          context.currentTheme.bgSurfaceBase2,
         ),
         shape: WidgetStatePropertyAll(
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ),
         side: WidgetStatePropertyAll(
-          BorderSide(color: context.currentTheme.strokeNeutralLight200),
+          BorderSide(color: context.currentTheme.strokeNeutralLight100),
         ),
-        elevation: const WidgetStatePropertyAll(8),
+        elevation: const WidgetStatePropertyAll(6),
+        shadowColor: WidgetStatePropertyAll(
+          context.currentTheme.strokeShadesBlack.withValues(alpha: 0.12),
+        ),
+        padding: const WidgetStatePropertyAll(
+          EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+        ),
       ),
       menuChildren: [
         for (final option in options) _buildMenuItem(context, option),
@@ -145,6 +165,7 @@ class ListingsFilterDropdownChip<T> extends StatelessWidget {
           selected: selected != null || selectedLabel != null,
           trailingIcon: TablerIcons.chevron_down,
           compact: compact,
+          borderless: borderless,
           onTap: () {
             if (controller.isOpen) {
               controller.close();
@@ -169,6 +190,13 @@ class ListingsFilterDropdownChip<T> extends StatelessWidget {
         : context.currentTheme.textNeutralPrimary;
 
     return MenuItemButton(
+      style: MenuItemButton.styleFrom(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        backgroundColor: isSelected
+            ? context.currentTheme.bgBrandLight100
+            : Colors.transparent,
+      ),
       onPressed: () => onSelected(option.value),
       leadingIcon: isSelected
           ? Icon(
@@ -179,7 +207,8 @@ class ListingsFilterDropdownChip<T> extends StatelessWidget {
           : const SizedBox(width: 18),
       child: Text(
         option.label,
-        style: AppTextStyles.p3Medium.copyWith(color: textColor),
+        style: (isSelected ? AppTextStyles.p3SemiBold : AppTextStyles.p3Medium)
+            .copyWith(color: textColor),
       ),
     );
   }

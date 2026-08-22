@@ -11,7 +11,6 @@ import 'package:ideal_mobile/gen/assets.gen.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
 import 'package:ideal_mobile/presentation/home/widgets/home_listing_rail.dart';
 import 'package:ideal_mobile/presentation/home/widgets/home_quick_filter_sheet.dart';
-import 'package:ideal_mobile/presentation/home/widgets/home_search_sheet.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_bloc.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_event.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_state.dart';
@@ -22,13 +21,13 @@ import 'package:ideal_mobile/presentation/listings/widgets/listings_empty_view.d
 import 'package:ideal_mobile/presentation/listings/widgets/listings_error_view.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/listings_feed.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/listings_filter_sheet.dart';
+import 'package:ideal_mobile/presentation/listings/widgets/listings_search_bar.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/map_pill_button.dart';
 import 'package:ideal_mobile/presentation/notifications/bloc/notification_badge_cubit.dart';
 import 'package:ideal_mobile/routes.gr.dart';
 import 'package:ideal_mobile/utils/extensions/build_context_ext.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 import 'package:ideal_mobile/widgets/app_top_bar.dart';
-import 'package:ideal_mobile/widgets/styling/app_colors.dart';
 
 /// Distance from the bottom of the feed at which the next page is requested.
 const _kLoadMoreThreshold = 400.0;
@@ -83,16 +82,6 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
   Future<void> _onRefresh() async {
     context.read<ListingsBloc>().add(const LoadListingsEvent());
     _loadRecommendations();
-  }
-
-  Future<void> _openSearchSheet(String currentQuery) async {
-    final query = await showHomeSearchSheet(
-      context,
-      currentQuery: currentQuery,
-    );
-    if (query != null && mounted) {
-      context.read<ListingsBloc>().add(SearchListingsEvent(query));
-    }
   }
 
   Future<void> _openQuickFilterSheet(
@@ -295,6 +284,15 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
                                     filterOptions: state.filterOptions,
                                   ),
                                   builder: (context, value) {
+                                    final loc = context.localization;
+                                    final clearDistrictA11y = loc
+                                        .home_quick_filter_clear_district_a11y;
+                                    final clearRoomsA11y =
+                                        loc.home_quick_filter_clear_rooms_a11y;
+                                    final clearPriceA11y =
+                                        loc.home_quick_filter_clear_price_a11y;
+                                    final clearTariffA11y =
+                                        loc.home_quick_filter_clear_tariff_a11y;
                                     final hasDistrict =
                                         value.filters.districtId != null;
                                     final hasRooms =
@@ -311,12 +309,13 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.stretch,
                                       children: [
-                                        _HomeSearchCard(
+                                        ListingsSearchBar(
                                           query: value.query,
                                           activeFiltersCount:
                                               value.filters.activeCount,
-                                          onSearchTap: () =>
-                                              _openSearchSheet(value.query),
+                                          onQueryChanged: (query) => context
+                                              .read<ListingsBloc>()
+                                              .add(SearchListingsEvent(query)),
                                           onFiltersTap: () =>
                                               showListingsFilterSheet(context),
                                         ),
@@ -346,9 +345,8 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
                                                         value.filters,
                                                       )
                                                     : null,
-                                                clearSemanticLabel: context
-                                                    .localization
-                                                    .home_quick_filter_clear_district_a11y,
+                                                clearSemanticLabel:
+                                                    clearDistrictA11y,
                                               ),
                                               const SizedBox(width: 8),
                                               _QuickFilterChip(
@@ -369,9 +367,8 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
                                                         value.filters,
                                                       )
                                                     : null,
-                                                clearSemanticLabel: context
-                                                    .localization
-                                                    .home_quick_filter_clear_rooms_a11y,
+                                                clearSemanticLabel:
+                                                    clearRoomsA11y,
                                               ),
                                               const SizedBox(width: 8),
                                               _QuickFilterChip(
@@ -392,9 +389,8 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
                                                         value.filters,
                                                       )
                                                     : null,
-                                                clearSemanticLabel: context
-                                                    .localization
-                                                    .home_quick_filter_clear_price_a11y,
+                                                clearSemanticLabel:
+                                                    clearPriceA11y,
                                               ),
                                               const SizedBox(width: 8),
                                               _QuickFilterChip(
@@ -416,9 +412,8 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
                                                         value.filters,
                                                       )
                                                     : null,
-                                                clearSemanticLabel: context
-                                                    .localization
-                                                    .home_quick_filter_clear_tariff_a11y,
+                                                clearSemanticLabel:
+                                                    clearTariffA11y,
                                               ),
                                             ],
                                           ),
@@ -534,140 +529,6 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
   ) {
     if (listingsBloc.isClosed || filters == listingsBloc.state.filters) return;
     listingsBloc.add(ApplyListingFiltersEvent(filters));
-  }
-}
-
-class _HomeSearchCard extends StatelessWidget {
-  const _HomeSearchCard({
-    required this.query,
-    required this.activeFiltersCount,
-    required this.onSearchTap,
-    required this.onFiltersTap,
-  });
-
-  final String query;
-  final int activeFiltersCount;
-  final VoidCallback onSearchTap;
-  final VoidCallback onFiltersTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(6),
-      decoration: BoxDecoration(
-        color: context.currentTheme.bgSurfaceBase2,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: context.currentTheme.strokeNeutralLight100),
-        boxShadow: const [
-          BoxShadow(
-            color: AppColors.shadowColor3,
-            blurRadius: 4,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Material(
-              color: context.currentTheme.bgNeutralLight50,
-              borderRadius: BorderRadius.circular(12),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(12),
-                onTap: onSearchTap,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 13,
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        TablerIcons.search,
-                        size: 20,
-                        color: context.currentTheme.iconNeutralDefault,
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          query.isNotEmpty
-                              ? query
-                              : context
-                                    .localization
-                                    .listings_search_placeholder,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: query.isNotEmpty
-                              ? AppTextStyles.p2SemiBold.copyWith(
-                                  color:
-                                      context.currentTheme.textNeutralPrimary,
-                                )
-                              : AppTextStyles.p2Regular.copyWith(
-                                  color:
-                                      context.currentTheme.textNeutralSecondary,
-                                ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 6),
-          Material(
-            color: context.currentTheme.bgNeutralLight50,
-            borderRadius: BorderRadius.circular(12),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(12),
-              onTap: onFiltersTap,
-              child: SizedBox(
-                width: 48,
-                height: 48,
-                child: Stack(
-                  alignment: Alignment.center,
-                  clipBehavior: Clip.none,
-                  children: [
-                    Icon(
-                      TablerIcons.adjustments_horizontal,
-                      size: 20,
-                      color: context.currentTheme.iconNeutralDefault,
-                    ),
-                    if (activeFiltersCount > 0)
-                      Positioned(
-                        top: 6,
-                        right: 6,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 4,
-                            vertical: 1,
-                          ),
-                          decoration: BoxDecoration(
-                            color: context.currentTheme.bgBrandDefault,
-                            shape: BoxShape.circle,
-                          ),
-                          constraints: const BoxConstraints(
-                            minWidth: 16,
-                            minHeight: 16,
-                          ),
-                          alignment: Alignment.center,
-                          child: Text(
-                            activeFiltersCount.toString(),
-                            style: AppTextStyles.c2SemiBold.copyWith(
-                              color: context.currentTheme.textNeutralWhite,
-                              fontSize: 9,
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }
 

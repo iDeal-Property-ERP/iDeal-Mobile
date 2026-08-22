@@ -79,7 +79,7 @@ void main() {
     expect(sheet, findsOneWidget);
     expect(
       tester.getSize(sheet).height,
-      lessThan(tester.view.physicalSize.height * 0.7),
+      greaterThan(tester.view.physicalSize.height * 0.7),
     );
     expect(find.text('Apply'), findsOneWidget);
     expect(find.text('Clear all'), findsOneWidget);
@@ -233,6 +233,14 @@ void main() {
       expect(find.text('Select district'), findsOneWidget);
       await tester.tap(find.text('Select district'));
       await tester.pumpAndSettle();
+
+      // Verify sheet is at full extended height (0.95)
+      final sheetWidget = find.byType(DraggableScrollableSheet);
+      expect(sheetWidget, findsOneWidget);
+      expect(
+        tester.getSize(sheetWidget).height,
+        greaterThan(tester.view.physicalSize.height * 0.8),
+      );
 
       // Search input should appear
       expect(find.text('Search district...'), findsOneWidget);

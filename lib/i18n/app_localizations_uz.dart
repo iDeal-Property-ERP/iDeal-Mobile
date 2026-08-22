@@ -1318,13 +1318,13 @@ class AppLocalizationsUz extends AppLocalizations {
   String get selected_sort => 'Saralash';
 
   @override
-  String get selected_sort_recent => 'Yaqinda tanlangan';
+  String get selected_sort_recent => 'Yangi';
 
   @override
-  String get selected_sort_price_asc => 'Narx: arzondan qimmatga';
+  String get selected_sort_price_asc => 'Narx ↑';
 
   @override
-  String get selected_sort_price_desc => 'Narx: qimmatdan arzonga';
+  String get selected_sort_price_desc => 'Narx ↓';
 
   @override
   String get selected_no_matches_title =>

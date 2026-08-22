@@ -1294,13 +1294,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selected_sort => 'Sort';
 
   @override
-  String get selected_sort_recent => 'Recently selected';
+  String get selected_sort_recent => 'Newest';
 
   @override
-  String get selected_sort_price_asc => 'Price: low to high';
+  String get selected_sort_price_asc => 'Price ↑';
 
   @override
-  String get selected_sort_price_desc => 'Price: high to low';
+  String get selected_sort_price_desc => 'Price ↓';
 
   @override
   String get selected_no_matches_title => 'No matching selected homes';

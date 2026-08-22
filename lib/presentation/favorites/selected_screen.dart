@@ -14,7 +14,6 @@ import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filte
 import 'package:ideal_mobile/presentation/listings/widgets/listing_card.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/listing_card_shimmer.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/listings_feed.dart';
-import 'package:ideal_mobile/presentation/listings/widgets/listings_filter_chips.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/listings_filter_dropdown_chip.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/listings_filter_sheet.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/listings_search_bar.dart';
@@ -181,9 +180,7 @@ class _SelectedScreenState extends State<SelectedScreen> {
               slivers: [
                 AppSliverTopBar.root(title: context.localization.selected),
                 const _SelectedSearchBarSection(),
-                const SliverToBoxAdapter(child: SizedBox(height: 4)),
-                const _SelectedFilterChipsSection(),
-                const SliverToBoxAdapter(child: SizedBox(height: 12)),
+                const SliverToBoxAdapter(child: SizedBox(height: 8)),
                 const _SelectedResultsHeader(),
                 const _SelectedBody(),
               ],
@@ -212,46 +209,29 @@ class _SelectedSearchBarSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final query = context.select<SelectedBloc, String>(
-      (bloc) => bloc.state.filters.query ?? '',
-    );
+    final selection = context
+        .select<
+          SelectedBloc,
+          ({String query, ListingFilters filters, ListingFilterOptions options})
+        >(
+          (bloc) => (
+            query: bloc.state.filters.query ?? '',
+            filters: bloc.state.filters,
+            options: bloc.state.filterOptions,
+          ),
+        );
 
     return SliverToBoxAdapter(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
         child: ListingsSearchBar(
-          query: query,
+          query: selection.query,
+          activeFiltersCount: selection.filters.activeCount,
           onQueryChanged: (value) =>
               context.read<SelectedBloc>().add(SearchSelectedEvent(value)),
+          onFiltersTap: () =>
+              _openFilters(context, selection.filters, selection.options),
         ),
-      ),
-    );
-  }
-}
-
-class _SelectedFilterChipsSection extends StatelessWidget {
-  const _SelectedFilterChipsSection();
-
-  @override
-  Widget build(BuildContext context) {
-    final selection = context
-        .select<
-          SelectedBloc,
-          ({ListingFilters filters, ListingFilterOptions options})
-        >(
-          (bloc) =>
-              (filters: bloc.state.filters, options: bloc.state.filterOptions),
-        );
-
-    return SliverToBoxAdapter(
-      child: ListingsFilterChips(
-        filters: selection.filters,
-        filterOptions: selection.options,
-        onFiltersChanged: (filters) => context.read<SelectedBloc>().add(
-          ApplySelectedFiltersEvent(filters),
-        ),
-        onOpenFilters: () =>
-            _openFilters(context, selection.filters, selection.options),
       ),
     );
   }
@@ -304,6 +284,7 @@ class _SelectedResultsHeader extends StatelessWidget {
             ),
             ListingsFilterDropdownChip<SelectedSort>(
               label: context.localization.selected_sort,
+              borderless: true,
               options: [
                 for (final sort in SelectedSort.values)
                   ListingsFilterDropdownOption<SelectedSort>(
