@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ideal_mobile/constants/integration_test_keys.dart';
 import 'package:ideal_mobile/core/services/injection_container.dart';
 import 'package:ideal_mobile/i18n/app_localizations.dart';
 import 'package:ideal_mobile/presentation/chat/bloc/chat_badge_cubit.dart';
@@ -24,6 +25,7 @@ import 'package:ideal_mobile/presentation/home/bloc/home_state.dart';
 import 'package:ideal_mobile/presentation/home/home_screen.dart';
 import 'package:ideal_mobile/presentation/home/widgets/home_quick_filter_sheet.dart';
 import 'package:ideal_mobile/presentation/home/widgets/home_screen_body.dart';
+import 'package:ideal_mobile/presentation/home/widgets/home_top_bar.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_bloc.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_event.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_state.dart';
@@ -33,13 +35,15 @@ import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filte
 import 'package:ideal_mobile/presentation/listings/widgets/listing_card_shimmer.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/listings_empty_view.dart';
 import 'package:ideal_mobile/presentation/notifications/bloc/notification_badge_cubit.dart';
+import 'package:ideal_mobile/presentation/profile/bloc/profile_bloc.dart';
+import 'package:ideal_mobile/presentation/profile/bloc/profile_event.dart';
+import 'package:ideal_mobile/presentation/profile/bloc/profile_state.dart';
 import 'package:ideal_mobile/presentation/profile/data/models/mobile_user_profile.dart';
 import 'package:ideal_mobile/presentation/profile/domain/usecases/get_profile.dart';
 import 'package:ideal_mobile/presentation/profile/domain/usecases/remove_profile_avatar.dart';
 import 'package:ideal_mobile/presentation/profile/domain/usecases/update_profile.dart';
 import 'package:ideal_mobile/presentation/profile/domain/usecases/update_profile_avatar.dart';
 import 'package:ideal_mobile/routes.gr.dart';
-import 'package:ideal_mobile/widgets/app_top_bar.dart';
 import 'package:ideal_mobile/widgets/styling/app_theme_data.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -61,6 +65,9 @@ class MockChatBadgeCubit extends MockCubit<int> implements ChatBadgeCubit {}
 
 class MockNotificationBadgeCubit extends MockCubit<int>
     implements NotificationBadgeCubit {}
+
+class MockProfileBloc extends MockBloc<ProfileEvent, ProfileState>
+    implements ProfileBloc {}
 
 class MockStackRouter extends Mock implements StackRouter {}
 
@@ -267,8 +274,8 @@ void main() {
       await pumpForLocale(const Locale('en'));
       expect(
         find.descendant(
-          of: find.byType(AppSliverTopBar),
-          matching: find.text('Home'),
+          of: find.byType(HomeSliverTopBar),
+          matching: find.text('Hi'),
         ),
         findsOneWidget,
       );
@@ -284,8 +291,8 @@ void main() {
       await pumpForLocale(const Locale('ru'));
       expect(
         find.descendant(
-          of: find.byType(AppSliverTopBar),
-          matching: find.text('Главная'),
+          of: find.byType(HomeSliverTopBar),
+          matching: find.text('Привет'),
         ),
         findsOneWidget,
       );
@@ -301,8 +308,8 @@ void main() {
       await pumpForLocale(const Locale('uz'));
       expect(
         find.descendant(
-          of: find.byType(AppSliverTopBar),
-          matching: find.text('Bosh sahifa'),
+          of: find.byType(HomeSliverTopBar),
+          matching: find.text('Salom'),
         ),
         findsOneWidget,
       );
@@ -367,15 +374,16 @@ void main() {
       );
 
       final logo = find.descendant(
-        of: find.byType(AppSliverTopBar),
+        of: find.byType(HomeSliverTopBar),
         matching: find.byType(Image),
       );
       final title = find.descendant(
-        of: find.byType(AppSliverTopBar),
-        matching: find.text('Home'),
+        of: find.byType(HomeSliverTopBar),
+        matching: find.text('Hi'),
       );
       final action = find.byTooltip('Notifications');
       expect(logo, findsOneWidget);
+      expect(title, findsOneWidget);
       final logoCenterBefore = tester.getCenter(logo);
       final titleCenterBefore = tester.getCenter(title);
       final actionCenterBefore = tester.getCenter(action);
@@ -513,7 +521,7 @@ void main() {
     });
 
     testWidgets(
-      'renders Find your next home, search trigger, chips, and feed heading',
+      'renders personalized top bar, search trigger, chips, and feed heading',
       (tester) async {
         final listingsBloc = MockListingsBloc();
         when(() => listingsBloc.state).thenReturn(
@@ -529,8 +537,10 @@ void main() {
           child: const Scaffold(body: HomeScreenBody()),
         );
 
-        expect(find.text('Find your next home'), findsOneWidget);
+        expect(find.text('Hi'), findsOneWidget);
         expect(find.text('Search rentals'), findsOneWidget);
+        expect(find.byKey(keys.homePage.bannerCarouselKey), findsOneWidget);
+        expect(find.text('100% Actual Listings'), findsOneWidget);
         expect(find.text('District'), findsOneWidget);
         expect(find.text('Rooms'), findsOneWidget);
         expect(find.text('Price'), findsOneWidget);
@@ -569,37 +579,32 @@ void main() {
       expect(find.text('Highly rated homes'), findsOneWidget);
     });
 
-    testWidgets(
-      'hides recommendation rail and highly rated heading when query or filter is active',
-      (tester) async {
-        final listingsBloc = MockListingsBloc();
-        when(() => listingsBloc.state).thenReturn(
-          ListingsState.test(
-            searchQuery: 'Yunusobod',
-            filters: const ListingFilters(
-              query: 'Yunusobod',
-              sort: 'score_desc',
-            ),
-            items: [_homeTestListing(1)],
-            recommendedListings: [
-              _homeTestListing(10, title: 'Recommended Home'),
-            ],
-            hasLoadedListings: true,
-            hasReachedMax: true,
-          ),
-        );
+    testWidgets('hides recommendation rail and highly rated heading when '
+        'query or filter is active', (tester) async {
+      final listingsBloc = MockListingsBloc();
+      when(() => listingsBloc.state).thenReturn(
+        ListingsState.test(
+          searchQuery: 'Yunusobod',
+          filters: const ListingFilters(query: 'Yunusobod', sort: 'score_desc'),
+          items: [_homeTestListing(1)],
+          recommendedListings: [
+            _homeTestListing(10, title: 'Recommended Home'),
+          ],
+          hasLoadedListings: true,
+          hasReachedMax: true,
+        ),
+      );
 
-        await tester.runWidgetTest(
-          providers: [BlocProvider<ListingsBloc>.value(value: listingsBloc)],
-          child: const Scaffold(body: HomeScreenBody()),
-        );
+      await tester.runWidgetTest(
+        providers: [BlocProvider<ListingsBloc>.value(value: listingsBloc)],
+        child: const Scaffold(body: HomeScreenBody()),
+      );
 
-        expect(find.text('Recommended for you'), findsNothing);
-        expect(find.text('Recommended Home'), findsNothing);
-        expect(find.text('Highly rated homes'), findsNothing);
-        expect(find.text('Listing 1'), findsOneWidget);
-      },
-    );
+      expect(find.text('Recommended for you'), findsNothing);
+      expect(find.text('Recommended Home'), findsNothing);
+      expect(find.text('Highly rated homes'), findsNothing);
+      expect(find.text('Listing 1'), findsOneWidget);
+    });
 
     testWidgets('renders active quick filter chips with resolved values '
         'and X clear buttons', (tester) async {
@@ -874,6 +879,7 @@ void main() {
                 child: HomeScreenWrapper(
                   chatsBloc: chatsBloc,
                   chatBadgeCubit: chatBadgeCubit,
+                  initialMottoIndex: 0,
                 ),
               ),
               createTestScenario(
@@ -886,6 +892,7 @@ void main() {
                 child: HomeScreenWrapper(
                   chatsBloc: chatsBloc,
                   chatBadgeCubit: chatBadgeCubit,
+                  initialMottoIndex: 0,
                 ),
                 theme: AppThemeEnum.DarkTheme,
               ),
@@ -893,6 +900,76 @@ void main() {
           );
         },
       );
+    });
+
+    group('HomeSliverTopBar', () {
+      testWidgets(
+        'renders personalized greeting when profile first name is present',
+        (tester) async {
+          final profileBloc = MockProfileBloc();
+          when(
+            () => profileBloc.state,
+          ).thenReturn(const ProfileState.initial(profile: _testProfile));
+          final listingsBloc = MockListingsBloc();
+          when(
+            () => listingsBloc.state,
+          ).thenReturn(ListingsState.test(hasLoadedListings: true));
+
+          await tester.runWidgetTest(
+            providers: [
+              BlocProvider<ProfileBloc>.value(value: profileBloc),
+              BlocProvider<ListingsBloc>.value(value: listingsBloc),
+            ],
+            child: const Scaffold(body: HomeScreenBody()),
+          );
+
+          expect(find.text('Hi, Test'), findsOneWidget);
+        },
+      );
+
+      testWidgets('renders fallback greeting when profile is null', (
+        tester,
+      ) async {
+        final profileBloc = MockProfileBloc();
+        when(() => profileBloc.state).thenReturn(const ProfileState.initial());
+        final listingsBloc = MockListingsBloc();
+        when(
+          () => listingsBloc.state,
+        ).thenReturn(ListingsState.test(hasLoadedListings: true));
+
+        await tester.runWidgetTest(
+          providers: [
+            BlocProvider<ProfileBloc>.value(value: profileBloc),
+            BlocProvider<ListingsBloc>.value(value: listingsBloc),
+          ],
+          child: const Scaffold(body: HomeScreenBody()),
+        );
+
+        expect(find.text('Hi'), findsOneWidget);
+      });
+
+      testWidgets('renders notification badge count when unreadCount > 0', (
+        tester,
+      ) async {
+        final notificationBadgeCubit = MockNotificationBadgeCubit();
+        when(() => notificationBadgeCubit.state).thenReturn(5);
+        if (sl.isRegistered<NotificationBadgeCubit>()) {
+          sl.unregister<NotificationBadgeCubit>();
+        }
+        sl.registerSingleton<NotificationBadgeCubit>(notificationBadgeCubit);
+
+        final listingsBloc = MockListingsBloc();
+        when(
+          () => listingsBloc.state,
+        ).thenReturn(ListingsState.test(hasLoadedListings: true));
+
+        await tester.runWidgetTest(
+          providers: [BlocProvider<ListingsBloc>.value(value: listingsBloc)],
+          child: const Scaffold(body: HomeScreenBody()),
+        );
+
+        expect(find.text('5'), findsOneWidget);
+      });
     });
   });
 }

@@ -1431,6 +1431,44 @@ class AppLocalizationsUz extends AppLocalizations {
   String get home_heading => 'Keyingi uyingizni toping';
 
   @override
+  String get home_greeting_guest => 'Salom';
+
+  @override
+  String home_greeting_user(String name) {
+    return 'Salom, $name';
+  }
+
+  @override
+  String get home_motto_1 => 'Yangi bitimga tayyormisiz?';
+
+  @override
+  String get home_motto_2 => 'Oʻzingizga mos joyni toping';
+
+  @override
+  String get home_motto_3 => 'Oʻzingizni uydagidek his eting';
+
+  @override
+  String get home_motto_4 => 'Yangi boshlanish sizni kutmoqda';
+
+  @override
+  String get home_motto_5 => 'Sevimli maskanlarni kashf eting';
+
+  @override
+  String get home_motto_6 => 'Oʻz uyingizni toping';
+
+  @override
+  String get home_motto_7 => 'Yangi uyingiz kaliti';
+
+  @override
+  String get home_motto_8 => 'Eng sara takliflarni koʻring';
+
+  @override
+  String get home_motto_9 => 'Yangi sahifangiz shu yerdan boshlanadi';
+
+  @override
+  String get home_motto_10 => 'Orzuingizdagi uyni toping';
+
+  @override
   String get home_recommended_heading => 'Siz uchun tavsiyalar';
 
   @override
@@ -1865,4 +1903,38 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get booking_back_home => 'Bosh sahifaga';
+
+  @override
+  String get home_banners_keys => '======== BOSH SAHIFA BANNERLARI ========';
+
+  @override
+  String get home_banner_tag => 'iDeal kafolati';
+
+  @override
+  String get home_banner_actual_title => 'Faqat dolzarb e\'lonlar';
+
+  @override
+  String get home_banner_actual_desc =>
+      'Ko\'rib turgan barcha takliflar mavjud. Muddati o\'tgan e\'lonlar yo\'q.';
+
+  @override
+  String get home_banner_verified_title => 'Tekshirilgan mulklar';
+
+  @override
+  String get home_banner_verified_desc =>
+      'Mutaxassislarimiz har bir uyni ko\'zdan kechirib, haqiqiyligini tasdiqlaydi.';
+
+  @override
+  String get home_banner_viewings_title => 'Ko\'rishni tashkil qilamiz';
+
+  @override
+  String get home_banner_viewings_desc =>
+      'Uyni oldindan borib ko\'ring, vakilimiz sizga hamrohlik qiladi va yordam beradi.';
+
+  @override
+  String get home_banner_legal_title => 'Rasmiy shartnomalar';
+
+  @override
+  String get home_banner_legal_desc =>
+      'Har bir ijara va xarid davlat ro\'yxatidan o\'tuvchi rasmiy shartnoma bilan himoyalangan.';
 }

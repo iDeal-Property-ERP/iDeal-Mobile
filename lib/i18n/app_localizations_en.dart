@@ -1406,6 +1406,44 @@ class AppLocalizationsEn extends AppLocalizations {
   String get home_heading => 'Find your next home';
 
   @override
+  String get home_greeting_guest => 'Hi';
+
+  @override
+  String home_greeting_user(String name) {
+    return 'Hi, $name';
+  }
+
+  @override
+  String get home_motto_1 => 'Ready for your next deal?';
+
+  @override
+  String get home_motto_2 => 'Find your perfect space';
+
+  @override
+  String get home_motto_3 => 'Make yourself at home';
+
+  @override
+  String get home_motto_4 => 'Your new beginning awaits';
+
+  @override
+  String get home_motto_5 => 'Discover spaces you love';
+
+  @override
+  String get home_motto_6 => 'Find where you belong';
+
+  @override
+  String get home_motto_7 => 'The key to your home';
+
+  @override
+  String get home_motto_8 => 'Explore premier listings today';
+
+  @override
+  String get home_motto_9 => 'Your next chapter starts here';
+
+  @override
+  String get home_motto_10 => 'Find your dream home';
+
+  @override
   String get home_recommended_heading => 'Recommended for you';
 
   @override
@@ -1837,4 +1875,38 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get booking_back_home => 'Back to home';
+
+  @override
+  String get home_banners_keys => '======== HOME BANNER KEYS ========';
+
+  @override
+  String get home_banner_tag => 'iDeal Guarantee';
+
+  @override
+  String get home_banner_actual_title => '100% Actual Listings';
+
+  @override
+  String get home_banner_actual_desc =>
+      'Whatever you see is available. No expired listings or outdated offers.';
+
+  @override
+  String get home_banner_verified_title => 'Verified Properties';
+
+  @override
+  String get home_banner_verified_desc =>
+      'Our team inspects each home to ensure photos and terms match reality.';
+
+  @override
+  String get home_banner_viewings_title => 'We Arrange Viewings';
+
+  @override
+  String get home_banner_viewings_desc =>
+      'Visit the property beforehand with our representative to assist you.';
+
+  @override
+  String get home_banner_legal_title => 'Official Legal Agreements';
+
+  @override
+  String get home_banner_legal_desc =>
+      'Every booking and purchase is protected by contracts recognized by official registries.';
 }

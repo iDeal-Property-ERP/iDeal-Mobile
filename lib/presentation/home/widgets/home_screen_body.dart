@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
@@ -7,10 +8,11 @@ import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
 import 'package:ideal_mobile/constants/integration_test_keys.dart';
 import 'package:ideal_mobile/core/services/injection_container.dart';
-import 'package:ideal_mobile/gen/assets.gen.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
+import 'package:ideal_mobile/presentation/home/widgets/home_banner_carousel.dart';
 import 'package:ideal_mobile/presentation/home/widgets/home_listing_rail.dart';
 import 'package:ideal_mobile/presentation/home/widgets/home_quick_filter_sheet.dart';
+import 'package:ideal_mobile/presentation/home/widgets/home_top_bar.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_bloc.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_event.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_state.dart';
@@ -27,13 +29,14 @@ import 'package:ideal_mobile/presentation/notifications/bloc/notification_badge_
 import 'package:ideal_mobile/routes.gr.dart';
 import 'package:ideal_mobile/utils/extensions/build_context_ext.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
-import 'package:ideal_mobile/widgets/app_top_bar.dart';
 
 /// Distance from the bottom of the feed at which the next page is requested.
 const _kLoadMoreThreshold = 400.0;
 
 class HomeScreenBody extends StatefulWidget {
-  const HomeScreenBody({super.key});
+  const HomeScreenBody({this.initialMottoIndex, super.key});
+
+  final int? initialMottoIndex;
 
   @override
   State<HomeScreenBody> createState() => _HomeScreenBodyState();
@@ -41,10 +44,12 @@ class HomeScreenBody extends StatefulWidget {
 
 class _HomeScreenBodyState extends State<HomeScreenBody> {
   final ScrollController _scrollController = ScrollController();
+  late int _mottoIndex;
 
   @override
   void initState() {
     super.initState();
+    _mottoIndex = widget.initialMottoIndex ?? Random().nextInt(10);
     _scrollController.addListener(_onScroll);
     WidgetsBinding.instance.addPostFrameCallback((_) => _loadRecommendations());
   }
@@ -80,6 +85,9 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
   }
 
   Future<void> _onRefresh() async {
+    setState(() {
+      _mottoIndex = Random().nextInt(10);
+    });
     context.read<ListingsBloc>().add(const LoadListingsEvent());
     _loadRecommendations();
   }
@@ -238,36 +246,15 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
                       controller: _scrollController,
                       physics: const AlwaysScrollableScrollPhysics(),
                       slivers: [
-                        AppSliverTopBar.root(
-                          title: context.localization.home,
-                          leading: const _HomeLogo(),
-                          actions: [
-                            AppTopBarAction(
-                              icon: TablerIcons.bell,
-                              tooltip: context.localization.notifications,
-                              badge: _notificationBadge(unreadCount),
-                              onPressed: () =>
-                                  context.pushRoute(NotificationsRoute()),
-                            ),
-                          ],
+                        HomeSliverTopBar(
+                          mottoIndex: _mottoIndex,
+                          unreadCount: unreadCount,
+                          onNotificationTap: () =>
+                              context.pushRoute(NotificationsRoute()),
                         ),
                         SliverToBoxAdapter(
                           child: Padding(
-                            padding: const EdgeInsets.fromLTRB(16, 12, 16, 10),
-                            child: Text(
-                              context.localization.home_heading,
-                              style: AppTextStyles.h1.copyWith(
-                                color: context.currentTheme.textNeutralPrimary,
-                                fontWeight: FontWeight.w800,
-                                fontSize: 27,
-                                letterSpacing: -0.5,
-                              ),
-                            ),
-                          ),
-                        ),
-                        SliverToBoxAdapter(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
                             child:
                                 BlocSelector<
                                   ListingsBloc,
@@ -319,7 +306,9 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
                                           onFiltersTap: () =>
                                               showListingsFilterSheet(context),
                                         ),
-                                        const SizedBox(height: 10),
+                                        const SizedBox(height: 14),
+                                        const HomeBannerCarousel(),
+                                        const SizedBox(height: 14),
                                         SingleChildScrollView(
                                           scrollDirection: Axis.horizontal,
                                           physics:
@@ -504,11 +493,6 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
     );
   }
 
-  String? _notificationBadge(int unreadCount) {
-    if (unreadCount <= 0) return null;
-    return unreadCount > 9 ? '9+' : '•';
-  }
-
   void _openMap() {
     final listingsBloc = context.read<ListingsBloc>();
     final state = listingsBloc.state;
@@ -620,29 +604,6 @@ class _QuickFilterChip extends StatelessWidget {
                 ),
               ),
             ),
-    );
-  }
-}
-
-class _HomeLogo extends StatelessWidget {
-  const _HomeLogo();
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      image: true,
-      label: 'iDeal',
-      child: ExcludeSemantics(
-        child: Image.asset(
-          context.themeAsset(
-            light: Assets.icons.companyLogoLt.path,
-            dark: Assets.icons.companyLogoDt.path,
-          ),
-          width: 28,
-          height: 28,
-          fit: BoxFit.contain,
-        ),
-      ),
     );
   }
 }

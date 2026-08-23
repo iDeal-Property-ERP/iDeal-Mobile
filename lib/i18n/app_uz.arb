@@ -464,6 +464,27 @@
   "listings_chip_premium": "Premium",
   "listings_search_placeholder": "Ijara qidirish",
   "home_heading": "Keyingi uyingizni toping",
+  "home_greeting_guest": "Salom",
+  "home_greeting_user": "Salom, {name}",
+  "@home_greeting_user": {
+    "description": "Foydalanuvchi ismi bilan bosh sahifadagi salomlashish",
+    "placeholders": {
+      "name": {
+        "example": "Mehroj",
+        "type": "String"
+      }
+    }
+  },
+  "home_motto_1": "Yangi bitimga tayyormisiz?",
+  "home_motto_2": "Oʻzingizga mos joyni toping",
+  "home_motto_3": "Oʻzingizni uydagidek his eting",
+  "home_motto_4": "Yangi boshlanish sizni kutmoqda",
+  "home_motto_5": "Sevimli maskanlarni kashf eting",
+  "home_motto_6": "Oʻz uyingizni toping",
+  "home_motto_7": "Yangi uyingiz kaliti",
+  "home_motto_8": "Eng sara takliflarni koʻring",
+  "home_motto_9": "Yangi sahifangiz shu yerdan boshlanadi",
+  "home_motto_10": "Orzuingizdagi uyni toping",
   "home_recommended_heading": "Siz uchun tavsiyalar",
   "home_recent_search_heading": "Oxirgi qidiruvlaringiz asosida",
   "home_recent_search_context": "{query} va oxirgi filtrlaringiz asosida",
@@ -661,5 +682,15 @@
   "booking_review_message": "Moliya jamoasi bu to‘lovni tekshirishi kerak. Yordam xizmati bog‘lanmaguncha qayta to‘lamang.",
   "booking_unavailable": "Ilovada bron qilish mavjud emas",
   "booking_return_unverified": "Bu qaytish havolasini faol to‘lov bilan moslashtirib bo‘lmadi. Havolaning o‘zi to‘lov isboti emas.",
-  "booking_back_home": "Bosh sahifaga"
+  "booking_back_home": "Bosh sahifaga",
+  "home_banners_keys": "======== BOSH SAHIFA BANNERLARI ========",
+  "home_banner_tag": "iDeal kafolati",
+  "home_banner_actual_title": "Faqat dolzarb e'lonlar",
+  "home_banner_actual_desc": "Ko'rib turgan barcha takliflar mavjud. Muddati o'tgan e'lonlar yo'q.",
+  "home_banner_verified_title": "Tekshirilgan mulklar",
+  "home_banner_verified_desc": "Mutaxassislarimiz har bir uyni ko'zdan kechirib, haqiqiyligini tasdiqlaydi.",
+  "home_banner_viewings_title": "Ko'rishni tashkil qilamiz",
+  "home_banner_viewings_desc": "Uyni oldindan borib ko'ring, vakilimiz sizga hamrohlik qiladi va yordam beradi.",
+  "home_banner_legal_title": "Rasmiy shartnomalar",
+  "home_banner_legal_desc": "Har bir ijara va xarid davlat ro'yxatidan o'tuvchi rasmiy shartnoma bilan himoyalangan."
 }

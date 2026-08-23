@@ -464,6 +464,27 @@
   "listings_chip_premium": "Премиум",
   "listings_search_placeholder": "Поиск аренды",
   "home_heading": "Найдите свой следующий дом",
+  "home_greeting_guest": "Привет",
+  "home_greeting_user": "Привет, {name}",
+  "@home_greeting_user": {
+    "description": "Приветствие на главном экране с именем пользователя",
+    "placeholders": {
+      "name": {
+        "example": "Мехрож",
+        "type": "String"
+      }
+    }
+  },
+  "home_motto_1": "Готовы к новой сделке?",
+  "home_motto_2": "Найдите идеальное пространство",
+  "home_motto_3": "Чувствуйте себя как дома",
+  "home_motto_4": "Ваше новое начало ждет вас",
+  "home_motto_5": "Откройте для себя любимые места",
+  "home_motto_6": "Найдите свой уютный уголок",
+  "home_motto_7": "Ключ к вашему новому дому",
+  "home_motto_8": "Лучшие предложения сегодня",
+  "home_motto_9": "Ваша новая история здесь",
+  "home_motto_10": "Найдите дом вашей мечты",
   "home_recommended_heading": "Рекомендуем для вас",
   "home_recent_search_heading": "На основе недавних поисков",
   "home_recent_search_context": "На основе запроса «{query}» и ваших фильтров",
@@ -661,5 +682,15 @@
   "booking_review_message": "Финансовая команда должна проверить платёж. Не платите повторно до связи с поддержкой.",
   "booking_unavailable": "Онлайн-бронирование недоступно",
   "booking_return_unverified": "Не удалось сопоставить ссылку с активной оплатой. Сама ссылка не подтверждает платёж.",
-  "booking_back_home": "На главную"
+  "booking_back_home": "На главную",
+  "home_banners_keys": "======== КЛЮЧИ БАННЕРОВ НА ГЛАВНОЙ ========",
+  "home_banner_tag": "Гарантия iDeal",
+  "home_banner_actual_title": "Только актуальные объявления",
+  "home_banner_actual_desc": "Всё, что вы видите — доступно. Никаких устаревших предложений.",
+  "home_banner_verified_title": "Проверенная недвижимость",
+  "home_banner_verified_desc": "Наша команда проверяет каждое жильё и согласие собственника.",
+  "home_banner_viewings_title": "Организуем просмотр",
+  "home_banner_viewings_desc": "Посетите объект заранее — наш представитель встретит вас и ответит на все вопросы.",
+  "home_banner_legal_title": "Официальные договоры",
+  "home_banner_legal_desc": "Каждая сделка защищена договором, признаваемым госреестрами."
 }

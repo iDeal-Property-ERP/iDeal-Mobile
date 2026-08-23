@@ -25,6 +25,8 @@ class SignupPageKeys {
 class HomePageKeys {
   final productCardKey = const Key('productCardKey');
   final listingsFeedKey = const Key('listingsFeedKey');
+  final bannerCarouselKey = const Key('homeBannerCarouselKey');
+  final bannerIndicatorKey = const Key('homeBannerIndicatorKey');
 
   /// Per-listing so sibling tiles in the feed never share a key. Integration
   /// tests can target one card by id, or match the `listingCard_` prefix.

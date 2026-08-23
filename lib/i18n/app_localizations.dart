@@ -2650,6 +2650,78 @@ abstract class AppLocalizations {
   /// **'Find your next home'**
   String get home_heading;
 
+  /// No description provided for @home_greeting_guest.
+  ///
+  /// In en, this message translates to:
+  /// **'Hi'**
+  String get home_greeting_guest;
+
+  /// Greeting shown on home screen when user first name is available
+  ///
+  /// In en, this message translates to:
+  /// **'Hi, {name}'**
+  String home_greeting_user(String name);
+
+  /// No description provided for @home_motto_1.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready for your next deal?'**
+  String get home_motto_1;
+
+  /// No description provided for @home_motto_2.
+  ///
+  /// In en, this message translates to:
+  /// **'Find your perfect space'**
+  String get home_motto_2;
+
+  /// No description provided for @home_motto_3.
+  ///
+  /// In en, this message translates to:
+  /// **'Make yourself at home'**
+  String get home_motto_3;
+
+  /// No description provided for @home_motto_4.
+  ///
+  /// In en, this message translates to:
+  /// **'Your new beginning awaits'**
+  String get home_motto_4;
+
+  /// No description provided for @home_motto_5.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover spaces you love'**
+  String get home_motto_5;
+
+  /// No description provided for @home_motto_6.
+  ///
+  /// In en, this message translates to:
+  /// **'Find where you belong'**
+  String get home_motto_6;
+
+  /// No description provided for @home_motto_7.
+  ///
+  /// In en, this message translates to:
+  /// **'The key to your home'**
+  String get home_motto_7;
+
+  /// No description provided for @home_motto_8.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore premier listings today'**
+  String get home_motto_8;
+
+  /// No description provided for @home_motto_9.
+  ///
+  /// In en, this message translates to:
+  /// **'Your next chapter starts here'**
+  String get home_motto_9;
+
+  /// No description provided for @home_motto_10.
+  ///
+  /// In en, this message translates to:
+  /// **'Find your dream home'**
+  String get home_motto_10;
+
   /// No description provided for @home_recommended_heading.
   ///
   /// In en, this message translates to:
@@ -3429,6 +3501,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Back to home'**
   String get booking_back_home;
+
+  /// No description provided for @home_banners_keys.
+  ///
+  /// In en, this message translates to:
+  /// **'======== HOME BANNER KEYS ========'**
+  String get home_banners_keys;
+
+  /// No description provided for @home_banner_tag.
+  ///
+  /// In en, this message translates to:
+  /// **'iDeal Guarantee'**
+  String get home_banner_tag;
+
+  /// No description provided for @home_banner_actual_title.
+  ///
+  /// In en, this message translates to:
+  /// **'100% Actual Listings'**
+  String get home_banner_actual_title;
+
+  /// No description provided for @home_banner_actual_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Whatever you see is available. No expired listings or outdated offers.'**
+  String get home_banner_actual_desc;
+
+  /// No description provided for @home_banner_verified_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified Properties'**
+  String get home_banner_verified_title;
+
+  /// No description provided for @home_banner_verified_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Our team inspects each home to ensure photos and terms match reality.'**
+  String get home_banner_verified_desc;
+
+  /// No description provided for @home_banner_viewings_title.
+  ///
+  /// In en, this message translates to:
+  /// **'We Arrange Viewings'**
+  String get home_banner_viewings_title;
+
+  /// No description provided for @home_banner_viewings_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit the property beforehand with our representative to assist you.'**
+  String get home_banner_viewings_desc;
+
+  /// No description provided for @home_banner_legal_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Official Legal Agreements'**
+  String get home_banner_legal_title;
+
+  /// No description provided for @home_banner_legal_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Every booking and purchase is protected by contracts recognized by official registries.'**
+  String get home_banner_legal_desc;
 }
 
 class _AppLocalizationsDelegate

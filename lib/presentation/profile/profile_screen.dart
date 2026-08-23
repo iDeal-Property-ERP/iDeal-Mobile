@@ -27,6 +27,18 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ProfileBloc? parentBloc;
+    try {
+      parentBloc = context.read<ProfileBloc>();
+    } catch (_) {}
+
+    if (parentBloc != null) {
+      return BlocProvider<ProfileBloc>.value(
+        value: parentBloc,
+        child: const ProfileScreenBody(),
+      );
+    }
+
     return BlocProvider<ProfileBloc>(
       create: (context) => ProfileBloc()..add(const LoadProfileEvent()),
       child: const ProfileScreenBody(),

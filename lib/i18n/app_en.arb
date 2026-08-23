@@ -566,6 +566,27 @@
   "listings_chip_premium": "Premium",
   "listings_search_placeholder": "Search rentals",
   "home_heading": "Find your next home",
+  "home_greeting_guest": "Hi",
+  "home_greeting_user": "Hi, {name}",
+  "@home_greeting_user": {
+    "description": "Greeting shown on home screen when user first name is available",
+    "placeholders": {
+      "name": {
+        "example": "Mehroj",
+        "type": "String"
+      }
+    }
+  },
+  "home_motto_1": "Ready for your next deal?",
+  "home_motto_2": "Find your perfect space",
+  "home_motto_3": "Make yourself at home",
+  "home_motto_4": "Your new beginning awaits",
+  "home_motto_5": "Discover spaces you love",
+  "home_motto_6": "Find where you belong",
+  "home_motto_7": "The key to your home",
+  "home_motto_8": "Explore premier listings today",
+  "home_motto_9": "Your next chapter starts here",
+  "home_motto_10": "Find your dream home",
   "home_recommended_heading": "Recommended for you",
   "home_recent_search_heading": "From your recent searches",
   "home_recent_search_context": "Based on {query} and your last filters",
@@ -763,5 +784,15 @@
   "booking_review_message": "Our finance team must review this payment. Do not pay again until support contacts you.",
   "booking_unavailable": "Direct booking is unavailable",
   "booking_return_unverified": "We could not match this return link to an active checkout. The link itself is not proof of payment.",
-  "booking_back_home": "Back to home"
+  "booking_back_home": "Back to home",
+  "home_banners_keys": "======== HOME BANNER KEYS ========",
+  "home_banner_tag": "iDeal Guarantee",
+  "home_banner_actual_title": "100% Actual Listings",
+  "home_banner_actual_desc": "Whatever you see is available. No expired listings or outdated offers.",
+  "home_banner_verified_title": "Verified Properties",
+  "home_banner_verified_desc": "Our team inspects each home to ensure photos and terms match reality.",
+  "home_banner_viewings_title": "We Arrange Viewings",
+  "home_banner_viewings_desc": "Visit the property beforehand with our representative to assist you.",
+  "home_banner_legal_title": "Official Legal Agreements",
+  "home_banner_legal_desc": "Every booking and purchase is protected by contracts recognized by official registries."
 }

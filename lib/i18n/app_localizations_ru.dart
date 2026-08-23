@@ -1432,6 +1432,44 @@ class AppLocalizationsRu extends AppLocalizations {
   String get home_heading => 'Найдите свой следующий дом';
 
   @override
+  String get home_greeting_guest => 'Привет';
+
+  @override
+  String home_greeting_user(String name) {
+    return 'Привет, $name';
+  }
+
+  @override
+  String get home_motto_1 => 'Готовы к новой сделке?';
+
+  @override
+  String get home_motto_2 => 'Найдите идеальное пространство';
+
+  @override
+  String get home_motto_3 => 'Чувствуйте себя как дома';
+
+  @override
+  String get home_motto_4 => 'Ваше новое начало ждет вас';
+
+  @override
+  String get home_motto_5 => 'Откройте для себя любимые места';
+
+  @override
+  String get home_motto_6 => 'Найдите свой уютный уголок';
+
+  @override
+  String get home_motto_7 => 'Ключ к вашему новому дому';
+
+  @override
+  String get home_motto_8 => 'Лучшие предложения сегодня';
+
+  @override
+  String get home_motto_9 => 'Ваша новая история здесь';
+
+  @override
+  String get home_motto_10 => 'Найдите дом вашей мечты';
+
+  @override
   String get home_recommended_heading => 'Рекомендуем для вас';
 
   @override
@@ -1867,4 +1905,38 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get booking_back_home => 'На главную';
+
+  @override
+  String get home_banners_keys => '======== КЛЮЧИ БАННЕРОВ НА ГЛАВНОЙ ========';
+
+  @override
+  String get home_banner_tag => 'Гарантия iDeal';
+
+  @override
+  String get home_banner_actual_title => 'Только актуальные объявления';
+
+  @override
+  String get home_banner_actual_desc =>
+      'Всё, что вы видите — доступно. Никаких устаревших предложений.';
+
+  @override
+  String get home_banner_verified_title => 'Проверенная недвижимость';
+
+  @override
+  String get home_banner_verified_desc =>
+      'Наша команда проверяет каждое жильё и согласие собственника.';
+
+  @override
+  String get home_banner_viewings_title => 'Организуем просмотр';
+
+  @override
+  String get home_banner_viewings_desc =>
+      'Посетите объект заранее — наш представитель встретит вас и ответит на все вопросы.';
+
+  @override
+  String get home_banner_legal_title => 'Официальные договоры';
+
+  @override
+  String get home_banner_legal_desc =>
+      'Каждая сделка защищена договором, признаваемым госреестрами.';
 }

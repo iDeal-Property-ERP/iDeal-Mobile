@@ -18,6 +18,8 @@ import 'package:ideal_mobile/presentation/home/widgets/bottom_nav_bar.dart';
 import 'package:ideal_mobile/presentation/home/widgets/home_screen_body.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_bloc.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_event.dart';
+import 'package:ideal_mobile/presentation/profile/bloc/profile_bloc.dart';
+import 'package:ideal_mobile/presentation/profile/bloc/profile_event.dart';
 import 'package:ideal_mobile/presentation/profile/profile_screen.dart';
 
 @RoutePage()
@@ -30,6 +32,9 @@ class HomeScreen extends StatelessWidget {
       providers: [
         BlocProvider<HomeBloc>(create: (_) => HomeBloc()),
         BlocProvider<SelectedBloc>(create: (_) => SelectedBloc()),
+        BlocProvider<ProfileBloc>(
+          create: (_) => ProfileBloc()..add(const LoadProfileEvent()),
+        ),
         BlocProvider<ListingsBloc>(
           create: (_) => ListingsBloc()
             ..add(const LoadFilterOptionsEvent())
@@ -42,10 +47,16 @@ class HomeScreen extends StatelessWidget {
 }
 
 class HomeScreenWrapper extends StatefulWidget {
-  const HomeScreenWrapper({this.chatsBloc, this.chatBadgeCubit, super.key});
+  const HomeScreenWrapper({
+    this.chatsBloc,
+    this.chatBadgeCubit,
+    this.initialMottoIndex,
+    super.key,
+  });
 
   final ChatsBloc? chatsBloc;
   final ChatBadgeCubit? chatBadgeCubit;
+  final int? initialMottoIndex;
 
   @override
   State<HomeScreenWrapper> createState() => HomeScreenWrapperState();
@@ -65,7 +76,12 @@ class HomeScreenWrapperState extends State<HomeScreenWrapper> {
     super.initState();
     _chatsBloc = widget.chatsBloc;
     _chatBadgeCubit = widget.chatBadgeCubit ?? sl<ChatBadgeCubit>();
-    _pages = [const HomeScreenBody(), null, null, null];
+    _pages = [
+      HomeScreenBody(initialMottoIndex: widget.initialMottoIndex),
+      null,
+      null,
+      null,
+    ];
   }
 
   void _syncChatPolling(int currentIndex) {
