@@ -5,6 +5,7 @@ class PushNotificationEvent {
     this.category,
     this.relatedObjectType,
     this.relatedObjectId,
+    this.replacementKey,
     this.title,
     this.body,
   });
@@ -14,6 +15,7 @@ class PushNotificationEvent {
   final String? category;
   final String? relatedObjectType;
   final int? relatedObjectId;
+  final String? replacementKey;
   final String? title;
   final String? body;
 
@@ -28,6 +30,7 @@ class PushNotificationEvent {
       category: _parseString(data['category']),
       relatedObjectType: _parseString(data['related_object_type']),
       relatedObjectId: _parseInt(data['related_object_id']),
+      replacementKey: _parseString(data['replacement_key']),
       title: title,
       body: body,
     );

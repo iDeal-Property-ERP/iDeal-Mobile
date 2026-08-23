@@ -10,6 +10,7 @@ void main() {
         'category': 'payments',
         'related_object_type': 'invoice',
         'related_object_id': '4',
+        'replacement_key': 'chat_conversation:4',
         'deep_link': 'ideal://notifications/12',
       },
       title: 'Payment due',
@@ -21,6 +22,7 @@ void main() {
     expect(event.category, 'payments');
     expect(event.relatedObjectType, 'invoice');
     expect(event.relatedObjectId, 4);
+    expect(event.replacementKey, 'chat_conversation:4');
     expect(event.title, 'Payment due');
     expect(event.body, 'Your payment is due.');
   });
@@ -38,6 +40,7 @@ void main() {
     expect(event.category, isNull);
     expect(event.relatedObjectType, isNull);
     expect(event.relatedObjectId, isNull);
+    expect(event.replacementKey, isNull);
     expect(event.title, isNull);
     expect(event.body, isNull);
   });

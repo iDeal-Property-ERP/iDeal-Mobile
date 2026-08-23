@@ -1,10 +1,13 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ideal_mobile/core/services/injection_container.dart';
 import 'package:ideal_mobile/presentation/notifications/bloc/notification_badge_cubit.dart';
 import 'package:ideal_mobile/presentation/notifications/bloc/notification_bloc.dart';
 import 'package:ideal_mobile/presentation/notifications/bloc/notification_event.dart';
+import 'package:ideal_mobile/presentation/notifications/domain/entities/notification_kind.dart';
 import 'package:ideal_mobile/presentation/notifications/widgets/notification_card.dart';
+import 'package:ideal_mobile/routes.gr.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 
 class NotificationList extends StatefulWidget {
@@ -67,6 +70,15 @@ class _NotificationListState extends State<NotificationList> {
                 MarkNotificationReadEvent(notification.id),
               );
               sl<NotificationBadgeCubit>().refresh();
+              if (notification.kind == NotificationKind.chatMessage &&
+                  notification.relatedObjectType == 'chat_conversation' &&
+                  notification.relatedObjectId != null) {
+                context.pushRoute(
+                  ChatConversationRoute(
+                    conversationId: notification.relatedObjectId!,
+                  ),
+                );
+              }
             },
           );
         },

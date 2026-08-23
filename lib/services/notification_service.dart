@@ -47,6 +47,7 @@ class NotificationService {
   bool _initialMessageDelivered = false;
   bool _isInitialized = false;
   bool _isDisposed = false;
+  int? _activeChatConversationId;
 
   Stream<Map<String, dynamic>> get onNotificationTap =>
       _onNotificationTapController.stream;
@@ -55,6 +56,10 @@ class NotificationService {
       _onNotificationReceivedController.stream;
 
   Map<String, dynamic>? get initialNotificationPayload => _initialMessage?.data;
+
+  void setActiveChatConversationId(int? conversationId) {
+    _activeChatConversationId = conversationId;
+  }
 
   Future<void> initialize() async {
     if (_isDisposed) return;
@@ -242,6 +247,7 @@ class NotificationService {
     debugPrint('[Push] Foreground message data: $data');
 
     if (Platform.isIOS) return;
+    if (_isActiveChatConversation(data)) return;
 
     if (notification != null) {
       try {
@@ -358,7 +364,10 @@ class NotificationService {
   }) async {
     // Create a unique ID for each notification
     int notificationId;
-    if (data?['notification_id'] != null) {
+    final replacementKey = data?['replacement_key']?.toString();
+    if (replacementKey != null && replacementKey.trim().isNotEmpty) {
+      notificationId = replacementKey.hashCode & 0x7FFFFFFF;
+    } else if (data?['notification_id'] != null) {
       // Convert UUID to a valid 32-bit integer by hashing
       final notificationIdStr = data!['notification_id'].toString();
       // Simple hash function that produces a 31-bit positive integer
@@ -384,6 +393,16 @@ class NotificationService {
         category: NotificationCategory.Message,
       ),
     );
+  }
+
+  bool _isActiveChatConversation(Map<String, dynamic> data) {
+    if (data['type']?.toString() != 'chat_message' ||
+        data['related_object_type']?.toString() != 'chat_conversation') {
+      return false;
+    }
+    final activeId = _activeChatConversationId;
+    if (activeId == null) return false;
+    return int.tryParse('${data['related_object_id'] ?? ''}') == activeId;
   }
 
   @pragma('vm:entry-point')

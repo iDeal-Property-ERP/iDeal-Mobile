@@ -17,7 +17,9 @@ class NotificationBadgeCubit extends Cubit<int> with WidgetsBindingObserver {
     _initialized = true;
     WidgetsBinding.instance.addObserver(this);
     _pushSubscription = NotificationService.instance.onNotificationReceived
-        .listen((_) => unawaited(refresh()));
+        .listen((event) {
+          if (event.type != 'chat_message') unawaited(refresh());
+        });
     unawaited(refresh());
   }
 

@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
 import 'package:ideal_mobile/core/services/injection_container.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
+import 'package:ideal_mobile/presentation/chat/bloc/chat_badge_cubit.dart';
 import 'package:ideal_mobile/presentation/chat/bloc/listing_chat_conversation_bloc.dart';
 import 'package:ideal_mobile/presentation/chat/bloc/listing_chat_conversation_event.dart';
 import 'package:ideal_mobile/presentation/chat/bloc/listing_chat_conversation_state.dart';
@@ -89,6 +92,9 @@ class _ChatConversationScreenState extends State<ChatConversationScreen>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _activeBloc?.add(const ChatConversationStopped());
+    if (sl.isRegistered<ChatBadgeCubit>()) {
+      unawaited(sl<ChatBadgeCubit>().refresh());
+    }
     super.dispose();
   }
 }

@@ -17,6 +17,7 @@ import 'package:ideal_mobile/routes.dart';
 import 'package:ideal_mobile/routes.gr.dart';
 import 'package:ideal_mobile/services/locale_service.dart';
 import 'package:ideal_mobile/services/notification_service.dart';
+import 'package:ideal_mobile/services/push/push_route_observer.dart';
 import 'package:ideal_mobile/services/secure_storage_service.dart';
 import 'package:ideal_mobile/services/theme_service.dart';
 import 'package:ideal_mobile/shared_pref/prefs.dart';
@@ -60,6 +61,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
   final AppRouter appRouter = AppRouter();
   final InternetConnectivityHelper _connectivityHelper =
       InternetConnectivityHelper();
+  final PushRouteObserver _pushRouteObserver = PushRouteObserver();
 
   late ThemeBloc themeBloc;
   StreamSubscription? _notificationSubscription;
@@ -265,7 +267,10 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
                         GlobalWidgetsLocalizations.delegate,
                       ],
                       routerConfig: appRouter.config(
-                        navigatorObservers: () => [ClarityRouteObserver()],
+                        navigatorObservers: () => [
+                          ClarityRouteObserver(),
+                          _pushRouteObserver,
+                        ],
                       ),
                       theme: AppThemesData.themeData[AppThemeEnum.LightTheme]!,
                       darkTheme:
