@@ -4,15 +4,25 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ideal_mobile/core/services/injection_container.dart';
 import 'package:ideal_mobile/presentation/chat/domain/usecases/get_chat_summary.dart';
+import 'package:ideal_mobile/presentation/chat/services/chat_realtime_service.dart';
 import 'package:ideal_mobile/services/notification_service.dart';
 
 class ChatBadgeCubit extends Cubit<int> with WidgetsBindingObserver {
-  ChatBadgeCubit({GetChatSummary? getChatSummary})
-    : _getChatSummary = getChatSummary ?? sl<GetChatSummary>(),
-      super(0);
+  ChatBadgeCubit({
+    GetChatSummary? getChatSummary,
+    ChatRealtimeService? realtime,
+  }) : _getChatSummary = getChatSummary ?? sl<GetChatSummary>(),
+       _realtime =
+           realtime ??
+           (sl.isRegistered<ChatRealtimeService>()
+               ? sl<ChatRealtimeService>()
+               : null),
+       super(0);
 
   final GetChatSummary _getChatSummary;
+  final ChatRealtimeService? _realtime;
   StreamSubscription? _pushSubscription;
+  StreamSubscription? _realtimeSubscription;
   bool _initialized = false;
 
   void initialize() {
@@ -23,6 +33,10 @@ class ChatBadgeCubit extends Cubit<int> with WidgetsBindingObserver {
         .listen((event) {
           if (event.type == 'chat_message') unawaited(refresh());
         });
+    _realtimeSubscription = _realtime?.events.listen(
+      (_) => unawaited(refresh()),
+    );
+    unawaited(_realtime?.connect() ?? Future<void>.value());
     unawaited(refresh());
   }
 
@@ -42,6 +56,8 @@ class ChatBadgeCubit extends Cubit<int> with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     final pushSubscription = _pushSubscription;
     if (pushSubscription != null) unawaited(pushSubscription.cancel());
+    final realtimeSubscription = _realtimeSubscription;
+    if (realtimeSubscription != null) unawaited(realtimeSubscription.cancel());
     return super.close();
   }
 }

@@ -31,8 +31,28 @@ class ChatConversationStopped extends ListingChatConversationEvent {
   const ChatConversationStopped();
 }
 
-class ChatConversationPollTicked extends ListingChatConversationEvent {
-  const ChatConversationPollTicked();
+class ChatConversationRealtimeRefreshRequested
+    extends ListingChatConversationEvent {
+  const ChatConversationRealtimeRefreshRequested();
+}
+
+class ChatConversationRealtimeReceived extends ListingChatConversationEvent {
+  const ChatConversationRealtimeReceived(this.conversationId);
+
+  final int? conversationId;
+
+  @override
+  List<Object?> get props => [conversationId];
+}
+
+class ChatConversationMessagesBecameVisible
+    extends ListingChatConversationEvent {
+  const ChatConversationMessagesBecameVisible(this.upToMessageId);
+
+  final int upToMessageId;
+
+  @override
+  List<Object> get props => [upToMessageId];
 }
 
 class ChatConversationRefreshRequested extends ListingChatConversationEvent {

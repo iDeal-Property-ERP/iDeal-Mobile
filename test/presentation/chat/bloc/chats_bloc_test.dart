@@ -286,7 +286,7 @@ void main() {
     await bloc.close();
   });
 
-  test('polling refreshes the already-loaded page range', () async {
+  test('event-driven refreshes the already-loaded page range', () async {
     final summary = Completer<Either<Failure, ChatSummary>>();
     when(() => getSummary(any())).thenAnswer((_) => summary.future);
     when(() => getConversations(any())).thenAnswer((invocation) async {
@@ -308,12 +308,12 @@ void main() {
     bloc.add(const ChatsLoadMoreRequested(ChatsTab.active));
     await _waitFor(bloc, (state) => state.activeFeed.page == 2);
     clearInteractions(getConversations);
-    bloc.add(const ChatsPollTicked());
-    await _waitFor(bloc, (state) => state.isPolling);
+    bloc.add(const ChatsRealtimeRefreshRequested());
+    await _waitFor(bloc, (state) => state.isRefreshing);
     summary.complete(
       Right<Failure, ChatSummary>(ChatSummaryModel.fromJson(summaryJson())),
     );
-    await _waitFor(bloc, (state) => !state.isPolling);
+    await _waitFor(bloc, (state) => !state.isRefreshing);
 
     verify(
       () => getConversations(const GetConversationsParams(archived: false)),
@@ -416,10 +416,10 @@ void main() {
     await bloc.close();
   });
 
-  test('does not poll before ChatsStarted', () async {
+  test('does not refresh before ChatsStarted', () async {
     final bloc = build();
 
-    bloc.add(const ChatsPollTicked());
+    bloc.add(const ChatsRealtimeRefreshRequested());
     await Future<void>.delayed(Duration.zero);
 
     verifyNever(() => getSummary(any()));

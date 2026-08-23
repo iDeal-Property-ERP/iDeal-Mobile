@@ -13,6 +13,7 @@ import 'package:ideal_mobile/presentation/chat/domain/usecases/get_conversations
 import 'package:ideal_mobile/presentation/chat/domain/usecases/report_conversation.dart';
 import 'package:ideal_mobile/presentation/chat/domain/usecases/set_conversation_archived.dart';
 import 'package:ideal_mobile/presentation/chat/domain/usecases/set_conversation_muted.dart';
+import 'package:ideal_mobile/presentation/chat/services/chat_realtime_service.dart';
 
 class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
   ChatsBloc({
@@ -22,6 +23,7 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     SetConversationMuted? setConversationMuted,
     ReportConversation? reportConversation,
     DeleteConversation? deleteConversation,
+    ChatRealtimeService? realtime,
   }) : _getConversations = getConversations ?? sl<GetConversations>(),
        _getChatSummary = getChatSummary ?? sl<GetChatSummary>(),
        _setConversationArchived =
@@ -30,13 +32,19 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
            setConversationMuted ?? sl<SetConversationMuted>(),
        _reportConversation = reportConversation ?? sl<ReportConversation>(),
        _deleteConversation = deleteConversation ?? sl<DeleteConversation>(),
+       _realtime =
+           realtime ??
+           (sl.isRegistered<ChatRealtimeService>()
+               ? sl<ChatRealtimeService>()
+               : null),
        super(const ChatsState.initial()) {
     on<ChatsStarted>(_onStarted);
     on<ChatsStopped>(_onStopped);
     on<ChatsTabSelected>(_onTabSelected);
     on<ChatsRefreshRequested>(_onRefreshRequested);
     on<ChatsLoadMoreRequested>(_onLoadMoreRequested);
-    on<ChatsPollTicked>(_onPollTicked);
+    on<ChatsRealtimeRefreshRequested>(_onRealtimeRefreshRequested);
+    on<ChatsRealtimeReceived>(_onRealtimeReceived);
     on<ChatsLifecycleChanged>(_onLifecycleChanged);
     on<ChatsArchiveToggled>(_onArchiveToggled);
     on<ChatsMuteToggled>(_onMuteToggled);
@@ -50,13 +58,14 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
   final SetConversationMuted _setConversationMuted;
   final ReportConversation _reportConversation;
   final DeleteConversation _deleteConversation;
+  final ChatRealtimeService? _realtime;
 
   final Map<ChatsTab, int> _requestGenerations = {
     ChatsTab.active: 0,
     ChatsTab.archived: 0,
   };
-  Timer? _pollTimer;
-  bool _pollInFlight = false;
+  StreamSubscription<ChatRealtimeEvent>? _realtimeSubscription;
+  bool _refreshInFlight = false;
   bool _started = false;
   bool _foreground = true;
   int _consecutiveFailures = 0;
@@ -64,7 +73,7 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
 
   @override
   Future<void> close() {
-    _stopPolling();
+    unawaited(_realtimeSubscription?.cancel() ?? Future<void>.value());
     return super.close();
   }
 
@@ -73,16 +82,18 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     _started = true;
     _foreground = true;
     _consecutiveFailures = 0;
+    _realtimeSubscription ??= _realtime?.events.listen(
+      (event) => add(ChatsRealtimeReceived(event.conversationId)),
+    );
+    unawaited(_realtime?.connect() ?? Future<void>.value());
     if (!state.activeFeed.hasLoaded) {
       await _loadFirstPage(ChatsTab.active, emit);
     }
-    if (_started && _foreground) _startPolling();
   }
 
   void _onStopped(ChatsStopped event, Emitter<ChatsState> emit) {
     _started = false;
-    _stopPolling();
-    emit(state.copyWith(isPolling: false));
+    emit(state.copyWith(isRefreshing: false));
   }
 
   Future<void> _onTabSelected(
@@ -103,7 +114,6 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
   ) async {
     _consecutiveFailures = 0;
     await _loadFirstPage(event.tab ?? state.selectedTab, emit);
-    if (_started && _foreground) _startPolling();
   }
 
   Future<void> _onLoadMoreRequested(
@@ -174,18 +184,18 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     );
   }
 
-  Future<void> _onPollTicked(
-    ChatsPollTicked event,
+  Future<void> _onRealtimeRefreshRequested(
+    ChatsRealtimeRefreshRequested event,
     Emitter<ChatsState> emit,
   ) async {
-    if (!_started || !_foreground || _pollInFlight) return;
-    _pollInFlight = true;
-    emit(state.copyWith(isPolling: true));
+    if (!_started || !_foreground || _refreshInFlight) return;
+    _refreshInFlight = true;
+    emit(state.copyWith(isRefreshing: true));
     final result = await _getChatSummary(
       GetChatSummaryParams(since: _summarySince),
     );
     if (isClosed) {
-      _pollInFlight = false;
+      _refreshInFlight = false;
       return;
     }
     var shouldReload = false;
@@ -214,9 +224,18 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
         await _reloadLoadedPrefix(ChatsTab.archived, emit);
       }
     }
-    _pollInFlight = false;
-    emit(state.copyWith(isPolling: false));
-    if (_started && _foreground) _startPolling();
+    _refreshInFlight = false;
+    emit(state.copyWith(isRefreshing: false));
+  }
+
+  Future<void> _onRealtimeReceived(
+    ChatsRealtimeReceived event,
+    Emitter<ChatsState> emit,
+  ) async {
+    await _onRealtimeRefreshRequested(
+      const ChatsRealtimeRefreshRequested(),
+      emit,
+    );
   }
 
   void _onLifecycleChanged(
@@ -226,16 +245,16 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
     switch (event.lifecycleState) {
       case AppLifecycleState.resumed:
         _foreground = true;
+        _realtime?.setForeground(value: true);
         if (_started) {
-          _startPolling();
-          add(const ChatsPollTicked());
+          add(const ChatsRealtimeRefreshRequested());
         }
       case AppLifecycleState.inactive:
       case AppLifecycleState.paused:
       case AppLifecycleState.hidden:
       case AppLifecycleState.detached:
         _foreground = false;
-        _stopPolling();
+        _realtime?.setForeground(value: false);
     }
   }
 
@@ -573,27 +592,6 @@ class ChatsBloc extends Bloc<ChatsEvent, ChatsState> {
       for (final item in items)
         if (seenIds.add(item.id)) item,
     ];
-  }
-
-  void _startPolling() {
-    _pollTimer?.cancel();
-    if (!_started || !_foreground) return;
-    final seconds = switch (_consecutiveFailures) {
-      0 => 5,
-      1 => 10,
-      2 => 20,
-      3 => 40,
-      _ => 60,
-    };
-    _pollTimer = Timer.periodic(
-      Duration(seconds: seconds),
-      (_) => add(const ChatsPollTicked()),
-    );
-  }
-
-  void _stopPolling() {
-    _pollTimer?.cancel();
-    _pollTimer = null;
   }
 }
 

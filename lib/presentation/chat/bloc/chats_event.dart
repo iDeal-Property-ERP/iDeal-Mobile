@@ -44,8 +44,17 @@ class ChatsLoadMoreRequested extends ChatsEvent {
   List<Object> get props => [tab];
 }
 
-class ChatsPollTicked extends ChatsEvent {
-  const ChatsPollTicked();
+class ChatsRealtimeRefreshRequested extends ChatsEvent {
+  const ChatsRealtimeRefreshRequested();
+}
+
+class ChatsRealtimeReceived extends ChatsEvent {
+  const ChatsRealtimeReceived(this.conversationId);
+
+  final int? conversationId;
+
+  @override
+  List<Object?> get props => [conversationId];
 }
 
 class ChatsLifecycleChanged extends ChatsEvent {

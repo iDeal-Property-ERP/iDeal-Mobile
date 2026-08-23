@@ -16,6 +16,8 @@ import 'package:ideal_mobile/presentation/chat/domain/usecases/send_image_messag
 import 'package:ideal_mobile/presentation/chat/domain/usecases/send_text_message.dart';
 import 'package:ideal_mobile/presentation/chat/domain/usecases/set_conversation_archived.dart';
 import 'package:ideal_mobile/presentation/chat/domain/usecases/set_conversation_muted.dart';
+import 'package:ideal_mobile/presentation/chat/services/chat_realtime_service.dart';
+import 'package:ideal_mobile/services/secure_storage_service.dart';
 import 'package:ideal_mobile/utils/cache_manager.dart';
 import 'package:ideal_mobile/utils/image_picker_util.dart';
 
@@ -24,6 +26,9 @@ void registerChatDependencies(GetIt sl) {
     sl.registerLazySingleton<ImagePickerUtil>(ImagePickerUtil.new);
   }
   sl
+    ..registerLazySingleton<ChatRealtimeService>(
+      () => ChatRealtimeService(sl<SecureStorageService>()),
+    )
     ..registerLazySingleton<ChatRemoteDataSource>(
       () => ChatRemoteDataSourceImpl(sl<Dio>(), sl<CacheManager>()),
     )

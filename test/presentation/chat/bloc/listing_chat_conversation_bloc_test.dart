@@ -173,19 +173,16 @@ void main() {
     expect(state.canSend, isFalse);
   });
 
-  test('a poll changing read-only state disables sending', () async {
+  test('marks only a message that the viewport reports as visible', () async {
     final getConversation = MockGetConversation();
     final getMessages = MockGetMessages();
     final markRead = MockMarkConversationRead();
     _stubInitial(getConversation, getMessages, markRead);
-    var initial = true;
-    when(() => getMessages(any())).thenAnswer((_) async {
-      if (initial) {
-        initial = false;
-        return Right<Failure, ChatMessagesPage>(_page());
-      }
-      return Right<Failure, ChatMessagesPage>(_page(isReadOnly: true));
-    });
+    when(() => getMessages(any())).thenAnswer(
+      (_) async => Right<Failure, ChatMessagesPage>(
+        _page(messages: [_message(id: 11, isMine: false)]),
+      ),
+    );
     final bloc = _buildBloc(
       getConversation: getConversation,
       getMessages: getMessages,
@@ -194,16 +191,51 @@ void main() {
 
     bloc.add(const ChatConversationStarted());
     await Future<void>.delayed(Duration.zero);
-    bloc.add(const ChatConversationDraftChanged('hello'));
-    bloc.add(const ChatConversationPollTicked());
+    bloc.add(const ChatConversationMessagesBecameVisible(11));
     await Future<void>.delayed(Duration.zero);
 
-    expect(bloc.state.isReadOnly, isTrue);
-    expect(bloc.state.canSend, isFalse);
+    verify(
+      () => markRead(
+        const MarkConversationReadParams(conversationId: 42, upToMessageId: 11),
+      ),
+    ).called(1);
     await bloc.close();
   });
 
-  test('poll timer fires once per second and stops on close', () {
+  test(
+    'an event-driven refresh changing read-only state disables sending',
+    () async {
+      final getConversation = MockGetConversation();
+      final getMessages = MockGetMessages();
+      final markRead = MockMarkConversationRead();
+      _stubInitial(getConversation, getMessages, markRead);
+      var initial = true;
+      when(() => getMessages(any())).thenAnswer((_) async {
+        if (initial) {
+          initial = false;
+          return Right<Failure, ChatMessagesPage>(_page());
+        }
+        return Right<Failure, ChatMessagesPage>(_page(isReadOnly: true));
+      });
+      final bloc = _buildBloc(
+        getConversation: getConversation,
+        getMessages: getMessages,
+        markRead: markRead,
+      );
+
+      bloc.add(const ChatConversationStarted());
+      await Future<void>.delayed(Duration.zero);
+      bloc.add(const ChatConversationDraftChanged('hello'));
+      bloc.add(const ChatConversationRealtimeRefreshRequested());
+      await Future<void>.delayed(Duration.zero);
+
+      expect(bloc.state.isReadOnly, isTrue);
+      expect(bloc.state.canSend, isFalse);
+      await bloc.close();
+    },
+  );
+
+  test('does not request new messages without a realtime event', () {
     fakeAsync((async) {
       final getConversation = MockGetConversation();
       final getMessages = MockGetMessages();
@@ -223,92 +255,95 @@ void main() {
       bloc.add(const ChatConversationStarted());
       async.flushMicrotasks();
       final initialCalls = calls;
-      async.elapse(const Duration(seconds: 1));
+      async.elapse(const Duration(seconds: 3));
       async.flushMicrotasks();
-      expect(calls, initialCalls + 1);
-      async.elapse(const Duration(seconds: 1));
-      async.flushMicrotasks();
-      expect(calls, initialCalls + 2);
+      expect(calls, initialCalls);
 
       unawaited(bloc.close());
       async.elapse(const Duration(seconds: 3));
       async.flushMicrotasks();
-      expect(calls, initialCalls + 2);
+      expect(calls, initialCalls);
     });
   });
 
-  test('does not issue a second poll while the first is unresolved', () {
-    fakeAsync((async) {
-      final getConversation = MockGetConversation();
-      final getMessages = MockGetMessages();
-      final markRead = MockMarkConversationRead();
-      _stubInitial(getConversation, getMessages, markRead);
-      final pendingPoll = Completer<Either<Failure, ChatMessagesPage>>();
-      var calls = 0;
-      var initial = true;
-      when(() => getMessages(any())).thenAnswer((_) {
-        if (initial) {
-          initial = false;
-          return Future.value(Right<Failure, ChatMessagesPage>(_page()));
-        }
-        calls++;
-        return pendingPoll.future;
+  test(
+    'does not issue a second realtime refresh while the first is unresolved',
+    () {
+      fakeAsync((async) {
+        final getConversation = MockGetConversation();
+        final getMessages = MockGetMessages();
+        final markRead = MockMarkConversationRead();
+        _stubInitial(getConversation, getMessages, markRead);
+        final pendingRefresh = Completer<Either<Failure, ChatMessagesPage>>();
+        var calls = 0;
+        var initial = true;
+        when(() => getMessages(any())).thenAnswer((_) {
+          if (initial) {
+            initial = false;
+            return Future.value(Right<Failure, ChatMessagesPage>(_page()));
+          }
+          calls++;
+          return pendingRefresh.future;
+        });
+        final bloc = _buildBloc(
+          getConversation: getConversation,
+          getMessages: getMessages,
+          markRead: markRead,
+        );
+
+        bloc.add(const ChatConversationStarted());
+        async.flushMicrotasks();
+        bloc.add(const ChatConversationRealtimeReceived(null));
+        async.flushMicrotasks();
+        bloc.add(const ChatConversationRealtimeReceived(null));
+        async.flushMicrotasks();
+        expect(calls, 1);
+
+        pendingRefresh.complete(Right<Failure, ChatMessagesPage>(_page()));
+        async.flushMicrotasks();
+        unawaited(bloc.close());
       });
-      final bloc = _buildBloc(
-        getConversation: getConversation,
-        getMessages: getMessages,
-        markRead: markRead,
-      );
+    },
+  );
 
-      bloc.add(const ChatConversationStarted());
-      async.flushMicrotasks();
-      async.elapse(const Duration(seconds: 1));
-      async.flushMicrotasks();
-      async.elapse(const Duration(seconds: 1));
-      async.flushMicrotasks();
-      expect(calls, 1);
-
-      pendingPoll.complete(Right<Failure, ChatMessagesPage>(_page()));
-      async.flushMicrotasks();
-      unawaited(bloc.close());
-    });
-  });
-
-  test('paused stops polling and resumed fires an immediate poll', () {
-    fakeAsync((async) {
-      final getConversation = MockGetConversation();
-      final getMessages = MockGetMessages();
-      final markRead = MockMarkConversationRead();
-      _stubInitial(getConversation, getMessages, markRead);
-      var calls = 0;
-      when(() => getMessages(any())).thenAnswer((_) async {
-        calls++;
-        return Right<Failure, ChatMessagesPage>(_page());
+  test(
+    'paused stops realtime refreshes and resumed fires an immediate refresh',
+    () {
+      fakeAsync((async) {
+        final getConversation = MockGetConversation();
+        final getMessages = MockGetMessages();
+        final markRead = MockMarkConversationRead();
+        _stubInitial(getConversation, getMessages, markRead);
+        var calls = 0;
+        when(() => getMessages(any())).thenAnswer((_) async {
+          calls++;
+          return Right<Failure, ChatMessagesPage>(_page());
+        });
+        final bloc = _buildBloc(
+          getConversation: getConversation,
+          getMessages: getMessages,
+          markRead: markRead,
+        );
+        bloc.add(const ChatConversationStarted());
+        async.flushMicrotasks();
+        final beforePause = calls;
+        bloc.add(
+          const ChatConversationLifecycleChanged(AppLifecycleState.paused),
+        );
+        async.flushMicrotasks();
+        async.elapse(const Duration(seconds: 2));
+        expect(calls, beforePause);
+        bloc.add(
+          const ChatConversationLifecycleChanged(AppLifecycleState.resumed),
+        );
+        async.flushMicrotasks();
+        expect(calls, beforePause + 1);
+        unawaited(bloc.close());
       });
-      final bloc = _buildBloc(
-        getConversation: getConversation,
-        getMessages: getMessages,
-        markRead: markRead,
-      );
-      bloc.add(const ChatConversationStarted());
-      async.flushMicrotasks();
-      final beforePause = calls;
-      bloc.add(
-        const ChatConversationLifecycleChanged(AppLifecycleState.paused),
-      );
-      async.flushMicrotasks();
-      async.elapse(const Duration(seconds: 2));
-      expect(calls, beforePause);
-      bloc.add(
-        const ChatConversationLifecycleChanged(AppLifecycleState.resumed),
-      );
-      async.flushMicrotasks();
-      expect(calls, beforePause + 1);
-      unawaited(bloc.close());
-    });
-  });
+    },
+  );
 
-  test('five consecutive poll failures stop the timer', () {
+  test('five consecutive realtime refresh failures stop further refreshes', () {
     fakeAsync((async) {
       final getConversation = MockGetConversation();
       final getMessages = MockGetMessages();
@@ -333,10 +368,12 @@ void main() {
       );
       bloc.add(const ChatConversationStarted());
       async.flushMicrotasks();
-      async.elapse(const Duration(seconds: 31));
-      async.flushMicrotasks();
+      for (var index = 0; index < 5; index++) {
+        bloc.add(const ChatConversationRealtimeReceived(null));
+        async.flushMicrotasks();
+      }
       expect(calls, 5);
-      async.elapse(const Duration(seconds: 30));
+      bloc.add(const ChatConversationRealtimeReceived(null));
       async.flushMicrotasks();
       expect(calls, 5);
       unawaited(bloc.close());

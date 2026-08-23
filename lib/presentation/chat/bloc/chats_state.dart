@@ -90,7 +90,7 @@ class ChatsState extends Equatable {
     this.activeFeed = const ChatsFeedState(),
     this.archivedFeed = const ChatsFeedState(),
     this.unreadTotal = 0,
-    this.isPolling = false,
+    this.isRefreshing = false,
     this.errorMessage,
   });
 
@@ -102,7 +102,7 @@ class ChatsState extends Equatable {
     this.activeFeed = const ChatsFeedState(hasLoaded: true),
     this.archivedFeed = const ChatsFeedState(),
     this.unreadTotal = 0,
-    this.isPolling = false,
+    this.isRefreshing = false,
     this.errorMessage,
   });
 
@@ -110,7 +110,7 @@ class ChatsState extends Equatable {
   final ChatsFeedState activeFeed;
   final ChatsFeedState archivedFeed;
   final int unreadTotal;
-  final bool isPolling;
+  final bool isRefreshing;
   final String? errorMessage;
 
   ChatsFeedState feedFor(ChatsTab tab) {
@@ -128,7 +128,7 @@ class ChatsState extends Equatable {
     ChatsFeedState? activeFeed,
     ChatsFeedState? archivedFeed,
     int? unreadTotal,
-    bool? isPolling,
+    bool? isRefreshing,
     Object? errorMessage = _unsetChatsError,
     bool clearErrorMessage = false,
   }) {
@@ -137,7 +137,7 @@ class ChatsState extends Equatable {
       activeFeed: activeFeed ?? this.activeFeed,
       archivedFeed: archivedFeed ?? this.archivedFeed,
       unreadTotal: unreadTotal ?? this.unreadTotal,
-      isPolling: isPolling ?? this.isPolling,
+      isRefreshing: isRefreshing ?? this.isRefreshing,
       errorMessage: clearErrorMessage
           ? null
           : identical(errorMessage, _unsetChatsError)
@@ -152,7 +152,7 @@ class ChatsState extends Equatable {
     activeFeed,
     archivedFeed,
     unreadTotal,
-    isPolling,
+    isRefreshing,
     errorMessage,
   ];
 }

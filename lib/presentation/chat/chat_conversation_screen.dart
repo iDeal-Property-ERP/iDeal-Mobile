@@ -225,8 +225,10 @@ class _MessagesList extends StatefulWidget {
 
 class _MessagesListState extends State<_MessagesList> {
   late final ScrollController _controller;
+  final Map<int, GlobalKey> _messageKeys = {};
   bool _initialScrollDone = false;
   bool _initialScrollScheduled = false;
+  bool _visibleReadScheduled = false;
 
   @override
   void initState() {
@@ -290,6 +292,7 @@ class _MessagesListState extends State<_MessagesList> {
       );
     }
     _scheduleInitialScroll();
+    _scheduleVisibleRead();
     final children = <Widget>[];
     DateTime? previousDate;
     for (final entry in entries) {
@@ -300,19 +303,22 @@ class _MessagesListState extends State<_MessagesList> {
       }
       if (entry.message != null) {
         final message = entry.message!;
-        if (message.isImage) {
-          children.add(
-            ChatImageBubble(message: message, status: state.statusFor(message)),
-          );
-        } else {
-          children.add(
-            ChatMessageBubble(
-              message: message,
-              status: state.statusFor(message),
-              onRetry: () => _retry(context, message.clientId),
-            ),
-          );
-        }
+        final bubble = message.isImage
+            ? ChatImageBubble(
+                message: message,
+                status: state.statusFor(message),
+              )
+            : ChatMessageBubble(
+                message: message,
+                status: state.statusFor(message),
+                onRetry: () => _retry(context, message.clientId),
+              );
+        children.add(
+          KeyedSubtree(
+            key: _messageKeys.putIfAbsent(message.id, GlobalKey.new),
+            child: bubble,
+          ),
+        );
       } else {
         final pending = entry.pending!;
         if (pending.isImage) {
@@ -336,6 +342,7 @@ class _MessagesListState extends State<_MessagesList> {
     }
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
+        _scheduleVisibleRead();
         if (_initialScrollDone && notification.metrics.extentBefore < 80) {
           context.read<ListingChatConversationBloc>().add(
             const ChatConversationLoadOlder(),
@@ -368,6 +375,7 @@ class _MessagesListState extends State<_MessagesList> {
       if (!mounted || !_controller.hasClients) return;
       _controller.jumpTo(_controller.position.maxScrollExtent);
       _initialScrollDone = true;
+      _scheduleVisibleRead();
     });
   }
 
@@ -391,6 +399,42 @@ class _MessagesListState extends State<_MessagesList> {
               .clamp(position.minScrollExtent, position.maxScrollExtent)
               .toDouble();
       _controller.jumpTo(offset);
+    });
+  }
+
+  void _scheduleVisibleRead() {
+    if (_visibleReadScheduled) return;
+    _visibleReadScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _visibleReadScheduled = false;
+      if (!mounted || !_controller.hasClients || !_initialScrollDone) return;
+      final viewport = _controller.position.context.storageContext
+          .findRenderObject();
+      if (viewport is! RenderBox || !viewport.hasSize) return;
+      final viewportTop = viewport.localToGlobal(Offset.zero).dy;
+      final viewportBottom = viewportTop + viewport.size.height;
+      int? highestVisibleIncoming;
+      for (final message in widget.state.messages) {
+        if (message.isMine) continue;
+        final renderObject = _messageKeys[message.id]?.currentContext
+            ?.findRenderObject();
+        if (renderObject is! RenderBox || !renderObject.hasSize) continue;
+        final messageTop = renderObject.localToGlobal(Offset.zero).dy;
+        final messageBottom = messageTop + renderObject.size.height;
+        final visibleHeight =
+            (messageBottom < viewportBottom ? messageBottom : viewportBottom) -
+            (messageTop > viewportTop ? messageTop : viewportTop);
+        if (visibleHeight >= renderObject.size.height * 0.6 &&
+            (highestVisibleIncoming == null ||
+                message.id > highestVisibleIncoming)) {
+          highestVisibleIncoming = message.id;
+        }
+      }
+      if (highestVisibleIncoming != null) {
+        context.read<ListingChatConversationBloc>().add(
+          ChatConversationMessagesBecameVisible(highestVisibleIncoming),
+        );
+      }
     });
   }
 

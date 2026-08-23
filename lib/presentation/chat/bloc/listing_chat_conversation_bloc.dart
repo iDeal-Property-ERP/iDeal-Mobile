@@ -20,6 +20,7 @@ import 'package:ideal_mobile/presentation/chat/domain/usecases/send_image_messag
 import 'package:ideal_mobile/presentation/chat/domain/usecases/send_text_message.dart';
 import 'package:ideal_mobile/presentation/chat/domain/usecases/set_conversation_archived.dart';
 import 'package:ideal_mobile/presentation/chat/domain/usecases/set_conversation_muted.dart';
+import 'package:ideal_mobile/presentation/chat/services/chat_realtime_service.dart';
 import 'package:uuid/uuid.dart';
 
 class ChatMessageMergeResult {
@@ -84,6 +85,7 @@ class ListingChatConversationBloc
     SetConversationArchived? setConversationArchived,
     SetConversationMuted? setConversationMuted,
     ReportConversation? reportConversation,
+    ChatRealtimeService? realtime,
   }) : _conversationId = conversationId,
        _getConversation = getConversation ?? sl<GetConversation>(),
        _getMessages = getMessages ?? sl<GetMessages>(),
@@ -96,6 +98,11 @@ class ListingChatConversationBloc
        _setConversationMuted =
            setConversationMuted ?? sl<SetConversationMuted>(),
        _reportConversation = reportConversation ?? sl<ReportConversation>(),
+       _realtime =
+           realtime ??
+           (sl.isRegistered<ChatRealtimeService>()
+               ? sl<ChatRealtimeService>()
+               : null),
        super(
          initialConversation?.id == conversationId
              ? const ListingChatConversationState.initial()
@@ -116,24 +123,27 @@ class ListingChatConversationBloc
   final SetConversationArchived _setConversationArchived;
   final SetConversationMuted _setConversationMuted;
   final ReportConversation _reportConversation;
+  final ChatRealtimeService? _realtime;
 
-  Timer? _pollTimer;
-  bool _pollInFlight = false;
+  StreamSubscription<ChatRealtimeEvent>? _realtimeSubscription;
+  bool _refreshInFlight = false;
   bool _readInFlight = false;
   bool _started = false;
   bool _initialMessagesLoaded = false;
   bool _initialLoadFinalized = false;
   bool _foreground = true;
   int _consecutiveFailures = 0;
-  DateTime? _lastTrafficAt;
   DateTime? _lastReadAt;
+  int? _lastReadMessageId;
 
   void _setupEventListeners() {
     on<ChatConversationStarted>(_onStarted);
     on<ChatConversationMetadataLoaded>(_onMetadataLoaded);
     on<ChatConversationInitialMessagesLoaded>(_onInitialMessagesLoaded);
     on<ChatConversationStopped>(_onStopped);
-    on<ChatConversationPollTicked>(_onPollTicked);
+    on<ChatConversationRealtimeRefreshRequested>(_onRealtimeRefreshRequested);
+    on<ChatConversationRealtimeReceived>(_onRealtimeReceived);
+    on<ChatConversationMessagesBecameVisible>(_onMessagesBecameVisible);
     on<ChatConversationRefreshRequested>(_onRefreshRequested);
     on<ChatConversationLoadOlder>(_onLoadOlder);
     on<ChatConversationLifecycleChanged>(_onLifecycleChanged);
@@ -149,7 +159,7 @@ class ListingChatConversationBloc
   @override
   Future<void> close() {
     _started = false;
-    _stopPolling();
+    unawaited(_realtimeSubscription?.cancel() ?? Future<void>.value());
     return super.close();
   }
 
@@ -169,6 +179,10 @@ class ListingChatConversationBloc
         clearErrorMessage: true,
       ),
     );
+    _realtimeSubscription ??= _realtime?.events.listen(
+      (event) => add(ChatConversationRealtimeReceived(event.conversationId)),
+    );
+    unawaited(_realtime?.connect() ?? Future<void>.value());
     // Start both reads before awaiting either. Metadata and the message area
     // can then reveal independently instead of serializing two round trips.
     unawaited(
@@ -219,7 +233,6 @@ class ListingChatConversationBloc
     );
     if (!conversationLoaded || isClosed) {
       _started = false;
-      _stopPolling();
       return;
     }
     await _finishInitialLoad(emit);
@@ -244,9 +257,6 @@ class ListingChatConversationBloc
       return;
     }
     _initialLoadFinalized = true;
-    _lastTrafficAt = DateTime.now();
-    await _markReadIfAllowed(force: true);
-    if (_started && _foreground) _startPolling();
   }
 
   void _onStopped(
@@ -254,20 +264,38 @@ class ListingChatConversationBloc
     Emitter<ListingChatConversationState> emit,
   ) {
     _started = false;
-    _stopPolling();
   }
 
-  Future<void> _onPollTicked(
-    ChatConversationPollTicked event,
+  Future<void> _onRealtimeRefreshRequested(
+    ChatConversationRealtimeRefreshRequested event,
     Emitter<ListingChatConversationState> emit,
   ) async {
-    await _pollNow(emit);
+    await _refreshNow(emit);
   }
 
-  Future<void> _pollNow(Emitter<ListingChatConversationState> emit) async {
-    if (!_started || !_foreground || _pollInFlight) return;
+  Future<void> _onRealtimeReceived(
+    ChatConversationRealtimeReceived event,
+    Emitter<ListingChatConversationState> emit,
+  ) async {
+    if (event.conversationId != null &&
+        event.conversationId != _conversationId) {
+      return;
+    }
+    await _refreshNow(emit);
+  }
+
+  Future<void> _onMessagesBecameVisible(
+    ChatConversationMessagesBecameVisible event,
+    Emitter<ListingChatConversationState> emit,
+  ) async {
+    if (event.upToMessageId <= (_lastReadMessageId ?? 0)) return;
+    await _markReadIfAllowed(upToMessageId: event.upToMessageId);
+  }
+
+  Future<void> _refreshNow(Emitter<ListingChatConversationState> emit) async {
+    if (!_started || !_foreground || _refreshInFlight) return;
     if (_consecutiveFailures >= 5) return;
-    _pollInFlight = true;
+    _refreshInFlight = true;
     final result = await _getMessages(
       GetMessagesParams(
         conversationId: _conversationId,
@@ -275,7 +303,7 @@ class ListingChatConversationBloc
       ),
     );
     if (isClosed) {
-      _pollInFlight = false;
+      _refreshInFlight = false;
       return;
     }
     ChatMessagesPage? successPage;
@@ -290,21 +318,10 @@ class ListingChatConversationBloc
     );
     final page = successPage;
     if (page != null) {
-      final oldIds = state.messages.map((message) => message.id).toSet();
-      final hasNewStaffMessage = page.messages.any(
-        (message) => !oldIds.contains(message.id) && !message.isMine,
-      );
       _applyPage(page, emit);
-      if (page.messages.isNotEmpty) _lastTrafficAt = DateTime.now();
       _consecutiveFailures = 0;
-      if (hasNewStaffMessage) await _markReadIfAllowed();
     }
-    _pollInFlight = false;
-    if (_started && _foreground && _consecutiveFailures < 5) {
-      _startPolling();
-    } else if (_consecutiveFailures >= 5) {
-      _stopPolling();
-    }
+    _refreshInFlight = false;
   }
 
   Future<void> _onRefreshRequested(
@@ -317,8 +334,7 @@ class ListingChatConversationBloc
     }
     _consecutiveFailures = 0;
     if (_started && _foreground) {
-      _startPolling();
-      await _pollNow(emit);
+      await _refreshNow(emit);
     }
   }
 
@@ -356,15 +372,14 @@ class ListingChatConversationBloc
       case AppLifecycleState.resumed:
         _foreground = true;
         if (_started) {
-          _startPolling();
-          add(const ChatConversationPollTicked());
+          unawaited(_realtime?.connect() ?? Future<void>.value());
+          add(const ChatConversationRealtimeRefreshRequested());
         }
       case AppLifecycleState.inactive:
       case AppLifecycleState.paused:
       case AppLifecycleState.hidden:
       case AppLifecycleState.detached:
         _foreground = false;
-        _stopPolling();
     }
   }
 
@@ -373,6 +388,10 @@ class ListingChatConversationBloc
     Emitter<ListingChatConversationState> emit,
   ) {
     emit(state.copyWith(draft: event.draft));
+    _realtime?.setTyping(
+      conversationId: _conversationId,
+      isTyping: event.draft.trim().isNotEmpty,
+    );
   }
 
   Future<void> _onTextSent(
@@ -599,7 +618,6 @@ class ListingChatConversationBloc
     ChatMessage message,
     Emitter<ListingChatConversationState> emit,
   ) {
-    _lastTrafficAt = DateTime.now();
     _consecutiveFailures = 0;
     final merged = mergeChatMessages(
       existing: state.messages,
@@ -617,7 +635,6 @@ class ListingChatConversationBloc
         clearErrorMessage: true,
       ),
     );
-    if (_started && _foreground) _startPolling();
   }
 
   List<PendingChatMessage> _replacePending(PendingChatMessage value) {
@@ -660,16 +677,6 @@ class ListingChatConversationBloc
     );
   }
 
-  Future<void> _loadMessages({
-    required Emitter<ListingChatConversationState> emit,
-  }) async {
-    final result = await _getMessages(
-      GetMessagesParams(conversationId: _conversationId),
-    );
-    if (isClosed) return;
-    _loadMessagesResult(result, emit: emit);
-  }
-
   void _loadMessagesResult(
     Either<Failure, ChatMessagesPage> result, {
     required Emitter<ListingChatConversationState> emit,
@@ -688,7 +695,10 @@ class ListingChatConversationBloc
     );
   }
 
-  Future<void> _markReadIfAllowed({bool force = false}) async {
+  Future<void> _markReadIfAllowed({
+    required int upToMessageId,
+    bool force = false,
+  }) async {
     if (!_foreground || _readInFlight) return;
     final lastRead = _lastReadAt;
     if (!force &&
@@ -701,12 +711,13 @@ class ListingChatConversationBloc
     final result = await _markConversationRead(
       MarkConversationReadParams(
         conversationId: _conversationId,
-        upToMessageId: state.lastKnownMessageId,
+        upToMessageId: upToMessageId,
       ),
     );
     _readInFlight = false;
     if (isClosed) return;
     result.fold((_) {}, (source) {
+      _lastReadMessageId = upToMessageId;
       emit(state.withConversationState(source));
     });
   }
@@ -715,39 +726,6 @@ class ListingChatConversationBloc
     if (first == null) return second;
     if (second == null) return first;
     return first > second ? first : second;
-  }
-
-  void _startPolling() {
-    _pollTimer?.cancel();
-    if (!_started || !_foreground || _consecutiveFailures >= 5) return;
-    final period = _pollPeriod();
-    _pollTimer = Timer.periodic(
-      period,
-      (_) => add(const ChatConversationPollTicked()),
-    );
-  }
-
-  Duration _pollPeriod() {
-    switch (_consecutiveFailures) {
-      case 0:
-        final traffic = _lastTrafficAt;
-        if (traffic != null &&
-            DateTime.now().difference(traffic) >= const Duration(seconds: 60)) {
-          return const Duration(seconds: 2);
-        }
-        return const Duration(seconds: 1);
-      case 1:
-        return const Duration(seconds: 2);
-      case 2:
-        return const Duration(seconds: 5);
-      default:
-        return const Duration(seconds: 10);
-    }
-  }
-
-  void _stopPolling() {
-    _pollTimer?.cancel();
-    _pollTimer = null;
   }
 
   static const _supportedImageExtensions = {
