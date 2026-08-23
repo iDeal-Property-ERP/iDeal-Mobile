@@ -1937,4 +1937,7 @@ class AppLocalizationsUz extends AppLocalizations {
   @override
   String get home_banner_legal_desc =>
       'Har bir ijara va xarid davlat ro\'yxatidan o\'tuvchi rasmiy shartnoma bilan himoyalangan.';
+
+  @override
+  String get list_property => 'Joylashtirish';
 }

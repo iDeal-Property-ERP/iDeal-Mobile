@@ -794,5 +794,6 @@
   "home_banner_viewings_title": "We Arrange Viewings",
   "home_banner_viewings_desc": "Visit the property beforehand with our representative to assist you.",
   "home_banner_legal_title": "Official Legal Agreements",
-  "home_banner_legal_desc": "Every booking and purchase is protected by contracts recognized by official registries."
+  "home_banner_legal_desc": "Every booking and purchase is protected by contracts recognized by official registries.",
+  "list_property": "List property"
 }

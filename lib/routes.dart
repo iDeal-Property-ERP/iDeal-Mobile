@@ -41,6 +41,9 @@ class AppRouter extends RootStackRouter {
       //Bookings
       BookingsRoute.page,
 
+      // List Property Wizard
+      ListPropertyWizardRoute.page,
+
       //Change Theme
       ChangeThemeRoute.page,
     ].map((page) => AutoRoute(page: page, path: '/${page.name}')).toList();

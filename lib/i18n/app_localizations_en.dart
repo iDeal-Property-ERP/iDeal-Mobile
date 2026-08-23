@@ -1909,4 +1909,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get home_banner_legal_desc =>
       'Every booking and purchase is protected by contracts recognized by official registries.';
+
+  @override
+  String get list_property => 'List property';
 }

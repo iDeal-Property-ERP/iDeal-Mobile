@@ -3561,6 +3561,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Every booking and purchase is protected by contracts recognized by official registries.'**
   String get home_banner_legal_desc;
+
+  /// No description provided for @list_property.
+  ///
+  /// In en, this message translates to:
+  /// **'List property'**
+  String get list_property;
 }
 
 class _AppLocalizationsDelegate

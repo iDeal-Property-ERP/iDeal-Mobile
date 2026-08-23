@@ -157,10 +157,11 @@ void main() {
       final nav = tester.widget<BottomNavigationBar>(
         find.byType(BottomNavigationBar),
       );
-      expect(nav.items, hasLength(4));
+      expect(nav.items, hasLength(5));
       expect(nav.items.map((item) => item.label).toList(), [
         'Home',
         'Selected',
+        'List property',
         'Chats',
         'Profile',
       ]);
@@ -285,7 +286,7 @@ void main() {
             .items
             .map((item) => item.label)
             .toList(),
-        ['Home', 'Selected', 'Chats', 'Profile'],
+        ['Home', 'Selected', 'List property', 'Chats', 'Profile'],
       );
 
       await pumpForLocale(const Locale('ru'));
@@ -302,7 +303,7 @@ void main() {
             .items
             .map((item) => item.label)
             .toList(),
-        ['Главная', 'Избранное', 'Чаты', 'Профиль'],
+        ['Главная', 'Избранное', 'Сдать', 'Чаты', 'Профиль'],
       );
 
       await pumpForLocale(const Locale('uz'));
@@ -319,7 +320,7 @@ void main() {
             .items
             .map((item) => item.label)
             .toList(),
-        ['Bosh sahifa', 'Tanlanganlar', 'Suhbatlar', 'Profil'],
+        ['Bosh sahifa', 'Tanlanganlar', 'Joylashtirish', 'Suhbatlar', 'Profil'],
       );
     });
 

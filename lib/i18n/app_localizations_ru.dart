@@ -1939,4 +1939,7 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get home_banner_legal_desc =>
       'Каждая сделка защищена договором, признаваемым госреестрами.';
+
+  @override
+  String get list_property => 'Сдать';
 }
