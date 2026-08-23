@@ -1912,4 +1912,42 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get list_property => 'List property';
+
+  @override
+  String get my_listings => 'My Listings';
+
+  @override
+  String get my_contracts => 'My Contracts';
+
+  @override
+  String get change_phone_number => 'Change Phone Number';
+
+  @override
+  String get change_password => 'Change Password';
+
+  @override
+  String get language_settings => 'Language Settings';
+
+  @override
+  String get app_section => 'App';
+
+  @override
+  String get booking_history => 'Booking History';
+
+  @override
+  String properties_count_label(int count) {
+    return '$count properties you have';
+  }
+
+  @override
+  String get status_approved => 'Approved';
+
+  @override
+  String get status_pending => 'Pending';
+
+  @override
+  String get status_rented => 'Rented';
+
+  @override
+  String get view_all => 'All';
 }

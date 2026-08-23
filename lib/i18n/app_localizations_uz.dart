@@ -1940,4 +1940,42 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get list_property => 'Joylashtirish';
+
+  @override
+  String get my_listings => 'Mening e\'lonlarim';
+
+  @override
+  String get my_contracts => 'Shartnomalarim';
+
+  @override
+  String get change_phone_number => 'Telefon raqamni o\'zgartirish';
+
+  @override
+  String get change_password => 'Parolni o\'zgartirish';
+
+  @override
+  String get language_settings => 'Til sozlamalari';
+
+  @override
+  String get app_section => 'Ilova';
+
+  @override
+  String get booking_history => 'Bronlar tarixi';
+
+  @override
+  String properties_count_label(int count) {
+    return '$count ta mulkingiz bor';
+  }
+
+  @override
+  String get status_approved => 'Tasdiqlangan';
+
+  @override
+  String get status_pending => 'Kutilmoqda';
+
+  @override
+  String get status_rented => 'Ijarada';
+
+  @override
+  String get view_all => 'Barchasi';
 }

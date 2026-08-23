@@ -8,6 +8,7 @@ import 'package:firebase_core_platform_interface/test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ideal_mobile/i18n/app_localizations.dart';
 import 'package:ideal_mobile/presentation/home/bloc/home_bloc.dart';
@@ -18,7 +19,11 @@ import 'package:ideal_mobile/presentation/profile/bloc/profile_event.dart';
 import 'package:ideal_mobile/presentation/profile/bloc/profile_state.dart';
 import 'package:ideal_mobile/presentation/profile/data/models/mobile_user_profile.dart';
 import 'package:ideal_mobile/presentation/profile/profile_screen.dart';
+import 'package:ideal_mobile/presentation/profile/widgets/profile_contracts_sheet.dart';
 import 'package:ideal_mobile/presentation/profile/widgets/profile_details.dart';
+import 'package:ideal_mobile/presentation/profile/widgets/profile_language_sheet.dart';
+import 'package:ideal_mobile/presentation/profile/widgets/profile_my_listings_sheet.dart';
+import 'package:ideal_mobile/presentation/profile/widgets/profile_terms_sheet.dart';
 import 'package:ideal_mobile/routes.gr.dart';
 import 'package:ideal_mobile/widgets/styling/app_theme_data.dart';
 import 'package:mocktail/mocktail.dart';
@@ -131,11 +136,13 @@ void main() {
       expect(routes.first, isA<HomeRoute>());
     });
 
-    testWidgets('uses the localized Profile root title', (tester) async {
+    testWidgets('uses localized profile options across languages', (
+      tester,
+    ) async {
       for (final scenario in const [
-        (Locale('en'), 'Profile'),
-        (Locale('ru'), 'Профиль'),
-        (Locale('uz'), 'Profil'),
+        (Locale('en'), 'My Listings'),
+        (Locale('ru'), 'Мои объявления'),
+        (Locale('uz'), 'Mening e\'lonlarim'),
       ]) {
         final profileBloc = MockProfileBloc();
         when(
@@ -212,6 +219,154 @@ void main() {
 
       expect(find.text('+998901234567'), findsOneWidget);
     });
+
+    testWidgets('Tapping My Listings opens ProfileMyListingsSheet', (
+      tester,
+    ) async {
+      final profileBloc = MockProfileBloc();
+      when(
+        () => profileBloc.state,
+      ).thenReturn(const ProfileState.test(profile: testProfile));
+
+      await tester.runWidgetTest(
+        providers: [BlocProvider<ProfileBloc>.value(value: profileBloc)],
+        child: const ProfileScreenBody(),
+      );
+
+      final myListingsFinder = find.text('My Listings');
+      expect(myListingsFinder, findsOneWidget);
+      await tester.tap(myListingsFinder);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ProfileMyListingsSheet), findsOneWidget);
+    });
+
+    testWidgets('Tapping Language Settings opens ProfileLanguageSheet', (
+      tester,
+    ) async {
+      final profileBloc = MockProfileBloc();
+      when(
+        () => profileBloc.state,
+      ).thenReturn(const ProfileState.test(profile: testProfile));
+
+      await tester.runWidgetTest(
+        providers: [BlocProvider<ProfileBloc>.value(value: profileBloc)],
+        child: const ProfileScreenBody(),
+      );
+
+      final langFinder = find.text('Language Settings');
+      expect(langFinder, findsOneWidget);
+      await tester.ensureVisible(langFinder);
+      await tester.tap(langFinder);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ProfileLanguageSheet), findsOneWidget);
+    });
+
+    testWidgets('Tapping Terms and Conditions opens ProfileTermsSheet', (
+      tester,
+    ) async {
+      final profileBloc = MockProfileBloc();
+      when(
+        () => profileBloc.state,
+      ).thenReturn(const ProfileState.test(profile: testProfile));
+
+      await tester.runWidgetTest(
+        providers: [BlocProvider<ProfileBloc>.value(value: profileBloc)],
+        child: const ProfileScreenBody(),
+      );
+
+      final termsFinder = find.text('Terms and Conditions');
+      expect(termsFinder, findsOneWidget);
+      await tester.ensureVisible(termsFinder);
+      await tester.tap(termsFinder);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ProfileTermsSheet), findsOneWidget);
+    });
+
+    testWidgets('Tapping My Contracts opens ProfileContractsSheet', (
+      tester,
+    ) async {
+      final profileBloc = MockProfileBloc();
+      when(
+        () => profileBloc.state,
+      ).thenReturn(const ProfileState.test(profile: testProfile));
+
+      await tester.runWidgetTest(
+        providers: [BlocProvider<ProfileBloc>.value(value: profileBloc)],
+        child: const ProfileScreenBody(),
+      );
+
+      final contractsFinder = find.text('My Contracts');
+      expect(contractsFinder, findsOneWidget);
+      await tester.tap(contractsFinder);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ProfileContractsSheet), findsOneWidget);
+    });
+
+    testWidgets('Tapping Appearance navigates to ChangeThemeRoute', (
+      tester,
+    ) async {
+      final profileBloc = MockProfileBloc();
+      final router = MockStackRouter();
+      when(
+        () => profileBloc.state,
+      ).thenReturn(const ProfileState.test(profile: testProfile));
+      when(() => router.push(any())).thenAnswer((_) async => null);
+
+      await tester.runWidgetTest(
+        providers: [BlocProvider<ProfileBloc>.value(value: profileBloc)],
+        child: StackRouterScope(
+          controller: router,
+          stateHash: 0,
+          child: const ProfileScreenBody(),
+        ),
+      );
+
+      final appearanceFinder = find.text('Appearance');
+      expect(appearanceFinder, findsOneWidget);
+      await tester.ensureVisible(appearanceFinder);
+      await tester.tap(appearanceFinder);
+      await tester.pumpAndSettle();
+
+      final route =
+          verify(() => router.push(captureAny())).captured.single
+              as PageRouteInfo;
+      expect(route, isA<ChangeThemeRoute>());
+    });
+
+    testWidgets(
+      'Tapping pencil icon next to name navigates to PersonalDetailsRoute',
+      (tester) async {
+        final profileBloc = MockProfileBloc();
+        final router = MockStackRouter();
+        when(
+          () => profileBloc.state,
+        ).thenReturn(const ProfileState.test(profile: testProfile));
+        when(() => router.push(any())).thenAnswer((_) async => null);
+
+        await tester.runWidgetTest(
+          providers: [BlocProvider<ProfileBloc>.value(value: profileBloc)],
+          child: StackRouterScope(
+            controller: router,
+            stateHash: 0,
+            child: const ProfileScreenBody(),
+          ),
+        );
+
+        final pencilFinder = find.byIcon(TablerIcons.pencil);
+        expect(pencilFinder, findsOneWidget);
+        await tester.tap(pencilFinder);
+        await tester.pumpAndSettle();
+
+        final route =
+            verify(() => router.push(captureAny())).captured.single
+                as PageRouteInfo;
+        expect(route, isA<PersonalDetailsRoute>());
+      },
+    );
 
     // Golden tests
     testExecutable(() {

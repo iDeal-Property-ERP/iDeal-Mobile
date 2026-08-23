@@ -795,5 +795,26 @@
   "home_banner_viewings_desc": "Visit the property beforehand with our representative to assist you.",
   "home_banner_legal_title": "Official Legal Agreements",
   "home_banner_legal_desc": "Every booking and purchase is protected by contracts recognized by official registries.",
-  "list_property": "List property"
+  "list_property": "List property",
+  "my_listings": "My Listings",
+  "my_contracts": "My Contracts",
+  "change_phone_number": "Change Phone Number",
+  "change_password": "Change Password",
+  "language_settings": "Language Settings",
+  "app_section": "App",
+  "booking_history": "Booking History",
+  "properties_count_label": "{count} properties you have",
+  "@properties_count_label": {
+    "description": "Number of properties user has",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "status_approved": "Approved",
+  "status_pending": "Pending",
+  "status_rented": "Rented",
+  "view_all": "All"
 }

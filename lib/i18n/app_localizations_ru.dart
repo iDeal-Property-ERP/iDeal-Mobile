@@ -1942,4 +1942,42 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get list_property => 'Сдать';
+
+  @override
+  String get my_listings => 'Мои объявления';
+
+  @override
+  String get my_contracts => 'Мои договоры';
+
+  @override
+  String get change_phone_number => 'Изменить номер телефона';
+
+  @override
+  String get change_password => 'Изменить пароль';
+
+  @override
+  String get language_settings => 'Настройки языка';
+
+  @override
+  String get app_section => 'Приложение';
+
+  @override
+  String get booking_history => 'История бронирований';
+
+  @override
+  String properties_count_label(int count) {
+    return '$count объектов в наличии';
+  }
+
+  @override
+  String get status_approved => 'Одобрено';
+
+  @override
+  String get status_pending => 'На рассмотрении';
+
+  @override
+  String get status_rented => 'В аренде';
+
+  @override
+  String get view_all => 'Все';
 }

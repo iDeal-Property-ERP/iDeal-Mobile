@@ -33,11 +33,11 @@ class HelpAndSupport extends StatelessWidget {
         TablerIcons.chevron_right,
         color: context.currentTheme.iconNeutralDefault,
       ),
-      onTap: () => _showContactOptions(context),
+      onTap: () => showContactOptions(context),
     );
   }
 
-  Future<void> _showContactOptions(BuildContext context) async {
+  static Future<void> showContactOptions(BuildContext context) async {
     final profile = context.read<ProfileBloc>().state.profile;
     final supportLinks = await sl<SupportRemoteDataSource>().getSupportLinks();
     if (!context.mounted) return;
@@ -74,7 +74,7 @@ class HelpAndSupport extends StatelessWidget {
 
     await showModalBottomSheet<void>(
       context: context,
-      barrierColor: AppColors.black.withOpacity(0.72),
+      barrierColor: AppColors.black.withValues(alpha: 0.72),
       backgroundColor: context.currentTheme.bgSurfaceBase2,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
@@ -112,7 +112,7 @@ class HelpAndSupport extends StatelessWidget {
     );
   }
 
-  Uri? _httpsUri(String? value) {
+  static Uri? _httpsUri(String? value) {
     if (value == null || value.trim().isEmpty) return null;
     final uri = Uri.tryParse(value.trim());
     return uri != null && uri.scheme == 'https' && uri.host.isNotEmpty
@@ -120,7 +120,7 @@ class HelpAndSupport extends StatelessWidget {
         : null;
   }
 
-  Future<void> _openExternal(
+  static Future<void> _openExternal(
     BuildContext context,
     BuildContext sheetContext,
     Uri uri,

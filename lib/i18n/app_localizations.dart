@@ -3567,6 +3567,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'List property'**
   String get list_property;
+
+  /// No description provided for @my_listings.
+  ///
+  /// In en, this message translates to:
+  /// **'My Listings'**
+  String get my_listings;
+
+  /// No description provided for @my_contracts.
+  ///
+  /// In en, this message translates to:
+  /// **'My Contracts'**
+  String get my_contracts;
+
+  /// No description provided for @change_phone_number.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Phone Number'**
+  String get change_phone_number;
+
+  /// No description provided for @change_password.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Password'**
+  String get change_password;
+
+  /// No description provided for @language_settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Language Settings'**
+  String get language_settings;
+
+  /// No description provided for @app_section.
+  ///
+  /// In en, this message translates to:
+  /// **'App'**
+  String get app_section;
+
+  /// No description provided for @booking_history.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking History'**
+  String get booking_history;
+
+  /// Number of properties user has
+  ///
+  /// In en, this message translates to:
+  /// **'{count} properties you have'**
+  String properties_count_label(int count);
+
+  /// No description provided for @status_approved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get status_approved;
+
+  /// No description provided for @status_pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get status_pending;
+
+  /// No description provided for @status_rented.
+  ///
+  /// In en, this message translates to:
+  /// **'Rented'**
+  String get status_rented;
+
+  /// No description provided for @view_all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get view_all;
 }
 
 class _AppLocalizationsDelegate

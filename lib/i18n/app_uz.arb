@@ -693,5 +693,26 @@
   "home_banner_viewings_desc": "Uyni oldindan borib ko'ring, vakilimiz sizga hamrohlik qiladi va yordam beradi.",
   "home_banner_legal_title": "Rasmiy shartnomalar",
   "home_banner_legal_desc": "Har bir ijara va xarid davlat ro'yxatidan o'tuvchi rasmiy shartnoma bilan himoyalangan.",
-  "list_property": "Joylashtirish"
+  "list_property": "Joylashtirish",
+  "my_listings": "Mening e'lonlarim",
+  "my_contracts": "Shartnomalarim",
+  "change_phone_number": "Telefon raqamni o'zgartirish",
+  "change_password": "Parolni o'zgartirish",
+  "language_settings": "Til sozlamalari",
+  "app_section": "Ilova",
+  "booking_history": "Bronlar tarixi",
+  "properties_count_label": "{count} ta mulkingiz bor",
+  "@properties_count_label": {
+    "description": "Foydalanuvchining mulklari soni",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "status_approved": "Tasdiqlangan",
+  "status_pending": "Kutilmoqda",
+  "status_rented": "Ijarada",
+  "view_all": "Barchasi"
 }

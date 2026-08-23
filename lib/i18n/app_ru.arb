@@ -693,5 +693,26 @@
   "home_banner_viewings_desc": "Посетите объект заранее — наш представитель встретит вас и ответит на все вопросы.",
   "home_banner_legal_title": "Официальные договоры",
   "home_banner_legal_desc": "Каждая сделка защищена договором, признаваемым госреестрами.",
-  "list_property": "Сдать"
+  "list_property": "Сдать",
+  "my_listings": "Мои объявления",
+  "my_contracts": "Мои договоры",
+  "change_phone_number": "Изменить номер телефона",
+  "change_password": "Изменить пароль",
+  "language_settings": "Настройки языка",
+  "app_section": "Приложение",
+  "booking_history": "История бронирований",
+  "properties_count_label": "{count} объектов в наличии",
+  "@properties_count_label": {
+    "description": "Количество объектов пользователя",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "status_approved": "Одобрено",
+  "status_pending": "На рассмотрении",
+  "status_rented": "В аренде",
+  "view_all": "Все"
 }
