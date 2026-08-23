@@ -3580,6 +3580,36 @@ abstract class AppLocalizations {
   /// **'My Contracts'**
   String get my_contracts;
 
+  /// No description provided for @contracts_empty_title.
+  ///
+  /// In en, this message translates to:
+  /// **'No contracts yet'**
+  String get contracts_empty_title;
+
+  /// No description provided for @contracts_empty_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your active and completed leases will appear here.'**
+  String get contracts_empty_subtitle;
+
+  /// No description provided for @contracts_load_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your contracts. Please try again.'**
+  String get contracts_load_error;
+
+  /// No description provided for @contracts_period.
+  ///
+  /// In en, this message translates to:
+  /// **'Period'**
+  String get contracts_period;
+
+  /// No description provided for @contracts_monthly_rent.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly rent'**
+  String get contracts_monthly_rent;
+
   /// No description provided for @change_phone_number.
   ///
   /// In en, this message translates to:
@@ -3597,6 +3627,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Language Settings'**
   String get language_settings;
+
+  /// No description provided for @my_account.
+  ///
+  /// In en, this message translates to:
+  /// **'My Account'**
+  String get my_account;
 
   /// No description provided for @app_section.
   ///
@@ -3633,6 +3669,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Rented'**
   String get status_rented;
+
+  /// No description provided for @status_rejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get status_rejected;
+
+  /// No description provided for @status_draft.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get status_draft;
+
+  /// No description provided for @no_listings_found.
+  ///
+  /// In en, this message translates to:
+  /// **'No listings found'**
+  String get no_listings_found;
+
+  /// No description provided for @list_first_property.
+  ///
+  /// In en, this message translates to:
+  /// **'List a property'**
+  String get list_first_property;
+
+  /// No description provided for @status_review_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Your property listing is currently under review. We will notify you once approved.'**
+  String get status_review_desc;
 
   /// No description provided for @view_all.
   ///

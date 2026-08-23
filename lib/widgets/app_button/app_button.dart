@@ -237,9 +237,7 @@ class AppButton extends StatelessWidget {
       style: style,
       size: size,
       state: state,
-      foregroundColor:
-          foregroundColor ??
-          rootNavigatorKey.currentContext?.currentTheme.textNeutralPrimary,
+      foregroundColor: foregroundColor,
       isLoading: isLoading,
     );
   }

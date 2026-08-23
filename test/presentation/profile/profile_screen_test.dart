@@ -10,10 +10,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ideal_mobile/core/services/injection_container.dart';
 import 'package:ideal_mobile/i18n/app_localizations.dart';
+import 'package:ideal_mobile/presentation/change_theme/widgets/theme_picker_sheet.dart';
+import 'package:ideal_mobile/presentation/contracts/bloc/contracts_bloc.dart';
+import 'package:ideal_mobile/presentation/contracts/bloc/contracts_event.dart';
+import 'package:ideal_mobile/presentation/contracts/bloc/contracts_state.dart';
 import 'package:ideal_mobile/presentation/home/bloc/home_bloc.dart';
 import 'package:ideal_mobile/presentation/home/bloc/home_event.dart';
 import 'package:ideal_mobile/presentation/home/bloc/home_state.dart';
+import 'package:ideal_mobile/presentation/my_listings/bloc/my_listings_bloc.dart';
+import 'package:ideal_mobile/presentation/my_listings/bloc/my_listings_event.dart';
+import 'package:ideal_mobile/presentation/my_listings/bloc/my_listings_state.dart';
 import 'package:ideal_mobile/presentation/profile/bloc/profile_bloc.dart';
 import 'package:ideal_mobile/presentation/profile/bloc/profile_event.dart';
 import 'package:ideal_mobile/presentation/profile/bloc/profile_state.dart';
@@ -23,7 +31,7 @@ import 'package:ideal_mobile/presentation/profile/widgets/profile_contracts_shee
 import 'package:ideal_mobile/presentation/profile/widgets/profile_details.dart';
 import 'package:ideal_mobile/presentation/profile/widgets/profile_language_sheet.dart';
 import 'package:ideal_mobile/presentation/profile/widgets/profile_my_listings_sheet.dart';
-import 'package:ideal_mobile/presentation/profile/widgets/profile_terms_sheet.dart';
+import 'package:ideal_mobile/presentation/settings/terms_and_conditions_screen.dart';
 import 'package:ideal_mobile/routes.gr.dart';
 import 'package:ideal_mobile/widgets/styling/app_theme_data.dart';
 import 'package:mocktail/mocktail.dart';
@@ -36,6 +44,12 @@ class MockHomeBloc extends MockBloc<HomeEvent, HomeState> implements HomeBloc {}
 
 class MockProfileBloc extends MockBloc<ProfileEvent, ProfileState>
     implements ProfileBloc {}
+
+class MockMyListingsBloc extends MockBloc<MyListingsEvent, MyListingsState>
+    implements MyListingsBloc {}
+
+class MockContractsBloc extends MockBloc<ContractsEvent, ContractsState>
+    implements ContractsBloc {}
 
 class MockStackRouter extends Mock implements StackRouter {}
 
@@ -68,6 +82,38 @@ void main() {
     );
   });
 
+  setUp(() {
+    if (!sl.isRegistered<MyListingsBloc>()) {
+      final mockMyListingsBloc = MockMyListingsBloc();
+      when(
+        () => mockMyListingsBloc.state,
+      ).thenReturn(const MyListingsState.initial());
+      when(
+        () => mockMyListingsBloc.stream,
+      ).thenAnswer((_) => const Stream.empty());
+      sl.registerFactory<MyListingsBloc>(() => mockMyListingsBloc);
+    }
+    if (!sl.isRegistered<ContractsBloc>()) {
+      final mockContractsBloc = MockContractsBloc();
+      when(
+        () => mockContractsBloc.state,
+      ).thenReturn(const ContractsState.initial());
+      when(
+        () => mockContractsBloc.stream,
+      ).thenAnswer((_) => const Stream.empty());
+      sl.registerFactory<ContractsBloc>(() => mockContractsBloc);
+    }
+  });
+
+  tearDown(() async {
+    if (sl.isRegistered<MyListingsBloc>()) {
+      await sl.unregister<MyListingsBloc>();
+    }
+    if (sl.isRegistered<ContractsBloc>()) {
+      await sl.unregister<ContractsBloc>();
+    }
+  });
+
   // Widget tests
   group('Profile Page', () {
     testWidgets('Profile page', (tester) async {
@@ -87,6 +133,7 @@ void main() {
       // assert
       expect(find.byType(ProfileScreenBody), findsOneWidget);
       expect(find.text('Sign out'), findsOneWidget);
+      expect(find.text('Delete Account'), findsNothing);
     });
 
     testWidgets('redirects to home tab and replaces route on SignOutState', (
@@ -263,7 +310,7 @@ void main() {
       expect(find.byType(ProfileLanguageSheet), findsOneWidget);
     });
 
-    testWidgets('Tapping Terms and Conditions opens ProfileTermsSheet', (
+    testWidgets('Tapping Terms and Conditions opens TermsAndConditionsScreen', (
       tester,
     ) async {
       final profileBloc = MockProfileBloc();
@@ -282,7 +329,7 @@ void main() {
       await tester.tap(termsFinder);
       await tester.pumpAndSettle();
 
-      expect(find.byType(ProfileTermsSheet), findsOneWidget);
+      expect(find.byType(TermsAndConditionsScreen), findsOneWidget);
     });
 
     testWidgets('Tapping My Contracts opens ProfileContractsSheet', (
@@ -306,23 +353,15 @@ void main() {
       expect(find.byType(ProfileContractsSheet), findsOneWidget);
     });
 
-    testWidgets('Tapping Appearance navigates to ChangeThemeRoute', (
-      tester,
-    ) async {
+    testWidgets('Tapping Appearance opens ThemePickerSheet', (tester) async {
       final profileBloc = MockProfileBloc();
-      final router = MockStackRouter();
       when(
         () => profileBloc.state,
       ).thenReturn(const ProfileState.test(profile: testProfile));
-      when(() => router.push(any())).thenAnswer((_) async => null);
 
       await tester.runWidgetTest(
         providers: [BlocProvider<ProfileBloc>.value(value: profileBloc)],
-        child: StackRouterScope(
-          controller: router,
-          stateHash: 0,
-          child: const ProfileScreenBody(),
-        ),
+        child: const ProfileScreenBody(),
       );
 
       final appearanceFinder = find.text('Appearance');
@@ -331,10 +370,7 @@ void main() {
       await tester.tap(appearanceFinder);
       await tester.pumpAndSettle();
 
-      final route =
-          verify(() => router.push(captureAny())).captured.single
-              as PageRouteInfo;
-      expect(route, isA<ChangeThemeRoute>());
+      expect(find.byType(ThemePickerSheet), findsOneWidget);
     });
 
     testWidgets(

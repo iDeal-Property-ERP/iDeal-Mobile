@@ -2,22 +2,41 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:ideal_mobile/widgets/images/tiered_network_image.dart';
 
 void main() {
-  test('normal display never requests original while variants exist', () {
-    const urls = ImageTierUrls(
-      previewUrl: 'https://cdn/preview.jpg',
-      displayUrl: 'https://cdn/display.jpg',
-      originalUrl: 'https://cdn/original.jpg',
-    );
-    expect(urls.candidates(ImageDisplayTier.display), [
-      'https://cdn/preview.jpg',
-      'https://cdn/display.jpg',
-    ]);
-    expect(urls.candidates(ImageDisplayTier.original), [
-      'https://cdn/display.jpg',
-      'https://cdn/original.jpg',
-      'https://cdn/preview.jpg',
-    ]);
-  });
+  test(
+    'normal display upgrades preview to display and retains original as fallback',
+    () {
+      const urls = ImageTierUrls(
+        previewUrl: 'https://cdn/preview.jpg',
+        displayUrl: 'https://cdn/display.jpg',
+        originalUrl: 'https://cdn/original.jpg',
+      );
+      expect(urls.candidates(ImageDisplayTier.display), [
+        'https://cdn/preview.jpg',
+        'https://cdn/display.jpg',
+        'https://cdn/original.jpg',
+      ]);
+      expect(urls.candidates(ImageDisplayTier.original), [
+        'https://cdn/display.jpg',
+        'https://cdn/original.jpg',
+        'https://cdn/preview.jpg',
+      ]);
+    },
+  );
+
+  test(
+    'normal display falls back to the original when only its preview variant exists',
+    () {
+      const urls = ImageTierUrls(
+        previewUrl: 'https://cdn/preview.jpg',
+        originalUrl: 'https://cdn/original.jpg',
+      );
+
+      expect(urls.candidates(ImageDisplayTier.display), [
+        'https://cdn/preview.jpg',
+        'https://cdn/original.jpg',
+      ]);
+    },
+  );
 
   test(
     'fullscreen requests display, then original, with preview failure fallback',

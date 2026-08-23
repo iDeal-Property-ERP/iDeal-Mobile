@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:ideal_mobile/presentation/settings/widgets/choose_app_theme.dart';
-import 'package:ideal_mobile/presentation/settings/widgets/delete_account.dart';
 import 'package:ideal_mobile/presentation/settings/widgets/divider.dart';
 import 'package:ideal_mobile/presentation/settings/widgets/notification_settings.dart';
 import 'package:ideal_mobile/presentation/settings/widgets/privacy_policy.dart';
@@ -31,8 +30,6 @@ class Settings extends StatelessWidget {
             ],
           ),
         ),
-        const Spacer(),
-        const DeleteAccount(),
       ],
     );
   }

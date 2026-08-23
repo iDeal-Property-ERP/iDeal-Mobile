@@ -5,7 +5,7 @@ import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
 import 'package:ideal_mobile/widgets/styling/app_colors.dart';
 
 /// The visual treatment used by an [AppTopBarAction].
-enum AppTopBarActionStyle { neutral, brand, overlay, surface }
+enum AppTopBarActionStyle { neutral, brand, overlay, surface, danger }
 
 /// A compact, accessible action for an iDeal top bar.
 class AppTopBarAction extends StatelessWidget {
@@ -451,6 +451,12 @@ class _TopBarColors {
             ? AppColors.bgSurfaceBase2dark
             : AppColors.bgSurfaceBase2,
         badge: isDark ? AppColors.brand400 : AppColors.brand600,
+      ),
+      AppTopBarActionStyle.danger => _TopBarColors(
+        surface: surface,
+        foreground: isDark ? AppColors.redError400 : AppColors.redError600,
+        background: Colors.transparent,
+        badge: isDark ? AppColors.redError300 : AppColors.redError700,
       ),
     };
   }

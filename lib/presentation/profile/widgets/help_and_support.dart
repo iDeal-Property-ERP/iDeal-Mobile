@@ -8,8 +8,8 @@ import 'package:ideal_mobile/presentation/contact_us/contact_us_screen.dart';
 import 'package:ideal_mobile/presentation/profile/bloc/profile_bloc.dart';
 import 'package:ideal_mobile/presentation/profile/data/datasources/support_remote_data_source.dart';
 import 'package:ideal_mobile/utils/extensions/build_context_ext.dart';
+import 'package:ideal_mobile/utils/haptic_feedback_util.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
-import 'package:ideal_mobile/widgets/styling/app_colors.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class HelpAndSupport extends StatelessWidget {
@@ -74,17 +74,16 @@ class HelpAndSupport extends StatelessWidget {
 
     await showModalBottomSheet<void>(
       context: context,
-      barrierColor: AppColors.black.withValues(alpha: 0.72),
-      backgroundColor: context.currentTheme.bgSurfaceBase2,
+      backgroundColor: context.currentTheme.bgSurfaceSheet,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      clipBehavior: Clip.antiAlias,
       builder: (sheetContext) => SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Center(
                 child: Container(
@@ -97,14 +96,22 @@ class HelpAndSupport extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              Text(
-                context.localization.help_and_support,
-                style: AppTextStyles.h6SemiBold.copyWith(
-                  color: context.currentTheme.textNeutralPrimary,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Text(
+                  context.localization.help_and_support,
+                  style: AppTextStyles.h6Bold.copyWith(
+                    color: context.currentTheme.textNeutralPrimary,
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
-              _SupportOptionsCard(options: options, sheetContext: sheetContext),
+              ...options.map(
+                (option) => _SupportOptionCard(
+                  option: option,
+                  onTap: () => option.onTap(sheetContext),
+                ),
+              ),
             ],
           ),
         ),
@@ -148,57 +155,63 @@ class _SupportOptionItem {
   final void Function(BuildContext sheetContext) onTap;
 }
 
-class _SupportOptionsCard extends StatelessWidget {
-  const _SupportOptionsCard({
-    required this.options,
-    required this.sheetContext,
-  });
+class _SupportOptionCard extends StatelessWidget {
+  const _SupportOptionCard({required this.option, required this.onTap});
 
-  final List<_SupportOptionItem> options;
-  final BuildContext sheetContext;
+  final _SupportOptionItem option;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final cardBg = context.isDark
-        ? context.currentTheme.bgSurfaceBase
-        : context.currentTheme.bgNeutralLight50;
-
-    return Material(
-      color: cardBg,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: context.currentTheme.strokeNeutralLight200),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          for (var i = 0; i < options.length; i++) ...[
-            if (i > 0)
-              Divider(
-                height: 1,
-                thickness: 1,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Material(
+        color: context.isDark
+            ? context.currentTheme.bgSurfaceBase2
+            : Colors.white,
+        borderRadius: BorderRadius.circular(14.0),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(14.0),
+          onTap: () async {
+            await HapticFeedbackUtil.light();
+            if (context.mounted) onTap();
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 14.0,
+            ),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14.0),
+              border: Border.all(
                 color: context.currentTheme.strokeNeutralLight200,
               ),
-            ListTile(
-              leading: Icon(
-                options[i].icon,
-                color: context.currentTheme.iconNeutralDefault,
-              ),
-              title: Text(
-                options[i].title,
-                style: AppTextStyles.p2Medium.copyWith(
-                  color: context.currentTheme.textNeutralPrimary,
-                ),
-              ),
-              trailing: Icon(
-                TablerIcons.chevron_right,
-                color: context.currentTheme.iconNeutralDefault,
-              ),
-              onTap: () => options[i].onTap(sheetContext),
             ),
-          ],
-        ],
+            child: Row(
+              children: [
+                Icon(
+                  option.icon,
+                  color: context.currentTheme.iconNeutralDefault,
+                  size: 22.0,
+                ),
+                const SizedBox(width: 14.0),
+                Expanded(
+                  child: Text(
+                    option.title,
+                    style: AppTextStyles.p2SemiBold.copyWith(
+                      color: context.currentTheme.textNeutralPrimary,
+                    ),
+                  ),
+                ),
+                Icon(
+                  TablerIcons.chevron_right,
+                  color: context.currentTheme.iconNeutralDefault,
+                  size: 20.0,
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

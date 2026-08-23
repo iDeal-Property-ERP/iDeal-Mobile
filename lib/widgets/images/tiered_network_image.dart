@@ -21,10 +21,9 @@ class ImageTierUrls {
   final String? displayUrl;
 
   List<String> candidates(ImageDisplayTier targetTier) {
-    final hasResponsiveVariants = _usable(previewUrl) || _usable(displayUrl);
     final ordered = switch (targetTier) {
-      ImageDisplayTier.preview || ImageDisplayTier.display =>
-        hasResponsiveVariants ? [previewUrl, displayUrl] : [originalUrl],
+      ImageDisplayTier.preview ||
+      ImageDisplayTier.display => [previewUrl, displayUrl, originalUrl],
       ImageDisplayTier.original => [displayUrl, originalUrl, previewUrl],
     };
     return ordered
@@ -34,8 +33,6 @@ class ImageTierUrls {
         .toSet()
         .toList(growable: false);
   }
-
-  bool _usable(String? value) => value?.trim().isNotEmpty ?? false;
 }
 
 /// Small transition model used by [TieredNetworkImage]. A failed higher tier
@@ -148,12 +145,11 @@ class _TieredNetworkImageState extends State<TieredNetworkImage> {
       builder: (context, constraints) {
         final dpr = MediaQuery.devicePixelRatioOf(context);
         final width = _physicalDimension(constraints.maxWidth, dpr);
-        final height = _physicalDimension(constraints.maxHeight, dpr);
-        final provider = ResizeImage(
-          FileImage(file),
-          width: width,
-          height: height,
-        );
+        // Decode by width only. Supplying both dimensions can change the
+        // decoded aspect ratio; BoxFit is responsible for the card crop.
+        final ImageProvider<Object> provider = width == null
+            ? FileImage(file)
+            : ResizeImage(FileImage(file), width: width);
         return Image(image: provider, fit: widget.fit);
       },
     );

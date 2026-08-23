@@ -9,6 +9,7 @@ import 'package:ideal_mobile/constants/constants.dart';
 import 'package:ideal_mobile/main.dart';
 import 'package:ideal_mobile/presentation/booking/booking_injection.dart';
 import 'package:ideal_mobile/presentation/chat/chat_injection.dart';
+import 'package:ideal_mobile/presentation/contracts/contracts_injection.dart';
 import 'package:ideal_mobile/presentation/favorites/data/datasources/favorites_remote_data_source.dart';
 import 'package:ideal_mobile/presentation/favorites/data/repositories/favorites_repository_impl.dart';
 import 'package:ideal_mobile/presentation/favorites/domain/repositories/favorites_repository.dart';
@@ -39,6 +40,7 @@ import 'package:ideal_mobile/presentation/login/domain/usecases/verify_otp.dart'
 import 'package:ideal_mobile/presentation/map/data/datasources/map_config_remote_data_source.dart';
 import 'package:ideal_mobile/presentation/map/data/repositories/map_config_repository_impl.dart';
 import 'package:ideal_mobile/presentation/map/domain/repositories/map_config_repository.dart';
+import 'package:ideal_mobile/presentation/my_listings/my_listings_injection.dart';
 import 'package:ideal_mobile/presentation/notifications/notifications_injection.dart';
 import 'package:ideal_mobile/presentation/profile/data/datasources/profile_remote_data_source.dart';
 import 'package:ideal_mobile/presentation/profile/data/datasources/support_remote_data_source.dart';
@@ -164,6 +166,8 @@ Future<void> configureDependencies({Dio? dio}) async {
   registerListingDetailDependencies(sl);
   registerBookingDependencies(sl);
   registerPropertyUploadDependencies(sl);
+  registerMyListingsDependencies(sl);
+  registerContractsDependencies(sl);
 }
 
 void _registerDioInterceptor(Dio dio) {

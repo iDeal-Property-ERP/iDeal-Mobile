@@ -1950,6 +1950,23 @@ class AppLocalizationsRu extends AppLocalizations {
   String get my_contracts => 'Мои договоры';
 
   @override
+  String get contracts_empty_title => 'Договоров пока нет';
+
+  @override
+  String get contracts_empty_subtitle =>
+      'Здесь появятся ваши текущие и завершённые договоры аренды.';
+
+  @override
+  String get contracts_load_error =>
+      'Не удалось загрузить договоры. Попробуйте ещё раз.';
+
+  @override
+  String get contracts_period => 'Срок';
+
+  @override
+  String get contracts_monthly_rent => 'Ежемесячная аренда';
+
+  @override
   String get change_phone_number => 'Изменить номер телефона';
 
   @override
@@ -1957,6 +1974,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get language_settings => 'Настройки языка';
+
+  @override
+  String get my_account => 'Мой аккаунт';
 
   @override
   String get app_section => 'Приложение';
@@ -1977,6 +1997,22 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get status_rented => 'В аренде';
+
+  @override
+  String get status_rejected => 'Отклонено';
+
+  @override
+  String get status_draft => 'Черновик';
+
+  @override
+  String get no_listings_found => 'Объявления не найдены';
+
+  @override
+  String get list_first_property => 'Добавить объект';
+
+  @override
+  String get status_review_desc =>
+      'Ваше объявление находится на проверке. Мы уведомим вас после одобрения.';
 
   @override
   String get view_all => 'Все';

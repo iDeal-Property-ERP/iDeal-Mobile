@@ -12,6 +12,8 @@ import 'package:ideal_mobile/presentation/profile/bloc/profile_bloc.dart';
 import 'package:ideal_mobile/presentation/profile/bloc/profile_event.dart';
 import 'package:ideal_mobile/presentation/profile/bloc/profile_state.dart';
 import 'package:ideal_mobile/presentation/profile/widgets/profile_avatar_cache_manager.dart';
+import 'package:ideal_mobile/presentation/profile/widgets/profile_avatar_file_size.dart';
+import 'package:ideal_mobile/utils/extensions/build_context_ext.dart';
 import 'package:ideal_mobile/utils/image_picker_util.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 import 'package:image_picker/image_picker.dart';
@@ -123,9 +125,20 @@ class UserAvatar extends StatelessWidget {
           : ImageSource.gallery,
       maxFileLimit: 1,
     );
-    if (images.isNotEmpty && context.mounted) {
-      onImageSelected(File(images.first.path));
+    if (images.isEmpty) return;
+
+    final image = File(images.first.path);
+    final isAllowed = isProfileAvatarFileSizeAllowed(await image.length());
+    if (!context.mounted) return;
+    if (!isAllowed) {
+      context.showSnackBar(
+        context.localization.file_too_large_error,
+        isDisplayingError: true,
+      );
+      return;
     }
+
+    onImageSelected(image);
   }
 }
 

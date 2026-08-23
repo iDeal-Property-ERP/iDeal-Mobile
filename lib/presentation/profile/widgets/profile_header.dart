@@ -4,20 +4,24 @@ import 'package:auto_route/auto_route.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
 import 'package:ideal_mobile/core/services/injection_container.dart';
+import 'package:ideal_mobile/gen/assets.gen.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
 import 'package:ideal_mobile/presentation/profile/bloc/profile_bloc.dart';
 import 'package:ideal_mobile/presentation/profile/bloc/profile_event.dart';
 import 'package:ideal_mobile/presentation/profile/bloc/profile_state.dart';
 import 'package:ideal_mobile/presentation/profile/widgets/profile_avatar_cache_manager.dart';
+import 'package:ideal_mobile/presentation/profile/widgets/profile_avatar_file_size.dart';
 import 'package:ideal_mobile/routes.gr.dart';
 import 'package:ideal_mobile/utils/extensions/build_context_ext.dart';
 import 'package:ideal_mobile/utils/image_picker_util.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 import 'package:ideal_mobile/widgets/shimmer/shimmer_circular_image.dart';
 import 'package:ideal_mobile/widgets/shimmer/shimmer_text.dart';
+import 'package:ideal_mobile/widgets/styling/app_colors.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -27,6 +31,9 @@ class ProfileHeader extends StatelessWidget {
   static const Color _navyLight = Color(0xFF0F2A5C);
   static const Color _navyDark = Color(0xFF0A1F45);
   static const Color _phoneColor = Color(0xFFAFC3EC);
+
+  static Color backgroundColorFor(BuildContext context) =>
+      context.isDark ? _navyDark : _navyLight;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +47,7 @@ class ProfileHeader extends StatelessWidget {
     final phone = state.profile?.phone ?? '';
     final showPhone = phone.isNotEmpty && phone != fullName;
 
-    final headerBg = context.isDark ? _navyDark : _navyLight;
+    final headerBg = backgroundColorFor(context);
 
     return Container(
       width: double.infinity,
@@ -55,7 +62,6 @@ class ProfileHeader extends StatelessWidget {
                   children: [
                     _ProfileAvatarBadge(
                       avatarUrl: state.profile?.avatarUrl,
-                      displayName: fullName,
                       isUpdating: state.isAvatarUpdating,
                     ),
                     const SizedBox(width: 16.0),
@@ -147,32 +153,16 @@ class ProfileHeader extends StatelessWidget {
 class _ProfileAvatarBadge extends StatelessWidget {
   const _ProfileAvatarBadge({
     required this.avatarUrl,
-    required this.displayName,
     required this.isUpdating,
   });
 
   final String? avatarUrl;
-  final String displayName;
   final bool isUpdating;
 
   static const Color _navy = Color(0xFF0F2A5C);
 
-  String _getInitials(String name) {
-    final trimmed = name.trim();
-    if (trimmed.isEmpty) return 'U';
-    final parts = trimmed.split(RegExp(r'\s+'));
-    if (parts.length >= 2) {
-      final first = parts[0].isNotEmpty ? parts[0][0] : '';
-      final second = parts[1].isNotEmpty ? parts[1][0] : '';
-      return '$first$second'.toUpperCase();
-    }
-    return trimmed.substring(0, trimmed.length >= 2 ? 2 : 1).toUpperCase();
-  }
-
   @override
   Widget build(BuildContext context) {
-    final initials = _getInitials(displayName);
-
     return GestureDetector(
       onTap: isUpdating ? null : () => _showPicker(context),
       child: Stack(
@@ -199,10 +189,10 @@ class _ProfileAvatarBadge extends StatelessWidget {
                       cacheKey: avatarUrl,
                       cacheManager: ProfileAvatarCacheManager.instance,
                       fit: BoxFit.cover,
-                      errorWidget: (_, _, _) => _initialsWidget(initials),
+                      errorWidget: (_, _, _) => _placeholder(context),
                     )
                   else
-                    _initialsWidget(initials),
+                    _placeholder(context),
                   if (isUpdating)
                     const ColoredBox(
                       color: Colors.black45,
@@ -248,21 +238,19 @@ class _ProfileAvatarBadge extends StatelessWidget {
     );
   }
 
-  Widget _initialsWidget(String initials) {
-    return Container(
-      color: Colors.white.withValues(alpha: 0.12),
-      alignment: Alignment.center,
-      child: Text(
-        initials,
-        style: const TextStyle(
-          fontSize: 22.0,
-          fontWeight: FontWeight.w800,
-          color: Colors.white,
-          letterSpacing: 0.5,
-        ),
-      ),
-    );
-  }
+  Widget _placeholder(BuildContext context) => SvgPicture.asset(
+    Assets.icons.userPlaceholder,
+    fit: BoxFit.cover,
+    colorMapper: context.isDark
+        ? const _UserPlaceholderColorMapper(
+            backgroundColor: AppColors.sapphirePrimaryDark,
+            foregroundColor: AppColors.brand50,
+          )
+        : const _UserPlaceholderColorMapper(
+            backgroundColor: AppColors.brand800,
+            foregroundColor: AppColors.white,
+          ),
+  );
 
   Future<void> _showPicker(BuildContext context) async {
     final action = await showModalBottomSheet<_AvatarAction>(
@@ -312,15 +300,57 @@ class _ProfileAvatarBadge extends StatelessWidget {
       maxFileLimit: 1,
     );
 
-    if (images.isNotEmpty && context.mounted) {
-      context.read<ProfileBloc>().add(
-        UpdateProfileAvatarEvent(image: File(images.first.path)),
+    if (images.isEmpty) return;
+
+    final image = File(images.first.path);
+    final isAllowed = isProfileAvatarFileSizeAllowed(await image.length());
+    if (!context.mounted) return;
+    if (!isAllowed) {
+      context.showSnackBar(
+        context.localization.file_too_large_error,
+        isDisplayingError: true,
       );
+      return;
     }
+
+    context.read<ProfileBloc>().add(UpdateProfileAvatarEvent(image: image));
   }
 }
 
 enum _AvatarAction { camera, gallery, remove }
+
+class _UserPlaceholderColorMapper extends ColorMapper {
+  const _UserPlaceholderColorMapper({
+    required this.backgroundColor,
+    required this.foregroundColor,
+  });
+
+  static const Color _sourceBackground = Color(0xFFCDCFCE);
+
+  final Color backgroundColor;
+  final Color foregroundColor;
+
+  @override
+  Color substitute(
+    String? id,
+    String elementName,
+    String attributeName,
+    Color color,
+  ) {
+    if (color == _sourceBackground) return backgroundColor;
+    if (color == Colors.white) return foregroundColor;
+    return color;
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      other is _UserPlaceholderColorMapper &&
+      other.backgroundColor == backgroundColor &&
+      other.foregroundColor == foregroundColor;
+
+  @override
+  int get hashCode => Object.hash(backgroundColor, foregroundColor);
+}
 
 class _ProfileHeaderSkeleton extends StatelessWidget {
   const _ProfileHeaderSkeleton();

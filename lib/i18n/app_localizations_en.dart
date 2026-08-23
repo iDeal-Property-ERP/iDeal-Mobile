@@ -1920,6 +1920,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get my_contracts => 'My Contracts';
 
   @override
+  String get contracts_empty_title => 'No contracts yet';
+
+  @override
+  String get contracts_empty_subtitle =>
+      'Your active and completed leases will appear here.';
+
+  @override
+  String get contracts_load_error =>
+      'Couldn\'t load your contracts. Please try again.';
+
+  @override
+  String get contracts_period => 'Period';
+
+  @override
+  String get contracts_monthly_rent => 'Monthly rent';
+
+  @override
   String get change_phone_number => 'Change Phone Number';
 
   @override
@@ -1927,6 +1944,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get language_settings => 'Language Settings';
+
+  @override
+  String get my_account => 'My Account';
 
   @override
   String get app_section => 'App';
@@ -1947,6 +1967,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get status_rented => 'Rented';
+
+  @override
+  String get status_rejected => 'Rejected';
+
+  @override
+  String get status_draft => 'Draft';
+
+  @override
+  String get no_listings_found => 'No listings found';
+
+  @override
+  String get list_first_property => 'List a property';
+
+  @override
+  String get status_review_desc =>
+      'Your property listing is currently under review. We will notify you once approved.';
 
   @override
   String get view_all => 'All';

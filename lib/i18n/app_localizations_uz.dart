@@ -1948,6 +1948,23 @@ class AppLocalizationsUz extends AppLocalizations {
   String get my_contracts => 'Shartnomalarim';
 
   @override
+  String get contracts_empty_title => 'Hali shartnomalar yo‘q';
+
+  @override
+  String get contracts_empty_subtitle =>
+      'Faol va yakunlangan ijara shartnomalaringiz shu yerda ko‘rinadi.';
+
+  @override
+  String get contracts_load_error =>
+      'Shartnomalarni yuklab bo‘lmadi. Qayta urinib ko‘ring.';
+
+  @override
+  String get contracts_period => 'Muddati';
+
+  @override
+  String get contracts_monthly_rent => 'Oylik ijara haqi';
+
+  @override
   String get change_phone_number => 'Telefon raqamni o\'zgartirish';
 
   @override
@@ -1955,6 +1972,9 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get language_settings => 'Til sozlamalari';
+
+  @override
+  String get my_account => 'Mening hisobim';
 
   @override
   String get app_section => 'Ilova';
@@ -1975,6 +1995,22 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get status_rented => 'Ijarada';
+
+  @override
+  String get status_rejected => 'Rad etildi';
+
+  @override
+  String get status_draft => 'Qoralama';
+
+  @override
+  String get no_listings_found => 'E\'lonlar topilmadi';
+
+  @override
+  String get list_first_property => 'E\'lon joylashtirish';
+
+  @override
+  String get status_review_desc =>
+      'E\'loningiz ko\'rib chiqilmoqda. Tasdiqlangach xabar beramiz.';
 
   @override
   String get view_all => 'Barchasi';
