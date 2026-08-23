@@ -15,27 +15,28 @@ class ListPropertyWizardState extends Equatable {
     this.status = WizardStatus.initial,
     this.currentStep = 0,
     this.config,
-    this.propertyType = 'apartment',
-    this.name = '',
+    this.propertyType,
+    this.name,
     this.districtId,
-    this.rooms = 1,
-    this.floor = 1,
+    this.rooms,
+    this.floor,
     this.totalFloors,
     this.areaSqm,
-    this.furnishing = 'furnished',
+    this.furnishing,
     this.description,
     this.amenities = const {},
     this.imagePaths = const [],
     this.monthlyPrice,
     this.depositAmount,
     this.currency = 'USD',
-    this.minimumStay = 1,
+    this.minimumStay,
     this.priceIncludes = const {},
     this.firstName = '',
     this.lastName,
     this.email,
     this.phone,
     this.acceptOffer = false,
+    this.showValidationErrors = false,
     this.errorMessage,
     this.createdListingId,
   });
@@ -44,26 +45,26 @@ class ListPropertyWizardState extends Equatable {
   final int currentStep;
   final PropertyUploadConfig? config;
 
-  // Details Step
-  final String propertyType;
-  final String name;
+  // Details Step (No defaults - all start null)
+  final String? propertyType;
+  final String? name;
   final int? districtId;
-  final int rooms;
-  final int floor;
+  final int? rooms;
+  final int? floor;
   final int? totalFloors;
   final int? areaSqm;
-  final String furnishing;
+  final String? furnishing;
   final String? description;
   final Set<String> amenities;
 
   // Photos Step
   final List<String> imagePaths;
 
-  // Pricing Step
+  // Pricing Step (No defaults - start null)
   final double? monthlyPrice;
   final double? depositAmount;
   final String currency;
-  final int minimumStay;
+  final int? minimumStay;
   final Set<String> priceIncludes;
 
   // Contact Step
@@ -75,25 +76,28 @@ class ListPropertyWizardState extends Equatable {
   // Review Step
   final bool acceptOffer;
 
+  // Validation
+  final bool showValidationErrors;
   final String? errorMessage;
   final int? createdListingId;
 
   bool get isDetailsValid =>
-      name.trim().isNotEmpty &&
+      propertyType != null &&
+      propertyType!.isNotEmpty &&
       districtId != null &&
+      rooms != null &&
+      rooms! > 0 &&
+      floor != null &&
+      floor! >= 0 &&
+      (totalFloors == null || totalFloors! >= floor!) &&
       areaSqm != null &&
       areaSqm! > 0 &&
-      rooms > 0 &&
-      floor >= 0 &&
-      (totalFloors == null || totalFloors! >= floor);
+      furnishing != null &&
+      furnishing!.isNotEmpty;
 
   bool get isPhotosValid => imagePaths.length >= 5;
 
-  bool get isPricingValid =>
-      monthlyPrice != null &&
-      monthlyPrice! > 0 &&
-      depositAmount != null &&
-      depositAmount! >= 0;
+  bool get isPricingValid => monthlyPrice != null && monthlyPrice! > 0;
 
   bool get isContactValid =>
       firstName.trim().isNotEmpty &&
@@ -127,6 +131,7 @@ class ListPropertyWizardState extends Equatable {
     String? email,
     String? phone,
     bool? acceptOffer,
+    bool? showValidationErrors,
     String? errorMessage,
     int? createdListingId,
     bool clearErrorMessage = false,
@@ -156,6 +161,7 @@ class ListPropertyWizardState extends Equatable {
       email: email ?? this.email,
       phone: phone ?? this.phone,
       acceptOffer: acceptOffer ?? this.acceptOffer,
+      showValidationErrors: showValidationErrors ?? this.showValidationErrors,
       errorMessage: clearErrorMessage
           ? null
           : (errorMessage ?? this.errorMessage),
@@ -189,6 +195,7 @@ class ListPropertyWizardState extends Equatable {
     email,
     phone,
     acceptOffer,
+    showValidationErrors,
     errorMessage,
     createdListingId,
   ];

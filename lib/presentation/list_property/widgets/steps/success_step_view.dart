@@ -20,16 +20,34 @@ class SuccessStepView extends StatelessWidget {
         children: [
           const Spacer(),
           Container(
-            width: 80,
-            height: 80,
+            width: 84,
+            height: 84,
             decoration: BoxDecoration(
-              color: theme.bgSuccessLight100,
+              color:
+                  (context.isDark
+                          ? const Color(0xFF22C55E)
+                          : const Color(0xFF16A34A))
+                      .withValues(alpha: 0.16),
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              TablerIcons.check,
-              color: theme.textSuccessPrimary,
-              size: 44,
+            padding: const EdgeInsets.all(10),
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Color(0xFF22C55E),
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Color(0x3322C55E),
+                    blurRadius: 16,
+                    offset: Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: const Icon(
+                TablerIcons.check,
+                color: Colors.white,
+                size: 34,
+              ),
             ),
           ),
           const SizedBox(height: 24),

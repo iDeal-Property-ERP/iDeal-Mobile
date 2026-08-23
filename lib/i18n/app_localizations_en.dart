@@ -1911,7 +1911,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Every booking and purchase is protected by contracts recognized by official registries.';
 
   @override
-  String get list_property => 'List property';
+  String get list_property => 'List';
 
   @override
   String get my_listings => 'My Listings';

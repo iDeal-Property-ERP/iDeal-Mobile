@@ -3565,7 +3565,7 @@ abstract class AppLocalizations {
   /// No description provided for @list_property.
   ///
   /// In en, this message translates to:
-  /// **'List property'**
+  /// **'List'**
   String get list_property;
 
   /// No description provided for @my_listings.

@@ -26,7 +26,7 @@ class PropertyContact extends Equatable {
 
 class PropertyUploadPayload extends Equatable {
   const PropertyUploadPayload({
-    required this.name,
+    this.name,
     required this.propertyType,
     required this.districtId,
     required this.rooms,
@@ -37,16 +37,16 @@ class PropertyUploadPayload extends Equatable {
     this.description,
     required this.amenities,
     required this.monthlyPrice,
-    required this.depositAmount,
+    this.depositAmount,
     required this.currency,
-    required this.minimumStay,
+    this.minimumStay,
     required this.priceIncludes,
     required this.acceptOffer,
     this.contact,
     required this.imagePaths,
   });
 
-  final String name;
+  final String? name;
   final String propertyType;
   final int districtId;
   final int rooms;
@@ -57,16 +57,16 @@ class PropertyUploadPayload extends Equatable {
   final String? description;
   final List<String> amenities;
   final double monthlyPrice;
-  final double depositAmount;
+  final double? depositAmount;
   final String currency;
-  final int minimumStay;
+  final int? minimumStay;
   final List<String> priceIncludes;
   final bool acceptOffer;
   final PropertyContact? contact;
   final List<String> imagePaths;
 
   Map<String, dynamic> toJson() => {
-    'name': name,
+    if (name != null && name!.isNotEmpty) 'name': name,
     'property_type': propertyType,
     'district_id': districtId,
     'rooms': rooms,
@@ -78,9 +78,9 @@ class PropertyUploadPayload extends Equatable {
       'description': description,
     'amenities': amenities,
     'monthly_price': monthlyPrice,
-    'deposit_amount': depositAmount,
+    if (depositAmount != null) 'deposit_amount': depositAmount,
     'currency': currency,
-    'minimum_stay': minimumStay,
+    if (minimumStay != null) 'minimum_stay': minimumStay,
     'price_includes': priceIncludes,
     'accept_offer': acceptOffer,
     if (contact != null) 'contact': contact!.toJson(),

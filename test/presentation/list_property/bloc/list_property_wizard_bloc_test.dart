@@ -65,13 +65,21 @@ void main() {
     bloc.close();
   });
 
-  test('initial state has step 0 and initial status', () {
+  test('initial state has step 0, initial status, and no prefilled specs', () {
     expect(bloc.state.status, WizardStatus.initial);
     expect(bloc.state.currentStep, 0);
+    expect(bloc.state.propertyType, isNull);
+    expect(bloc.state.districtId, isNull);
+    expect(bloc.state.rooms, isNull);
+    expect(bloc.state.floor, isNull);
+    expect(bloc.state.areaSqm, isNull);
+    expect(bloc.state.furnishing, isNull);
+    expect(bloc.state.minimumStay, isNull);
+    expect(bloc.state.showValidationErrors, isFalse);
   });
 
   blocTest<ListPropertyWizardBloc, ListPropertyWizardState>(
-    'emits [loadingConfig, configReady] when started succeeds',
+    'emits [loadingConfig, configReady] on started without defaults',
     build: () {
       when(
         () => mockGetConfig(),
@@ -84,7 +92,6 @@ void main() {
       const ListPropertyWizardState(
         status: WizardStatus.configReady,
         config: sampleConfig,
-        districtId: 1,
         firstName: 'Ali',
         lastName: 'Valiyev',
         email: 'ali@example.com',
@@ -114,10 +121,8 @@ void main() {
     act: (b) {
       b.add(const ListPropertyPhotosAdded(['/path/1.png', '/path/2.png']));
       b.add(const ListPropertyPhotosAdded(['/path/3.png']));
-      b.add(
-        const ListPropertyPhotoSetPrimary(1),
-      ); // moves /path/2.png to index 0
-      b.add(const ListPropertyPhotoRemoved(2)); // removes index 2
+      b.add(const ListPropertyPhotoSetPrimary(1));
+      b.add(const ListPropertyPhotoRemoved(2));
     },
     expect: () => [
       const ListPropertyWizardState(imagePaths: ['/path/1.png', '/path/2.png']),
@@ -132,13 +137,14 @@ void main() {
   );
 
   blocTest<ListPropertyWizardBloc, ListPropertyWizardState>(
-    'validates details step before advancing',
+    'shows validation errors when advancing on empty details step',
     build: () => bloc,
     act: (b) {
       b.add(const ListPropertyStepAdvanceRequested());
     },
     expect: () => [
       const ListPropertyWizardState(
+        showValidationErrors: true,
         errorMessage: 'Please fill in all required property details.',
       ),
     ],
@@ -148,27 +154,29 @@ void main() {
     'advances step when details valid',
     build: () => bloc,
     seed: () => const ListPropertyWizardState(
-      name: 'Nice Apartment',
+      propertyType: 'apartment',
       districtId: 1,
       rooms: 2,
       floor: 3,
       areaSqm: 65,
+      furnishing: 'furnished',
     ),
     act: (b) => b.add(const ListPropertyStepAdvanceRequested()),
     expect: () => [
       const ListPropertyWizardState(
-        name: 'Nice Apartment',
+        propertyType: 'apartment',
         districtId: 1,
         rooms: 2,
         floor: 3,
         areaSqm: 65,
+        furnishing: 'furnished',
         currentStep: 1,
       ),
     ],
   );
 
   blocTest<ListPropertyWizardBloc, ListPropertyWizardState>(
-    'submits successfully when review valid',
+    'submits successfully with only raw specs (no title/description)',
     build: () {
       when(() => mockSubmit(any())).thenAnswer(
         (_) async => const Right(
@@ -184,14 +192,13 @@ void main() {
     },
     seed: () => const ListPropertyWizardState(
       currentStep: 4,
-      name: 'Modern Flat',
+      propertyType: 'apartment',
       districtId: 1,
       rooms: 2,
       floor: 2,
       areaSqm: 70,
+      furnishing: 'furnished',
       monthlyPrice: 600,
-      depositAmount: 600,
-      minimumStay: 3,
       firstName: 'Ali',
       phone: '+998901234567',
       imagePaths: ['p1', 'p2', 'p3', 'p4', 'p5'],
@@ -202,14 +209,13 @@ void main() {
       const ListPropertyWizardState(
         currentStep: 4,
         status: WizardStatus.submitting,
-        name: 'Modern Flat',
+        propertyType: 'apartment',
         districtId: 1,
         rooms: 2,
         floor: 2,
         areaSqm: 70,
+        furnishing: 'furnished',
         monthlyPrice: 600,
-        depositAmount: 600,
-        minimumStay: 3,
         firstName: 'Ali',
         phone: '+998901234567',
         imagePaths: ['p1', 'p2', 'p3', 'p4', 'p5'],
@@ -219,14 +225,13 @@ void main() {
         currentStep: 5,
         status: WizardStatus.submitted,
         createdListingId: 42,
-        name: 'Modern Flat',
+        propertyType: 'apartment',
         districtId: 1,
         rooms: 2,
         floor: 2,
         areaSqm: 70,
+        furnishing: 'furnished',
         monthlyPrice: 600,
-        depositAmount: 600,
-        minimumStay: 3,
         firstName: 'Ali',
         phone: '+998901234567',
         imagePaths: ['p1', 'p2', 'p3', 'p4', 'p5'],

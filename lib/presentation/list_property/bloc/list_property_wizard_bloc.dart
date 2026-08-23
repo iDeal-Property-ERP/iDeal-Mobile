@@ -46,14 +46,10 @@ class ListPropertyWizardBloc
       ),
       (config) {
         final profile = config.userProfile;
-        final defaultDistrict = config.districts.isNotEmpty
-            ? config.districts.first.id
-            : null;
         emit(
           state.copyWith(
             status: WizardStatus.configReady,
             config: config,
-            districtId: state.districtId ?? defaultDistrict,
             firstName: state.firstName.isNotEmpty
                 ? state.firstName
                 : (profile?.firstName ?? ''),
@@ -70,7 +66,13 @@ class ListPropertyWizardBloc
     ListPropertyStepChanged event,
     Emitter<ListPropertyWizardState> emit,
   ) {
-    emit(state.copyWith(currentStep: event.step, clearErrorMessage: true));
+    emit(
+      state.copyWith(
+        currentStep: event.step,
+        showValidationErrors: false,
+        clearErrorMessage: true,
+      ),
+    );
   }
 
   void _onDetailsUpdated(
@@ -198,42 +200,70 @@ class ListPropertyWizardBloc
         if (!state.isDetailsValid) {
           emit(
             state.copyWith(
+              showValidationErrors: true,
               errorMessage: 'Please fill in all required property details.',
             ),
           );
           return;
         }
-        emit(state.copyWith(currentStep: 1, clearErrorMessage: true));
+        emit(
+          state.copyWith(
+            currentStep: 1,
+            showValidationErrors: false,
+            clearErrorMessage: true,
+          ),
+        );
       case 1:
         if (!state.isPhotosValid) {
           emit(
             state.copyWith(
+              showValidationErrors: true,
               errorMessage: 'At least 5 photos are required to continue.',
             ),
           );
           return;
         }
-        emit(state.copyWith(currentStep: 2, clearErrorMessage: true));
+        emit(
+          state.copyWith(
+            currentStep: 2,
+            showValidationErrors: false,
+            clearErrorMessage: true,
+          ),
+        );
       case 2:
         if (!state.isPricingValid) {
           emit(
             state.copyWith(
-              errorMessage: 'Please specify monthly rent and deposit amount.',
+              showValidationErrors: true,
+              errorMessage: 'Please specify monthly rent price.',
             ),
           );
           return;
         }
-        emit(state.copyWith(currentStep: 3, clearErrorMessage: true));
+        emit(
+          state.copyWith(
+            currentStep: 3,
+            showValidationErrors: false,
+            clearErrorMessage: true,
+          ),
+        );
       case 3:
         if (!state.isContactValid) {
           emit(
             state.copyWith(
+              showValidationErrors: true,
               errorMessage: 'Please provide your name and contact info.',
             ),
           );
           return;
         }
-        emit(state.copyWith(currentStep: 4, clearErrorMessage: true));
+        emit(
+          state.copyWith(
+            currentStep: 4,
+            showValidationErrors: false,
+            clearErrorMessage: true,
+          ),
+        );
       case 4:
         add(const ListPropertySubmitted());
       default:
@@ -248,17 +278,28 @@ class ListPropertyWizardBloc
     if (!state.acceptOffer) {
       emit(
         state.copyWith(
+          showValidationErrors: true,
           errorMessage: 'Please accept the public offer to publish.',
         ),
       );
       return;
     }
     if (!state.isPhotosValid) {
-      emit(state.copyWith(errorMessage: 'At least 5 photos are required.'));
+      emit(
+        state.copyWith(
+          showValidationErrors: true,
+          errorMessage: 'At least 5 photos are required.',
+        ),
+      );
       return;
     }
-    if (state.districtId == null || state.monthlyPrice == null) {
-      emit(state.copyWith(errorMessage: 'Please complete all required steps.'));
+    if (!state.isDetailsValid || !state.isPricingValid) {
+      emit(
+        state.copyWith(
+          showValidationErrors: true,
+          errorMessage: 'Please complete all required steps.',
+        ),
+      );
       return;
     }
 
@@ -267,18 +308,18 @@ class ListPropertyWizardBloc
     );
 
     final payload = PropertyUploadPayload(
-      name: state.name.trim(),
-      propertyType: state.propertyType,
+      name: state.name?.trim(),
+      propertyType: state.propertyType!,
       districtId: state.districtId!,
-      rooms: state.rooms,
-      floor: state.floor,
+      rooms: state.rooms!,
+      floor: state.floor!,
       totalFloors: state.totalFloors,
-      areaSqm: state.areaSqm ?? 0,
-      furnishing: state.furnishing,
-      description: state.description,
+      areaSqm: state.areaSqm!,
+      furnishing: state.furnishing!,
+      description: state.description?.trim(),
       amenities: state.amenities.toList(),
       monthlyPrice: state.monthlyPrice!,
-      depositAmount: state.depositAmount ?? 0,
+      depositAmount: state.depositAmount,
       currency: state.currency,
       minimumStay: state.minimumStay,
       priceIncludes: state.priceIncludes.toList(),
@@ -305,6 +346,7 @@ class ListPropertyWizardBloc
           status: WizardStatus.submitted,
           currentStep: 5,
           createdListingId: res.id,
+          showValidationErrors: false,
           clearErrorMessage: true,
         ),
       ),

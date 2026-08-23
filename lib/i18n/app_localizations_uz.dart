@@ -1939,7 +1939,7 @@ class AppLocalizationsUz extends AppLocalizations {
       'Har bir ijara va xarid davlat ro\'yxatidan o\'tuvchi rasmiy shartnoma bilan himoyalangan.';
 
   @override
-  String get list_property => 'Joylashtirish';
+  String get list_property => 'Joylash';
 
   @override
   String get my_listings => 'Mening e\'lonlarim';

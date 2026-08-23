@@ -39,6 +39,8 @@ class ReviewStepView extends StatelessWidget {
       builder: (context, state) {
         final theme = context.currentTheme;
         final config = state.config;
+        final showError = state.showValidationErrors;
+        final isOfferMissing = showError && !state.acceptOffer;
 
         final districtName =
             config?.districts
@@ -60,24 +62,27 @@ class ReviewStepView extends StatelessWidget {
                 const ListPropertyStepChanged(0),
               ),
               children: [
-                _SummaryRow(label: 'Title', value: state.name),
                 _SummaryRow(
                   label: 'Type',
-                  value: state.propertyType.toUpperCase(),
+                  value: (state.propertyType ?? 'apartment')
+                      .replaceAll('_', ' ')
+                      .toUpperCase(),
                 ),
                 _SummaryRow(label: 'District', value: districtName),
                 _SummaryRow(
                   label: 'Rooms / Floor',
                   value: [
-                    '${state.rooms} rooms',
-                    'floor ${state.floor}',
+                    '${state.rooms ?? 0} rooms',
+                    'floor ${state.floor ?? 0}',
                     if (state.totalFloors != null) 'total ${state.totalFloors}',
                   ].join(', '),
                 ),
                 _SummaryRow(label: 'Area', value: '${state.areaSqm ?? 0} m²'),
                 _SummaryRow(
                   label: 'Furnishing',
-                  value: state.furnishing.replaceAll('_', ' ').toUpperCase(),
+                  value: (state.furnishing ?? 'unfurnished')
+                      .replaceAll('_', ' ')
+                      .toUpperCase(),
                 ),
                 if (state.amenities.isNotEmpty)
                   _SummaryRow(
@@ -121,7 +126,7 @@ class ReviewStepView extends StatelessWidget {
 
             // Pricing Summary Card
             _SummaryCard(
-              title: 'Pricing & Terms',
+              title: 'Pricing',
               icon: TablerIcons.coin,
               onEdit: () => context.read<ListPropertyWizardBloc>().add(
                 const ListPropertyStepChanged(2),
@@ -132,16 +137,6 @@ class ReviewStepView extends StatelessWidget {
                   value:
                       '${state.monthlyPrice?.toStringAsFixed(0) ?? '0'} '
                       '${state.currency}',
-                ),
-                _SummaryRow(
-                  label: 'Deposit',
-                  value:
-                      '${state.depositAmount?.toStringAsFixed(0) ?? '0'} '
-                      '${state.currency}',
-                ),
-                _SummaryRow(
-                  label: 'Minimum Stay',
-                  value: '${state.minimumStay} months',
                 ),
                 if (state.priceIncludes.isNotEmpty)
                   _SummaryRow(
@@ -179,9 +174,12 @@ class ReviewStepView extends StatelessWidget {
                 color: theme.bgSurfaceBase2,
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
-                  color: state.acceptOffer
-                      ? theme.bgBrandDefault
-                      : theme.strokeNeutralLight200,
+                  color: isOfferMissing
+                      ? theme.strokeErrorDefault
+                      : (state.acceptOffer
+                            ? theme.bgBrandDefault
+                            : theme.strokeNeutralLight200),
+                  width: isOfferMissing ? 1.5 : 1,
                 ),
               ),
               child: Column(
@@ -217,7 +215,9 @@ class ReviewStepView extends StatelessWidget {
                               'owner or authorized representative of this '
                               'property.',
                               style: AppTextStyles.p3Medium.copyWith(
-                                color: theme.textNeutralPrimary,
+                                color: isOfferMissing
+                                    ? theme.textErrorPrimary
+                                    : theme.textNeutralPrimary,
                               ),
                             ),
                           ),
@@ -245,6 +245,14 @@ class ReviewStepView extends StatelessWidget {
                 ],
               ),
             ),
+            if (isOfferMissing)
+              const Padding(
+                padding: EdgeInsets.only(top: 6, left: 4),
+                child: Text(
+                  'Please accept the public offer agreement to proceed',
+                  style: TextStyle(color: Colors.redAccent, fontSize: 12),
+                ),
+              ),
             const SizedBox(height: 24),
           ],
         );

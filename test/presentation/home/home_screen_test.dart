@@ -161,7 +161,7 @@ void main() {
       expect(nav.items.map((item) => item.label).toList(), [
         'Home',
         'Selected',
-        'List property',
+        'List',
         'Chats',
         'Profile',
       ]);
@@ -286,7 +286,7 @@ void main() {
             .items
             .map((item) => item.label)
             .toList(),
-        ['Home', 'Selected', 'List property', 'Chats', 'Profile'],
+        ['Home', 'Selected', 'List', 'Chats', 'Profile'],
       );
 
       await pumpForLocale(const Locale('ru'));
@@ -320,7 +320,7 @@ void main() {
             .items
             .map((item) => item.label)
             .toList(),
-        ['Bosh sahifa', 'Tanlanganlar', 'Joylashtirish', 'Suhbatlar', 'Profil'],
+        ['Bosh sahifa', 'Tanlanganlar', 'Joylash', 'Suhbatlar', 'Profil'],
       );
     });
 

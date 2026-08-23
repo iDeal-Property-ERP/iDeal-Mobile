@@ -57,6 +57,12 @@ class PhotosStepView extends StatelessWidget {
         final theme = context.currentTheme;
         final photoCount = state.imagePaths.length;
         final hasMinimumPhotos = photoCount >= 5;
+        final showError = state.showValidationErrors && !hasMinimumPhotos;
+        final banner = _BannerColors.resolve(
+          isDark: context.isDark,
+          hasMinPhotos: hasMinimumPhotos,
+          showError: showError,
+        );
 
         return ListView(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -65,14 +71,11 @@ class PhotosStepView extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: hasMinimumPhotos
-                    ? theme.bgSuccessLight50
-                    : theme.bgWarningLight50,
+                color: banner.bg,
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
-                  color: hasMinimumPhotos
-                      ? theme.strokeSuccessDefault
-                      : theme.strokeWarningDefault,
+                  color: banner.border,
+                  width: showError ? 1.5 : 1,
                 ),
               ),
               child: Row(
@@ -80,10 +83,10 @@ class PhotosStepView extends StatelessWidget {
                   Icon(
                     hasMinimumPhotos
                         ? TablerIcons.check
-                        : TablerIcons.alert_circle,
-                    color: hasMinimumPhotos
-                        ? theme.textSuccessPrimary
-                        : theme.textWarningPrimary,
+                        : (showError
+                              ? TablerIcons.alert_triangle
+                              : TablerIcons.alert_circle),
+                    color: banner.icon,
                     size: 22,
                   ),
                   const SizedBox(width: 10),
@@ -94,9 +97,7 @@ class PhotosStepView extends StatelessWidget {
                         Text(
                           '$photoCount of 5 photos added',
                           style: AppTextStyles.p3SemiBold.copyWith(
-                            color: hasMinimumPhotos
-                                ? theme.textSuccessPrimary
-                                : theme.textWarningPrimary,
+                            color: banner.title,
                           ),
                         ),
                         const SizedBox(height: 2),
@@ -105,7 +106,7 @@ class PhotosStepView extends StatelessWidget {
                               ? 'Great job! You can add more or continue.'
                               : 'Add at least 5 bright photos to proceed.',
                           style: AppTextStyles.p4Regular.copyWith(
-                            color: theme.textNeutralSecondary,
+                            color: banner.subtitle,
                           ),
                         ),
                       ],
@@ -299,6 +300,54 @@ class PhotosStepView extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+}
+
+class _BannerColors {
+  const _BannerColors({
+    required this.bg,
+    required this.border,
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+  });
+
+  final Color bg;
+  final Color border;
+  final Color title;
+  final Color subtitle;
+  final Color icon;
+
+  static _BannerColors resolve({
+    required bool isDark,
+    required bool hasMinPhotos,
+    required bool showError,
+  }) {
+    if (hasMinPhotos) {
+      return _BannerColors(
+        bg: isDark ? const Color(0xFF132A1C) : const Color(0xFFEAF7EE),
+        border: isDark ? const Color(0xFF1E5131) : const Color(0xFFA6E3B8),
+        title: isDark ? const Color(0xFF4ADE80) : const Color(0xFF15803D),
+        subtitle: isDark ? const Color(0xFF86EFAC) : const Color(0xFF166534),
+        icon: isDark ? const Color(0xFF4ADE80) : const Color(0xFF15803D),
+      );
+    }
+    if (showError) {
+      return _BannerColors(
+        bg: isDark ? const Color(0xFF2D1214) : const Color(0xFFFEECEE),
+        border: isDark ? const Color(0xFF6B2026) : const Color(0xFFFCA5A5),
+        title: isDark ? const Color(0xFFF87171) : const Color(0xFFB91C1C),
+        subtitle: isDark ? const Color(0xFFFCA5A5) : const Color(0xFF991B1B),
+        icon: isDark ? const Color(0xFFF87171) : const Color(0xFFB91C1C),
+      );
+    }
+    return _BannerColors(
+      bg: isDark ? const Color(0xFF2B220A) : const Color(0xFFFEFBE8),
+      border: isDark ? const Color(0xFF5A4412) : const Color(0xFFFDE047),
+      title: isDark ? const Color(0xFFFACC15) : const Color(0xFFA16207),
+      subtitle: isDark ? const Color(0xFFFDE68A) : const Color(0xFF854D0E),
+      icon: isDark ? const Color(0xFFFACC15) : const Color(0xFFA16207),
     );
   }
 }
