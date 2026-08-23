@@ -115,6 +115,114 @@ void main() {
     );
   });
 
+  test('loads the available phone-change OTP methods', () async {
+    when(() => dio.get('/mobile/auth/methods/')).thenAnswer(
+      (_) async => response(200, {
+        'success': true,
+        'message': 'OK',
+        'data': {
+          'channels': ['telegram', 'sms'],
+        },
+      }),
+    );
+
+    final methods = await dataSource.getPhoneChangeOtpMethods();
+
+    expect(methods, ['telegram', 'sms']);
+  });
+
+  test(
+    'requests a phone-change OTP and parses its delivery metadata',
+    () async {
+      when(
+        () => dio.post(
+          '/mobile/account/phone/otp/request/',
+          data: {'phone': '+998901234567', 'channel': 'telegram'},
+        ),
+      ).thenAnswer(
+        (_) async => response(200, {
+          'success': true,
+          'message': 'OK',
+          'data': {
+            'channel': 'telegram',
+            'expires_in': 300,
+            'resend_after': 60,
+          },
+        }),
+      );
+
+      final challenge = await dataSource.requestPhoneChangeOtp(
+        phone: '+998901234567',
+        channel: 'telegram',
+      );
+
+      expect(challenge.channel, 'telegram');
+      expect(challenge.expiresIn, 300);
+      expect(challenge.resendAfter, 60);
+    },
+  );
+
+  test('uses the detailed API error for an occupied phone number', () async {
+    when(
+      () => dio.post(
+        '/mobile/account/phone/otp/request/',
+        data: {'phone': '+998901234567', 'channel': 'telegram'},
+      ),
+    ).thenAnswer(
+      (_) async => response(409, {
+        'success': false,
+        'message': 'Data conflict',
+        'error': 'This phone number is already in use',
+      }),
+    );
+
+    expect(
+      () => dataSource.requestPhoneChangeOtp(
+        phone: '+998901234567',
+        channel: 'telegram',
+      ),
+      throwsA(
+        isA<APIException>().having(
+          (error) => error.message,
+          'message',
+          'This phone number is already in use',
+        ),
+      ),
+    );
+  });
+
+  test('confirms a phone change and invalidates the profile cache', () async {
+    when(
+      () => dio.post(
+        '/mobile/account/phone/confirm/',
+        data: {'phone': '+998901234567', 'code': '123456'},
+      ),
+    ).thenAnswer(
+      (_) async => response(200, {
+        'success': true,
+        'message': 'OK',
+        'data': {
+          'id': 3,
+          'first_name': 'Aziz',
+          'last_name': null,
+          'patronymic': null,
+          'email': 'aziz@example.com',
+          'phone': '+998901234567',
+          'nationality': null,
+          'avatar_url': null,
+        },
+      }),
+    );
+
+    final profile = await dataSource.confirmPhoneChange(
+      phone: '+998901234567',
+      code: '123456',
+    );
+
+    expect(profile.phone, '+998901234567');
+    verify(() => cacheManager.invalidateProfile()).called(1);
+  });
+
   test('uploads an avatar as multipart form data', () async {
     final image = File('${Directory.systemTemp.path}/profile-avatar-test.png')
       ..writeAsBytesSync([0]);

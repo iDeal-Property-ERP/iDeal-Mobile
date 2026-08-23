@@ -46,8 +46,11 @@ import 'package:ideal_mobile/presentation/profile/data/datasources/profile_remot
 import 'package:ideal_mobile/presentation/profile/data/datasources/support_remote_data_source.dart';
 import 'package:ideal_mobile/presentation/profile/data/repositories/profile_repository_impl.dart';
 import 'package:ideal_mobile/presentation/profile/domain/repositories/profile_repository.dart';
+import 'package:ideal_mobile/presentation/profile/domain/usecases/confirm_phone_change.dart';
+import 'package:ideal_mobile/presentation/profile/domain/usecases/get_phone_change_otp_methods.dart';
 import 'package:ideal_mobile/presentation/profile/domain/usecases/get_profile.dart';
 import 'package:ideal_mobile/presentation/profile/domain/usecases/remove_profile_avatar.dart';
+import 'package:ideal_mobile/presentation/profile/domain/usecases/request_phone_change_otp.dart';
 import 'package:ideal_mobile/presentation/profile/domain/usecases/update_profile.dart';
 import 'package:ideal_mobile/presentation/profile/domain/usecases/update_profile_avatar.dart';
 import 'package:ideal_mobile/routes.gr.dart';
@@ -105,6 +108,13 @@ Future<void> configureDependencies({Dio? dio}) async {
       () => SupportRemoteDataSourceImpl(sl<Dio>(), sl<CacheManager>()),
     )
     ..registerLazySingleton(() => GetProfile(sl<ProfileRepository>()))
+    ..registerLazySingleton(
+      () => GetPhoneChangeOtpMethods(sl<ProfileRepository>()),
+    )
+    ..registerLazySingleton(
+      () => RequestPhoneChangeOtp(sl<ProfileRepository>()),
+    )
+    ..registerLazySingleton(() => ConfirmPhoneChange(sl<ProfileRepository>()))
     ..registerLazySingleton(() => UpdateProfile(sl<ProfileRepository>()))
     ..registerLazySingleton(() => UpdateProfileAvatar(sl<ProfileRepository>()))
     ..registerLazySingleton(() => RemoveProfileAvatar(sl<ProfileRepository>()))

@@ -1968,6 +1968,37 @@ class AppLocalizationsUz extends AppLocalizations {
   String get change_phone_number => 'Telefon raqamni o\'zgartirish';
 
   @override
+  String get phone_change_current_number => 'Joriy raqam';
+
+  @override
+  String get phone_change_new_number => 'Yangi telefon raqami';
+
+  @override
+  String get phone_change_description =>
+      'Yangi raqamingizga bir martalik tasdiqlash kodi yuboramiz.';
+
+  @override
+  String get phone_change_send_code => 'Tasdiqlash kodini olish';
+
+  @override
+  String get phone_change_choose_channel =>
+      'Tasdiqlash kodini olish usulini tanlang';
+
+  @override
+  String phone_change_code_sent(String phone) {
+    return 'Tasdiqlash kodi $phone raqamiga yuborildi';
+  }
+
+  @override
+  String phone_change_resend_in(int seconds) {
+    return '$seconds soniyadan keyin qayta yuborish';
+  }
+
+  @override
+  String get phone_change_no_channels =>
+      'Hozir tasdiqlash usullari mavjud emas. Keyinroq qayta urinib ko\'ring.';
+
+  @override
   String get change_password => 'Parolni o\'zgartirish';
 
   @override

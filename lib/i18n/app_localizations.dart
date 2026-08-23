@@ -3616,6 +3616,54 @@ abstract class AppLocalizations {
   /// **'Change Phone Number'**
   String get change_phone_number;
 
+  /// No description provided for @phone_change_current_number.
+  ///
+  /// In en, this message translates to:
+  /// **'Current number'**
+  String get phone_change_current_number;
+
+  /// No description provided for @phone_change_new_number.
+  ///
+  /// In en, this message translates to:
+  /// **'New phone number'**
+  String get phone_change_new_number;
+
+  /// No description provided for @phone_change_description.
+  ///
+  /// In en, this message translates to:
+  /// **'We will send a one-time verification code to your new number.'**
+  String get phone_change_description;
+
+  /// No description provided for @phone_change_send_code.
+  ///
+  /// In en, this message translates to:
+  /// **'Send verification code'**
+  String get phone_change_send_code;
+
+  /// No description provided for @phone_change_choose_channel.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how to receive your verification code'**
+  String get phone_change_choose_channel;
+
+  /// No description provided for @phone_change_code_sent.
+  ///
+  /// In en, this message translates to:
+  /// **'A verification code was sent to {phone}'**
+  String phone_change_code_sent(String phone);
+
+  /// No description provided for @phone_change_resend_in.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend in {seconds}s'**
+  String phone_change_resend_in(int seconds);
+
+  /// No description provided for @phone_change_no_channels.
+  ///
+  /// In en, this message translates to:
+  /// **'No verification methods are available right now. Please try again later.'**
+  String get phone_change_no_channels;
+
   /// No description provided for @change_password.
   ///
   /// In en, this message translates to:

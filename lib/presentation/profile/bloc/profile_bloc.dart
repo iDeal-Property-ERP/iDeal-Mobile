@@ -53,6 +53,9 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   void _setupEventListener() {
     on<LoadProfileEvent>(_onLoadProfileEvent);
     on<UpdateProfileEvent>(_onUpdateProfileEvent);
+    on<SyncProfileEvent>((event, emit) {
+      emit(state.copyWith(profile: event.profile, clearProfileError: true));
+    });
     on<UpdateProfileAvatarEvent>(_onUpdateProfileAvatarEvent);
     on<RemoveProfileAvatarEvent>(_onRemoveProfileAvatarEvent);
     on<SignOutEvent>(_onSignOutEvent);

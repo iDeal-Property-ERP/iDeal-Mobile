@@ -1940,6 +1940,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String get change_phone_number => 'Change Phone Number';
 
   @override
+  String get phone_change_current_number => 'Current number';
+
+  @override
+  String get phone_change_new_number => 'New phone number';
+
+  @override
+  String get phone_change_description =>
+      'We will send a one-time verification code to your new number.';
+
+  @override
+  String get phone_change_send_code => 'Send verification code';
+
+  @override
+  String get phone_change_choose_channel =>
+      'Choose how to receive your verification code';
+
+  @override
+  String phone_change_code_sent(String phone) {
+    return 'A verification code was sent to $phone';
+  }
+
+  @override
+  String phone_change_resend_in(int seconds) {
+    return 'Resend in ${seconds}s';
+  }
+
+  @override
+  String get phone_change_no_channels =>
+      'No verification methods are available right now. Please try again later.';
+
+  @override
   String get change_password => 'Change Password';
 
   @override

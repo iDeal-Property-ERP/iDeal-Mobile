@@ -23,6 +23,15 @@ class UpdateProfileEvent extends ProfileEvent {
   List<Object> get props => [profile];
 }
 
+class SyncProfileEvent extends ProfileEvent {
+  const SyncProfileEvent({required this.profile});
+
+  final MobileUserProfile profile;
+
+  @override
+  List<Object> get props => [profile];
+}
+
 class UpdateProfileAvatarEvent extends ProfileEvent {
   const UpdateProfileAvatarEvent({required this.image});
 

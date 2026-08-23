@@ -804,6 +804,28 @@
   "contracts_period": "Period",
   "contracts_monthly_rent": "Monthly rent",
   "change_phone_number": "Change Phone Number",
+  "phone_change_current_number": "Current number",
+  "phone_change_new_number": "New phone number",
+  "phone_change_description": "We will send a one-time verification code to your new number.",
+  "phone_change_send_code": "Send verification code",
+  "phone_change_choose_channel": "Choose how to receive your verification code",
+  "phone_change_code_sent": "A verification code was sent to {phone}",
+  "@phone_change_code_sent": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
+  "phone_change_resend_in": "Resend in {seconds}s",
+  "@phone_change_resend_in": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "phone_change_no_channels": "No verification methods are available right now. Please try again later.",
   "change_password": "Change Password",
   "language_settings": "Language Settings",
   "my_account": "My Account",

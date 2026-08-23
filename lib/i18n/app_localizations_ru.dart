@@ -1970,6 +1970,37 @@ class AppLocalizationsRu extends AppLocalizations {
   String get change_phone_number => 'Изменить номер телефона';
 
   @override
+  String get phone_change_current_number => 'Текущий номер';
+
+  @override
+  String get phone_change_new_number => 'Новый номер телефона';
+
+  @override
+  String get phone_change_description =>
+      'Мы отправим одноразовый код подтверждения на ваш новый номер.';
+
+  @override
+  String get phone_change_send_code => 'Получить код подтверждения';
+
+  @override
+  String get phone_change_choose_channel =>
+      'Выберите способ получения кода подтверждения';
+
+  @override
+  String phone_change_code_sent(String phone) {
+    return 'Код подтверждения отправлен на номер $phone';
+  }
+
+  @override
+  String phone_change_resend_in(int seconds) {
+    return 'Отправить повторно через $seconds с';
+  }
+
+  @override
+  String get phone_change_no_channels =>
+      'Сейчас нет доступных способов подтверждения. Повторите попытку позже.';
+
+  @override
   String get change_password => 'Изменить пароль';
 
   @override

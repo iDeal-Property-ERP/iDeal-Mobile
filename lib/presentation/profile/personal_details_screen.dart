@@ -186,8 +186,14 @@ class _PersonalDetailsFormState extends State<_PersonalDetailsForm> {
                         readOnly: true,
                         bottomPadding: 0.0,
                         labelAction: TextButton.icon(
-                          onPressed: () =>
-                              ProfileChangePhoneSheet.show(context),
+                          onPressed: () async {
+                            final profile = await ProfileChangePhoneSheet.show(
+                              context,
+                            );
+                            if (profile != null && mounted) {
+                              _phoneController.text = profile.phone ?? '';
+                            }
+                          },
                           icon: const Icon(TablerIcons.pencil, size: 16.0),
                           label: Text(context.localization.edit),
                           style: TextButton.styleFrom(

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:ideal_mobile/core/errors/exceptions.dart';
 import 'package:ideal_mobile/presentation/profile/data/models/mobile_user_profile.dart';
+import 'package:ideal_mobile/presentation/profile/data/models/phone_change_otp_challenge.dart';
 import 'package:ideal_mobile/utils/cache_manager.dart';
 
 abstract class ProfileRemoteDataSource {
@@ -13,6 +14,18 @@ abstract class ProfileRemoteDataSource {
   Future<MobileUserProfile> updateAvatar(File image);
 
   Future<MobileUserProfile> removeAvatar();
+
+  Future<List<String>> getPhoneChangeOtpMethods();
+
+  Future<PhoneChangeOtpChallenge> requestPhoneChangeOtp({
+    required String phone,
+    required String channel,
+  });
+
+  Future<MobileUserProfile> confirmPhoneChange({
+    required String phone,
+    required String code,
+  });
 }
 
 class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
@@ -56,23 +69,75 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
     return _profileFromMutationResponse(response);
   }
 
+  @override
+  Future<List<String>> getPhoneChangeOtpMethods() async {
+    final response = await _request(() => _dio.get('/mobile/auth/methods/'));
+    final data = _dataFromSuccessfulResponse(response);
+    final channels = data['channels'];
+    return channels is List ? channels.whereType<String>().toList() : const [];
+  }
+
+  @override
+  Future<PhoneChangeOtpChallenge> requestPhoneChangeOtp({
+    required String phone,
+    required String channel,
+  }) async {
+    final response = await _request(
+      () => _dio.post(
+        '/mobile/account/phone/otp/request/',
+        data: {'phone': phone, 'channel': channel},
+      ),
+      preferErrorDetail: true,
+    );
+    try {
+      return PhoneChangeOtpChallenge.fromJson(
+        _dataFromSuccessfulResponse(response, preferErrorDetail: true),
+      );
+    } on FormatException catch (error) {
+      throw APIException(
+        message: error.message,
+        statusCode: response.statusCode ?? 500,
+      );
+    }
+  }
+
+  @override
+  Future<MobileUserProfile> confirmPhoneChange({
+    required String phone,
+    required String code,
+  }) async {
+    final response = await _request(
+      () => _dio.post(
+        '/mobile/account/phone/confirm/',
+        data: {'phone': phone, 'code': code},
+      ),
+      preferErrorDetail: true,
+    );
+    return _profileFromMutationResponse(response, preferErrorDetail: true);
+  }
+
   Future<MobileUserProfile> _profileFromMutationResponse(
-    Response<dynamic> response,
-  ) async {
-    final profile = _profileFromResponse(response);
+    Response<dynamic> response, {
+    bool preferErrorDetail = false,
+  }) async {
+    final profile = _profileFromResponse(
+      response,
+      preferErrorDetail: preferErrorDetail,
+    );
     await _cacheManager.invalidateProfile();
     return profile;
   }
 
   Future<Response<dynamic>> _request(
-    Future<Response<dynamic>> Function() request,
-  ) async {
+    Future<Response<dynamic>> Function() request, {
+    bool preferErrorDetail = false,
+  }) async {
     try {
       return await request();
     } on DioException catch (error) {
       throw APIException(
         message:
-            _messageFromData(error.response?.data) ??
+            _errorMessageFromData(error.response?.data, preferErrorDetail) ??
             error.message ??
             'Request failed.',
         statusCode: error.response?.statusCode ?? 505,
@@ -82,14 +147,37 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
     }
   }
 
-  MobileUserProfile _profileFromResponse(Response<dynamic> response) {
+  MobileUserProfile _profileFromResponse(
+    Response<dynamic> response, {
+    bool preferErrorDetail = false,
+  }) {
+    final data = _dataFromSuccessfulResponse(
+      response,
+      preferErrorDetail: preferErrorDetail,
+    );
+    try {
+      return MobileUserProfile.fromJson(data);
+    } on FormatException catch (error) {
+      throw APIException(
+        message: error.message,
+        statusCode: response.statusCode ?? 500,
+      );
+    }
+  }
+
+  Map<String, dynamic> _dataFromSuccessfulResponse(
+    Response<dynamic> response, {
+    bool preferErrorDetail = false,
+  }) {
     final body = response.data is Map
         ? Map<String, dynamic>.from(response.data as Map)
         : <String, dynamic>{};
 
     if (response.statusCode != 200 || body['success'] != true) {
       throw APIException(
-        message: _messageFromData(response.data) ?? 'Request failed.',
+        message:
+            _errorMessageFromData(response.data, preferErrorDetail) ??
+            'Request failed.',
         statusCode: response.statusCode ?? 500,
       );
     }
@@ -102,19 +190,16 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
       );
     }
 
-    try {
-      return MobileUserProfile.fromJson(Map<String, dynamic>.from(data));
-    } on FormatException catch (error) {
-      throw APIException(
-        message: error.message,
-        statusCode: response.statusCode ?? 500,
-      );
-    }
+    return Map<String, dynamic>.from(data);
   }
 
-  String? _messageFromData(dynamic data) {
+  String? _errorMessageFromData(dynamic data, bool preferErrorDetail) {
     if (data is! Map) return data?.toString();
 
+    final error = data['error'];
+    if (preferErrorDetail && error is String && error.trim().isNotEmpty) {
+      return error;
+    }
     final message = data['message'];
     return message is String && message.trim().isNotEmpty ? message : null;
   }
