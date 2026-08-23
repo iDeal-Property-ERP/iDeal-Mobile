@@ -1,7 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/widgets.dart';
 import 'package:ideal_mobile/presentation/chat/chat_conversation_screen.dart';
-import 'package:ideal_mobile/services/notification_service.dart';
+import 'package:ideal_mobile/services/push/active_chat_conversation_tracker.dart';
 
 /// Keeps foreground chat alerts scoped to the route the user can currently see.
 class PushRouteObserver extends AutoRouterObserver {
@@ -28,12 +28,12 @@ class PushRouteObserver extends AutoRouterObserver {
   void _sync(Route<dynamic>? route) {
     final settings = route?.settings;
     if (settings is! AutoRoutePage<Object?>) {
-      NotificationService.instance.setActiveChatConversationId(null);
+      ActiveChatConversationTracker.instance.setConversationId(null);
       return;
     }
 
     final child = settings.child;
-    NotificationService.instance.setActiveChatConversationId(
+    ActiveChatConversationTracker.instance.setConversationId(
       child is ChatConversationScreen ? child.conversationId : null,
     );
   }

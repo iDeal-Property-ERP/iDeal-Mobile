@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
+import 'package:ideal_mobile/services/push/active_chat_conversation_tracker.dart';
 import 'package:ideal_mobile/services/push/device_registration_api.dart';
 import 'package:ideal_mobile/services/push/notification_permission_status.dart';
 import 'package:ideal_mobile/services/push/push_device_info.dart';
@@ -47,8 +48,6 @@ class NotificationService {
   bool _initialMessageDelivered = false;
   bool _isInitialized = false;
   bool _isDisposed = false;
-  int? _activeChatConversationId;
-
   Stream<Map<String, dynamic>> get onNotificationTap =>
       _onNotificationTapController.stream;
 
@@ -56,10 +55,6 @@ class NotificationService {
       _onNotificationReceivedController.stream;
 
   Map<String, dynamic>? get initialNotificationPayload => _initialMessage?.data;
-
-  void setActiveChatConversationId(int? conversationId) {
-    _activeChatConversationId = conversationId;
-  }
 
   Future<void> initialize() async {
     if (_isDisposed) return;
@@ -400,7 +395,7 @@ class NotificationService {
         data['related_object_type']?.toString() != 'chat_conversation') {
       return false;
     }
-    final activeId = _activeChatConversationId;
+    final activeId = ActiveChatConversationTracker.instance.conversationId;
     if (activeId == null) return false;
     return int.tryParse('${data['related_object_id'] ?? ''}') == activeId;
   }
