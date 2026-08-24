@@ -57,6 +57,8 @@ test/**/failures/**/*.*
 .env
 .env.*
 !.env.example
+scripts/build/.env
+!scripts/build/.env.example
 ios/Flutter/GoogleMaps.xcconfig
 
 # Local IDE and tooling state
@@ -72,6 +74,9 @@ android/key.properties
 *.p12
 *.pfx
 *.mobileprovision
+
+# Release secrets (App Store Connect keys, Play service accounts, keystores)
+scripts/build/.secrets/
 
 # Android Firebase configuration files
 android/app/google-services.json
@@ -99,3 +104,4 @@ firebase.json
 
 # Claude
 .claude/
+/.secrets/
