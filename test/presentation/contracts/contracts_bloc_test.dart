@@ -1,6 +1,5 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:dartz/dartz.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:ideal_mobile/core/errors/failure.dart';
 import 'package:ideal_mobile/presentation/contracts/bloc/contracts_bloc.dart';
 import 'package:ideal_mobile/presentation/contracts/bloc/contracts_event.dart';

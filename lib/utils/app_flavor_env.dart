@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart' as services;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 enum AppFlavor { local, dev, prod }
@@ -8,9 +10,30 @@ class AppConfig {
   static const _dev = 'dev';
   static const _prod = 'prod';
 
-  /// Fetch app flavor from environment variables (`dart-define`)
+  /// Fetch app flavor from environment (`dart-define`),
+  /// native flavor (`services.appFlavor`), or build mode
   static AppFlavor get appFlavor {
-    const flavor = String.fromEnvironment(_app_flavor, defaultValue: _local);
+    // 1. Explicit dart-define --dart-define=APP_FLAVOR=prod|dev|local
+    const dartDefineFlavor = String.fromEnvironment(_app_flavor);
+    if (dartDefineFlavor.isNotEmpty) {
+      return _parseFlavor(dartDefineFlavor);
+    }
+
+    // 2. Native flavor from Gradle / Xcode (--flavor prod|dev)
+    const nativeFlavor = services.appFlavor;
+    if (nativeFlavor != null && nativeFlavor.isNotEmpty) {
+      return _parseFlavor(nativeFlavor);
+    }
+
+    // 3. Fallback: Release builds must NEVER default to local/ngrok
+    if (kReleaseMode) {
+      return AppFlavor.prod;
+    }
+
+    return AppFlavor.local;
+  }
+
+  static AppFlavor _parseFlavor(String flavor) {
     switch (flavor.toLowerCase()) {
       case _local:
         return AppFlavor.local;
@@ -50,17 +73,6 @@ class AppConfig {
 
   static String get supportWhatsAppUrl =>
       dotenv.env['SUPPORT_WHATSAPP_URL']?.trim() ?? '';
-
-  static String getDioCertHash() {
-    switch (appFlavor) {
-      case AppFlavor.local:
-        return '';
-      case AppFlavor.dev:
-        return dotenv.env['CERT_HASH_DEV']?.trim() ?? '';
-      case AppFlavor.prod:
-        return dotenv.env['CERT_HASH_PROD']?.trim() ?? '';
-    }
-  }
 
   static String get yandexMapKitApiKey => dotenv.isInitialized
       ? dotenv.env['YANDEX_MAPKIT_API_KEY']?.trim() ?? ''

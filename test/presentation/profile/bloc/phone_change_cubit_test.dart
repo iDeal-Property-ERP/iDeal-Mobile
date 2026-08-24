@@ -23,7 +23,6 @@ void main() {
     firstName: 'Aziz',
     lastName: null,
     patronymic: null,
-    email: null,
     phone: phone,
     nationality: null,
     avatarUrl: null,

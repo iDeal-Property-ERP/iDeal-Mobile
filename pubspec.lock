@@ -957,14 +957,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.2"
-  http_certificate_pinning:
-    dependency: "direct main"
-    description:
-      name: http_certificate_pinning
-      sha256: a7803cdca6cb5e676dc621e92dc95bd8b3d0ae84a8b0520e5e0b52693a95da1e
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.2"
   http_multi_server:
     dependency: transitive
     description:

@@ -1,7 +1,7 @@
-package com.ideal.mobile
+package com.ideal.uz
 import android.content.Context.BATTERY_SERVICE
-import android.os.Build
 import android.os.BatteryManager
+import android.os.Build
 import android.os.Bundle
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -36,7 +36,9 @@ class MainActivity : FlutterFragmentActivity() {
                         }
                     }
 
-                    else -> result.notImplemented()
+                    else -> {
+                        result.notImplemented()
+                    }
                 }
             }
     }

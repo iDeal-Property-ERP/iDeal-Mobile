@@ -2,9 +2,9 @@ name: ideal_mobile
 description: >
   iDeal Mobile marketplace application.
 
-publish_to: 'none'
+publish_to: "none"
 
-version: 0.1.0+1
+version: 0.1.0+5
 
 environment:
   sdk: ^3.11.0
@@ -54,7 +54,6 @@ dependencies:
   dio: ^5.8.0+1
   flutter_dotenv: ^6.0.0
   lottie: ^3.3.1
-  http_certificate_pinning: ^3.0.1
   flutter_secure_storage: ^9.2.4
   dio_cache_interceptor: ^4.0.3
   http_cache_file_store: ^2.0.1
@@ -144,6 +143,6 @@ patrol:
   app_name: iDeal Mobile
   flavors: dev
   android:
-    package_name: com.ideal.mobile.dev
+    package_name: com.ideal.uz.dev
   ios:
     bundle_id: com.ideal.mobile.dev

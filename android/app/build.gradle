@@ -21,8 +21,23 @@ if (keystorePropertiesFile.exists()) {
     keystorePropertiesFile.withInputStream { keystoreProperties.load(it) }
 }
 
+def pubspecFile = rootProject.file('../pubspec.yaml')
+def parsedVersionCode = flutter.versionCode
+def parsedVersionName = flutter.versionName
+
+if (pubspecFile.exists()) {
+    def pubspecContent = pubspecFile.text
+    def versionMatch = (pubspecContent =~ /version:\s*([^\s+]+)\+?(\d+)?/)
+    if (versionMatch.find()) {
+        parsedVersionName = versionMatch.group(1)
+        if (versionMatch.group(2)) {
+            parsedVersionCode = Integer.parseInt(versionMatch.group(2))
+        }
+    }
+}
+
 android {
-    namespace = "com.ideal.mobile"
+    namespace = "com.ideal.uz"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "28.2.13676358"
 
@@ -38,13 +53,13 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.ideal.mobile"
+        applicationId = "com.ideal.uz"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdkVersion = 26
         targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        versionCode = parsedVersionCode
+        versionName = parsedVersionName
         testInstrumentationRunner = "pl.leancode.patrol.PatrolJUnitRunner"
         testInstrumentationRunnerArguments["clearPackageData"] = "true"
         manifestPlaceholders["GOOGLE_MAPS_API_KEY"] =
@@ -75,13 +90,13 @@ android {
             dimension "app"
             resValue "string", "app_name", "iDeal Mobile Dev"
             versionNameSuffix "-dev"
-            applicationId "com.ideal.mobile.dev"
+            applicationId "com.ideal.uz.dev"
         }
         prod {
             dimension "app"
             resValue "string", "app_name", "iDeal Mobile"
             versionNameSuffix "-prod"
-            applicationId "com.ideal.mobile"
+            applicationId "com.ideal.uz"
         }
     }
 
@@ -96,9 +111,7 @@ flutter {
 
 dependencies {
     androidTestUtil "androidx.test:orchestrator:1.5.1"
-    implementation platform('com.android.billingclient:billing:7.0.0')
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
     implementation 'com.google.j2objc:j2objc-annotations:3.0.0'
-    implementation platform('com.android.billingclient:billing:7.0.0')
     implementation 'com.google.android.gms:play-services-location:21.1.0'
 }

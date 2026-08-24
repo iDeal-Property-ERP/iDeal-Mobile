@@ -1,4 +1,4 @@
-package com.ideal.mobile;
+package com.ideal.uz;
 
 import androidx.test.platform.app.InstrumentationRegistry;
 import org.junit.Test;

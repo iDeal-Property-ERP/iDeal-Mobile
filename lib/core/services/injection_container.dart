@@ -4,8 +4,6 @@ import 'package:auto_route/auto_route.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
-import 'package:http_certificate_pinning/http_certificate_pinning.dart';
-import 'package:ideal_mobile/constants/constants.dart';
 import 'package:ideal_mobile/main.dart';
 import 'package:ideal_mobile/presentation/booking/booking_injection.dart';
 import 'package:ideal_mobile/presentation/chat/chat_injection.dart';
@@ -185,26 +183,7 @@ void _registerDioInterceptor(Dio dio) {
   if (kDebugMode) {
     dio.interceptors.add(_approvedDioLogInterceptor());
   }
-
-  if (AppConfig.appFlavor == AppFlavor.local ||
-      AppConfig.appFlavor == AppFlavor.dev) {
-    dio.interceptors.add(authErrorInterceptor(dio));
-    debugPrint(
-      '[HTTP] ${AppConfig.appFlavor.name} API mode: '
-      'certificate pinning disabled',
-    );
-    return;
-  }
-
-  final certHash = _getCertHash();
-  dio.interceptors.addAll([
-    CertificatePinningInterceptor(
-      allowedSHAFingerprints: [certHash],
-      callFollowingErrorInterceptor: true,
-    ),
-    _sslPinningErrorInterceptor,
-    authErrorInterceptor(dio),
-  ]);
+  dio.interceptors.add(authErrorInterceptor(dio));
 }
 
 /// Logs only safe request metadata in debug builds.
@@ -260,22 +239,6 @@ bool _isTokenFreeEndpoint(String path) {
     '/auth/refresh/',
   ];
   return tokenFreeEndpoints.any(path.endsWith);
-}
-
-InterceptorsWrapper get _sslPinningErrorInterceptor {
-  return InterceptorsWrapper(
-    onError: (DioException dioError, ErrorInterceptorHandler handler) async {
-      if (dioError.error.toString().contains(kConnectionIsNotSecureError)) {
-        debugPrint('[SSL Pinning] Connection is not secure!');
-
-        await rootNavigatorKey.currentContext!.router.replaceAll([
-          const SslConnectionFailedRoute(),
-        ]);
-      }
-
-      handler.next(dioError);
-    },
-  );
 }
 
 Future<bool>? _refreshTokensFuture;
@@ -469,24 +432,4 @@ String? _bearerAccessToken(RequestOptions requestOptions) {
 Future<bool> _isCurrentBackendSession(String accessToken) async {
   if (!sl.isRegistered<SecureStorageService>()) return false;
   return await sl<SecureStorageService>().getAccessToken() == accessToken;
-}
-
-String _getCertHash() {
-  final certificateHash = AppConfig.getDioCertHash();
-  if (certificateHash.isEmpty) {
-    throw Exception(
-      '[SSL Pinning] Missing certificate hash for: '
-      '${AppConfig.appFlavor.name}',
-    );
-  }
-
-  if (certificateHash.length != 64) {
-    throw Exception(
-      '[SSL Pinning] Certificate hash length is not 64 characters. '
-      'Current length: ${certificateHash.length}',
-    );
-  }
-
-  debugPrint('[SSL Pinning] Using SHA-256 certHash: "$certificateHash"');
-  return certificateHash;
 }
