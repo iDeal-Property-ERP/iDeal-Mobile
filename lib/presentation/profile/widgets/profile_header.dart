@@ -263,6 +263,17 @@ class _ProfileAvatarBadge extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            const SizedBox(height: 12.0),
+            Center(
+              child: Container(
+                width: 40.0,
+                height: 4.0,
+                decoration: BoxDecoration(
+                  color: context.currentTheme.strokeNeutralLight200,
+                  borderRadius: BorderRadius.circular(4.0),
+                ),
+              ),
+            ),
             const SizedBox(height: 8.0),
             ListTile(
               leading: const Icon(TablerIcons.camera),
