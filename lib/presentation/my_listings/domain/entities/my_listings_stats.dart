@@ -7,7 +7,6 @@ class MyListingsStats extends Equatable {
     this.pendingCount = 0,
     this.rentedCount = 0,
     this.rejectedCount = 0,
-    this.draftCount = 0,
     this.archivedCount = 0,
   });
 
@@ -16,7 +15,6 @@ class MyListingsStats extends Equatable {
   final int pendingCount;
   final int rentedCount;
   final int rejectedCount;
-  final int draftCount;
   final int archivedCount;
 
   static const empty = MyListingsStats();
@@ -28,7 +26,6 @@ class MyListingsStats extends Equatable {
     pendingCount,
     rentedCount,
     rejectedCount,
-    draftCount,
     archivedCount,
   ];
 }

@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:ideal_mobile/services/secure_storage_service.dart';
 import 'package:ideal_mobile/utils/app_flavor_env.dart';
 import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class ChatRealtimeEvent {
   const ChatRealtimeEvent({
@@ -27,42 +28,66 @@ class ChatRealtimeEvent {
   }
 }
 
+typedef WebSocketChannelFactory =
+    WebSocketChannel Function(Uri uri, Map<String, dynamic>? headers);
+
 /// Owns one authenticated, replayable chat socket for the active app process.
 class ChatRealtimeService {
-  ChatRealtimeService(this._storage);
+  ChatRealtimeService(this._storage, {WebSocketChannelFactory? channelFactory})
+    : _channelFactory = channelFactory;
 
   final SecureStorageService _storage;
+  final WebSocketChannelFactory? _channelFactory;
   final _events = StreamController<ChatRealtimeEvent>.broadcast();
-  IOWebSocketChannel? _channel;
+  WebSocketChannel? _channel;
   StreamSubscription? _subscription;
   Timer? _heartbeat;
   Timer? _reconnect;
   int _cursor = 0;
   int _attempts = 0;
+  bool _connecting = false;
   bool _foreground = true;
   bool _disposed = false;
 
   Stream<ChatRealtimeEvent> get events => _events.stream;
 
+  static WebSocketChannel _defaultChannelFactory(
+    Uri uri,
+    Map<String, dynamic>? headers,
+  ) {
+    return IOWebSocketChannel.connect(uri, headers: headers);
+  }
+
   Future<void> connect() async {
-    if (_disposed || !_foreground || _channel != null) return;
-    final accessToken = await _storage.getAccessToken();
-    if (accessToken == null || accessToken.trim().isEmpty) return;
-    final baseUri = Uri.tryParse(AppConfig.baseUrl);
-    if (baseUri == null || baseUri.host.isEmpty) return;
-    final scheme = baseUri.scheme == 'https' ? 'wss' : 'ws';
-    final uri = baseUri.replace(scheme: scheme, path: '/ws/v1/chat/');
-    final channel = IOWebSocketChannel.connect(
-      uri,
-      headers: {'Authorization': 'Bearer $accessToken'},
-    );
-    _channel = channel;
-    _subscription = channel.stream.listen(
-      _onMessage,
-      onDone: _onDisconnected,
-      onError: (_, _) => _onDisconnected(),
-      cancelOnError: true,
-    );
+    if (_disposed || !_foreground || _channel != null || _connecting) return;
+    _connecting = true;
+    try {
+      final accessToken = await _storage.getAccessToken();
+      if (_disposed || !_foreground || _channel != null) return;
+      if (accessToken == null || accessToken.trim().isEmpty) return;
+      final baseUri = Uri.tryParse(AppConfig.baseUrl);
+      if (baseUri == null || baseUri.host.isEmpty) return;
+      final scheme = baseUri.scheme == 'https' ? 'wss' : 'ws';
+      final uri = baseUri.replace(scheme: scheme, path: '/ws/v1/chat/');
+
+      final factory = _channelFactory ?? _defaultChannelFactory;
+      final channel = factory(uri, {
+        'Authorization': 'Bearer $accessToken',
+        'Origin': baseUri.origin,
+      });
+      _channel = channel;
+      _subscription = channel.stream.listen(
+        _onMessage,
+        onDone: _onDisconnected,
+        onError: (_, _) => _onDisconnected(),
+        cancelOnError: true,
+      );
+      await channel.ready;
+    } catch (_) {
+      _onDisconnected();
+    } finally {
+      _connecting = false;
+    }
   }
 
   void setForeground({required bool value}) {
@@ -123,7 +148,9 @@ class ChatRealtimeService {
   void _onDisconnected() {
     _heartbeat?.cancel();
     _heartbeat = null;
+    unawaited(_subscription?.cancel() ?? Future<void>.value());
     _subscription = null;
+    unawaited(_channel?.sink.close() ?? Future<void>.value());
     _channel = null;
     if (_disposed || !_foreground || _reconnect != null) return;
     _attempts += 1;
@@ -136,7 +163,9 @@ class ChatRealtimeService {
   }
 
   void _send(Map<String, dynamic> value) {
-    _channel?.sink.add(jsonEncode(value));
+    try {
+      _channel?.sink.add(jsonEncode(value));
+    } catch (_) {}
   }
 
   void _closeSocket() {

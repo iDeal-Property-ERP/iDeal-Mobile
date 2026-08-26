@@ -7,7 +7,6 @@ class MyListingsStatsModel extends MyListingsStats {
     super.pendingCount,
     super.rentedCount,
     super.rejectedCount,
-    super.draftCount,
     super.archivedCount,
   });
 
@@ -18,7 +17,6 @@ class MyListingsStatsModel extends MyListingsStats {
       pendingCount: (json['pending_count'] as num?)?.toInt() ?? 0,
       rentedCount: (json['rented_count'] as num?)?.toInt() ?? 0,
       rejectedCount: (json['rejected_count'] as num?)?.toInt() ?? 0,
-      draftCount: (json['draft_count'] as num?)?.toInt() ?? 0,
       archivedCount: (json['archived_count'] as num?)?.toInt() ?? 0,
     );
   }
