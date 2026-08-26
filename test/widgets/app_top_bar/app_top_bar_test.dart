@@ -138,6 +138,58 @@ void main() {
   });
 
   group('AppTopBar.page', () {
+    testWidgets('supports custom backgroundColor', (tester) async {
+      const bar = AppTopBar.page(
+        title: 'Custom BG',
+        backgroundColor: Colors.red,
+      );
+
+      await tester.pumpWidget(_testApp(const Scaffold(appBar: bar)));
+      final material = tester.widget<Material>(
+        find
+            .descendant(
+              of: find.byType(AppTopBar),
+              matching: find.byType(Material),
+            )
+            .first,
+      );
+      expect(material.color, Colors.red);
+    });
+
+    testWidgets('supports custom titleWidget', (tester) async {
+      tester.view.physicalSize = const Size(375, 800);
+      tester.view.devicePixelRatio = 1;
+      tester.view.padding = const FakeViewPadding(top: 24);
+      addTearDown(tester.view.reset);
+
+      const bar = AppTopBar.page(
+        titleWidget: Text('Custom Header', key: ValueKey('custom-title')),
+        actions: [
+          AppTopBarAction(
+            icon: Icons.refresh,
+            tooltip: 'Refresh',
+            onPressed: _noop,
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(_testApp(const Scaffold(appBar: bar)));
+      expect(find.byKey(const ValueKey('custom-title')), findsOneWidget);
+      expect(find.text('Custom Header'), findsOneWidget);
+
+      final backButtonCenter = tester.getCenter(
+        find.byIcon(TablerIcons.arrow_left),
+      );
+      final actionCenter = tester.getCenter(find.byTooltip('Refresh'));
+      final titleCenter = tester.getCenter(
+        find.byKey(const ValueKey('custom-title')),
+      );
+
+      expect(backButtonCenter.dy, 24 + 28.0);
+      expect(actionCenter.dy, 24 + 28.0);
+      expect(titleCenter.dy, 24 + 28.0);
+    });
+
     testWidgets('uses a fixed 56px row and supports bottom content', (
       tester,
     ) async {

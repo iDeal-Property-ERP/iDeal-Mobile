@@ -32,8 +32,28 @@ class ListingChatConversationAppBar extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    final bar = AppTopBar.page(
-      title: '',
+    return AppTopBar.page(
+      backgroundColor: context.currentTheme.bgSurfaceBase2,
+      titleWidget: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ChatAvatar(imageUrl: listing.coverImageUrl, size: 40),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Semantics(
+              header: true,
+              child: Text(
+                listing.title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyles.p3SemiBold.copyWith(
+                  color: context.currentTheme.textNeutralPrimary,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
       actions: [
         AppTopBarAction(
           icon: TablerIcons.dots_vertical,
@@ -58,43 +78,6 @@ class ListingChatConversationAppBar extends StatelessWidget
                 ),
               ),
             ),
-    );
-
-    return PreferredSize(
-      preferredSize: bar.preferredSize,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          bar,
-          IgnorePointer(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 64),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ChatAvatar(imageUrl: listing.coverImageUrl, size: 40),
-                    const SizedBox(width: 8),
-                    Flexible(
-                      child: Semantics(
-                        header: true,
-                        child: Text(
-                          listing.title,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: AppTextStyles.p3SemiBold.copyWith(
-                            color: context.currentTheme.textNeutralPrimary,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 

@@ -13,7 +13,7 @@ class NetworkImageScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppTopBar.page(title: ''),
+      appBar: const AppTopBar.page(),
       body: Center(
         child: Hero(
           tag: link,

@@ -82,13 +82,15 @@ class AppTopBarAction extends StatelessWidget {
 class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
   const AppTopBar.page({
     super.key,
-    required this.title,
+    this.title = '',
+    this.titleWidget,
     this.onBack,
     this.actions = const <AppTopBarAction>[],
     this.contextualTitle,
     this.bottom,
     this.bottomHeight,
     this.showBackButton = true,
+    this.backgroundColor,
   });
 
   static const double height = 56;
@@ -97,12 +99,14 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
   static const double controlRadius = 14;
 
   final String title;
+  final Widget? titleWidget;
   final VoidCallback? onBack;
   final List<AppTopBarAction> actions;
   final String? contextualTitle;
   final Widget? bottom;
   final double? bottomHeight;
   final bool showBackButton;
+  final Color? backgroundColor;
 
   double get _bottomExtent {
     if (bottom == null) return 0;
@@ -119,16 +123,18 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     final colors = _TopBarColors.of(context, AppTopBarActionStyle.neutral);
     final topInset = MediaQueryData.fromView(View.of(context)).padding.top;
+    final surface = backgroundColor ?? colors.surface;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: _TopBarColors.overlayStyle(context),
+      value: _TopBarColors.overlayStyle(context, surfaceColor: surface),
       child: Material(
-        color: colors.surface,
+        color: surface,
         child: Column(
           children: [
             SizedBox(height: topInset),
             _TopBarContent(
               title: title,
+              titleWidget: titleWidget,
               contextualTitle: contextualTitle,
               onBack: onBack,
               actions: actions,
@@ -146,24 +152,28 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
 class AppSliverTopBar extends StatelessWidget {
   const AppSliverTopBar.root({
     super.key,
-    required this.title,
+    this.title = '',
+    this.titleWidget,
     this.leading,
     this.onBack,
     this.actions = const <AppTopBarAction>[],
     this.bottom,
     this.bottomHeight,
     this.showBackButton = false,
+    this.backgroundColor,
   });
 
   static const double height = AppTopBar.height;
 
   final String title;
+  final Widget? titleWidget;
   final Widget? leading;
   final VoidCallback? onBack;
   final List<AppTopBarAction> actions;
   final Widget? bottom;
   final double? bottomHeight;
   final bool showBackButton;
+  final Color? backgroundColor;
 
   double get _bottomExtent {
     if (bottom == null) return 0;
@@ -178,6 +188,7 @@ class AppSliverTopBar extends StatelessWidget {
     final colors = _TopBarColors.of(context, AppTopBarActionStyle.neutral);
     final topInset = MediaQuery.paddingOf(context).top;
     final extent = height + topInset + _bottomExtent;
+    final surface = backgroundColor ?? colors.surface;
 
     return SliverAppBar(
       primary: false,
@@ -188,16 +199,20 @@ class AppSliverTopBar extends StatelessWidget {
       toolbarHeight: extent,
       elevation: 0,
       scrolledUnderElevation: 0,
-      backgroundColor: colors.surface,
+      backgroundColor: surface,
       surfaceTintColor: Colors.transparent,
       foregroundColor: colors.foreground,
-      systemOverlayStyle: _TopBarColors.overlayStyle(context),
+      systemOverlayStyle: _TopBarColors.overlayStyle(
+        context,
+        surfaceColor: surface,
+      ),
       flexibleSpace: Padding(
         padding: EdgeInsets.only(top: topInset),
         child: Column(
           children: [
             _TopBarContent(
               title: title,
+              titleWidget: titleWidget,
               leading: leading,
               onBack: onBack,
               actions: actions,
@@ -214,6 +229,7 @@ class AppSliverTopBar extends StatelessWidget {
 class _TopBarContent extends StatelessWidget {
   const _TopBarContent({
     required this.title,
+    this.titleWidget,
     required this.actions,
     required this.showBackButton,
     this.leading,
@@ -222,6 +238,7 @@ class _TopBarContent extends StatelessWidget {
   });
 
   final String title;
+  final Widget? titleWidget;
   final Widget? leading;
   final String? contextualTitle;
   final VoidCallback? onBack;
@@ -249,10 +266,9 @@ class _TopBarContent extends StatelessWidget {
           Center(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: titleInset),
-              child: _TopBarTitle(
-                title: title,
-                contextualTitle: contextualTitle,
-              ),
+              child:
+                  titleWidget ??
+                  _TopBarTitle(title: title, contextualTitle: contextualTitle),
             ),
           ),
           if (hasLeading)
@@ -461,11 +477,14 @@ class _TopBarColors {
     };
   }
 
-  static SystemUiOverlayStyle overlayStyle(BuildContext context) {
+  static SystemUiOverlayStyle overlayStyle(
+    BuildContext context, {
+    Color? surfaceColor,
+  }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final surface = isDark
-        ? AppColors.bgSurfaceBaseDark
-        : AppColors.bgSurfaceBase;
+    final surface =
+        surfaceColor ??
+        (isDark ? AppColors.bgSurfaceBaseDark : AppColors.bgSurfaceBase);
     return SystemUiOverlayStyle(
       statusBarColor: surface,
       statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,

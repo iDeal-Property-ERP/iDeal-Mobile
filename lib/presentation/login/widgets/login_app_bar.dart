@@ -22,7 +22,6 @@ class LoginAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     final topInset = MediaQueryData.fromView(View.of(context)).padding.top;
     final bar = AppTopBar.page(
-      title: '',
       showBackButton: !removeLeading,
       onBack: removeLeading ? null : () => context.router.maybePop(),
     );
