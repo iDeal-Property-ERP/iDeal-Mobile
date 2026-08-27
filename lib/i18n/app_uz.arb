@@ -750,5 +750,6 @@
   "listPropertyOnboardingDesc3": "iDeal oylik to‘lovingiz hisoblanadigan summaning 10%ini oladi. Qolgan 90% sizga — kafolatlangan summadan yoki yuqoriroq ijara daromadidan.",
   "listPropertyOnboardingBadge3": "10% iDeal • 90% egaga",
   "listPropertyOnboardingSkip": "O'tkazib yuborish",
-  "listPropertyOnboardingContinue": "Davom etish"
+  "listPropertyOnboardingContinue": "Davom etish",
+  "usually_responds_within_1_hour": "Odatda 1 soat ichida javob beradi"
 }

@@ -272,7 +272,6 @@ class ListingDetailBody extends StatelessWidget {
       depositAmount: null,
       minimumStay: null,
       priceIncludes: const [],
-      responseTime: '',
       createdAt: DateTime.fromMillisecondsSinceEpoch(0),
       photos: card.coverImageUrl == null
           ? const []

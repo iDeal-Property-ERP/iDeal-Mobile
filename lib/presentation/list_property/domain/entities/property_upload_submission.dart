@@ -27,6 +27,7 @@ class PropertyContact extends Equatable {
 class PropertyUploadPayload extends Equatable {
   const PropertyUploadPayload({
     this.name,
+    this.contentLocale,
     required this.propertyType,
     required this.districtId,
     required this.rooms,
@@ -47,6 +48,7 @@ class PropertyUploadPayload extends Equatable {
   });
 
   final String? name;
+  final String? contentLocale;
   final String propertyType;
   final int districtId;
   final int rooms;
@@ -67,6 +69,8 @@ class PropertyUploadPayload extends Equatable {
 
   Map<String, dynamic> toJson() => {
     if (name != null && name!.isNotEmpty) 'name': name,
+    if (contentLocale != null && contentLocale!.isNotEmpty)
+      'content_locale': contentLocale,
     'property_type': propertyType,
     'district_id': districtId,
     'rooms': rooms,
@@ -89,6 +93,7 @@ class PropertyUploadPayload extends Equatable {
   @override
   List<Object?> get props => [
     name,
+    contentLocale,
     propertyType,
     districtId,
     rooms,

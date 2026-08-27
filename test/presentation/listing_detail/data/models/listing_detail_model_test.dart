@@ -28,7 +28,6 @@ void main() {
     'deposit_amount': 520.0,
     'minimum_stay': 6,
     'price_includes': ['wifi', 'cleaning'],
-    'response_time': 'Usually responds within 1 hour',
     'created_at': '2026-07-01T10:00:00+00:00',
     'photos': [
       {
@@ -76,7 +75,6 @@ void main() {
     expect(model.priceIncludes, ['wifi', 'cleaning']);
     expect(model.canMessage, isTrue);
     expect(model.contactPhone, '+998 90 123 45 67');
-    expect(model.toJson()['response_time'], 'Usually responds within 1 hour');
     expect(model.toJson()['can_message'], isTrue);
     expect(model.toJson()['contact_phone'], '+998 90 123 45 67');
     expect(model.toJson()['photos'], isA<List<dynamic>>());

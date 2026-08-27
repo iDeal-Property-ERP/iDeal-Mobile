@@ -866,5 +866,6 @@
   "listPropertyOnboardingDesc3": "iDeal charges 10% of the amount used for your monthly payout. You receive the remaining 90%—from the guarantee or from higher rent.",
   "listPropertyOnboardingBadge3": "10% iDeal • 90% owner",
   "listPropertyOnboardingSkip": "Skip",
-  "listPropertyOnboardingContinue": "Continue"
+  "listPropertyOnboardingContinue": "Continue",
+  "usually_responds_within_1_hour": "Usually responds within 1 hour"
 }

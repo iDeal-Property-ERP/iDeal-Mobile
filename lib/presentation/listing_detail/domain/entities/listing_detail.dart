@@ -85,7 +85,6 @@ class ListingDetail extends Equatable {
     required this.depositAmount,
     required this.minimumStay,
     required this.priceIncludes,
-    required this.responseTime,
     required this.createdAt,
     required this.photos,
     required this.amenities,
@@ -120,7 +119,6 @@ class ListingDetail extends Equatable {
   final double? depositAmount;
   final int? minimumStay;
   final List<String> priceIncludes;
-  final String responseTime;
   final DateTime createdAt;
   final List<ListingPhoto> photos;
   final List<ListingAmenity> amenities;
@@ -158,7 +156,6 @@ class ListingDetail extends Equatable {
     depositAmount,
     minimumStay,
     priceIncludes,
-    responseTime,
     createdAt,
     photos,
     amenities,

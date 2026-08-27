@@ -3855,6 +3855,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Continue'**
   String get listPropertyOnboardingContinue;
+
+  /// No description provided for @usually_responds_within_1_hour.
+  ///
+  /// In en, this message translates to:
+  /// **'Usually responds within 1 hour'**
+  String get usually_responds_within_1_hour;
 }
 
 class _AppLocalizationsDelegate

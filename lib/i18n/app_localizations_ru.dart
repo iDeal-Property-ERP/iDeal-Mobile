@@ -2103,4 +2103,8 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get listPropertyOnboardingContinue => 'Продолжить';
+
+  @override
+  String get usually_responds_within_1_hour =>
+      'Обычно отвечает в течение 1 часа';
 }

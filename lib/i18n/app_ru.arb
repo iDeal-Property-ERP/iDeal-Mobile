@@ -750,5 +750,6 @@
   "listPropertyOnboardingDesc3": "iDeal удерживает 10% от суммы, по которой рассчитывается ваша ежемесячная выплата. Вы получаете оставшиеся 90% — из гарантии или более высокой аренды.",
   "listPropertyOnboardingBadge3": "10% iDeal • 90% владельцу",
   "listPropertyOnboardingSkip": "Пропустить",
-  "listPropertyOnboardingContinue": "Продолжить"
+  "listPropertyOnboardingContinue": "Продолжить",
+  "usually_responds_within_1_hour": "Обычно отвечает в течение 1 часа"
 }

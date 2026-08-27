@@ -2071,4 +2071,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get listPropertyOnboardingContinue => 'Continue';
+
+  @override
+  String get usually_responds_within_1_hour => 'Usually responds within 1 hour';
 }

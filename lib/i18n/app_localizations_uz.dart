@@ -2100,4 +2100,8 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get listPropertyOnboardingContinue => 'Davom etish';
+
+  @override
+  String get usually_responds_within_1_hour =>
+      'Odatda 1 soat ichida javob beradi';
 }

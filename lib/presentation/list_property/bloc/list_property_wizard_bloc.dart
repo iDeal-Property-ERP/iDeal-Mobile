@@ -4,6 +4,7 @@ import 'package:ideal_mobile/presentation/list_property/bloc/list_property_wizar
 import 'package:ideal_mobile/presentation/list_property/domain/entities/property_upload_submission.dart';
 import 'package:ideal_mobile/presentation/list_property/domain/usecases/get_property_upload_config.dart';
 import 'package:ideal_mobile/presentation/list_property/domain/usecases/submit_property_upload.dart';
+import 'package:ideal_mobile/services/locale_service.dart';
 
 class ListPropertyWizardBloc
     extends Bloc<ListPropertyWizardEvent, ListPropertyWizardState> {
@@ -309,6 +310,7 @@ class ListPropertyWizardBloc
 
     final payload = PropertyUploadPayload(
       name: state.name?.trim(),
+      contentLocale: LocaleService.locale.value?.languageCode ?? 'uz',
       propertyType: state.propertyType!,
       districtId: state.districtId!,
       rooms: state.rooms!,

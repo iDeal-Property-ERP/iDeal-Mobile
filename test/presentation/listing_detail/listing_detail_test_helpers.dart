@@ -56,7 +56,6 @@ ListingDetail buildListingDetail({
     depositAmount: 520,
     minimumStay: 3,
     priceIncludes: const ['Water', 'Wi-Fi'],
-    responseTime: 'Usually within an hour',
     createdAt: DateTime(2026),
     photos: List<ListingPhoto>.generate(
       5,

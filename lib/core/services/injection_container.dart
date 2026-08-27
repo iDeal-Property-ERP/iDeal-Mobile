@@ -54,6 +54,7 @@ import 'package:ideal_mobile/presentation/profile/domain/usecases/update_profile
 import 'package:ideal_mobile/routes.gr.dart';
 import 'package:ideal_mobile/services/favorites_sync_service.dart';
 import 'package:ideal_mobile/services/legacy_favorites_cleanup_service.dart';
+import 'package:ideal_mobile/services/locale_service.dart';
 import 'package:ideal_mobile/services/notification_service.dart';
 import 'package:ideal_mobile/services/performance_monitoring_service.dart';
 import 'package:ideal_mobile/services/recent_searches_service.dart';
@@ -219,6 +220,9 @@ InterceptorsWrapper _approvedDioLogInterceptor() {
 InterceptorsWrapper _authHeaderInterceptor() {
   return InterceptorsWrapper(
     onRequest: (options, handler) async {
+      final currentLocale = LocaleService.locale.value?.languageCode ?? 'en';
+      options.headers['Accept-Language'] = currentLocale;
+
       if (!_isTokenFreeEndpoint(options.uri.path)) {
         final accessToken = await sl<SecureStorageService>().getAccessToken();
         if (accessToken != null && accessToken.trim().isNotEmpty) {

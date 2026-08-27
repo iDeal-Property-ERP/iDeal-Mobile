@@ -43,7 +43,6 @@ Map<String, dynamic> _detailJson() => {
   'deposit_amount': 520.0,
   'minimum_stay': 6,
   'price_includes': ['wifi'],
-  'response_time': 'Usually responds within 1 hour',
   'created_at': '2026-07-01T10:00:00+00:00',
   'photos': [
     {

@@ -50,8 +50,8 @@ const String kConnectionIsNotSecureError = 'Connection is not secure';
 // API cache namespace. Incrementing this retires every response written by an
 // earlier schema, which is important when an old app version may have cached
 // authenticated data under a broadly applied interceptor.
-const String kPublicApiCache = 'public_api_cache_v2';
-const int kPublicApiCacheSchemaVersion = 2;
+const String kPublicApiCache = 'public_api_cache_v3';
+const int kPublicApiCacheSchemaVersion = 3;
 
 // Date formats
 const String kDefaultDateFormat = 'dd-MM-yyyy';

@@ -43,7 +43,6 @@ ListingDetail _listingDetail() {
     depositAmount: 520.0,
     minimumStay: 6,
     priceIncludes: const ['wifi'],
-    responseTime: 'Usually responds within 1 hour',
     createdAt: DateTime.utc(2026, 7, 1, 10),
     photos: const [],
     amenities: const [],
