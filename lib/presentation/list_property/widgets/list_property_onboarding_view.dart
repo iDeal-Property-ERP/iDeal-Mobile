@@ -120,7 +120,9 @@ class _ListPropertyOnboardingViewState
                         height: 8,
                         width: isActive ? 24 : 8,
                         decoration: BoxDecoration(
-                          color: isActive ? theme.bgBrandDefault : theme.strokeNeutralLight200,
+                          color: isActive
+                              ? theme.bgBrandDefault
+                              : theme.strokeNeutralLight200,
                           borderRadius: BorderRadius.circular(4),
                         ),
                       );

@@ -36,7 +36,7 @@ class _LegalWebPageScreenState extends State<LegalWebPageScreen> {
     if (frontendBaseUrl.isEmpty) return;
     _documentUri = _buildDocumentUri(frontendBaseUrl);
     _controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.disabled)
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageStarted: (_) => setState(() {
@@ -70,7 +70,12 @@ class _LegalWebPageScreenState extends State<LegalWebPageScreen> {
     final base = Uri.parse(frontendBaseUrl);
     final locale = Localizations.localeOf(context).languageCode;
     final localePath = locale == 'en' ? '' : '/$locale';
-    return base.replace(path: '$localePath${widget.path}');
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return base.replace(
+      path: '$localePath${widget.path}',
+      queryParameters: {'theme': isDark ? 'dark' : 'light', 'embedded': 'true'},
+    );
   }
 
   @override
