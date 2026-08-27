@@ -1357,13 +1357,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get listings_tariff_premium => 'Премиум';
 
   @override
-  String get listings_furnishing_furnished => 'С мебелью';
+  String get listings_furnishing_furnished => 'Полная';
 
   @override
   String get listings_furnishing_semi_furnished => 'Частично';
 
   @override
-  String get listings_furnishing_unfurnished => 'Без мебели';
+  String get listings_furnishing_unfurnished => 'Без';
 
   @override
   String get listings_all_filters => 'Все фильтры';
@@ -1379,6 +1379,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get listings_filter_district => 'Район';
+
+  @override
+  String get listings_filter_currency => 'Валюта';
 
   @override
   String get listings_filter_property_type => 'Тип жилья';
@@ -1412,6 +1415,21 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get listings_range_max => 'Макс';
+
+  @override
+  String get listings_rooms_any => 'Любое';
+
+  @override
+  String get listings_rooms_min => 'Мин. комнат';
+
+  @override
+  String get listings_rooms_max => 'Макс. комнат';
+
+  @override
+  String get listings_price_from => 'От';
+
+  @override
+  String get listings_price_to => 'До';
 
   @override
   String get listings_chip_verified => 'Только проверенные';

@@ -22,6 +22,9 @@ class _PresetRange {
   final String label;
 
   bool matches(num? currentMin, num? currentMax) {
+    if (min == 5 && max == null) {
+      return currentMin == 5 && currentMax == null;
+    }
     return currentMin == min && currentMax == max;
   }
 }
@@ -30,14 +33,8 @@ const _roomPresets = <_PresetRange>[
   _PresetRange(min: 1, max: 1, label: '1'),
   _PresetRange(min: 2, max: 2, label: '2'),
   _PresetRange(min: 3, max: 3, label: '3'),
-  _PresetRange(min: 4, label: '4+'),
-];
-
-const _pricePresets = <_PresetRange>[
-  _PresetRange(max: 300, label: '≤\$300'),
-  _PresetRange(min: 300, max: 600, label: '\$300–\$600'),
-  _PresetRange(min: 600, max: 1000, label: '\$600–\$1000'),
-  _PresetRange(min: 1000, label: '\$1000+'),
+  _PresetRange(min: 4, max: 4, label: '4'),
+  _PresetRange(min: 5, label: '5+'),
 ];
 
 Future<ListingFilters?> showHomeQuickFilterSheet(
@@ -87,31 +84,30 @@ class HomeQuickFilterSheet extends StatefulWidget {
 
 class _HomeQuickFilterSheetState extends State<HomeQuickFilterSheet> {
   late ListingFilters _draft;
+  late String _currency;
 
-  // Controllers for rooms and price
+  // Controllers for price
   late final TextEditingController _minController;
   late final TextEditingController _maxController;
+
+  static const double _defaultUsdMax = 3000.0;
+  static const double _defaultUzsMax = 40000000.0;
 
   @override
   void initState() {
     super.initState();
     _draft = widget.initialFilters;
+    _currency = _draft.currency ?? 'USD';
 
     switch (widget.kind) {
-      case HomeQuickFilterKind.rooms:
-        _minController = TextEditingController(
-          text: _formatNumber(_draft.roomsMin),
-        );
-        _maxController = TextEditingController(
-          text: _formatNumber(_draft.roomsMax),
-        );
       case HomeQuickFilterKind.price:
         _minController = TextEditingController(
-          text: _formatNumber(_draft.priceMin),
+          text: _formatPriceValue(_draft.priceMin, _currency),
         );
         _maxController = TextEditingController(
-          text: _formatNumber(_draft.priceMax),
+          text: _formatPriceValue(_draft.priceMax, _currency),
         );
+      case HomeQuickFilterKind.rooms:
       case HomeQuickFilterKind.district:
       case HomeQuickFilterKind.tariff:
         _minController = TextEditingController();
@@ -138,6 +134,38 @@ class _HomeQuickFilterSheetState extends State<HomeQuickFilterSheet> {
         return context.localization.home_quick_filter_tariff;
     }
   }
+
+  IconData _sheetIcon() {
+    switch (widget.kind) {
+      case HomeQuickFilterKind.district:
+        return TablerIcons.map_pin;
+      case HomeQuickFilterKind.rooms:
+        return TablerIcons.bed;
+      case HomeQuickFilterKind.price:
+        return _currency == 'USD'
+            ? TablerIcons.currency_dollar
+            : TablerIcons.cash;
+      case HomeQuickFilterKind.tariff:
+        return TablerIcons.sparkles;
+    }
+  }
+
+  double get _maxPriceBound {
+    if (_currency == 'UZS') {
+      return (widget.filterOptions.priceMax != null &&
+              widget.filterOptions.priceMax! > 100000)
+          ? widget.filterOptions.priceMax!
+          : _defaultUzsMax;
+    }
+    return (widget.filterOptions.priceMax != null &&
+            widget.filterOptions.priceMax! < 100000)
+        ? widget.filterOptions.priceMax!
+        : _defaultUsdMax;
+  }
+
+  double get _minPriceBound => 0.0;
+
+  double get _priceStep => _currency == 'USD' ? 50.0 : 500000.0;
 
   @override
   Widget build(BuildContext context) {
@@ -167,40 +195,106 @@ class _HomeQuickFilterSheetState extends State<HomeQuickFilterSheet> {
   }
 
   Widget _buildHeader(BuildContext context) {
-    final title = _sheetTitle(context);
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 12, 12, 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Center(
-            child: Container(
-              width: 36,
-              height: 4,
-              decoration: BoxDecoration(
-                color: context.currentTheme.strokeNeutralLight200,
-                borderRadius: BorderRadius.circular(2),
-              ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Center(
+          child: Container(
+            width: 36,
+            height: 4,
+            margin: const EdgeInsets.only(top: 8, bottom: 8),
+            decoration: BoxDecoration(
+              color: context.currentTheme.strokeNeutralLight200,
+              borderRadius: BorderRadius.circular(2),
             ),
           ),
-          const SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 4, 12, 12),
+          child: Row(
             children: [
-              Text(
-                title,
-                style: AppTextStyles.h2Bold.copyWith(
-                  color: context.currentTheme.textNeutralPrimary,
+              Icon(
+                _sheetIcon(),
+                size: 20,
+                color: context.currentTheme.iconNeutralDefault,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  _sheetTitle(context),
+                  style: AppTextStyles.h6Bold.copyWith(
+                    color: context.currentTheme.textNeutralPrimary,
+                  ),
                 ),
               ),
+              if (widget.kind == HomeQuickFilterKind.price)
+                _buildCurrencySelector(context),
               IconButton(
-                icon: const Icon(TablerIcons.x),
-                color: context.currentTheme.iconNeutralDefault,
+                icon: Icon(
+                  TablerIcons.x,
+                  size: 20,
+                  color: context.currentTheme.iconNeutralDefault,
+                ),
                 onPressed: () => Navigator.of(context).pop(),
+                visualDensity: VisualDensity.compact,
+                splashRadius: 20,
               ),
             ],
           ),
-        ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCurrencySelector(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: context.currentTheme.bgSurfaceBase2,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: context.currentTheme.strokeNeutralLight100),
+      ),
+      padding: const EdgeInsets.all(2),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: ['USD', 'UZS'].map((curr) {
+          final isSelected = _currency == curr;
+          return GestureDetector(
+            onTap: () {
+              if (_currency != curr) {
+                setState(() {
+                  _currency = curr;
+                  _minController.clear();
+                  _maxController.clear();
+                  _draft = _draft.copyWith(
+                    currency: curr,
+                    clearPriceMin: true,
+                    clearPriceMax: true,
+                  );
+                });
+              }
+            },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? context.currentTheme.bgBrandDefault
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text(
+                curr,
+                style: AppTextStyles.p4Medium.copyWith(
+                  color: isSelected
+                      ? context.currentTheme.textNeutralWhite
+                      : context.currentTheme.textNeutralSecondary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }
@@ -240,6 +334,7 @@ class _HomeQuickFilterSheetState extends State<HomeQuickFilterSheet> {
         for (final district in districts)
           _buildSelectableCard(
             context,
+            icon: TablerIcons.map_pin,
             label: district.name,
             isSelected: _draft.districtId == district.id,
             onTap: () {
@@ -292,6 +387,7 @@ class _HomeQuickFilterSheetState extends State<HomeQuickFilterSheet> {
         for (final choice in tariffs)
           _buildSelectableCard(
             context,
+            icon: _getTariffIcon(choice.value),
             label: choice.label,
             isSelected:
                 _draft.tariff?.toLowerCase() == choice.value.toLowerCase(),
@@ -310,122 +406,142 @@ class _HomeQuickFilterSheetState extends State<HomeQuickFilterSheet> {
   }
 
   Widget _buildRoomsBody(BuildContext context) {
-    _PresetRange? activePreset;
-    for (final preset in _roomPresets) {
-      if (preset.matches(_draft.roomsMin, _draft.roomsMax)) {
-        activePreset = preset;
-        break;
-      }
-    }
+    final minRooms = _draft.roomsMin;
+    final maxRooms = _draft.roomsMax;
+    final theme = context.currentTheme;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            for (final preset in _roomPresets)
-              _buildPresetChip(
-                context,
-                label: preset.label,
-                isSelected: activePreset == preset,
-                onTap: () =>
-                    _onRoomPresetTapped(preset, activePreset == preset),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: _roomPresets.map((preset) {
+          final isSelected = preset.matches(minRooms, maxRooms);
+
+          return Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 3),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () => _onRoomPresetTapped(preset, isSelected),
+                  borderRadius: BorderRadius.circular(AppRadius.input),
+                  child: Container(
+                    height: 44,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? theme.bgBrandLight100
+                          : theme.bgSurfaceBase2,
+                      borderRadius: BorderRadius.circular(AppRadius.input),
+                      border: Border.all(
+                        color: isSelected
+                            ? theme.strokeBrandHover
+                            : theme.strokeNeutralLight100,
+                        width: isSelected ? 1.5 : 1.0,
+                      ),
+                    ),
+                    child: Text(
+                      preset.label,
+                      style: AppTextStyles.p3Medium.copyWith(
+                        color: isSelected
+                            ? theme.textBrandPrimary
+                            : theme.textNeutralPrimary,
+                        fontWeight: isSelected ? FontWeight.w700 : null,
+                      ),
+                    ),
+                  ),
+                ),
               ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Text(
-          context.localization.home_quick_filter_custom_range,
-          style: AppTextStyles.p3Medium.copyWith(
-            color: context.currentTheme.textNeutralPrimary,
-          ),
-        ),
-        const SizedBox(height: 8),
-        _buildRangeFields(
-          context,
-          minController: _minController,
-          maxController: _maxController,
-          minHint: widget.filterOptions.roomsMin,
-          maxHint: widget.filterOptions.roomsMax,
-          onMinChanged: (value) {
-            final parsed = int.tryParse(value);
-            setState(() {
-              _draft = value.isEmpty
-                  ? _draft.copyWith(clearRoomsMin: true)
-                  : _draft.copyWith(roomsMin: parsed);
-            });
-          },
-          onMaxChanged: (value) {
-            final parsed = int.tryParse(value);
-            setState(() {
-              _draft = value.isEmpty
-                  ? _draft.copyWith(clearRoomsMax: true)
-                  : _draft.copyWith(roomsMax: parsed);
-            });
-          },
-        ),
-      ],
+            ),
+          );
+        }).toList(),
+      ),
     );
   }
 
   Widget _buildPriceBody(BuildContext context) {
-    _PresetRange? activePreset;
-    for (final preset in _pricePresets) {
-      if (preset.matches(_draft.priceMin, _draft.priceMax)) {
-        activePreset = preset;
-        break;
-      }
-    }
+    final maxBound = _maxPriceBound;
+    final minBound = _minPriceBound;
+    final step = _priceStep;
+
+    final currentMin = (_draft.priceMin ?? minBound).clamp(minBound, maxBound);
+    final currentMax = (_draft.priceMax ?? maxBound).clamp(
+      currentMin,
+      maxBound,
+    );
+
+    final divisions = ((maxBound - minBound) / step).round().clamp(1, 1000);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            for (final preset in _pricePresets)
-              _buildPresetChip(
-                context,
-                label: preset.label,
-                isSelected: activePreset == preset,
-                onTap: () =>
-                    _onPricePresetTapped(preset, activePreset == preset),
-              ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Text(
-          context.localization.home_quick_filter_custom_range,
-          style: AppTextStyles.p3Medium.copyWith(
-            color: context.currentTheme.textNeutralPrimary,
-          ),
-        ),
-        const SizedBox(height: 8),
         _buildRangeFields(
           context,
           minController: _minController,
           maxController: _maxController,
-          minHint: widget.filterOptions.priceMin,
-          maxHint: widget.filterOptions.priceMax,
+          minHint: minBound,
+          maxHint: maxBound,
+          prefixIcon: Icon(
+            _currency == 'USD' ? TablerIcons.currency_dollar : TablerIcons.cash,
+            size: 16,
+            color: context.currentTheme.iconNeutralDefault,
+          ),
           onMinChanged: (value) {
-            final parsed = double.tryParse(value);
+            final clean = value.replaceAll('.', '').trim();
+            final parsed = double.tryParse(clean);
             setState(() {
-              _draft = value.isEmpty
+              _draft = clean.isEmpty
                   ? _draft.copyWith(clearPriceMin: true)
                   : _draft.copyWith(priceMin: parsed);
             });
           },
           onMaxChanged: (value) {
-            final parsed = double.tryParse(value);
+            final clean = value.replaceAll('.', '').trim();
+            final parsed = double.tryParse(clean);
             setState(() {
-              _draft = value.isEmpty
+              _draft = clean.isEmpty
                   ? _draft.copyWith(clearPriceMax: true)
                   : _draft.copyWith(priceMax: parsed);
             });
           },
+        ),
+        const SizedBox(height: 8),
+        SliderTheme(
+          data: SliderTheme.of(context).copyWith(
+            activeTrackColor: context.currentTheme.bgBrandDefault,
+            inactiveTrackColor: context.currentTheme.strokeNeutralLight200,
+            thumbColor: context.currentTheme.bgBrandDefault,
+            overlayColor: context.currentTheme.bgBrandLight100.withValues(
+              alpha: 0.2,
+            ),
+            trackHeight: 4,
+            thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 9),
+            rangeThumbShape: const RoundRangeSliderThumbShape(
+              enabledThumbRadius: 9,
+            ),
+          ),
+          child: RangeSlider(
+            values: RangeValues(currentMin, currentMax),
+            min: minBound,
+            max: maxBound,
+            divisions: divisions,
+            onChanged: (values) {
+              final steppedStart = (values.start / step).round() * step;
+              final steppedEnd = (values.end / step).round() * step;
+              final newMin = steppedStart <= minBound ? null : steppedStart;
+              final newMax = steppedEnd >= maxBound ? null : steppedEnd;
+
+              setState(() {
+                _draft = _draft.copyWith(
+                  priceMin: newMin,
+                  priceMax: newMax,
+                  clearPriceMin: newMin == null,
+                  clearPriceMax: newMax == null,
+                );
+                _minController.text = _formatPriceValue(newMin, _currency);
+                _maxController.text = _formatPriceValue(newMax, _currency);
+              });
+            },
+          ),
         ),
       ],
     );
@@ -435,8 +551,6 @@ class _HomeQuickFilterSheetState extends State<HomeQuickFilterSheet> {
     if (isAlreadySelected) {
       setState(() {
         _draft = _draft.copyWith(clearRoomsMin: true, clearRoomsMax: true);
-        _minController.clear();
-        _maxController.clear();
       });
     } else {
       setState(() {
@@ -446,35 +560,13 @@ class _HomeQuickFilterSheetState extends State<HomeQuickFilterSheet> {
           clearRoomsMin: preset.min == null,
           clearRoomsMax: preset.max == null,
         );
-        _minController.text = _formatNumber(preset.min);
-        _maxController.text = _formatNumber(preset.max);
-      });
-    }
-  }
-
-  void _onPricePresetTapped(_PresetRange preset, bool isAlreadySelected) {
-    if (isAlreadySelected) {
-      setState(() {
-        _draft = _draft.copyWith(clearPriceMin: true, clearPriceMax: true);
-        _minController.clear();
-        _maxController.clear();
-      });
-    } else {
-      setState(() {
-        _draft = _draft.copyWith(
-          priceMin: preset.min?.toDouble(),
-          priceMax: preset.max?.toDouble(),
-          clearPriceMin: preset.min == null,
-          clearPriceMax: preset.max == null,
-        );
-        _minController.text = _formatNumber(preset.min);
-        _maxController.text = _formatNumber(preset.max);
       });
     }
   }
 
   Widget _buildSelectableCard(
     BuildContext context, {
+    required IconData icon,
     required String label,
     required bool isSelected,
     required VoidCallback onTap,
@@ -500,8 +592,15 @@ class _HomeQuickFilterSheetState extends State<HomeQuickFilterSheet> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                Icon(
+                  icon,
+                  size: 20,
+                  color: isSelected
+                      ? context.currentTheme.iconBrandPrimary
+                      : context.currentTheme.iconNeutralDefault,
+                ),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     label,
@@ -526,50 +625,13 @@ class _HomeQuickFilterSheetState extends State<HomeQuickFilterSheet> {
     );
   }
 
-  Widget _buildPresetChip(
-    BuildContext context, {
-    required String label,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    final foregroundColor = isSelected
-        ? context.currentTheme.textBrandPrimary
-        : context.currentTheme.textNeutralPrimary;
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(999),
-        child: Container(
-          constraints: const BoxConstraints(minHeight: 36),
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          decoration: BoxDecoration(
-            color: isSelected
-                ? context.currentTheme.bgBrandLight100
-                : context.currentTheme.bgSurfaceBase2,
-            border: Border.all(
-              color: isSelected
-                  ? context.currentTheme.iconBrandPrimary
-                  : context.currentTheme.strokeNeutralLight100,
-            ),
-            borderRadius: BorderRadius.circular(999),
-          ),
-          child: Text(
-            label,
-            style: AppTextStyles.p3Medium.copyWith(color: foregroundColor),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildRangeFields(
     BuildContext context, {
     required TextEditingController minController,
     required TextEditingController maxController,
     required num? minHint,
     required num? maxHint,
+    Widget? prefixIcon,
     required ValueChanged<String> onMinChanged,
     required ValueChanged<String> onMaxChanged,
   }) {
@@ -579,14 +641,17 @@ class _HomeQuickFilterSheetState extends State<HomeQuickFilterSheet> {
           child: TextField(
             controller: minController,
             keyboardType: TextInputType.number,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+            ],
             style: AppTextStyles.p3Regular.copyWith(
               color: context.currentTheme.textNeutralPrimary,
             ),
             decoration: _fieldDecoration(
               context,
               context.localization.listings_range_min,
-              hintText: _formatNumber(minHint),
+              prefixIcon: prefixIcon,
+              hintText: '0',
             ),
             onChanged: onMinChanged,
           ),
@@ -596,14 +661,17 @@ class _HomeQuickFilterSheetState extends State<HomeQuickFilterSheet> {
           child: TextField(
             controller: maxController,
             keyboardType: TextInputType.number,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+            ],
             style: AppTextStyles.p3Regular.copyWith(
               color: context.currentTheme.textNeutralPrimary,
             ),
             decoration: _fieldDecoration(
               context,
               context.localization.listings_range_max,
-              hintText: _formatNumber(maxHint),
+              prefixIcon: prefixIcon,
+              hintText: _formatPriceValue(maxHint, _currency),
             ),
             onChanged: onMaxChanged,
           ),
@@ -615,6 +683,7 @@ class _HomeQuickFilterSheetState extends State<HomeQuickFilterSheet> {
   InputDecoration _fieldDecoration(
     BuildContext context,
     String? label, {
+    Widget? prefixIcon,
     String? hintText,
   }) {
     final base = InputDecorations.denseDecoration(
@@ -624,6 +693,13 @@ class _HomeQuickFilterSheetState extends State<HomeQuickFilterSheet> {
     return base.copyWith(
       labelText: label,
       hintText: hintText,
+      prefixIcon: prefixIcon != null
+          ? Padding(
+              padding: const EdgeInsets.only(left: 10, right: 6),
+              child: prefixIcon,
+            )
+          : null,
+      prefixIconConstraints: const BoxConstraints(minWidth: 32, minHeight: 32),
       hintStyle: AppTextStyles.p3Regular.copyWith(
         color: context.currentTheme.textNeutralDisable,
       ),
@@ -659,7 +735,7 @@ class _HomeQuickFilterSheetState extends State<HomeQuickFilterSheet> {
 
   Widget _buildFooter(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 10, 20, 16),
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
       decoration: BoxDecoration(
         color: context.currentTheme.bgSurfaceSheet,
         border: Border(
@@ -677,10 +753,10 @@ class _HomeQuickFilterSheetState extends State<HomeQuickFilterSheet> {
               backgroundColor: context.currentTheme.bgSurfaceBase2,
               borderColor: context.currentTheme.strokeNeutralLight200,
               shouldSetFullWidth: true,
-              onPressed: _clearKindDraft,
+              onPressed: _clearDraft,
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 12),
           Expanded(
             child: AppButton(
               size: AppButtonSize.medium,
@@ -696,7 +772,7 @@ class _HomeQuickFilterSheetState extends State<HomeQuickFilterSheet> {
     );
   }
 
-  void _clearKindDraft() {
+  void _clearDraft() {
     setState(() {
       switch (widget.kind) {
         case HomeQuickFilterKind.district:
@@ -705,8 +781,6 @@ class _HomeQuickFilterSheetState extends State<HomeQuickFilterSheet> {
           _draft = _draft.copyWith(clearTariff: true);
         case HomeQuickFilterKind.rooms:
           _draft = _draft.copyWith(clearRoomsMin: true, clearRoomsMax: true);
-          _minController.clear();
-          _maxController.clear();
         case HomeQuickFilterKind.price:
           _draft = _draft.copyWith(clearPriceMin: true, clearPriceMax: true);
           _minController.clear();
@@ -716,34 +790,52 @@ class _HomeQuickFilterSheetState extends State<HomeQuickFilterSheet> {
   }
 
   void _applyDraft() {
-    var normalized = _draft;
-    if (widget.kind == HomeQuickFilterKind.rooms) {
-      if (normalized.roomsMin != null &&
-          normalized.roomsMax != null &&
-          normalized.roomsMin! > normalized.roomsMax!) {
-        normalized = normalized.copyWith(
-          roomsMin: normalized.roomsMax,
-          roomsMax: normalized.roomsMin,
+    var finalDraft = _draft;
+    if (widget.kind == HomeQuickFilterKind.price) {
+      if (finalDraft.priceMin != null &&
+          finalDraft.priceMax != null &&
+          finalDraft.priceMin! > finalDraft.priceMax!) {
+        finalDraft = finalDraft.copyWith(
+          priceMin: finalDraft.priceMax,
+          priceMax: finalDraft.priceMin,
         );
       }
-    } else if (widget.kind == HomeQuickFilterKind.price) {
-      if (normalized.priceMin != null &&
-          normalized.priceMax != null &&
-          normalized.priceMin! > normalized.priceMax!) {
-        normalized = normalized.copyWith(
-          priceMin: normalized.priceMax,
-          priceMax: normalized.priceMin,
+    } else if (widget.kind == HomeQuickFilterKind.rooms) {
+      if (finalDraft.roomsMin != null &&
+          finalDraft.roomsMax != null &&
+          finalDraft.roomsMin! > finalDraft.roomsMax!) {
+        finalDraft = finalDraft.copyWith(
+          roomsMin: finalDraft.roomsMax,
+          roomsMax: finalDraft.roomsMin,
         );
       }
     }
-
-    FocusManager.instance.primaryFocus?.unfocus();
-    Navigator.of(context).pop(normalized);
+    Navigator.of(context).pop(finalDraft);
   }
 
-  String _formatNumber(num? value) {
+  static String _formatPriceValue(num? value, String currency) {
     if (value == null) return '';
-    if (value == value.roundToDouble()) return value.toInt().toString();
-    return value.toString();
+    final intVal = value.round();
+    if (currency == 'UZS') {
+      final raw = intVal.toString();
+      return raw.replaceAllMapped(
+        RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+        (Match m) => '${m[1]}.',
+      );
+    }
+    return intVal.toString();
+  }
+
+  static IconData _getTariffIcon(String value) {
+    switch (value.toLowerCase()) {
+      case 'standard':
+        return TablerIcons.tag;
+      case 'comfort':
+        return TablerIcons.sparkles;
+      case 'premium':
+        return TablerIcons.crown;
+      default:
+        return TablerIcons.star;
+    }
   }
 }

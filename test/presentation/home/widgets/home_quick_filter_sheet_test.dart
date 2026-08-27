@@ -268,10 +268,11 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Rooms'), findsOneWidget);
-      expect(find.text('1'), findsNWidgets(2)); // preset + hint
+      expect(find.text('1'), findsOneWidget); // preset
       expect(find.text('2'), findsOneWidget);
       expect(find.text('3'), findsOneWidget);
-      expect(find.text('4+'), findsOneWidget);
+      expect(find.text('4'), findsOneWidget);
+      expect(find.text('5+'), findsOneWidget);
 
       // Tap preset 2
       await tester.tap(find.text('2'));
@@ -283,47 +284,6 @@ void main() {
 
       expect(result?.roomsMin, 2);
       expect(result?.roomsMax, 2);
-    });
-
-    testWidgets('normalizes inverted room ranges on Apply', (tester) async {
-      ListingFilters? result;
-
-      await tester.runWidgetTest(
-        child: Builder(
-          builder: (context) => Scaffold(
-            body: Center(
-              child: ElevatedButton(
-                onPressed: () async {
-                  result = await showHomeQuickFilterSheet(
-                    context,
-                    kind: HomeQuickFilterKind.rooms,
-                    filters: const ListingFilters(),
-                    filterOptions: testFilterOptions,
-                  );
-                },
-                child: const Text('Open'),
-              ),
-            ),
-          ),
-        ),
-      );
-
-      await tester.tap(find.text('Open'));
-      await tester.pumpAndSettle();
-
-      // Enter min 4, max 2
-      final textFields = find.byType(TextField);
-      await tester.enterText(textFields.at(0), '4');
-      await tester.enterText(textFields.at(1), '2');
-      await tester.pumpAndSettle();
-
-      // Apply
-      await tester.tap(find.text('Apply'));
-      await tester.pumpAndSettle();
-
-      // Swapped/normalized
-      expect(result?.roomsMin, 2);
-      expect(result?.roomsMax, 4);
     });
 
     testWidgets('tapping active preset clears it', (tester) async {
@@ -366,9 +326,7 @@ void main() {
   });
 
   group('HomeQuickFilterSheet - Price', () {
-    testWidgets('presets, custom range, and inverted normalization', (
-      tester,
-    ) async {
+    testWidgets('custom range and inverted normalization', (tester) async {
       ListingFilters? result;
 
       await tester.runWidgetTest(
@@ -395,14 +353,6 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Price'), findsOneWidget);
-      expect(find.text('≤\$300'), findsOneWidget);
-      expect(find.text('\$300–\$600'), findsOneWidget);
-      expect(find.text('\$600–\$1000'), findsOneWidget);
-      expect(find.text('\$1000+'), findsOneWidget);
-
-      // Tap $300–$600
-      await tester.tap(find.text('\$300–\$600'));
-      await tester.pumpAndSettle();
 
       // Enter inverted custom range 1200 - 400
       final textFields = find.byType(TextField);

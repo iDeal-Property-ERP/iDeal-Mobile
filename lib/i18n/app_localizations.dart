@@ -2503,19 +2503,19 @@ abstract class AppLocalizations {
   /// No description provided for @listings_furnishing_furnished.
   ///
   /// In en, this message translates to:
-  /// **'Furnished'**
+  /// **'Full'**
   String get listings_furnishing_furnished;
 
   /// No description provided for @listings_furnishing_semi_furnished.
   ///
   /// In en, this message translates to:
-  /// **'Semi-furnished'**
+  /// **'Partial'**
   String get listings_furnishing_semi_furnished;
 
   /// No description provided for @listings_furnishing_unfurnished.
   ///
   /// In en, this message translates to:
-  /// **'Unfurnished'**
+  /// **'None'**
   String get listings_furnishing_unfurnished;
 
   /// No description provided for @listings_all_filters.
@@ -2547,6 +2547,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'District'**
   String get listings_filter_district;
+
+  /// No description provided for @listings_filter_currency.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency'**
+  String get listings_filter_currency;
 
   /// No description provided for @listings_filter_property_type.
   ///
@@ -2613,6 +2619,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Max'**
   String get listings_range_max;
+
+  /// No description provided for @listings_rooms_any.
+  ///
+  /// In en, this message translates to:
+  /// **'Any'**
+  String get listings_rooms_any;
+
+  /// No description provided for @listings_rooms_min.
+  ///
+  /// In en, this message translates to:
+  /// **'Min rooms'**
+  String get listings_rooms_min;
+
+  /// No description provided for @listings_rooms_max.
+  ///
+  /// In en, this message translates to:
+  /// **'Max rooms'**
+  String get listings_rooms_max;
+
+  /// No description provided for @listings_price_from.
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get listings_price_from;
+
+  /// No description provided for @listings_price_to.
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get listings_price_to;
 
   /// No description provided for @listings_chip_verified.
   ///

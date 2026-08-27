@@ -8,6 +8,7 @@ class ListingFilters extends Equatable {
     this.propertyType,
     this.priceMin,
     this.priceMax,
+    this.currency,
     this.roomsMin,
     this.roomsMax,
     this.verified,
@@ -22,6 +23,7 @@ class ListingFilters extends Equatable {
       propertyType = null,
       priceMin = null,
       priceMax = null,
+      currency = null,
       roomsMin = null,
       roomsMax = null,
       verified = null,
@@ -34,6 +36,7 @@ class ListingFilters extends Equatable {
   final String? propertyType;
   final double? priceMin;
   final double? priceMax;
+  final String? currency;
   final int? roomsMin;
   final int? roomsMax;
   final bool? verified;
@@ -49,6 +52,7 @@ class ListingFilters extends Equatable {
     String? propertyType,
     double? priceMin,
     double? priceMax,
+    String? currency,
     int? roomsMin,
     int? roomsMax,
     bool? verified,
@@ -60,6 +64,7 @@ class ListingFilters extends Equatable {
     bool clearPropertyType = false,
     bool clearPriceMin = false,
     bool clearPriceMax = false,
+    bool clearCurrency = false,
     bool clearRoomsMin = false,
     bool clearRoomsMax = false,
     bool clearVerified = false,
@@ -75,6 +80,7 @@ class ListingFilters extends Equatable {
           : propertyType ?? this.propertyType,
       priceMin: clearPriceMin ? null : priceMin ?? this.priceMin,
       priceMax: clearPriceMax ? null : priceMax ?? this.priceMax,
+      currency: clearCurrency ? null : currency ?? this.currency,
       roomsMin: clearRoomsMin ? null : roomsMin ?? this.roomsMin,
       roomsMax: clearRoomsMax ? null : roomsMax ?? this.roomsMax,
       verified: clearVerified ? null : verified ?? this.verified,
@@ -98,6 +104,7 @@ class ListingFilters extends Equatable {
     addParameter('property_type', propertyType);
     addParameter('price_min', priceMin);
     addParameter('price_max', priceMax);
+    addParameter('currency', currency);
     addParameter('rooms_min', roomsMin);
     addParameter('rooms_max', roomsMax);
     addParameter('verified', verified);
@@ -131,6 +138,7 @@ class ListingFilters extends Equatable {
     propertyType,
     priceMin,
     priceMax,
+    currency,
     roomsMin,
     roomsMax,
     verified,

@@ -47,7 +47,7 @@ class ListingsFilterPillChip extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: BorderRadius.circular(10),
         child: Container(
           constraints: BoxConstraints(
             minHeight: compact ? 36 : (borderless ? 32 : 44),
@@ -65,9 +65,9 @@ class ListingsFilterPillChip extends StatelessWidget {
                   border: Border.all(
                     color: selected
                         ? context.currentTheme.iconBrandPrimary
-                        : context.currentTheme.bgNeutralLight100,
+                        : context.currentTheme.strokeNeutralLight100,
                   ),
-                  borderRadius: BorderRadius.circular(999),
+                  borderRadius: BorderRadius.circular(10),
                 ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -122,6 +122,7 @@ class ListingsFilterDropdownChip<T> extends StatelessWidget {
     required this.options,
     required this.selected,
     required this.onSelected,
+    this.leadingIcon,
     this.selectedLabel,
     this.compact = false,
     this.borderless = false,
@@ -130,6 +131,7 @@ class ListingsFilterDropdownChip<T> extends StatelessWidget {
   final String label;
   final List<ListingsFilterDropdownOption<T>> options;
   final T? selected;
+  final IconData? leadingIcon;
   final String? selectedLabel;
   final bool compact;
   final bool borderless;
@@ -162,6 +164,7 @@ class ListingsFilterDropdownChip<T> extends StatelessWidget {
       builder: (context, controller, child) {
         return ListingsFilterPillChip(
           label: _visibleLabel(),
+          leadingIcon: leadingIcon,
           selected: selected != null || selectedLabel != null,
           trailingIcon: TablerIcons.chevron_down,
           compact: compact,

@@ -8,12 +8,37 @@ import 'package:ideal_mobile/presentation/listings/bloc/listings_bloc.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_event.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filter_options.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filters.dart';
+import 'package:ideal_mobile/presentation/listings/widgets/district_picker_sheet.dart';
+import 'package:ideal_mobile/utils/haptic_feedback_util.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 import 'package:ideal_mobile/widgets/app_button/app_button.dart';
 import 'package:ideal_mobile/widgets/app_button/enums/app_button_size_enum.dart';
 import 'package:ideal_mobile/widgets/app_button/enums/app_button_style_enum.dart';
 import 'package:ideal_mobile/widgets/styling/app_radius.dart';
 import 'package:ideal_mobile/widgets/styling/input_decorations.dart';
+
+class _RoomPreset {
+  const _RoomPreset({required this.label, this.min, this.max});
+
+  final String label;
+  final int? min;
+  final int? max;
+
+  bool isSelected(int? draftMin, int? draftMax) {
+    if (min == 5 && max == null) {
+      return draftMin == 5 && draftMax == null;
+    }
+    return draftMin == min && draftMax == max;
+  }
+}
+
+const _roomPresets = <_RoomPreset>[
+  _RoomPreset(label: '1', min: 1, max: 1),
+  _RoomPreset(label: '2', min: 2, max: 2),
+  _RoomPreset(label: '3', min: 3, max: 3),
+  _RoomPreset(label: '4', min: 4, max: 4),
+  _RoomPreset(label: '5+', min: 5),
+];
 
 Future<ListingFilters?> showListingsFilterSheet(
   BuildContext context, {
@@ -80,51 +105,31 @@ class ListingsFilterSheet extends StatefulWidget {
 
 class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
   late ListingFilters _draft;
+  late String _currency;
   late final TextEditingController _priceMinController;
   late final TextEditingController _priceMaxController;
-  late final TextEditingController _roomsMinController;
-  late final TextEditingController _roomsMaxController;
-  late final TextEditingController _districtSearchController;
-  late final FocusNode _districtSearchFocusNode;
-  bool _isDistrictDropdownOpen = false;
+
+  static const double _defaultUsdMax = 3000.0;
+  static const double _defaultUzsMax = 40000000.0;
 
   @override
   void initState() {
     super.initState();
     _draft = widget.initialFilters;
+    _currency = _draft.currency ?? 'USD';
     _priceMinController = TextEditingController(
-      text: _formatNumber(_draft.priceMin),
+      text: _formatPriceValue(_draft.priceMin, _currency),
     );
     _priceMaxController = TextEditingController(
-      text: _formatNumber(_draft.priceMax),
+      text: _formatPriceValue(_draft.priceMax, _currency),
     );
-    _roomsMinController = TextEditingController(
-      text: _formatNumber(_draft.roomsMin),
-    );
-    _roomsMaxController = TextEditingController(
-      text: _formatNumber(_draft.roomsMax),
-    );
-    _districtSearchController = TextEditingController();
-    _districtSearchFocusNode = FocusNode();
-    _districtSearchFocusNode.addListener(_onDistrictSearchFocusChanged);
   }
 
   @override
   void dispose() {
-    _districtSearchFocusNode.removeListener(_onDistrictSearchFocusChanged);
     _priceMinController.dispose();
     _priceMaxController.dispose();
-    _roomsMinController.dispose();
-    _roomsMaxController.dispose();
-    _districtSearchController.dispose();
-    _districtSearchFocusNode.dispose();
     super.dispose();
-  }
-
-  void _onDistrictSearchFocusChanged() {
-    if (_districtSearchFocusNode.hasFocus) {
-      _expandSheetIfNeeded();
-    }
   }
 
   void _expandSheetIfNeeded() {
@@ -140,6 +145,23 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
       }
     }
   }
+
+  double get _maxPriceBound {
+    if (_currency == 'UZS') {
+      return (widget.filterOptions.priceMax != null &&
+              widget.filterOptions.priceMax! > 100000)
+          ? widget.filterOptions.priceMax!
+          : _defaultUzsMax;
+    }
+    return (widget.filterOptions.priceMax != null &&
+            widget.filterOptions.priceMax! < 100000)
+        ? widget.filterOptions.priceMax!
+        : _defaultUsdMax;
+  }
+
+  double get _minPriceBound => 0.0;
+
+  double get _priceStep => _currency == 'USD' ? 50.0 : 500000.0;
 
   @override
   Widget build(BuildContext context) {
@@ -189,78 +211,62 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
 
     if (filterOptions.districts.isNotEmpty) {
       sections.addAll([
-        _buildSectionTitle(
+        _buildSectionHeader(
           context,
-          context.localization.listings_filter_district,
+          icon: TablerIcons.map_pin,
+          title: context.localization.listings_filter_district,
         ),
-        _buildDistrictDropdown(context, filterOptions.districts),
-        const SizedBox(height: 12),
+        _buildDistrictSelector(context, filterOptions.districts),
+        const SizedBox(height: 16),
       ]);
     }
 
     if (filterOptions.propertyTypes.isNotEmpty) {
       sections.addAll([
-        _buildChoiceGroup(
+        _buildSectionHeader(
           context,
+          icon: TablerIcons.building,
           title: context.localization.listings_filter_property_type,
-          choices: filterOptions.propertyTypes,
-          selectedValue: _draft.propertyType,
-          onChanged: _onPropertyTypeChanged,
         ),
-        const SizedBox(height: 12),
-      ]);
-    }
-
-    sections.addAll([
-      _buildSectionTitle(context, context.localization.listings_filter_price),
-      _buildRangeFields(
-        context,
-        minController: _priceMinController,
-        maxController: _priceMaxController,
-        minHint: filterOptions.priceMin,
-        maxHint: filterOptions.priceMax,
-        onMinChanged: _onPriceMinChanged,
-        onMaxChanged: _onPriceMaxChanged,
-      ),
-      const SizedBox(height: 12),
-      _buildSectionTitle(context, context.localization.listings_filter_rooms),
-      _buildRangeFields(
-        context,
-        minController: _roomsMinController,
-        maxController: _roomsMaxController,
-        minHint: filterOptions.roomsMin,
-        maxHint: filterOptions.roomsMax,
-        onMinChanged: _onRoomsMinChanged,
-        onMaxChanged: _onRoomsMaxChanged,
-      ),
-      const SizedBox(height: 12),
-      _buildVerificationSection(context),
-      const SizedBox(height: 12),
-    ]);
-
-    if (filterOptions.furnishings.isNotEmpty) {
-      sections.addAll([
-        _buildChoiceGroup(
-          context,
-          title: context.localization.listings_filter_furnishing,
-          choices: filterOptions.furnishings,
-          selectedValue: _draft.furnishing,
-          onChanged: _onFurnishingChanged,
-        ),
-        const SizedBox(height: 12),
+        _buildPropertyTypeGrid(context, filterOptions.propertyTypes),
+        const SizedBox(height: 16),
       ]);
     }
 
     if (filterOptions.tariffs.isNotEmpty) {
-      sections.add(
+      sections.addAll([
         _buildChoiceGroup(
           context,
+          icon: TablerIcons.sparkles,
           title: context.localization.listings_filter_tariff,
           choices: filterOptions.tariffs,
           selectedValue: _draft.tariff,
+          getIcon: _getTariffIcon,
           onChanged: _onTariffChanged,
         ),
-      );
+        const SizedBox(height: 16),
+      ]);
+    }
+
+    sections.addAll([
+      _buildPriceSection(context),
+      const SizedBox(height: 16),
+      _buildRoomsSection(context),
+      const SizedBox(height: 16),
+      _buildVerificationSection(context),
+      const SizedBox(height: 16),
+    ]);
+
+    if (filterOptions.furnishings.isNotEmpty) {
+      sections.addAll([
+        _buildSectionHeader(
+          context,
+          icon: TablerIcons.armchair,
+          title: context.localization.listings_filter_furnishing,
+        ),
+        _buildFurnishingSlider(context, filterOptions.furnishings),
+        const SizedBox(height: 16),
+      ]);
     }
 
     return Column(
@@ -269,71 +275,33 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
     );
   }
 
-  Widget _buildSectionTitle(BuildContext context, String title) {
+  Widget _buildSectionHeader(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    Widget? trailing,
+  }) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Text(
-        title,
-        style: AppTextStyles.p3Medium.copyWith(
-          color: context.currentTheme.textNeutralPrimary,
-        ),
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: [
+          Icon(icon, size: 18, color: context.currentTheme.iconNeutralDefault),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              title,
+              style: AppTextStyles.p3Medium.copyWith(
+                color: context.currentTheme.textNeutralPrimary,
+              ),
+            ),
+          ),
+          ?trailing,
+        ],
       ),
     );
   }
 
-  Widget _buildVerificationSection(BuildContext context) {
-    final isChecked = _draft.verified ?? false;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        _buildSectionTitle(
-          context,
-          context.localization.listings_filter_verification,
-        ),
-        InkWell(
-          onTap: () => _onVerifiedChanged(isChecked ? null : true),
-          borderRadius: BorderRadius.circular(AppRadius.input),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            child: Row(
-              children: [
-                SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: Checkbox(
-                    value: isChecked,
-                    activeColor: context.currentTheme.bgBrandDefault,
-                    checkColor: context.currentTheme.textNeutralWhite,
-                    side: BorderSide(
-                      color: context.currentTheme.strokeNeutralLight200,
-                      width: 1.5,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    onChanged: (value) {
-                      _onVerifiedChanged((value ?? false) ? true : null);
-                    },
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    context.localization.listings_chip_verified,
-                    style: AppTextStyles.p3Medium.copyWith(
-                      color: context.currentTheme.textNeutralPrimary,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDistrictDropdown(
+  Widget _buildDistrictSelector(
     BuildContext context,
     List<ListingDistrict> districts,
   ) {
@@ -341,298 +309,631 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
         .where((district) => district.id == _draft.districtId)
         .firstOrNull;
 
-    final query = _districtSearchController.text.trim().toLowerCase();
-    final filteredDistricts =
-        (query.isEmpty
-                ? districts
-                : districts.where((d) => d.name.toLowerCase().contains(query)))
-            .take(3)
-            .toList();
+    final theme = context.currentTheme;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => _openDistrictPicker(context, districts),
+        borderRadius: BorderRadius.circular(AppRadius.input),
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 46),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: BoxDecoration(
+            color: theme.bgSurfaceBase2,
+            borderRadius: BorderRadius.circular(AppRadius.input),
+            border: Border.all(
+              color: selectedDistrict != null
+                  ? theme.strokeBrandHover
+                  : theme.strokeNeutralLight100,
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                TablerIcons.map_pin,
+                size: 18,
+                color: selectedDistrict != null
+                    ? theme.iconBrandPrimary
+                    : theme.iconNeutralDefault,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  selectedDistrict?.name ??
+                      context.localization.listings_select_district,
+                  style: AppTextStyles.p3Regular.copyWith(
+                    color: selectedDistrict != null
+                        ? theme.textNeutralPrimary
+                        : theme.textNeutralDisable,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              if (selectedDistrict != null)
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    setState(() {
+                      _draft = _draft.copyWith(clearDistrictId: true);
+                    });
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 6),
+                    child: Icon(
+                      TablerIcons.x,
+                      size: 16,
+                      color: theme.iconNeutralDefault,
+                    ),
+                  ),
+                ),
+              Icon(
+                TablerIcons.chevron_right,
+                size: 18,
+                color: theme.iconNeutralDefault,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openDistrictPicker(
+    BuildContext context,
+    List<ListingDistrict> districts,
+  ) async {
+    await HapticFeedbackUtil.light();
+    if (!context.mounted) return;
+
+    final result = await showDistrictPickerSheet(
+      context,
+      districts: districts,
+      selectedDistrictId: _draft.districtId,
+    );
+
+    if (result != null && mounted) {
+      setState(() {
+        if (result.districtId == null) {
+          _draft = _draft.copyWith(clearDistrictId: true);
+        } else {
+          _draft = _draft.copyWith(districtId: result.districtId);
+        }
+      });
+    }
+  }
+
+  Widget _buildPropertyTypeGrid(
+    BuildContext context,
+    List<ListingChoice> choices,
+  ) {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 8,
+        crossAxisSpacing: 8,
+        childAspectRatio: 2.1,
+      ),
+      itemCount: choices.length,
+      itemBuilder: (context, index) {
+        final choice = choices[index];
+        final isSelected = _draft.propertyType == choice.value;
+        final theme = context.currentTheme;
+
+        final foregroundColor = isSelected
+            ? theme.textBrandPrimary
+            : theme.textNeutralPrimary;
+        final iconColor = isSelected
+            ? theme.iconBrandPrimary
+            : theme.iconNeutralDefault;
+
+        return Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () =>
+                _onPropertyTypeChanged(isSelected ? null : choice.value),
+            borderRadius: BorderRadius.circular(AppRadius.input),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? theme.bgBrandLight100
+                    : theme.bgSurfaceBase2,
+                border: Border.all(
+                  color: isSelected
+                      ? theme.strokeBrandHover
+                      : theme.strokeNeutralLight100,
+                  width: isSelected ? 1.5 : 1.0,
+                ),
+                borderRadius: BorderRadius.circular(AppRadius.input),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    _getPropertyTypeIcon(choice.value),
+                    size: 22,
+                    color: iconColor,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    choice.label,
+                    style: AppTextStyles.p4Medium.copyWith(
+                      color: foregroundColor,
+                      fontWeight: isSelected ? FontWeight.w600 : null,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildPriceSection(BuildContext context) {
+    final maxBound = _maxPriceBound;
+    final minBound = _minPriceBound;
+    final step = _priceStep;
+
+    final currentMin = (_draft.priceMin ?? minBound).clamp(minBound, maxBound);
+    final currentMax = (_draft.priceMax ?? maxBound).clamp(
+      currentMin,
+      maxBound,
+    );
+
+    final divisions = ((maxBound - minBound) / step).round().clamp(1, 1000);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        InkWell(
-          onTap: () {
-            setState(() {
-              _isDistrictDropdownOpen = !_isDistrictDropdownOpen;
-              if (_isDistrictDropdownOpen) {
-                _expandSheetIfNeeded();
-                Future.microtask(() {
-                  if (mounted) {
-                    _districtSearchFocusNode.requestFocus();
-                  }
-                });
-              }
-            });
-          },
-          borderRadius: BorderRadius.circular(AppRadius.input),
-          child: Container(
-            constraints: const BoxConstraints(minHeight: 44),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            decoration: BoxDecoration(
-              color: context.currentTheme.bgSurfaceBase2,
-              borderRadius: BorderRadius.circular(AppRadius.input),
-              border: Border.all(
-                color: _isDistrictDropdownOpen
-                    ? context.currentTheme.strokeBrandHover
-                    : context.currentTheme.strokeNeutralLight100,
-              ),
+        _buildSectionHeader(
+          context,
+          icon: _currency == 'USD'
+              ? TablerIcons.currency_dollar
+              : TablerIcons.cash,
+          title: context.localization.listings_filter_price,
+          trailing: _buildCurrencySelector(context),
+        ),
+        _buildPriceRangeInputs(context),
+        const SizedBox(height: 8),
+        SliderTheme(
+          data: SliderTheme.of(context).copyWith(
+            activeTrackColor: context.currentTheme.bgBrandDefault,
+            inactiveTrackColor: context.currentTheme.strokeNeutralLight200,
+            thumbColor: context.currentTheme.bgBrandDefault,
+            overlayColor: context.currentTheme.bgBrandLight100.withValues(
+              alpha: 0.2,
             ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    selectedDistrict?.name ??
-                        context.localization.listings_select_district,
-                    style: AppTextStyles.p3Regular.copyWith(
-                      color: selectedDistrict != null
-                          ? context.currentTheme.textNeutralPrimary
-                          : context.currentTheme.textNeutralDisable,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                if (selectedDistrict != null)
-                  GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () {
-                      setState(() {
-                        _draft = _draft.copyWith(clearDistrictId: true);
-                      });
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 6),
-                      child: Icon(
-                        TablerIcons.x,
-                        size: 16,
-                        color: context.currentTheme.iconNeutralDefault,
-                      ),
-                    ),
-                  ),
-                Icon(
-                  _isDistrictDropdownOpen
-                      ? TablerIcons.chevron_up
-                      : TablerIcons.chevron_down,
-                  size: 18,
-                  color: context.currentTheme.iconNeutralDefault,
-                ),
-              ],
+            trackHeight: 4,
+            thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 9),
+            rangeThumbShape: const RoundRangeSliderThumbShape(
+              enabledThumbRadius: 9,
             ),
+          ),
+          child: RangeSlider(
+            values: RangeValues(currentMin, currentMax),
+            min: minBound,
+            max: maxBound,
+            divisions: divisions,
+            onChanged: (values) {
+              final steppedStart = (values.start / step).round() * step;
+              final steppedEnd = (values.end / step).round() * step;
+              final newMin = steppedStart <= minBound ? null : steppedStart;
+              final newMax = steppedEnd >= maxBound ? null : steppedEnd;
+
+              setState(() {
+                _draft = _draft.copyWith(
+                  priceMin: newMin,
+                  priceMax: newMax,
+                  clearPriceMin: newMin == null,
+                  clearPriceMax: newMax == null,
+                );
+                _priceMinController.text = _formatPriceValue(newMin, _currency);
+                _priceMaxController.text = _formatPriceValue(newMax, _currency);
+              });
+            },
           ),
         ),
-        if (_isDistrictDropdownOpen) ...[
-          const SizedBox(height: 6),
-          Container(
-            decoration: BoxDecoration(
-              color: context.currentTheme.bgSurfaceBase2,
-              borderRadius: BorderRadius.circular(AppRadius.input),
-              border: Border.all(
-                color: context.currentTheme.strokeNeutralLight200,
-              ),
-            ),
-            padding: const EdgeInsets.all(8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                TextField(
-                  controller: _districtSearchController,
-                  focusNode: _districtSearchFocusNode,
-                  style: AppTextStyles.p3Regular.copyWith(
-                    color: context.currentTheme.textNeutralPrimary,
-                  ),
-                  decoration: InputDecoration(
-                    isDense: true,
-                    hintText: context.localization.listings_search_district,
-                    hintStyle: AppTextStyles.p3Regular.copyWith(
-                      color: context.currentTheme.textNeutralDisable,
-                    ),
-                    prefixIcon: Icon(
-                      TablerIcons.search,
-                      size: 18,
-                      color: context.currentTheme.iconNeutralDefault,
-                    ),
-                    prefixIconConstraints: const BoxConstraints(
-                      minWidth: 32,
-                      minHeight: 32,
-                    ),
-                    suffixIcon: _districtSearchController.text.isNotEmpty
-                        ? GestureDetector(
-                            behavior: HitTestBehavior.opaque,
-                            onTap: () {
-                              setState(() {
-                                _districtSearchController.clear();
-                              });
-                            },
-                            child: Icon(
-                              TablerIcons.x,
-                              size: 16,
-                              color: context.currentTheme.iconNeutralDefault,
-                            ),
-                          )
-                        : null,
-                    suffixIconConstraints: const BoxConstraints(
-                      minWidth: 32,
-                      minHeight: 32,
-                    ),
-                    filled: true,
-                    fillColor: context.currentTheme.bgSurfaceSheet,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 8,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                        AppRadius.input / 1.5,
-                      ),
-                      borderSide: BorderSide(
-                        color: context.currentTheme.strokeNeutralLight100,
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                        AppRadius.input / 1.5,
-                      ),
-                      borderSide: BorderSide(
-                        color: context.currentTheme.strokeNeutralLight100,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                        AppRadius.input / 1.5,
-                      ),
-                      borderSide: BorderSide(
-                        color: context.currentTheme.strokeBrandHover,
-                      ),
-                    ),
-                  ),
-                  onChanged: (value) => setState(() {}),
-                ),
-                const SizedBox(height: 6),
-                if (filteredDistricts.isEmpty)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    child: Center(
-                      child: Text(
-                        context.localization.listings_no_districts_found,
-                        style: AppTextStyles.p3Regular.copyWith(
-                          color: context.currentTheme.textNeutralSecondary,
-                        ),
-                      ),
-                    ),
-                  )
-                else
-                  ...filteredDistricts.map((district) {
-                    final isSelected = _draft.districtId == district.id;
-                    return Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: () {
-                          setState(() {
-                            _draft = isSelected
-                                ? _draft.copyWith(clearDistrictId: true)
-                                : _draft.copyWith(districtId: district.id);
-                            _isDistrictDropdownOpen = false;
-                            _districtSearchController.clear();
-                          });
-                        },
-                        borderRadius: BorderRadius.circular(8),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: isSelected
-                                ? context.currentTheme.bgBrandLight100
-                                : Colors.transparent,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  district.name,
-                                  style: AppTextStyles.p3Medium.copyWith(
-                                    color: isSelected
-                                        ? context.currentTheme.textBrandPrimary
-                                        : context
-                                              .currentTheme
-                                              .textNeutralPrimary,
-                                  ),
-                                ),
-                              ),
-                              if (isSelected)
-                                Icon(
-                                  TablerIcons.check,
-                                  size: 16,
-                                  color: context.currentTheme.iconBrandPrimary,
-                                ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  }),
-              ],
-            ),
-          ),
-        ],
       ],
     );
   }
 
-  Widget _buildRangeFields(
-    BuildContext context, {
-    required TextEditingController minController,
-    required TextEditingController maxController,
-    required num? minHint,
-    required num? maxHint,
-    required ValueChanged<String> onMinChanged,
-    required ValueChanged<String> onMaxChanged,
-  }) {
+  Widget _buildCurrencySelector(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: context.currentTheme.bgSurfaceBase2,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: context.currentTheme.strokeNeutralLight100),
+      ),
+      padding: const EdgeInsets.all(2),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: ['USD', 'UZS'].map((curr) {
+          final isSelected = _currency == curr;
+          return GestureDetector(
+            onTap: () {
+              if (_currency != curr) {
+                setState(() {
+                  _currency = curr;
+                  _priceMinController.clear();
+                  _priceMaxController.clear();
+                  _draft = _draft.copyWith(
+                    currency: curr,
+                    clearPriceMin: true,
+                    clearPriceMax: true,
+                  );
+                });
+              }
+            },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? context.currentTheme.bgBrandDefault
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text(
+                curr,
+                style: AppTextStyles.p4Medium.copyWith(
+                  color: isSelected
+                      ? context.currentTheme.textNeutralWhite
+                      : context.currentTheme.textNeutralSecondary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildPriceRangeInputs(BuildContext context) {
     return Row(
       children: [
         Expanded(
           child: TextField(
-            controller: minController,
+            controller: _priceMinController,
             keyboardType: TextInputType.number,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+            ],
             style: AppTextStyles.p3Regular.copyWith(
               color: context.currentTheme.textNeutralPrimary,
             ),
             decoration: _fieldDecoration(
               context,
-              context.localization.listings_range_min,
-              hintText: _formatNumber(minHint),
+              context.localization.listings_price_from,
+              prefixIcon: Icon(
+                _currency == 'USD'
+                    ? TablerIcons.currency_dollar
+                    : TablerIcons.cash,
+                size: 16,
+                color: context.currentTheme.iconNeutralDefault,
+              ),
+              hintText: '0',
             ),
-            onChanged: onMinChanged,
+            onChanged: (val) {
+              final cleanText = val.replaceAll('.', '').trim();
+              final parsed = double.tryParse(cleanText);
+              setState(() {
+                _draft = parsed == null
+                    ? _draft.copyWith(clearPriceMin: true)
+                    : _draft.copyWith(priceMin: parsed);
+              });
+            },
           ),
         ),
         const SizedBox(width: 12),
         Expanded(
           child: TextField(
-            controller: maxController,
+            controller: _priceMaxController,
             keyboardType: TextInputType.number,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+            ],
             style: AppTextStyles.p3Regular.copyWith(
               color: context.currentTheme.textNeutralPrimary,
             ),
             decoration: _fieldDecoration(
               context,
-              context.localization.listings_range_max,
-              hintText: _formatNumber(maxHint),
+              context.localization.listings_price_to,
+              prefixIcon: Icon(
+                _currency == 'USD'
+                    ? TablerIcons.currency_dollar
+                    : TablerIcons.cash,
+                size: 16,
+                color: context.currentTheme.iconNeutralDefault,
+              ),
+              hintText: _formatPriceValue(_maxPriceBound, _currency),
             ),
-            onChanged: onMaxChanged,
+            onChanged: (val) {
+              final cleanText = val.replaceAll('.', '').trim();
+              final parsed = double.tryParse(cleanText);
+              setState(() {
+                _draft = parsed == null
+                    ? _draft.copyWith(clearPriceMax: true)
+                    : _draft.copyWith(priceMax: parsed);
+              });
+            },
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildRoomsSection(BuildContext context) {
+    final theme = context.currentTheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _buildSectionHeader(
+          context,
+          icon: TablerIcons.bed,
+          title: context.localization.listings_filter_rooms,
+        ),
+        Row(
+          children: _roomPresets.map((preset) {
+            final isSelected = preset.isSelected(
+              _draft.roomsMin,
+              _draft.roomsMax,
+            );
+
+            return Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 3),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () => _onRoomPresetTapped(preset),
+                    borderRadius: BorderRadius.circular(AppRadius.input),
+                    child: Container(
+                      height: 44,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? theme.bgBrandLight100
+                            : theme.bgSurfaceBase2,
+                        borderRadius: BorderRadius.circular(AppRadius.input),
+                        border: Border.all(
+                          color: isSelected
+                              ? theme.strokeBrandHover
+                              : theme.strokeNeutralLight100,
+                          width: isSelected ? 1.5 : 1.0,
+                        ),
+                      ),
+                      child: Text(
+                        preset.label,
+                        style: AppTextStyles.p3Medium.copyWith(
+                          color: isSelected
+                              ? theme.textBrandPrimary
+                              : theme.textNeutralPrimary,
+                          fontWeight: isSelected ? FontWeight.w700 : null,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  void _onRoomPresetTapped(_RoomPreset preset) {
+    final isCurrentlySelected = preset.isSelected(
+      _draft.roomsMin,
+      _draft.roomsMax,
+    );
+    setState(() {
+      if (isCurrentlySelected) {
+        _draft = _draft.copyWith(clearRoomsMin: true, clearRoomsMax: true);
+      } else {
+        _draft = _draft.copyWith(
+          roomsMin: preset.min,
+          roomsMax: preset.max,
+          clearRoomsMin: preset.min == null,
+          clearRoomsMax: preset.max == null,
+        );
+      }
+    });
+  }
+
+  Widget _buildFurnishingSlider(
+    BuildContext context,
+    List<ListingChoice> furnishings,
+  ) {
+    final theme = context.currentTheme;
+
+    // Fixed 3 positions with localized compact labels
+    final options = <ListingChoice>[
+      ListingChoice(
+        value: 'unfurnished',
+        label: context.localization.listings_furnishing_unfurnished,
+      ),
+      ListingChoice(
+        value: 'semi_furnished',
+        label: context.localization.listings_furnishing_semi_furnished,
+      ),
+      ListingChoice(
+        value: 'furnished',
+        label: context.localization.listings_furnishing_furnished,
+      ),
+    ];
+
+    final activeIndex = options.indexWhere(
+      (opt) => opt.value.toLowerCase() == _draft.furnishing?.toLowerCase(),
+    );
+
+    return Container(
+      height: 46,
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      decoration: BoxDecoration(
+        color: theme.bgSurfaceBase2,
+        borderRadius: BorderRadius.circular(AppRadius.input),
+        border: Border.all(color: theme.strokeNeutralLight100),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: List.generate(options.length, (index) {
+          final opt = options[index];
+          final isSelected = index == activeIndex;
+          final foregroundColor = isSelected
+              ? theme.textBrandPrimary
+              : theme.textNeutralPrimary;
+          final iconColor = isSelected
+              ? theme.iconBrandPrimary
+              : theme.iconNeutralDefault;
+
+          return Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 2),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () =>
+                      _onFurnishingChanged(isSelected ? null : opt.value),
+                  borderRadius: BorderRadius.circular(AppRadius.input - 2),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 150),
+                    curve: Curves.easeOutCubic,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 4,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? theme.bgBrandLight100
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(AppRadius.input - 2),
+                      border: Border.all(
+                        color: isSelected
+                            ? theme.strokeBrandHover
+                            : Colors.transparent,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          _getFurnishingIcon(opt.value),
+                          size: 16,
+                          color: iconColor,
+                        ),
+                        const SizedBox(width: 4),
+                        Flexible(
+                          child: Text(
+                            opt.label,
+                            style: AppTextStyles.p4Medium.copyWith(
+                              color: foregroundColor,
+                              fontWeight: isSelected ? FontWeight.w600 : null,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
+  Widget _buildVerificationSection(BuildContext context) {
+    final isChecked = _draft.verified ?? false;
+    return Container(
+      decoration: BoxDecoration(
+        color: context.currentTheme.bgSurfaceBase2,
+        borderRadius: BorderRadius.circular(AppRadius.input),
+        border: Border.all(
+          color: isChecked
+              ? context.currentTheme.strokeBrandHover
+              : context.currentTheme.strokeNeutralLight100,
+        ),
+      ),
+      child: InkWell(
+        onTap: () => _onVerifiedChanged(isChecked ? null : true),
+        borderRadius: BorderRadius.circular(AppRadius.input),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          child: Row(
+            children: [
+              Icon(
+                TablerIcons.shield_check,
+                size: 20,
+                color: isChecked
+                    ? context.currentTheme.iconBrandPrimary
+                    : context.currentTheme.iconNeutralDefault,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      context.localization.listings_filter_verification,
+                      style: AppTextStyles.p3Medium.copyWith(
+                        color: context.currentTheme.textNeutralPrimary,
+                      ),
+                    ),
+                    Text(
+                      context.localization.listings_chip_verified,
+                      style: AppTextStyles.p4Regular.copyWith(
+                        color: context.currentTheme.textNeutralSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                width: 24,
+                height: 24,
+                child: Checkbox(
+                  value: isChecked,
+                  activeColor: context.currentTheme.bgBrandDefault,
+                  checkColor: context.currentTheme.textNeutralWhite,
+                  side: BorderSide(
+                    color: context.currentTheme.strokeNeutralLight200,
+                    width: 1.5,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  onChanged: (value) {
+                    _onVerifiedChanged((value ?? false) ? true : null);
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
   InputDecoration _fieldDecoration(
     BuildContext context,
     String? label, {
+    Widget? prefixIcon,
     String? hintText,
   }) {
     final base = InputDecorations.denseDecoration(
@@ -642,6 +943,13 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
     return base.copyWith(
       labelText: label,
       hintText: hintText,
+      prefixIcon: prefixIcon != null
+          ? Padding(
+              padding: const EdgeInsets.only(left: 10, right: 6),
+              child: prefixIcon,
+            )
+          : null,
+      prefixIconConstraints: const BoxConstraints(minWidth: 32, minHeight: 32),
       hintStyle: AppTextStyles.p3Regular.copyWith(
         color: context.currentTheme.textNeutralDisable,
       ),
@@ -677,15 +985,17 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
 
   Widget _buildChoiceGroup(
     BuildContext context, {
+    required IconData icon,
     required String title,
     required List<ListingChoice> choices,
     required String? selectedValue,
+    required IconData Function(String value) getIcon,
     required ValueChanged<String?> onChanged,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _buildSectionTitle(context, title),
+        _buildSectionHeader(context, icon: icon, title: title),
         Wrap(
           spacing: 8,
           runSpacing: 8,
@@ -694,6 +1004,7 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
               (choice) => _buildChoice(
                 context,
                 label: choice.label,
+                icon: getIcon(choice.value),
                 selected: selectedValue == choice.value,
                 onTap: () => onChanged(
                   selectedValue == choice.value ? null : choice.value,
@@ -709,35 +1020,46 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
   Widget _buildChoice(
     BuildContext context, {
     required String label,
+    required IconData icon,
     required bool selected,
     required VoidCallback onTap,
   }) {
     final foregroundColor = selected
         ? context.currentTheme.textBrandPrimary
         : context.currentTheme.textNeutralPrimary;
+    final iconColor = selected
+        ? context.currentTheme.iconBrandPrimary
+        : context.currentTheme.iconNeutralDefault;
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: BorderRadius.circular(10),
         child: Container(
-          constraints: const BoxConstraints(minHeight: 36),
-          padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
+          constraints: const BoxConstraints(minHeight: 38),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
             color: selected
                 ? context.currentTheme.bgBrandLight100
                 : context.currentTheme.bgSurfaceBase2,
             border: Border.all(
               color: selected
-                  ? context.currentTheme.iconBrandPrimary
+                  ? context.currentTheme.strokeBrandHover
                   : context.currentTheme.strokeNeutralLight100,
             ),
-            borderRadius: BorderRadius.circular(999),
+            borderRadius: BorderRadius.circular(10),
           ),
-          child: Text(
-            label,
-            style: AppTextStyles.p3Medium.copyWith(color: foregroundColor),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 16, color: iconColor),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: AppTextStyles.p3Medium.copyWith(color: foregroundColor),
+              ),
+            ],
           ),
         ),
       ),
@@ -783,38 +1105,6 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
     );
   }
 
-  void _onPriceMinChanged(String value) {
-    _updateDraft(
-      value.isEmpty
-          ? _draft.copyWith(clearPriceMin: true)
-          : _draft.copyWith(priceMin: double.tryParse(value)),
-    );
-  }
-
-  void _onPriceMaxChanged(String value) {
-    _updateDraft(
-      value.isEmpty
-          ? _draft.copyWith(clearPriceMax: true)
-          : _draft.copyWith(priceMax: double.tryParse(value)),
-    );
-  }
-
-  void _onRoomsMinChanged(String value) {
-    _updateDraft(
-      value.isEmpty
-          ? _draft.copyWith(clearRoomsMin: true)
-          : _draft.copyWith(roomsMin: int.tryParse(value)),
-    );
-  }
-
-  void _onRoomsMaxChanged(String value) {
-    _updateDraft(
-      value.isEmpty
-          ? _draft.copyWith(clearRoomsMax: true)
-          : _draft.copyWith(roomsMax: int.tryParse(value)),
-    );
-  }
-
   void _onFurnishingChanged(String? value) {
     setState(() {
       _draft = value == null
@@ -847,50 +1137,87 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
     });
   }
 
-  void _updateDraft(ListingFilters updated) {
-    setState(() {
-      _draft = updated;
-    });
-  }
-
   void _clearDraft() {
     setState(() {
       _draft = const ListingFilters.empty();
+      _currency = 'USD';
       _priceMinController.clear();
       _priceMaxController.clear();
-      _roomsMinController.clear();
-      _roomsMaxController.clear();
-      _districtSearchController.clear();
-      _isDistrictDropdownOpen = false;
     });
   }
 
   void _applyDraft() {
-    var normalized = _draft;
-    if (normalized.priceMin != null &&
-        normalized.priceMax != null &&
-        normalized.priceMin! > normalized.priceMax!) {
-      normalized = normalized.copyWith(
-        priceMin: normalized.priceMax,
-        priceMax: normalized.priceMin,
+    var finalDraft = _draft;
+    if (finalDraft.priceMin != null &&
+        finalDraft.priceMax != null &&
+        finalDraft.priceMin! > finalDraft.priceMax!) {
+      finalDraft = finalDraft.copyWith(
+        priceMin: finalDraft.priceMax,
+        priceMax: finalDraft.priceMin,
       );
     }
-    if (normalized.roomsMin != null &&
-        normalized.roomsMax != null &&
-        normalized.roomsMin! > normalized.roomsMax!) {
-      normalized = normalized.copyWith(
-        roomsMin: normalized.roomsMax,
-        roomsMax: normalized.roomsMin,
+    if (finalDraft.roomsMin != null &&
+        finalDraft.roomsMax != null &&
+        finalDraft.roomsMin! > finalDraft.roomsMax!) {
+      finalDraft = finalDraft.copyWith(
+        roomsMin: finalDraft.roomsMax,
+        roomsMax: finalDraft.roomsMin,
       );
     }
-
-    FocusManager.instance.primaryFocus?.unfocus();
-    Navigator.of(context).pop(normalized);
+    Navigator.of(context).pop(finalDraft);
   }
 
-  String _formatNumber(num? value) {
+  static String _formatPriceValue(num? value, String currency) {
     if (value == null) return '';
-    if (value == value.roundToDouble()) return value.toInt().toString();
-    return value.toString();
+    final intVal = value.round();
+    if (currency == 'UZS') {
+      final raw = intVal.toString();
+      return raw.replaceAllMapped(
+        RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+        (Match m) => '${m[1]}.',
+      );
+    }
+    return intVal.toString();
+  }
+
+  static IconData _getPropertyTypeIcon(String value) {
+    switch (value.toLowerCase()) {
+      case 'apartment':
+        return TablerIcons.building;
+      case 'house':
+        return TablerIcons.home;
+      case 'studio':
+        return TablerIcons.layout;
+      case 'room':
+        return TablerIcons.door;
+      default:
+        return TablerIcons.building;
+    }
+  }
+
+  static IconData _getFurnishingIcon(String value) {
+    switch (value.toLowerCase()) {
+      case 'furnished':
+        return TablerIcons.armchair;
+      case 'semi_furnished':
+        return TablerIcons.lamp;
+      case 'unfurnished':
+        return TablerIcons.box;
+      default:
+        return TablerIcons.sofa;
+    }
+  }
+
+  static IconData _getTariffIcon(String value) {
+    switch (value.toLowerCase()) {
+      case 'standard':
+        return TablerIcons.tag;
+      case 'comfort':
+        return TablerIcons.sparkles;
+      case 'premium':
+        return TablerIcons.crown;
+      default:
+        return TablerIcons.star;
+    }
   }
 }

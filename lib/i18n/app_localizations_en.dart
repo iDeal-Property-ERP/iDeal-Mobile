@@ -1331,13 +1331,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get listings_tariff_premium => 'Premium';
 
   @override
-  String get listings_furnishing_furnished => 'Furnished';
+  String get listings_furnishing_furnished => 'Full';
 
   @override
-  String get listings_furnishing_semi_furnished => 'Semi-furnished';
+  String get listings_furnishing_semi_furnished => 'Partial';
 
   @override
-  String get listings_furnishing_unfurnished => 'Unfurnished';
+  String get listings_furnishing_unfurnished => 'None';
 
   @override
   String get listings_all_filters => 'All filters';
@@ -1353,6 +1353,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get listings_filter_district => 'District';
+
+  @override
+  String get listings_filter_currency => 'Currency';
 
   @override
   String get listings_filter_property_type => 'Property type';
@@ -1386,6 +1389,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get listings_range_max => 'Max';
+
+  @override
+  String get listings_rooms_any => 'Any';
+
+  @override
+  String get listings_rooms_min => 'Min rooms';
+
+  @override
+  String get listings_rooms_max => 'Max rooms';
+
+  @override
+  String get listings_price_from => 'From';
+
+  @override
+  String get listings_price_to => 'To';
 
   @override
   String get listings_chip_verified => 'Verified only';

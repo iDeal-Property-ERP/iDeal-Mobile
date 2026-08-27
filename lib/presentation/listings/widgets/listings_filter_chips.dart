@@ -32,6 +32,7 @@ class ListingsFilterChips extends StatelessWidget {
       ListingsFilterPillChip(
         label: context.localization.listings_chip_verified,
         selected: filters.verified ?? false,
+        leadingIcon: TablerIcons.shield_check,
         onTap: () => _toggleVerified(filters),
       ),
     ];
@@ -88,6 +89,7 @@ class ListingsFilterChips extends StatelessWidget {
 
     return ListingsFilterDropdownChip<int>(
       label: context.localization.listings_filter_district,
+      leadingIcon: TablerIcons.map_pin,
       options: options,
       selected: filters.districtId,
       selectedLabel: selectedDistrict == null && filters.districtId != null
@@ -113,6 +115,7 @@ class ListingsFilterChips extends StatelessWidget {
 
     return ListingsFilterDropdownChip<_FilterRange>(
       label: context.localization.listings_filter_rooms,
+      leadingIcon: TablerIcons.bed,
       options: _roomOptions(context),
       selected: selectedRange,
       selectedLabel: hasSelectedRange
@@ -137,6 +140,7 @@ class ListingsFilterChips extends StatelessWidget {
   Widget _buildPropertyTypeChip(BuildContext context) {
     return ListingsFilterDropdownChip<String>(
       label: context.localization.listings_filter_property_type,
+      leadingIcon: TablerIcons.building,
       options: [
         ListingsFilterDropdownOption<String>(
           value: null,
@@ -170,6 +174,7 @@ class ListingsFilterChips extends StatelessWidget {
 
     return ListingsFilterDropdownChip<_FilterRange>(
       label: context.localization.listings_filter_price,
+      leadingIcon: TablerIcons.currency_dollar,
       options: _priceOptions(context),
       selected: selectedRange,
       selectedLabel: hasSelectedRange
@@ -194,6 +199,7 @@ class ListingsFilterChips extends StatelessWidget {
   Widget _buildTariffChip(BuildContext context) {
     return ListingsFilterDropdownChip<String>(
       label: context.localization.listings_filter_tariff,
+      leadingIcon: TablerIcons.sparkles,
       options: [
         ListingsFilterDropdownOption<String>(
           value: null,
@@ -219,6 +225,7 @@ class ListingsFilterChips extends StatelessWidget {
   Widget _buildFurnishingChip(BuildContext context) {
     return ListingsFilterDropdownChip<String>(
       label: context.localization.listings_filter_furnishing,
+      leadingIcon: TablerIcons.armchair,
       options: [
         ListingsFilterDropdownOption<String>(
           value: null,

@@ -177,6 +177,7 @@ class _ListingMapToolbarState extends State<ListingMapToolbar> {
     final filters = widget.filters;
     return ListingsFilterDropdownChip<int>(
       label: context.localization.listings_filter_district,
+      leadingIcon: TablerIcons.map_pin,
       selected: filters.districtId,
       options: [
         ListingsFilterDropdownOption<int>(
@@ -203,6 +204,7 @@ class _ListingMapToolbarState extends State<ListingMapToolbar> {
     final filters = widget.filters;
     return ListingsFilterDropdownChip<String>(
       label: context.localization.listings_filter_property_type,
+      leadingIcon: TablerIcons.building,
       selected: filters.propertyType,
       options: [
         ListingsFilterDropdownOption<String>(
@@ -230,6 +232,7 @@ class _ListingMapToolbarState extends State<ListingMapToolbar> {
     final selected = _findRange(filters.priceMin, filters.priceMax, _prices);
     return ListingsFilterDropdownChip<_Range>(
       label: context.localization.listings_filter_price,
+      leadingIcon: TablerIcons.currency_dollar,
       selected: selected,
       selectedLabel:
           selected == null &&
@@ -266,6 +269,7 @@ class _ListingMapToolbarState extends State<ListingMapToolbar> {
     final selected = _findRange(filters.roomsMin, filters.roomsMax, _rooms);
     return ListingsFilterDropdownChip<_Range>(
       label: context.localization.listings_filter_rooms,
+      leadingIcon: TablerIcons.bed,
       selected: selected,
       selectedLabel:
           selected == null &&

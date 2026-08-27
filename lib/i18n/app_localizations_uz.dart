@@ -1356,13 +1356,13 @@ class AppLocalizationsUz extends AppLocalizations {
   String get listings_tariff_premium => 'Premium';
 
   @override
-  String get listings_furnishing_furnished => 'Jihozlangan';
+  String get listings_furnishing_furnished => 'Jihozli';
 
   @override
   String get listings_furnishing_semi_furnished => 'Qisman';
 
   @override
-  String get listings_furnishing_unfurnished => 'Jihozlanmagan';
+  String get listings_furnishing_unfurnished => 'Jihozsiz';
 
   @override
   String get listings_all_filters => 'Barcha filtrlar';
@@ -1378,6 +1378,9 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get listings_filter_district => 'Tuman';
+
+  @override
+  String get listings_filter_currency => 'Valyuta';
 
   @override
   String get listings_filter_property_type => 'Uy turi';
@@ -1411,6 +1414,21 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get listings_range_max => 'Maks';
+
+  @override
+  String get listings_rooms_any => 'Ixtiyoriy';
+
+  @override
+  String get listings_rooms_min => 'Kamida xonalar';
+
+  @override
+  String get listings_rooms_max => 'Ko\'pi bilan xonalar';
+
+  @override
+  String get listings_price_from => 'Dan';
+
+  @override
+  String get listings_price_to => 'Gacha';
 
   @override
   String get listings_chip_verified => 'Faqat tekshirilgan';
