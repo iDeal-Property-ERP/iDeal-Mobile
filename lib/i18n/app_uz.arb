@@ -739,5 +739,16 @@
   "no_listings_found": "E'lonlar topilmadi",
   "list_first_property": "E'lon joylashtirish",
   "status_review_desc": "E'loningiz ko'rib chiqilmoqda. Tasdiqlangach xabar beramiz.",
-  "view_all": "Barchasi"
+  "view_all": "Barchasi",
+  "listPropertyOnboardingTitle1": "Ishonchli daromad",
+  "listPropertyOnboardingDesc1": "iDeal bilan kafolatlangan oylik summani kelishib oling. Uy vaqtincha ijaraga berilmasa ham, shaffof komissiyamiz chegirilgach, kelishilgan to‘lovni olasiz.",
+  "listPropertyOnboardingBadge1": "Har oy kafolat",
+  "listPropertyOnboardingTitle2": "Ijara oshsa, daromadingiz ham oshadi",
+  "listPropertyOnboardingDesc2": "Uyingizni kafolatlangan summadan yuqori narxda ijaraga bersak, to‘lovingiz yuqoriroq ijara summasidan hisoblanadi. Natija qancha yaxshi bo‘lsa, shuncha ko‘p daromad olasiz.",
+  "listPropertyOnboardingBadge2": "Yuqori ijara — yuqori daromad",
+  "listPropertyOnboardingTitle3": "Aniq 10% komissiya",
+  "listPropertyOnboardingDesc3": "iDeal oylik to‘lovingiz hisoblanadigan summaning 10%ini oladi. Qolgan 90% sizga — kafolatlangan summadan yoki yuqoriroq ijara daromadidan.",
+  "listPropertyOnboardingBadge3": "10% iDeal • 90% egaga",
+  "listPropertyOnboardingSkip": "O'tkazib yuborish",
+  "listPropertyOnboardingContinue": "Davom etish"
 }

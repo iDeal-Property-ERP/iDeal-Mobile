@@ -15,6 +15,7 @@ import 'package:ideal_mobile/presentation/list_property/widgets/steps/photos_ste
 import 'package:ideal_mobile/presentation/list_property/widgets/steps/pricing_step_view.dart';
 import 'package:ideal_mobile/presentation/list_property/widgets/steps/review_step_view.dart';
 import 'package:ideal_mobile/presentation/list_property/widgets/steps/success_step_view.dart';
+import 'package:ideal_mobile/presentation/list_property/widgets/list_property_onboarding_view.dart';
 import 'package:ideal_mobile/presentation/list_property/widgets/wizard_step_header.dart';
 import 'package:ideal_mobile/utils/extensions/build_context_ext.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
@@ -23,11 +24,29 @@ import 'package:ideal_mobile/widgets/app_button/enums/app_button_size_enum.dart'
 import 'package:ideal_mobile/widgets/app_button/enums/app_button_style_enum.dart';
 
 @RoutePage()
-class ListPropertyWizardScreen extends StatelessWidget {
+class ListPropertyWizardScreen extends StatefulWidget {
   const ListPropertyWizardScreen({super.key});
 
   @override
+  State<ListPropertyWizardScreen> createState() =>
+      _ListPropertyWizardScreenState();
+}
+
+class _ListPropertyWizardScreenState extends State<ListPropertyWizardScreen> {
+  bool _showOnboarding = true;
+
+  @override
   Widget build(BuildContext context) {
+    if (_showOnboarding) {
+      return ListPropertyOnboardingView(
+        onComplete: () {
+          setState(() {
+            _showOnboarding = false;
+          });
+        },
+      );
+    }
+
     return BlocProvider<ListPropertyWizardBloc>(
       create: (_) => ListPropertyWizardBloc(
         getConfig: sl<GetPropertyUploadConfig>(),
@@ -164,9 +183,6 @@ class _ListPropertyWizardView extends StatelessWidget {
           body: SafeArea(
             child: isSuccess
                 ? const SuccessStepView()
-                : state.status == WizardStatus.loadingConfig &&
-                      state.config == null
-                ? const Center(child: CircularProgressIndicator())
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [

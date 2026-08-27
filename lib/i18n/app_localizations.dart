@@ -3789,6 +3789,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All'**
   String get view_all;
+
+  /// No description provided for @listPropertyOnboardingTitle1.
+  ///
+  /// In en, this message translates to:
+  /// **'Income you can count on'**
+  String get listPropertyOnboardingTitle1;
+
+  /// No description provided for @listPropertyOnboardingDesc1.
+  ///
+  /// In en, this message translates to:
+  /// **'Agree on a guaranteed monthly amount with iDeal. Even if your home is vacant, you still receive the agreed owner payout after our transparent fee.'**
+  String get listPropertyOnboardingDesc1;
+
+  /// No description provided for @listPropertyOnboardingBadge1.
+  ///
+  /// In en, this message translates to:
+  /// **'Guaranteed every month'**
+  String get listPropertyOnboardingBadge1;
+
+  /// No description provided for @listPropertyOnboardingTitle2.
+  ///
+  /// In en, this message translates to:
+  /// **'Your income grows with the rent'**
+  String get listPropertyOnboardingTitle2;
+
+  /// No description provided for @listPropertyOnboardingDesc2.
+  ///
+  /// In en, this message translates to:
+  /// **'When we rent your home above the guaranteed amount, your payout is calculated from the higher rent. The better the result, the more you earn.'**
+  String get listPropertyOnboardingDesc2;
+
+  /// No description provided for @listPropertyOnboardingBadge2.
+  ///
+  /// In en, this message translates to:
+  /// **'More rent. More earnings.'**
+  String get listPropertyOnboardingBadge2;
+
+  /// No description provided for @listPropertyOnboardingTitle3.
+  ///
+  /// In en, this message translates to:
+  /// **'A clear 10% fee'**
+  String get listPropertyOnboardingTitle3;
+
+  /// No description provided for @listPropertyOnboardingDesc3.
+  ///
+  /// In en, this message translates to:
+  /// **'iDeal charges 10% of the amount used for your monthly payout. You receive the remaining 90%—from the guarantee or from higher rent.'**
+  String get listPropertyOnboardingDesc3;
+
+  /// No description provided for @listPropertyOnboardingBadge3.
+  ///
+  /// In en, this message translates to:
+  /// **'10% iDeal • 90% owner'**
+  String get listPropertyOnboardingBadge3;
+
+  /// No description provided for @listPropertyOnboardingSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get listPropertyOnboardingSkip;
+
+  /// No description provided for @listPropertyOnboardingContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get listPropertyOnboardingContinue;
 }
 
 class _AppLocalizationsDelegate

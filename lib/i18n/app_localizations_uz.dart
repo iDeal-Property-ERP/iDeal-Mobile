@@ -2063,4 +2063,41 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get view_all => 'Barchasi';
+
+  @override
+  String get listPropertyOnboardingTitle1 => 'Ishonchli daromad';
+
+  @override
+  String get listPropertyOnboardingDesc1 =>
+      'iDeal bilan kafolatlangan oylik summani kelishib oling. Uy vaqtincha ijaraga berilmasa ham, shaffof komissiyamiz chegirilgach, kelishilgan to‘lovni olasiz.';
+
+  @override
+  String get listPropertyOnboardingBadge1 => 'Har oy kafolat';
+
+  @override
+  String get listPropertyOnboardingTitle2 =>
+      'Ijara oshsa, daromadingiz ham oshadi';
+
+  @override
+  String get listPropertyOnboardingDesc2 =>
+      'Uyingizni kafolatlangan summadan yuqori narxda ijaraga bersak, to‘lovingiz yuqoriroq ijara summasidan hisoblanadi. Natija qancha yaxshi bo‘lsa, shuncha ko‘p daromad olasiz.';
+
+  @override
+  String get listPropertyOnboardingBadge2 => 'Yuqori ijara — yuqori daromad';
+
+  @override
+  String get listPropertyOnboardingTitle3 => 'Aniq 10% komissiya';
+
+  @override
+  String get listPropertyOnboardingDesc3 =>
+      'iDeal oylik to‘lovingiz hisoblanadigan summaning 10%ini oladi. Qolgan 90% sizga — kafolatlangan summadan yoki yuqoriroq ijara daromadidan.';
+
+  @override
+  String get listPropertyOnboardingBadge3 => '10% iDeal • 90% egaga';
+
+  @override
+  String get listPropertyOnboardingSkip => 'O\'tkazib yuborish';
+
+  @override
+  String get listPropertyOnboardingContinue => 'Davom etish';
 }

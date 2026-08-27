@@ -739,5 +739,16 @@
   "no_listings_found": "Объявления не найдены",
   "list_first_property": "Добавить объект",
   "status_review_desc": "Ваше объявление находится на проверке. Мы уведомим вас после одобрения.",
-  "view_all": "Все"
+  "view_all": "Все",
+  "listPropertyOnboardingTitle1": "Доход, на который можно рассчитывать",
+  "listPropertyOnboardingDesc1": "Согласуйте с iDeal гарантированную ежемесячную сумму. Даже если жильё временно пустует, вы получите согласованную выплату владельцу за вычетом нашей прозрачной комиссии.",
+  "listPropertyOnboardingBadge1": "Гарантия каждый месяц",
+  "listPropertyOnboardingTitle2": "Ваш доход растёт вместе с арендой",
+  "listPropertyOnboardingDesc2": "Если мы сдаём ваше жильё дороже гарантированной суммы, выплата рассчитывается от более высокой арендной платы. Чем лучше результат, тем больше вы зарабатываете.",
+  "listPropertyOnboardingBadge2": "Выше аренда — выше доход",
+  "listPropertyOnboardingTitle3": "Понятная комиссия 10%",
+  "listPropertyOnboardingDesc3": "iDeal удерживает 10% от суммы, по которой рассчитывается ваша ежемесячная выплата. Вы получаете оставшиеся 90% — из гарантии или более высокой аренды.",
+  "listPropertyOnboardingBadge3": "10% iDeal • 90% владельцу",
+  "listPropertyOnboardingSkip": "Пропустить",
+  "listPropertyOnboardingContinue": "Продолжить"
 }

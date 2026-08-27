@@ -2065,4 +2065,42 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get view_all => 'Все';
+
+  @override
+  String get listPropertyOnboardingTitle1 =>
+      'Доход, на который можно рассчитывать';
+
+  @override
+  String get listPropertyOnboardingDesc1 =>
+      'Согласуйте с iDeal гарантированную ежемесячную сумму. Даже если жильё временно пустует, вы получите согласованную выплату владельцу за вычетом нашей прозрачной комиссии.';
+
+  @override
+  String get listPropertyOnboardingBadge1 => 'Гарантия каждый месяц';
+
+  @override
+  String get listPropertyOnboardingTitle2 =>
+      'Ваш доход растёт вместе с арендой';
+
+  @override
+  String get listPropertyOnboardingDesc2 =>
+      'Если мы сдаём ваше жильё дороже гарантированной суммы, выплата рассчитывается от более высокой арендной платы. Чем лучше результат, тем больше вы зарабатываете.';
+
+  @override
+  String get listPropertyOnboardingBadge2 => 'Выше аренда — выше доход';
+
+  @override
+  String get listPropertyOnboardingTitle3 => 'Понятная комиссия 10%';
+
+  @override
+  String get listPropertyOnboardingDesc3 =>
+      'iDeal удерживает 10% от суммы, по которой рассчитывается ваша ежемесячная выплата. Вы получаете оставшиеся 90% — из гарантии или более высокой аренды.';
+
+  @override
+  String get listPropertyOnboardingBadge3 => '10% iDeal • 90% владельцу';
+
+  @override
+  String get listPropertyOnboardingSkip => 'Пропустить';
+
+  @override
+  String get listPropertyOnboardingContinue => 'Продолжить';
 }

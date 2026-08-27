@@ -2035,4 +2035,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get view_all => 'All';
+
+  @override
+  String get listPropertyOnboardingTitle1 => 'Income you can count on';
+
+  @override
+  String get listPropertyOnboardingDesc1 =>
+      'Agree on a guaranteed monthly amount with iDeal. Even if your home is vacant, you still receive the agreed owner payout after our transparent fee.';
+
+  @override
+  String get listPropertyOnboardingBadge1 => 'Guaranteed every month';
+
+  @override
+  String get listPropertyOnboardingTitle2 => 'Your income grows with the rent';
+
+  @override
+  String get listPropertyOnboardingDesc2 =>
+      'When we rent your home above the guaranteed amount, your payout is calculated from the higher rent. The better the result, the more you earn.';
+
+  @override
+  String get listPropertyOnboardingBadge2 => 'More rent. More earnings.';
+
+  @override
+  String get listPropertyOnboardingTitle3 => 'A clear 10% fee';
+
+  @override
+  String get listPropertyOnboardingDesc3 =>
+      'iDeal charges 10% of the amount used for your monthly payout. You receive the remaining 90%—from the guarantee or from higher rent.';
+
+  @override
+  String get listPropertyOnboardingBadge3 => '10% iDeal • 90% owner';
+
+  @override
+  String get listPropertyOnboardingSkip => 'Skip';
+
+  @override
+  String get listPropertyOnboardingContinue => 'Continue';
 }

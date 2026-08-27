@@ -855,5 +855,16 @@
   "no_listings_found": "No listings found",
   "list_first_property": "List a property",
   "status_review_desc": "Your property listing is currently under review. We will notify you once approved.",
-  "view_all": "All"
+  "view_all": "All",
+  "listPropertyOnboardingTitle1": "Income you can count on",
+  "listPropertyOnboardingDesc1": "Agree on a guaranteed monthly amount with iDeal. Even if your home is vacant, you still receive the agreed owner payout after our transparent fee.",
+  "listPropertyOnboardingBadge1": "Guaranteed every month",
+  "listPropertyOnboardingTitle2": "Your income grows with the rent",
+  "listPropertyOnboardingDesc2": "When we rent your home above the guaranteed amount, your payout is calculated from the higher rent. The better the result, the more you earn.",
+  "listPropertyOnboardingBadge2": "More rent. More earnings.",
+  "listPropertyOnboardingTitle3": "A clear 10% fee",
+  "listPropertyOnboardingDesc3": "iDeal charges 10% of the amount used for your monthly payout. You receive the remaining 90%—from the guarantee or from higher rent.",
+  "listPropertyOnboardingBadge3": "10% iDeal • 90% owner",
+  "listPropertyOnboardingSkip": "Skip",
+  "listPropertyOnboardingContinue": "Continue"
 }
