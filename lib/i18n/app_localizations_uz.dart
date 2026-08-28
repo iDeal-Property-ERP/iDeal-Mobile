@@ -1401,6 +1401,34 @@ class AppLocalizationsUz extends AppLocalizations {
   String get listings_filter_verification => 'Tasdiqlash';
 
   @override
+  String get listings_availability => 'Mavjudlik';
+
+  @override
+  String get listings_date_filter_title => 'Mavjudlik sanasi';
+
+  @override
+  String get listings_date_filter_button => 'Sanalar';
+
+  @override
+  String get listings_select_dates => 'Sanani tanlang';
+
+  @override
+  String listings_date_range(String start, String end) {
+    return '$start dan $end gacha';
+  }
+
+  @override
+  String get listings_flexibility => 'Moslashuvchanlik';
+
+  @override
+  String listings_flexibility_days(int days) {
+    return '± $days kun';
+  }
+
+  @override
+  String get listings_clear_dates => 'Sanani tozalash';
+
+  @override
   String get listings_search_district => 'Tumanni qidirish...';
 
   @override

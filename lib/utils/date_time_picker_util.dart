@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ideal_mobile/utils/extensions/date_time_extensions.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 class DateTimePickerUtil {
@@ -16,17 +17,23 @@ class DateTimePickerUtil {
 
   /// Shows a calendar range picker with a customizable date range.
   ///
+  /// The picker is rendered as a centered popup (not a full-screen route) and
+  /// enforces a minimum span of [minimumMonthSpan] months: the confirm action
+  /// stays disabled and an inline hint is shown until a valid range is chosen.
+  ///
   /// [initialRange] - Optional default selected range.
   /// [firstDate] - Minimum selectable date.
   /// [lastDate] - Maximum selectable date.
   /// [helpText] - Optional picker title.
-  /// [onRangeSelected] - Callback with selected date range.
+  /// [minimumMonthSpan] - Minimum number of whole months the range must span.
+  /// [onRangeSelected] - Callback with the selected date range.
   static Future<void> showRangeDatePicker({
     required BuildContext context,
     DateTimeRange? initialRange,
     DateTime? firstDate,
     DateTime? lastDate,
     String? helpText,
+    int minimumMonthSpan = 1,
     required ValueChanged<DateTimeRange> onRangeSelected,
   }) async {
     final first = _defaultFirstDate(firstDate);
@@ -36,17 +43,151 @@ class DateTimePickerUtil {
       throw ArgumentError('firstDate must be before or equal to lastDate');
     }
 
-    final pickedRange = await showDateRangePicker(
+    DateTimeRange? result;
+
+    await showDialog<void>(
       context: context,
-      firstDate: first,
-      lastDate: last,
-      initialDateRange: initialRange,
-      helpText: helpText,
+      builder: (dialogContext) {
+        DateTime? start = initialRange?.start;
+        DateTime? end = initialRange?.end;
+        var step = start == null ? 1 : 2;
+
+        bool isValid() {
+          final s = start;
+          final e = end;
+          return s != null &&
+              e != null &&
+              !e.isBefore(_addMonths(s, minimumMonthSpan));
+        }
+
+        return StatefulBuilder(
+          builder: (ctx, setState) {
+            final valid = isValid();
+            final theme = Theme.of(context);
+            final picker = step == 1
+                ? CalendarDatePicker(
+                    initialDate: start ?? first,
+                    firstDate: first,
+                    lastDate: last,
+                    onDateChanged: (value) => setState(() {
+                      start = value;
+                      step = 2;
+                    }),
+                  )
+                : CalendarDatePicker(
+                    initialDate: end ?? start ?? first,
+                    firstDate: start ?? first,
+                    lastDate: last,
+                    onDateChanged: (value) => setState(() => end = value),
+                  );
+
+            return Dialog(
+              insetPadding: const EdgeInsets.all(16),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 400),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 16, 12, 12),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (helpText != null)
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            left: 4,
+                            right: 4,
+                            bottom: 8,
+                          ),
+                          child: Text(
+                            helpText,
+                            style: theme.textTheme.titleMedium,
+                          ),
+                        ),
+                      if (step == 2)
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            left: 4,
+                            right: 4,
+                            bottom: 8,
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  'Start: '
+                                  '${start!.format(pattern: 'd MMM yyyy')}',
+                                  style: theme.textTheme.bodyMedium,
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () => setState(() => step = 1),
+                                child: const Text('Change'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      picker,
+                      if (step == 2 &&
+                          start != null &&
+                          end != null &&
+                          !valid)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8, left: 4),
+                          child: Text(
+                            'Select a range of at least '
+                            '$minimumMonthSpan '
+                            '${minimumMonthSpan == 1 ? 'month' : 'months'}.',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.error,
+                            ),
+                          ),
+                        ),
+                      const SizedBox(height: 12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () =>
+                                Navigator.of(dialogContext).pop(),
+                            child: const Text('Cancel'),
+                          ),
+                          const SizedBox(width: 8),
+                          FilledButton(
+                            onPressed: valid
+                                ? () {
+                                    result = DateTimeRange(
+                                      start: start!,
+                                      end: end!,
+                                    );
+                                    Navigator.of(dialogContext).pop();
+                                  }
+                                : null,
+                            child: const Text('Apply'),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
 
-    if (pickedRange != null) {
-      onRangeSelected(pickedRange);
-    }
+    if (result != null) onRangeSelected(result!);
+  }
+
+  /// Returns [date] advanced by [months] whole months, clamping the day to the
+  /// destination month's length.
+  static DateTime _addMonths(DateTime date, int months) {
+    final total = date.year * 12 + (date.month - 1) + months;
+    final year = total ~/ 12;
+    final month = total % 12 + 1;
+    final lastDay = DateTime(year, month + 1, 0).day;
+    final day = date.day > lastDay ? lastDay : date.day;
+    return DateTime(year, month, day);
   }
 
   /// Shows a calendar **single date picker** with a customizable date range.

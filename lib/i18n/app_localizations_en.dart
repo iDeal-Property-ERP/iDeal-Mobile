@@ -1376,6 +1376,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String get listings_filter_verification => 'Verification';
 
   @override
+  String get listings_availability => 'Availability';
+
+  @override
+  String get listings_date_filter_title => 'Availability dates';
+
+  @override
+  String get listings_date_filter_button => 'Dates';
+
+  @override
+  String get listings_select_dates => 'Select dates';
+
+  @override
+  String listings_date_range(String start, String end) {
+    return 'From $start to $end';
+  }
+
+  @override
+  String get listings_flexibility => 'Flexibility';
+
+  @override
+  String listings_flexibility_days(int days) {
+    return '± $days days';
+  }
+
+  @override
+  String get listings_clear_dates => 'Clear dates';
+
+  @override
   String get listings_search_district => 'Search district...';
 
   @override

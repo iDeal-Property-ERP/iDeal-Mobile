@@ -86,6 +86,8 @@ dev_dependencies:
   mocktail_image_network: ^1.2.0
   patrol: ^3.19.0
 
+  flutter_localizations:
+    sdk: flutter
 flutter_native_splash:
   color: "#000000"
 

@@ -454,6 +454,33 @@
   "listings_filter_furnishing": "Мебель",
   "listings_filter_tariff": "Тариф",
   "listings_filter_verification": "Верификация",
+  "listings_availability": "Доступность",
+  "listings_date_filter_title": "Даты доступности",
+  "listings_date_filter_button": "Даты",
+  "listings_select_dates": "Выберите даты",
+  "listings_date_range": "С {start} по {end}",
+  "@listings_date_range": {
+    "description": "Selected availability date range",
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "listings_flexibility": "Гибкость",
+  "listings_flexibility_days": "± {days} дн.",
+  "@listings_flexibility_days": {
+    "description": "Availability flexibility in days",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "listings_clear_dates": "Очистить даты",
   "listings_search_district": "Поиск района...",
   "listings_no_districts_found": "Районы не найдены",
   "listings_select_district": "Выберите район",

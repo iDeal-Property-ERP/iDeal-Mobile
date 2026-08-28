@@ -10,6 +10,7 @@ import 'package:ideal_mobile/core/services/injection_container.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
 import 'package:ideal_mobile/presentation/home/widgets/home_all_filters_button.dart';
 import 'package:ideal_mobile/presentation/home/widgets/home_banner_carousel.dart';
+import 'package:ideal_mobile/presentation/home/widgets/home_date_filter_button.dart';
 import 'package:ideal_mobile/presentation/home/widgets/home_listing_rail.dart';
 import 'package:ideal_mobile/presentation/home/widgets/home_top_bar.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_bloc.dart';
@@ -18,6 +19,7 @@ import 'package:ideal_mobile/presentation/listings/bloc/listings_state.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filter_options.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filters.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/listing_card_shimmer.dart';
+import 'package:ideal_mobile/presentation/listings/widgets/listing_date_filter_sheet.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/listings_empty_view.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/listings_error_view.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/listings_feed.dart';
@@ -156,13 +158,28 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
                                         const SizedBox(height: 14),
                                         const HomeBannerCarousel(),
                                         const SizedBox(height: 14),
-                                        HomeAllFiltersButton(
-                                          key:
-                                              keys.homePage.allFiltersButtonKey,
-                                          onTap: () =>
-                                              showListingsFilterSheet(context),
-                                          activeFiltersCount:
-                                              value.filters.activeCount,
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: HomeAllFiltersButton(
+                                                key: keys
+                                                    .homePage
+                                                    .allFiltersButtonKey,
+                                                onTap: () =>
+                                                    showListingsFilterSheet(
+                                                      context,
+                                                    ),
+                                                activeFiltersCount:
+                                                    value.filters.activeCount,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            HomeDateFilterButton(
+                                              onTap: _openDateFilter,
+                                              isActive:
+                                                  value.filters.hasDateRange,
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     );
@@ -262,6 +279,10 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
             _applyReturnedFilters(listingsBloc, filters),
       ),
     );
+  }
+
+  Future<void> _openDateFilter() async {
+    await showListingDateFilterSheet(context);
   }
 
   void _applyReturnedFilters(

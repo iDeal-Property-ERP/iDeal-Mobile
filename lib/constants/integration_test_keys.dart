@@ -42,11 +42,23 @@ class ListingDetailPageKeys {
   final bookButton = const Key('listingDetailBookButton');
 }
 
+class ListingDateFilterKeys {
+  final field = const Key('listingDateFilterField');
+  final rangeSelector = const Key('listingDateRangeSelector');
+  final flexibilityDecrease = const Key('listingFlexibilityDecrease');
+  final flexibilityIncrease = const Key('listingFlexibilityIncrease');
+  final flexibilityValue = const Key('listingFlexibilityValue');
+  final clearDates = const Key('listingClearDatesButton');
+  final sheet = const Key('listingDateFilterSheet');
+  final cancel = const Key('listingDateFilterCancelButton');
+}
+
 class Keys {
   final signInPage = LoginPageKeys();
   final signupPage = SignupPageKeys();
   final homePage = HomePageKeys();
   final listingDetail = ListingDetailPageKeys();
+  final dateFilter = ListingDateFilterKeys();
 }
 
 final keys = Keys();

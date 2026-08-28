@@ -1,5 +1,13 @@
 import 'package:equatable/equatable.dart';
+import 'package:ideal_mobile/utils/extensions/date_time_extensions.dart';
 import 'package:ideal_mobile/utils/typedef.dart';
+
+/// Default flexibility (in days) applied when a date range is selected but the
+/// user has not overridden it. Mirrors the backend's availability default.
+const int kDefaultFlexibilityDays = 3;
+
+/// Upper bound for the mobile availability flexibility control.
+const int kMaxFlexibilityDays = 30;
 
 class ListingFilters extends Equatable {
   const ListingFilters({
@@ -15,6 +23,9 @@ class ListingFilters extends Equatable {
     this.furnishing,
     this.tariff,
     this.sort,
+    this.startDate,
+    this.endDate,
+    this.flexibilityDays,
   });
 
   const ListingFilters.empty()
@@ -29,7 +40,10 @@ class ListingFilters extends Equatable {
       verified = null,
       furnishing = null,
       tariff = null,
-      sort = null;
+      sort = null,
+      startDate = null,
+      endDate = null,
+      flexibilityDays = null;
 
   final String? query;
   final int? districtId;
@@ -43,6 +57,12 @@ class ListingFilters extends Equatable {
   final String? furnishing;
   final String? tariff;
   final String? sort;
+  final DateTime? startDate;
+  final DateTime? endDate;
+  final int? flexibilityDays;
+
+  /// True when both ends of the availability window are set.
+  bool get hasDateRange => startDate != null && endDate != null;
 
   /// A nullable value keeps its current value unless its matching clear flag
   /// is true. Clear flags take precedence over a value passed in the same call.
@@ -59,6 +79,9 @@ class ListingFilters extends Equatable {
     String? furnishing,
     String? tariff,
     String? sort,
+    DateTime? startDate,
+    DateTime? endDate,
+    int? flexibilityDays,
     bool clearQuery = false,
     bool clearDistrictId = false,
     bool clearPropertyType = false,
@@ -71,6 +94,8 @@ class ListingFilters extends Equatable {
     bool clearFurnishing = false,
     bool clearTariff = false,
     bool clearSort = false,
+    bool clearDates = false,
+    bool clearFlexibility = false,
   }) {
     return ListingFilters(
       query: clearQuery ? null : query ?? this.query,
@@ -87,6 +112,11 @@ class ListingFilters extends Equatable {
       furnishing: clearFurnishing ? null : furnishing ?? this.furnishing,
       tariff: clearTariff ? null : tariff ?? this.tariff,
       sort: clearSort ? null : sort ?? this.sort,
+      startDate: clearDates ? null : startDate ?? this.startDate,
+      endDate: clearDates ? null : endDate ?? this.endDate,
+      flexibilityDays: clearDates || clearFlexibility
+          ? null
+          : flexibilityDays ?? this.flexibilityDays,
     );
   }
 
@@ -111,6 +141,15 @@ class ListingFilters extends Equatable {
     addParameter('furnishing', furnishing);
     addParameter('tariff', tariff);
     addParameter('sort', sort);
+    addParameter('start_date', startDate?.format(pattern: 'yyyy-MM-dd'));
+    addParameter('end_date', endDate?.format(pattern: 'yyyy-MM-dd'));
+    // Flexibility is only meaningful together with a complete date range.
+    if (hasDateRange) {
+      addParameter(
+        'flexibility_days',
+        flexibilityDays ?? kDefaultFlexibilityDays,
+      );
+    }
 
     return parameters;
   }
@@ -128,6 +167,8 @@ class ListingFilters extends Equatable {
     if (verified != null) count++;
     if (furnishing?.isNotEmpty ?? false) count++;
     if (tariff?.isNotEmpty ?? false) count++;
+    // A complete date range counts as a single active filter.
+    if (hasDateRange) count++;
     return count;
   }
 
@@ -145,5 +186,8 @@ class ListingFilters extends Equatable {
     furnishing,
     tariff,
     sort,
+    startDate,
+    endDate,
+    flexibilityDays,
   ];
 }

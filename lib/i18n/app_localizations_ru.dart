@@ -1402,6 +1402,34 @@ class AppLocalizationsRu extends AppLocalizations {
   String get listings_filter_verification => 'Верификация';
 
   @override
+  String get listings_availability => 'Доступность';
+
+  @override
+  String get listings_date_filter_title => 'Даты доступности';
+
+  @override
+  String get listings_date_filter_button => 'Даты';
+
+  @override
+  String get listings_select_dates => 'Выберите даты';
+
+  @override
+  String listings_date_range(String start, String end) {
+    return 'С $start по $end';
+  }
+
+  @override
+  String get listings_flexibility => 'Гибкость';
+
+  @override
+  String listings_flexibility_days(int days) {
+    return '± $days дн.';
+  }
+
+  @override
+  String get listings_clear_dates => 'Очистить даты';
+
+  @override
   String get listings_search_district => 'Поиск района...';
 
   @override

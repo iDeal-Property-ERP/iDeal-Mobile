@@ -9,6 +9,7 @@ import 'package:ideal_mobile/presentation/listings/bloc/listings_event.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filter_options.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filters.dart';
 import 'package:ideal_mobile/presentation/listings/widgets/district_picker_sheet.dart';
+import 'package:ideal_mobile/presentation/listings/widgets/listing_date_filter_field.dart';
 import 'package:ideal_mobile/utils/haptic_feedback_util.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 import 'package:ideal_mobile/widgets/app_button/app_button.dart';
@@ -254,6 +255,8 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
       _buildRoomsSection(context),
       const SizedBox(height: 16),
       _buildVerificationSection(context),
+      const SizedBox(height: 16),
+      _buildAvailabilitySection(context),
       const SizedBox(height: 16),
     ]);
 
@@ -1110,6 +1113,40 @@ class _ListingsFilterSheetState extends State<ListingsFilterSheet> {
       _draft = value == null
           ? _draft.copyWith(clearFurnishing: true)
           : _draft.copyWith(furnishing: value);
+    });
+  }
+
+  Widget _buildAvailabilitySection(BuildContext context) {
+    final initialFlexibility =
+        _draft.flexibilityDays ?? kDefaultFlexibilityDays;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _buildSectionHeader(
+          context,
+          icon: TablerIcons.calendar,
+          title: context.localization.listings_availability,
+        ),
+        ListingDateFilterField(
+          key: ValueKey(_draft.hasDateRange),
+          initialStartDate: _draft.startDate,
+          initialEndDate: _draft.endDate,
+          initialFlexibilityDays: initialFlexibility,
+          onChanged: _onDatesChanged,
+        ),
+      ],
+    );
+  }
+
+  void _onDatesChanged(DateTime? start, DateTime? end, int flexibility) {
+    setState(() {
+      _draft = _draft.copyWith(
+        startDate: start,
+        endDate: end,
+        flexibilityDays: flexibility,
+        clearDates: start == null && end == null,
+        clearFlexibility: start == null && end == null,
+      );
     });
   }
 

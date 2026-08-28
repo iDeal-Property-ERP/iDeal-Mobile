@@ -24,6 +24,7 @@ import 'package:ideal_mobile/presentation/home/bloc/home_event.dart';
 import 'package:ideal_mobile/presentation/home/bloc/home_state.dart';
 import 'package:ideal_mobile/presentation/home/home_screen.dart';
 import 'package:ideal_mobile/presentation/home/widgets/home_all_filters_button.dart';
+import 'package:ideal_mobile/presentation/home/widgets/home_date_filter_button.dart';
 import 'package:ideal_mobile/presentation/home/widgets/home_screen_body.dart';
 import 'package:ideal_mobile/presentation/home/widgets/home_top_bar.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_bloc.dart';
@@ -653,10 +654,11 @@ void main() {
         child: const Scaffold(body: HomeScreenBody()),
       );
 
-      // Column is padded by 16 on each side, so the stretched button fills
-      // the remaining width.
+      // Column is padded by 16 on each side, and the all-filters button now
+      // shares the row with the 48px date-filter button plus an 8px gap.
       final buttonSize = tester.getSize(find.byType(HomeAllFiltersButton));
-      expect(buttonSize.width, 411 - 32);
+      expect(buttonSize.width, 411 - 32 - 8 - 48);
+      expect(tester.getSize(find.byType(HomeDateFilterButton)).width, 48);
     });
 
     testWidgets('hides the count badge when no filters are active', (

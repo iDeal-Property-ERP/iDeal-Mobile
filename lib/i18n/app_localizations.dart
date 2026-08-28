@@ -2590,6 +2590,54 @@ abstract class AppLocalizations {
   /// **'Verification'**
   String get listings_filter_verification;
 
+  /// No description provided for @listings_availability.
+  ///
+  /// In en, this message translates to:
+  /// **'Availability'**
+  String get listings_availability;
+
+  /// No description provided for @listings_date_filter_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Availability dates'**
+  String get listings_date_filter_title;
+
+  /// No description provided for @listings_date_filter_button.
+  ///
+  /// In en, this message translates to:
+  /// **'Dates'**
+  String get listings_date_filter_button;
+
+  /// No description provided for @listings_select_dates.
+  ///
+  /// In en, this message translates to:
+  /// **'Select dates'**
+  String get listings_select_dates;
+
+  /// Selected availability date range
+  ///
+  /// In en, this message translates to:
+  /// **'From {start} to {end}'**
+  String listings_date_range(String start, String end);
+
+  /// No description provided for @listings_flexibility.
+  ///
+  /// In en, this message translates to:
+  /// **'Flexibility'**
+  String get listings_flexibility;
+
+  /// Availability flexibility in days
+  ///
+  /// In en, this message translates to:
+  /// **'± {days} days'**
+  String listings_flexibility_days(int days);
+
+  /// No description provided for @listings_clear_dates.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear dates'**
+  String get listings_clear_dates;
+
   /// No description provided for @listings_search_district.
   ///
   /// In en, this message translates to:

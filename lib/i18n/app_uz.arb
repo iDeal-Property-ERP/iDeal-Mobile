@@ -454,6 +454,33 @@
   "listings_filter_furnishing": "Jihoz",
   "listings_filter_tariff": "Tarif",
   "listings_filter_verification": "Tasdiqlash",
+  "listings_availability": "Mavjudlik",
+  "listings_date_filter_title": "Mavjudlik sanasi",
+  "listings_date_filter_button": "Sanalar",
+  "listings_select_dates": "Sanani tanlang",
+  "listings_date_range": "{start} dan {end} gacha",
+  "@listings_date_range": {
+    "description": "Selected availability date range",
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "listings_flexibility": "Moslashuvchanlik",
+  "listings_flexibility_days": "± {days} kun",
+  "@listings_flexibility_days": {
+    "description": "Availability flexibility in days",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "listings_clear_dates": "Sanani tozalash",
   "listings_search_district": "Tumanni qidirish...",
   "listings_no_districts_found": "Tumanlar topilmadi",
   "listings_select_district": "Tumanni tanlang",
