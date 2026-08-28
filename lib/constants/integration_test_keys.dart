@@ -27,6 +27,7 @@ class HomePageKeys {
   final listingsFeedKey = const Key('listingsFeedKey');
   final bannerCarouselKey = const Key('homeBannerCarouselKey');
   final bannerIndicatorKey = const Key('homeBannerIndicatorKey');
+  final allFiltersButtonKey = const Key('homeAllFiltersButtonKey');
 
   /// Per-listing so sibling tiles in the feed never share a key. Integration
   /// tests can target one card by id, or match the `listingCard_` prefix.
