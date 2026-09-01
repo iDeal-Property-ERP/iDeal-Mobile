@@ -127,10 +127,7 @@ class DateTimePickerUtil {
                           ),
                         ),
                       picker,
-                      if (step == 2 &&
-                          start != null &&
-                          end != null &&
-                          !valid)
+                      if (step == 2 && start != null && end != null && !valid)
                         Padding(
                           padding: const EdgeInsets.only(top: 8, left: 4),
                           child: Text(
@@ -147,8 +144,7 @@ class DateTimePickerUtil {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           TextButton(
-                            onPressed: () =>
-                                Navigator.of(dialogContext).pop(),
+                            onPressed: () => Navigator.of(dialogContext).pop(),
                             child: const Text('Cancel'),
                           ),
                           const SizedBox(width: 8),

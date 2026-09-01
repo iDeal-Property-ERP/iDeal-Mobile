@@ -32,8 +32,9 @@ class HomeDateFilterButton extends StatelessWidget {
                 ? theme.strokeBrandHover
                 : theme.strokeNeutralLight200,
           ),
-          backgroundColor:
-              isActive ? theme.bgBrandLight100 : Colors.transparent,
+          backgroundColor: isActive
+              ? theme.bgBrandLight100
+              : Colors.transparent,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadius.button),
           ),

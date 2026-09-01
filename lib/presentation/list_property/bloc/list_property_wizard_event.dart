@@ -25,6 +25,7 @@ class ListPropertyDetailsUpdated extends ListPropertyWizardEvent {
     this.propertyType,
     this.name,
     this.districtId,
+    this.landmark,
     this.rooms,
     this.floor,
     this.totalFloors,
@@ -36,6 +37,7 @@ class ListPropertyDetailsUpdated extends ListPropertyWizardEvent {
   final String? propertyType;
   final String? name;
   final int? districtId;
+  final String? landmark;
   final int? rooms;
   final int? floor;
   final int? totalFloors;
@@ -48,6 +50,7 @@ class ListPropertyDetailsUpdated extends ListPropertyWizardEvent {
     propertyType,
     name,
     districtId,
+    landmark,
     rooms,
     floor,
     totalFloors,

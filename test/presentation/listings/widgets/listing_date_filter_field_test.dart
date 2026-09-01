@@ -50,9 +50,7 @@ void main() {
       expect(find.text('Select dates'), findsOneWidget);
       expect(find.byIcon(TablerIcons.calendar), findsOneWidget);
       expect(
-        tester
-            .widget<Text>(find.byKey(keys.dateFilter.flexibilityValue))
-            .data,
+        tester.widget<Text>(find.byKey(keys.dateFilter.flexibilityValue)).data,
         '± 3 days',
       );
     });
@@ -65,9 +63,7 @@ void main() {
       await tester.tap(find.byKey(keys.dateFilter.flexibilityDecrease));
       await tester.pump();
       expect(
-        tester
-            .widget<Text>(find.byKey(keys.dateFilter.flexibilityValue))
-            .data,
+        tester.widget<Text>(find.byKey(keys.dateFilter.flexibilityValue)).data,
         '± 2 days',
       );
 
@@ -75,9 +71,7 @@ void main() {
       await tester.tap(find.byKey(keys.dateFilter.flexibilityIncrease));
       await tester.pump();
       expect(
-        tester
-            .widget<Text>(find.byKey(keys.dateFilter.flexibilityValue))
-            .data,
+        tester.widget<Text>(find.byKey(keys.dateFilter.flexibilityValue)).data,
         '± 4 days',
       );
 
@@ -87,9 +81,7 @@ void main() {
       await tester.tap(increase);
       await tester.pump();
       expect(
-        tester
-            .widget<Text>(find.byKey(keys.dateFilter.flexibilityValue))
-            .data,
+        tester.widget<Text>(find.byKey(keys.dateFilter.flexibilityValue)).data,
         '± $kMaxFlexibilityDays days',
       );
 
@@ -99,9 +91,7 @@ void main() {
       await tester.tap(decrease);
       await tester.pump();
       expect(
-        tester
-            .widget<Text>(find.byKey(keys.dateFilter.flexibilityValue))
-            .data,
+        tester.widget<Text>(find.byKey(keys.dateFilter.flexibilityValue)).data,
         '± 0 days',
       );
     });
@@ -153,37 +143,39 @@ void main() {
     });
 
     testWidgets(
-        'range picker popup disables Apply and warns for a range under 1 month',
-        (tester) async {
-      await pumpField(
-        tester,
-        startDate: DateTime(2026, 9),
-        endDate: DateTime(2026, 9, 10),
-      );
+      'range picker popup disables Apply and warns for a range under 1 month',
+      (tester) async {
+        await pumpField(
+          tester,
+          startDate: DateTime(2026, 9),
+          endDate: DateTime(2026, 9, 10),
+        );
 
-      await tester.tap(find.byKey(keys.dateFilter.rangeSelector));
-      await tester.pumpAndSettle();
+        await tester.tap(find.byKey(keys.dateFilter.rangeSelector));
+        await tester.pumpAndSettle();
 
-      // Popup dialog with the localized title is shown.
-      expect(find.text('Availability dates'), findsOneWidget);
+        // Popup dialog with the localized title is shown.
+        expect(find.text('Availability dates'), findsOneWidget);
 
-      // Under 1 month -> Apply is disabled and a hint is shown.
-      final apply = tester.widget<FilledButton>(
-        find.widgetWithText(FilledButton, 'Apply'),
-      );
-      expect(apply.onPressed, isNull);
-      expect(
-        find.text('Select a range of at least 1 month.'),
-        findsOneWidget,
-      );
+        // Under 1 month -> Apply is disabled and a hint is shown.
+        final apply = tester.widget<FilledButton>(
+          find.widgetWithText(FilledButton, 'Apply'),
+        );
+        expect(apply.onPressed, isNull);
+        expect(
+          find.text('Select a range of at least 1 month.'),
+          findsOneWidget,
+        );
 
-      await tester.tap(find.widgetWithText(TextButton, 'Cancel'));
-      await tester.pumpAndSettle();
-      expect(find.text('Availability dates'), findsNothing);
-    });
+        await tester.tap(find.widgetWithText(TextButton, 'Cancel'));
+        await tester.pumpAndSettle();
+        expect(find.text('Availability dates'), findsNothing);
+      },
+    );
 
-    testWidgets('range picker popup enables Apply for a range of 1 month',
-        (tester) async {
+    testWidgets('range picker popup enables Apply for a range of 1 month', (
+      tester,
+    ) async {
       await pumpField(
         tester,
         startDate: DateTime(2026, 9),
@@ -197,10 +189,7 @@ void main() {
         find.widgetWithText(FilledButton, 'Apply'),
       );
       expect(apply.onPressed, isNotNull);
-      expect(
-        find.text('Select a range of at least 1 month.'),
-        findsNothing,
-      );
+      expect(find.text('Select a range of at least 1 month.'), findsNothing);
 
       await tester.tap(find.widgetWithText(FilledButton, 'Apply'));
       await tester.pumpAndSettle();

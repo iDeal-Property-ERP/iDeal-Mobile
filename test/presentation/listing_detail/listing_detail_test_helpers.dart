@@ -20,8 +20,11 @@ ListingDetail buildListingDetail({
   List<ListingAmenity>? amenities,
   List<VerificationItem>? verificationChecklist,
   String? description =
-      'A bright, carefully maintained home with a quiet outlook and everything needed for a comfortable long-term stay near the park and local services.',
+      'A bright, carefully maintained home with a quiet outlook and '
+      'everything needed for a comfortable long-term stay near the park '
+      'and local services.',
   String? district = 'Yunusobod',
+  String? landmark,
   double? price = 520,
   double score = 9.2,
   double? mapLat = 41.36,
@@ -37,6 +40,7 @@ ListingDetail buildListingDetail({
     title: 'Sunny apartment near the park',
     district: district,
     address: '12-kvartal, Tashkent',
+    landmark: landmark,
     propertyType: 'apartment',
     rooms: 2,
     areaSqm: 68,

@@ -9,6 +9,7 @@ void main() {
     'title': 'Yunusobod 12-kvartal',
     'district': 'Yunusobod District',
     'address': '12-kvartal',
+    'landmark': 'Near Grand Mir Hotel',
     'property_type': 'apartment',
     'rooms': 2,
     'area_sqm': 65,
@@ -57,6 +58,7 @@ void main() {
     expect(model.id, 12);
     expect(model.propertyId, 34);
     expect(model.title, 'Yunusobod 12-kvartal');
+    expect(model.landmark, 'Near Grand Mir Hotel');
     expect(model.price, 520.0);
     expect(model.coverImageUrl, 'https://example.com/photo.jpg');
     expect(
@@ -84,6 +86,7 @@ void main() {
     final missingOptionalData = {
       ...json,
       'district': null,
+      'landmark': null,
       'rooms': null,
       'area_sqm': null,
       'floor': null,
@@ -103,6 +106,7 @@ void main() {
     final model = ListingDetailModel.fromJson(missingOptionalData);
 
     expect(model.district, isNull);
+    expect(model.landmark, isNull);
     expect(model.rooms, isNull);
     expect(model.areaSqm, isNull);
     expect(model.price, isNull);

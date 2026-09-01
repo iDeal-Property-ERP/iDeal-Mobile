@@ -43,10 +43,9 @@ class HomeAllFiltersButton extends StatelessWidget {
             Icon(
               TablerIcons.adjustments_horizontal,
               size: 20,
-              color:
-                  hasActiveFilters
-                      ? theme.iconBrandPrimary
-                      : theme.iconNeutralDefault,
+              color: hasActiveFilters
+                  ? theme.iconBrandPrimary
+                  : theme.iconNeutralDefault,
             ),
             const SizedBox(width: 8),
             Text(

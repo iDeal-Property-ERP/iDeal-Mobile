@@ -54,8 +54,11 @@ void main() {
     testWidgets('opens with the title and the date field', (tester) async {
       await pumpApp(
         tester,
-        initialFilters:
-            ListingFilters(startDate: start, endDate: end, flexibilityDays: 5),
+        initialFilters: ListingFilters(
+          startDate: start,
+          endDate: end,
+          flexibilityDays: 5,
+        ),
         openButtonKey: openKey,
       );
 
@@ -70,8 +73,11 @@ void main() {
     testWidgets('apply returns the seeded filters unchanged', (tester) async {
       await pumpApp(
         tester,
-        initialFilters:
-            ListingFilters(startDate: start, endDate: end, flexibilityDays: 7),
+        initialFilters: ListingFilters(
+          startDate: start,
+          endDate: end,
+          flexibilityDays: 7,
+        ),
         openButtonKey: openKey,
       );
 
@@ -86,13 +92,14 @@ void main() {
       expect(result?.flexibilityDays, 7);
     });
 
-    testWidgets('clear returns filters without the date range', (
-      tester,
-    ) async {
+    testWidgets('clear returns filters without the date range', (tester) async {
       await pumpApp(
         tester,
-        initialFilters:
-            ListingFilters(startDate: start, endDate: end, flexibilityDays: 4),
+        initialFilters: ListingFilters(
+          startDate: start,
+          endDate: end,
+          flexibilityDays: 4,
+        ),
         openButtonKey: openKey,
       );
 
@@ -110,8 +117,11 @@ void main() {
     testWidgets('cancel dismisses without applying', (tester) async {
       await pumpApp(
         tester,
-        initialFilters:
-            ListingFilters(startDate: start, endDate: end, flexibilityDays: 4),
+        initialFilters: ListingFilters(
+          startDate: start,
+          endDate: end,
+          flexibilityDays: 4,
+        ),
         openButtonKey: openKey,
       );
 
@@ -129,8 +139,11 @@ void main() {
     ) async {
       await pumpApp(
         tester,
-        initialFilters:
-            ListingFilters(startDate: start, endDate: end, flexibilityDays: 3),
+        initialFilters: ListingFilters(
+          startDate: start,
+          endDate: end,
+          flexibilityDays: 3,
+        ),
         openButtonKey: openKey,
       );
 

@@ -66,6 +66,7 @@ class ListingDetail extends Equatable {
     required this.title,
     required this.district,
     required this.address,
+    this.landmark,
     required this.propertyType,
     required this.rooms,
     required this.areaSqm,
@@ -100,6 +101,7 @@ class ListingDetail extends Equatable {
   final String title;
   final String? district;
   final String address;
+  final String? landmark;
   final String propertyType;
   final int? rooms;
   final int? areaSqm;
@@ -137,6 +139,7 @@ class ListingDetail extends Equatable {
     title,
     district,
     address,
+    landmark,
     propertyType,
     rooms,
     areaSqm,

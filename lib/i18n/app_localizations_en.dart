@@ -1667,6 +1667,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get listing_detail_verified => 'Verified';
 
   @override
+  String listing_detail_landmark(String value) {
+    return 'Landmark: $value';
+  }
+
+  @override
+  String get list_property_landmark => 'Landmark';
+
+  @override
+  String get list_property_landmark_hint => 'Optional, up to 5 words';
+
+  @override
+  String get list_property_landmark_words_error => 'Cannot exceed 5 words';
+
+  @override
   String get listing_detail_trust_heading =>
       'Verified & contract-backed by iDeal';
 

@@ -101,6 +101,27 @@ void main() {
   );
 
   blocTest<ListPropertyWizardBloc, ListPropertyWizardState>(
+    'updates details including landmark',
+    build: () => bloc,
+    act: (b) {
+      b.add(
+        const ListPropertyDetailsUpdated(
+          propertyType: 'apartment',
+          districtId: 1,
+          landmark: 'Near Grand Mir Hotel',
+        ),
+      );
+    },
+    expect: () => [
+      const ListPropertyWizardState(
+        propertyType: 'apartment',
+        districtId: 1,
+        landmark: 'Near Grand Mir Hotel',
+      ),
+    ],
+  );
+
+  blocTest<ListPropertyWizardBloc, ListPropertyWizardState>(
     'toggles amenities correctly',
     build: () => bloc,
     act: (b) {

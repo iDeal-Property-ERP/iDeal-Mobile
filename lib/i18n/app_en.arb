@@ -700,6 +700,19 @@
     }
   },
   "listing_detail_verified": "Verified",
+  "listing_detail_landmark": "Landmark: {value}",
+  "@listing_detail_landmark": {
+    "description": "The landmark for a listing detail page.",
+    "placeholders": {
+      "value": {
+        "example": "Near Grand Mir Hotel",
+        "type": "String"
+      }
+    }
+  },
+  "list_property_landmark": "Landmark",
+  "list_property_landmark_hint": "Optional, up to 5 words",
+  "list_property_landmark_words_error": "Cannot exceed 5 words",
   "listing_detail_trust_heading": "Verified & contract-backed by iDeal",
   "listing_detail_about": "About this home",
   "listing_detail_amenities": "What this place offers",

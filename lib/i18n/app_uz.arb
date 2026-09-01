@@ -598,6 +598,19 @@
     }
   },
   "listing_detail_verified": "Tekshirilgan",
+  "listing_detail_landmark": "Mo‘ljal: {value}",
+  "@listing_detail_landmark": {
+    "description": "The landmark for a listing detail page.",
+    "placeholders": {
+      "value": {
+        "example": "Grand Mir mehmonxonasi yaqinida",
+        "type": "String"
+      }
+    }
+  },
+  "list_property_landmark": "Mo‘ljal",
+  "list_property_landmark_hint": "Ixtiyoriy, 5 tagacha so‘z",
+  "list_property_landmark_words_error": "5 tagacha so‘z kiritish mumkin",
   "listing_detail_trust_heading": "iDeal tomonidan tekshirilgan va shartnoma bilan kafolatlangan",
   "listing_detail_about": "Bu uy haqida",
   "listing_detail_amenities": "Bu joyda nimalar bor",

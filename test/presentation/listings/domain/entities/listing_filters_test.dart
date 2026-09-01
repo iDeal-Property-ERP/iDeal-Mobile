@@ -32,10 +32,7 @@ void main() {
         flexibilityDays: 7,
       );
 
-      expect(
-        filters.toQueryParameters()['flexibility_days'],
-        equals(7),
-      );
+      expect(filters.toQueryParameters()['flexibility_days'], equals(7));
     });
 
     test('toQueryParameters omits availability keys without a range', () {

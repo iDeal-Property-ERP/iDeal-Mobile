@@ -18,6 +18,7 @@ class ListPropertyWizardState extends Equatable {
     this.propertyType,
     this.name,
     this.districtId,
+    this.landmark,
     this.rooms,
     this.floor,
     this.totalFloors,
@@ -49,6 +50,7 @@ class ListPropertyWizardState extends Equatable {
   final String? propertyType;
   final String? name;
   final int? districtId;
+  final String? landmark;
   final int? rooms;
   final int? floor;
   final int? totalFloors;
@@ -85,6 +87,14 @@ class ListPropertyWizardState extends Equatable {
       propertyType != null &&
       propertyType!.isNotEmpty &&
       districtId != null &&
+      (landmark == null ||
+          (landmark!
+                      .trim()
+                      .split(RegExp(r'\s+'))
+                      .where((w) => w.isNotEmpty)
+                      .length <=
+                  5 &&
+              landmark!.trim().length <= 100)) &&
       rooms != null &&
       rooms! > 0 &&
       floor != null &&
@@ -113,6 +123,7 @@ class ListPropertyWizardState extends Equatable {
     String? propertyType,
     String? name,
     int? districtId,
+    String? landmark,
     int? rooms,
     int? floor,
     int? totalFloors,
@@ -143,6 +154,7 @@ class ListPropertyWizardState extends Equatable {
       propertyType: propertyType ?? this.propertyType,
       name: name ?? this.name,
       districtId: districtId ?? this.districtId,
+      landmark: landmark ?? this.landmark,
       rooms: rooms ?? this.rooms,
       floor: floor ?? this.floor,
       totalFloors: totalFloors ?? this.totalFloors,
@@ -177,6 +189,7 @@ class ListPropertyWizardState extends Equatable {
     propertyType,
     name,
     districtId,
+    landmark,
     rooms,
     floor,
     totalFloors,

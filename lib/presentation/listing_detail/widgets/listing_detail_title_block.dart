@@ -78,6 +78,31 @@ class ListingDetailTitleBlock extends StatelessWidget {
             ),
           ],
         ),
+        if (detail.landmark != null && detail.landmark!.trim().isNotEmpty) ...[
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              Icon(
+                TablerIcons.map_pin,
+                size: 15,
+                color: context.currentTheme.textNeutralSecondary,
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  context.localization.listing_detail_landmark(
+                    detail.landmark!.trim(),
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.p3Regular.copyWith(
+                    color: context.currentTheme.textNeutralSecondary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ],
     );
   }

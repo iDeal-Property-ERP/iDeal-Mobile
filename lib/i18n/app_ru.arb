@@ -598,6 +598,19 @@
     }
   },
   "listing_detail_verified": "Проверено",
+  "listing_detail_landmark": "Ориентир: {value}",
+  "@listing_detail_landmark": {
+    "description": "The landmark for a listing detail page.",
+    "placeholders": {
+      "value": {
+        "example": "Рядом с гостиницей Grand Mir",
+        "type": "String"
+      }
+    }
+  },
+  "list_property_landmark": "Ориентир",
+  "list_property_landmark_hint": "Необязательно, до 5 слов",
+  "list_property_landmark_words_error": "Не более 5 слов",
   "listing_detail_trust_heading": "Проверено iDeal и подкреплено договором",
   "listing_detail_about": "Об этом объекте",
   "listing_detail_amenities": "Что есть в этом жилье",

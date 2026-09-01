@@ -1697,6 +1697,20 @@ class AppLocalizationsRu extends AppLocalizations {
   String get listing_detail_verified => 'Проверено';
 
   @override
+  String listing_detail_landmark(String value) {
+    return 'Ориентир: $value';
+  }
+
+  @override
+  String get list_property_landmark => 'Ориентир';
+
+  @override
+  String get list_property_landmark_hint => 'Необязательно, до 5 слов';
+
+  @override
+  String get list_property_landmark_words_error => 'Не более 5 слов';
+
+  @override
   String get listing_detail_trust_heading =>
       'Проверено iDeal и подкреплено договором';
 

@@ -745,35 +745,36 @@ void main() {
     testWidgets(
       'narrow layout renders the all-filters button without overflow',
       (tester) async {
-      tester.view.physicalSize = const Size(320, 600);
-      tester.view.devicePixelRatio = 1;
-      addTearDown(tester.view.reset);
+        tester.view.physicalSize = const Size(320, 600);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.reset);
 
-      final listingsBloc = MockListingsBloc();
-      when(() => listingsBloc.state).thenReturn(
-        ListingsState.test(
-          filters: const ListingFilters(
-            districtId: 1,
-            roomsMin: 10,
-            roomsMax: 20,
-            priceMin: 5000,
-            priceMax: 10000,
-            tariff: 'extremely_long_tariff_name',
+        final listingsBloc = MockListingsBloc();
+        when(() => listingsBloc.state).thenReturn(
+          ListingsState.test(
+            filters: const ListingFilters(
+              districtId: 1,
+              roomsMin: 10,
+              roomsMax: 20,
+              priceMin: 5000,
+              priceMax: 10000,
+              tariff: 'extremely_long_tariff_name',
+            ),
+            items: [_homeTestListing(1)],
+            hasLoadedListings: true,
+            hasReachedMax: true,
           ),
-          items: [_homeTestListing(1)],
-          hasLoadedListings: true,
-          hasReachedMax: true,
-        ),
-      );
+        );
 
-      await tester.runWidgetTest(
-        providers: [BlocProvider<ListingsBloc>.value(value: listingsBloc)],
-        child: const Scaffold(body: HomeScreenBody()),
-      );
+        await tester.runWidgetTest(
+          providers: [BlocProvider<ListingsBloc>.value(value: listingsBloc)],
+          child: const Scaffold(body: HomeScreenBody()),
+        );
 
-      expect(find.byType(HomeAllFiltersButton), findsOneWidget);
-      expect(find.text('All filters'), findsOneWidget);
-    });
+        expect(find.byType(HomeAllFiltersButton), findsOneWidget);
+        expect(find.text('All filters'), findsOneWidget);
+      },
+    );
 
     // Golden test cases
     testExecutable(() {

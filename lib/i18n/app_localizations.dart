@@ -3124,6 +3124,30 @@ abstract class AppLocalizations {
   /// **'Verified'**
   String get listing_detail_verified;
 
+  /// The landmark for a listing detail page.
+  ///
+  /// In en, this message translates to:
+  /// **'Landmark: {value}'**
+  String listing_detail_landmark(String value);
+
+  /// No description provided for @list_property_landmark.
+  ///
+  /// In en, this message translates to:
+  /// **'Landmark'**
+  String get list_property_landmark;
+
+  /// No description provided for @list_property_landmark_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional, up to 5 words'**
+  String get list_property_landmark_hint;
+
+  /// No description provided for @list_property_landmark_words_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot exceed 5 words'**
+  String get list_property_landmark_words_error;
+
   /// No description provided for @listing_detail_trust_heading.
   ///
   /// In en, this message translates to:

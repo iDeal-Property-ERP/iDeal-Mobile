@@ -1694,6 +1694,21 @@ class AppLocalizationsUz extends AppLocalizations {
   String get listing_detail_verified => 'Tekshirilgan';
 
   @override
+  String listing_detail_landmark(String value) {
+    return 'Mo‘ljal: $value';
+  }
+
+  @override
+  String get list_property_landmark => 'Mo‘ljal';
+
+  @override
+  String get list_property_landmark_hint => 'Ixtiyoriy, 5 tagacha so‘z';
+
+  @override
+  String get list_property_landmark_words_error =>
+      '5 tagacha so‘z kiritish mumkin';
+
+  @override
   String get listing_detail_trust_heading =>
       'iDeal tomonidan tekshirilgan va shartnoma bilan kafolatlangan';
 

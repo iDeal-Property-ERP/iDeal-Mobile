@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
+import 'package:ideal_mobile/i18n/localization.dart';
 import 'package:ideal_mobile/presentation/list_property/bloc/list_property_wizard_bloc.dart';
 import 'package:ideal_mobile/presentation/list_property/bloc/list_property_wizard_event.dart';
 import 'package:ideal_mobile/presentation/list_property/bloc/list_property_wizard_state.dart';
@@ -69,6 +70,11 @@ class ReviewStepView extends StatelessWidget {
                       .toUpperCase(),
                 ),
                 _SummaryRow(label: 'District', value: districtName),
+                if (state.landmark != null && state.landmark!.trim().isNotEmpty)
+                  _SummaryRow(
+                    label: context.localization.list_property_landmark,
+                    value: state.landmark!.trim(),
+                  ),
                 _SummaryRow(
                   label: 'Rooms / Floor',
                   value: [

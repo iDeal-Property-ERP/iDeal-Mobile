@@ -9,13 +9,13 @@ import 'package:ideal_mobile/presentation/list_property/bloc/list_property_wizar
 import 'package:ideal_mobile/presentation/list_property/bloc/list_property_wizard_state.dart';
 import 'package:ideal_mobile/presentation/list_property/domain/usecases/get_property_upload_config.dart';
 import 'package:ideal_mobile/presentation/list_property/domain/usecases/submit_property_upload.dart';
+import 'package:ideal_mobile/presentation/list_property/widgets/list_property_onboarding_view.dart';
 import 'package:ideal_mobile/presentation/list_property/widgets/steps/contact_step_view.dart';
 import 'package:ideal_mobile/presentation/list_property/widgets/steps/details_step_view.dart';
 import 'package:ideal_mobile/presentation/list_property/widgets/steps/photos_step_view.dart';
 import 'package:ideal_mobile/presentation/list_property/widgets/steps/pricing_step_view.dart';
 import 'package:ideal_mobile/presentation/list_property/widgets/steps/review_step_view.dart';
 import 'package:ideal_mobile/presentation/list_property/widgets/steps/success_step_view.dart';
-import 'package:ideal_mobile/presentation/list_property/widgets/list_property_onboarding_view.dart';
 import 'package:ideal_mobile/presentation/list_property/widgets/wizard_step_header.dart';
 import 'package:ideal_mobile/utils/extensions/build_context_ext.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
