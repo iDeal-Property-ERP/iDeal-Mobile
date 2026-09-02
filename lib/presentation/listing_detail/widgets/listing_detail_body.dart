@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
 import 'package:ideal_mobile/constants/integration_test_keys.dart';
 import 'package:ideal_mobile/i18n/localization.dart';
 import 'package:ideal_mobile/presentation/booking/domain/entities/booking.dart';
@@ -169,9 +168,6 @@ class ListingDetailBody extends StatelessWidget {
       );
     }
 
-    sections.add(const SizedBox(height: 14));
-    sections.add(_buildFootnote(context, detail));
-
     return CustomScrollView(
       slivers: [
         SliverToBoxAdapter(child: ListingDetailHero(detail: detail)),
@@ -194,36 +190,6 @@ class ListingDetailBody extends StatelessWidget {
     );
   }
 
-  Widget _buildFootnote(BuildContext context, ListingDetail detail) {
-    final segments = <String>[
-      context.localization.listing_detail_no_obligation,
-    ];
-
-    if (detail.depositAmount != null) {
-      segments.add(
-        context.localization.listing_detail_deposit(
-          _formatAmount(detail.depositAmount!, detail.currency),
-        ),
-      );
-    }
-
-    if (detail.minimumStay != null) {
-      segments.add(
-        context.localization.listing_detail_minimum_stay(detail.minimumStay!),
-      );
-    }
-
-    return Text(
-      segments.join(' · '),
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      textAlign: TextAlign.left,
-      style: AppTextStyles.p4Regular.copyWith(
-        color: context.currentTheme.textNeutralSecondary,
-      ),
-    );
-  }
-
   void _retry(BuildContext context, ListingDetail? detail) {
     final id = listingId ?? detail?.id;
     if (id == null) return;
@@ -235,14 +201,6 @@ class ListingDetailBody extends StatelessWidget {
     Navigator.of(context).push(
       MaterialPageRoute<void>(builder: (_) => ListingMapScreen(detail: detail)),
     );
-  }
-
-  String _formatAmount(double amount, String currency) {
-    final value = amount == amount.roundToDouble()
-        ? amount.toInt().toString()
-        : amount.toString();
-
-    return currency == 'USD' ? '\$$value' : '$value $currency';
   }
 
   ListingDetail? _previewDetail(ListingCard? card) {
