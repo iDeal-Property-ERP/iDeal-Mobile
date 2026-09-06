@@ -2109,36 +2109,35 @@ class AppLocalizationsRu extends AppLocalizations {
   String get view_all => 'Все';
 
   @override
-  String get listPropertyOnboardingTitle1 =>
-      'Доход, на который можно рассчитывать';
+  String get listPropertyOnboardingTitle1 => 'Ваш дом — наша работа';
 
   @override
   String get listPropertyOnboardingDesc1 =>
-      'Согласуйте с iDeal гарантированную ежемесячную сумму. Даже если жильё временно пустует, вы получите согласованную выплату владельцу за вычетом нашей прозрачной комиссии.';
+      'Поиск арендатора, заключение договора, уборка и контроль — всем этим занимается iDeal. Вам остаётся лишь раз в месяц просмотреть отчёт.';
 
   @override
-  String get listPropertyOnboardingBadge1 => 'Гарантия каждый месяц';
+  String get listPropertyOnboardingBadge1 => 'Доход без хлопот';
 
   @override
   String get listPropertyOnboardingTitle2 =>
-      'Ваш доход растёт вместе с арендой';
+      'Чем выше аренда, тем выше ваш доход';
 
   @override
   String get listPropertyOnboardingDesc2 =>
-      'Если мы сдаём ваше жильё дороже гарантированной суммы, выплата рассчитывается от более высокой арендной платы. Чем лучше результат, тем больше вы зарабатываете.';
+      'Чем лучше арендатора мы найдём, тем больше будет ваш доход. Поэтому наши интересы всегда совпадают с вашими.';
 
   @override
-  String get listPropertyOnboardingBadge2 => 'Выше аренда — выше доход';
+  String get listPropertyOnboardingBadge2 => 'Честное партнёрство';
 
   @override
-  String get listPropertyOnboardingTitle3 => 'Понятная комиссия 10%';
+  String get listPropertyOnboardingTitle3 => 'Ваше жильё сдастся быстрее';
 
   @override
   String get listPropertyOnboardingDesc3 =>
-      'iDeal удерживает 10% от суммы, по которой рассчитывается ваша ежемесячная выплата. Вы получаете оставшиеся 90% — из гарантии или более высокой аренды.';
+      'Все наши объявления размещаются без риелторской комиссии. Это удобнее для арендаторов, а значит, интерес к вашему жилью и скорость сдачи в аренду возрастают.';
 
   @override
-  String get listPropertyOnboardingBadge3 => '10% iDeal • 90% владельцу';
+  String get listPropertyOnboardingBadge3 => 'Без риелторов, без комиссии';
 
   @override
   String get listPropertyOnboardingSkip => 'Пропустить';

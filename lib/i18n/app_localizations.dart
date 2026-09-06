@@ -3865,55 +3865,55 @@ abstract class AppLocalizations {
   /// No description provided for @listPropertyOnboardingTitle1.
   ///
   /// In en, this message translates to:
-  /// **'Income you can count on'**
+  /// **'Your home, our work'**
   String get listPropertyOnboardingTitle1;
 
   /// No description provided for @listPropertyOnboardingDesc1.
   ///
   /// In en, this message translates to:
-  /// **'Agree on a guaranteed monthly amount with iDeal. Even if your home is vacant, you still receive the agreed owner payout after our transparent fee.'**
+  /// **'iDeal handles finding a tenant, signing the contract, cleaning, and supervision. All you need to do is review the report once a month.'**
   String get listPropertyOnboardingDesc1;
 
   /// No description provided for @listPropertyOnboardingBadge1.
   ///
   /// In en, this message translates to:
-  /// **'Guaranteed every month'**
+  /// **'Hassle-free income'**
   String get listPropertyOnboardingBadge1;
 
   /// No description provided for @listPropertyOnboardingTitle2.
   ///
   /// In en, this message translates to:
-  /// **'Your income grows with the rent'**
+  /// **'The higher the rent, the higher your income'**
   String get listPropertyOnboardingTitle2;
 
   /// No description provided for @listPropertyOnboardingDesc2.
   ///
   /// In en, this message translates to:
-  /// **'When we rent your home above the guaranteed amount, your payout is calculated from the higher rent. The better the result, the more you earn.'**
+  /// **'The better a tenant we find, the more your income grows. That is why our interests are always aligned with yours.'**
   String get listPropertyOnboardingDesc2;
 
   /// No description provided for @listPropertyOnboardingBadge2.
   ///
   /// In en, this message translates to:
-  /// **'More rent. More earnings.'**
+  /// **'Fair partnership'**
   String get listPropertyOnboardingBadge2;
 
   /// No description provided for @listPropertyOnboardingTitle3.
   ///
   /// In en, this message translates to:
-  /// **'A clear 10% fee'**
+  /// **'Your home is rented out faster'**
   String get listPropertyOnboardingTitle3;
 
   /// No description provided for @listPropertyOnboardingDesc3.
   ///
   /// In en, this message translates to:
-  /// **'iDeal charges 10% of the amount used for your monthly payout. You receive the remaining 90%—from the guarantee or from higher rent.'**
+  /// **'All of our listings are published without a broker\'s fee. This is more convenient for tenants, which means more interest in your home and a faster rental.'**
   String get listPropertyOnboardingDesc3;
 
   /// No description provided for @listPropertyOnboardingBadge3.
   ///
   /// In en, this message translates to:
-  /// **'10% iDeal • 90% owner'**
+  /// **'No brokers, no fees'**
   String get listPropertyOnboardingBadge3;
 
   /// No description provided for @listPropertyOnboardingSkip.

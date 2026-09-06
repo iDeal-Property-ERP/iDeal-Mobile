@@ -2079,34 +2079,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String get view_all => 'All';
 
   @override
-  String get listPropertyOnboardingTitle1 => 'Income you can count on';
+  String get listPropertyOnboardingTitle1 => 'Your home, our work';
 
   @override
   String get listPropertyOnboardingDesc1 =>
-      'Agree on a guaranteed monthly amount with iDeal. Even if your home is vacant, you still receive the agreed owner payout after our transparent fee.';
+      'iDeal handles finding a tenant, signing the contract, cleaning, and supervision. All you need to do is review the report once a month.';
 
   @override
-  String get listPropertyOnboardingBadge1 => 'Guaranteed every month';
+  String get listPropertyOnboardingBadge1 => 'Hassle-free income';
 
   @override
-  String get listPropertyOnboardingTitle2 => 'Your income grows with the rent';
+  String get listPropertyOnboardingTitle2 =>
+      'The higher the rent, the higher your income';
 
   @override
   String get listPropertyOnboardingDesc2 =>
-      'When we rent your home above the guaranteed amount, your payout is calculated from the higher rent. The better the result, the more you earn.';
+      'The better a tenant we find, the more your income grows. That is why our interests are always aligned with yours.';
 
   @override
-  String get listPropertyOnboardingBadge2 => 'More rent. More earnings.';
+  String get listPropertyOnboardingBadge2 => 'Fair partnership';
 
   @override
-  String get listPropertyOnboardingTitle3 => 'A clear 10% fee';
+  String get listPropertyOnboardingTitle3 => 'Your home is rented out faster';
 
   @override
   String get listPropertyOnboardingDesc3 =>
-      'iDeal charges 10% of the amount used for your monthly payout. You receive the remaining 90%—from the guarantee or from higher rent.';
+      'All of our listings are published without a broker\'s fee. This is more convenient for tenants, which means more interest in your home and a faster rental.';
 
   @override
-  String get listPropertyOnboardingBadge3 => '10% iDeal • 90% owner';
+  String get listPropertyOnboardingBadge3 => 'No brokers, no fees';
 
   @override
   String get listPropertyOnboardingSkip => 'Skip';

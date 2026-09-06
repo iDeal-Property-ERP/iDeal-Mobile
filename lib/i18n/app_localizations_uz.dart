@@ -2108,35 +2108,35 @@ class AppLocalizationsUz extends AppLocalizations {
   String get view_all => 'Barchasi';
 
   @override
-  String get listPropertyOnboardingTitle1 => 'Ishonchli daromad';
+  String get listPropertyOnboardingTitle1 => 'Uy sizniki, ish bizniki';
 
   @override
   String get listPropertyOnboardingDesc1 =>
-      'iDeal bilan kafolatlangan oylik summani kelishib oling. Uy vaqtincha ijaraga berilmasa ham, shaffof komissiyamiz chegirilgach, kelishilgan to‘lovni olasiz.';
+      'Ijarachi qidirish, shartnoma tuzish, tozalash, nazorat qilish — buning barchasini iDeal bajaradi. Sizga esa faqat oyiga bir marta hisobotni ko’rib chiqish qoladi.';
 
   @override
-  String get listPropertyOnboardingBadge1 => 'Har oy kafolat';
+  String get listPropertyOnboardingBadge1 => 'BOSH OG’RIG’ISIZ DAROMAD';
 
   @override
   String get listPropertyOnboardingTitle2 =>
-      'Ijara oshsa, daromadingiz ham oshadi';
+      'Ijara narxi qancha yuqori bo’lsa, daromadingiz ham shuncha oshadi';
 
   @override
   String get listPropertyOnboardingDesc2 =>
-      'Uyingizni kafolatlangan summadan yuqori narxda ijaraga bersak, to‘lovingiz yuqoriroq ijara summasidan hisoblanadi. Natija qancha yaxshi bo‘lsa, shuncha ko‘p daromad olasiz.';
+      'Biz qanchalik yaxshi ijarachi topsak, sizning daromadingiz ham shunchalik ko’payadi. Shuning uchun bizning manfaatimiz doim sizning manfaatingiz bilan mos keladi.';
 
   @override
-  String get listPropertyOnboardingBadge2 => 'Yuqori ijara — yuqori daromad';
+  String get listPropertyOnboardingBadge2 => 'ADOLATLI HAMKORLIK';
 
   @override
-  String get listPropertyOnboardingTitle3 => 'Aniq 10% komissiya';
+  String get listPropertyOnboardingTitle3 => 'Uyingiz tezroq ijaraga chiqadi';
 
   @override
   String get listPropertyOnboardingDesc3 =>
-      'iDeal oylik to‘lovingiz hisoblanadigan summaning 10%ini oladi. Qolgan 90% sizga — kafolatlangan summadan yoki yuqoriroq ijara daromadidan.';
+      'Barcha e’lonlarimiz maklerlik to’lovisiz joylanadi. Bu ijarachilar uchun qulayroq, demak — uyingizga qiziqish ham, ijaraga berilish tezligi ham ortadi.';
 
   @override
-  String get listPropertyOnboardingBadge3 => '10% iDeal • 90% egaga';
+  String get listPropertyOnboardingBadge3 => 'MAKLERSIZ, TO’LOVSIZ';
 
   @override
   String get listPropertyOnboardingSkip => 'O\'tkazib yuborish';
