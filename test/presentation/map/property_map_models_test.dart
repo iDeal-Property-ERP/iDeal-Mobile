@@ -28,6 +28,37 @@ void main() {
       );
     });
 
+    test('handles single coordinate and identical coordinate collections', () {
+      final bounds = PropertyMapBounds.fromCoordinates(const [
+        PropertyMapCoordinate(latitude: 41.30, longitude: 69.20),
+        PropertyMapCoordinate(latitude: 41.30, longitude: 69.20),
+      ]);
+
+      expect(bounds.southWest, bounds.northEast);
+      expect(
+        bounds.center,
+        const PropertyMapCoordinate(latitude: 41.30, longitude: 69.20),
+      );
+    });
+
+    test('handles points along single latitude or longitude axis', () {
+      final latAxis = PropertyMapBounds.fromCoordinates(const [
+        PropertyMapCoordinate(latitude: 41.20, longitude: 69.20),
+        PropertyMapCoordinate(latitude: 41.40, longitude: 69.20),
+      ]);
+      expect(latAxis.southWest.longitude, latAxis.northEast.longitude);
+      expect(latAxis.southWest.latitude, 41.20);
+      expect(latAxis.northEast.latitude, 41.40);
+
+      final lonAxis = PropertyMapBounds.fromCoordinates(const [
+        PropertyMapCoordinate(latitude: 41.30, longitude: 69.10),
+        PropertyMapCoordinate(latitude: 41.30, longitude: 69.50),
+      ]);
+      expect(lonAxis.southWest.latitude, lonAxis.northEast.latitude);
+      expect(lonAxis.southWest.longitude, 69.10);
+      expect(lonAxis.northEast.longitude, 69.50);
+    });
+
     test('rejects an empty coordinate collection', () {
       expect(
         () => PropertyMapBounds.fromCoordinates(const []),

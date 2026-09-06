@@ -2,6 +2,7 @@
 // ignore_for_file: implementation_imports
 
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:ideal_mobile/presentation/map/domain/property_map_models.dart';
@@ -64,6 +65,7 @@ class _YandexPropertyMapState extends State<YandexPropertyMap>
   late PropertyMapMarkerSnapshot _markerSnapshot;
   final PropertyMapAttachmentGuard _attachmentGuard =
       PropertyMapAttachmentGuard();
+  mapkit.MapWindow? _mapWindow;
   mapkit.Map? _map;
   bool _cameraListenerAttached = false;
   bool _inputListenerAttached = false;
@@ -118,6 +120,7 @@ class _YandexPropertyMapState extends State<YandexPropertyMap>
     widget.controller?.detach(this);
     final map = _map;
     _map = null;
+    _mapWindow = null;
     if (map != null) {
       _releaseMap(
         map,
@@ -173,6 +176,7 @@ class _YandexPropertyMapState extends State<YandexPropertyMap>
     }
 
     try {
+      _mapWindow = mapWindow;
       _map = map;
       map.addCameraListener(_cameraListener);
       _cameraListenerAttached = true;
@@ -182,13 +186,16 @@ class _YandexPropertyMapState extends State<YandexPropertyMap>
       _configureMap();
       _replaceMarkers();
       if (widget.fitMarkersOnCreate && _markerSnapshot.markers.length > 1) {
-        unawaited(
-          fitBounds(
-            PropertyMapBounds.fromCoordinates(
-              _markerSnapshot.markers.map((marker) => marker.coordinate),
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted || !_attachmentGuard.isActive || _map == null) return;
+          unawaited(
+            fitBounds(
+              PropertyMapBounds.fromCoordinates(
+                _markerSnapshot.markers.map((marker) => marker.coordinate),
+              ),
             ),
-          ),
-        );
+          );
+        });
       }
       if (mounted && _attachmentGuard.isActive) {
         widget.onMapReady?.call(PropertyMapProvider.yandex);
@@ -199,7 +206,10 @@ class _YandexPropertyMapState extends State<YandexPropertyMap>
         cameraListenerAttached: _cameraListenerAttached,
         inputListenerAttached: _inputListenerAttached,
       );
-      if (identical(_map, map)) _map = null;
+      if (identical(_map, map)) {
+        _map = null;
+        _mapWindow = null;
+      }
       _cameraListenerAttached = false;
       _inputListenerAttached = false;
       if (mounted && _attachmentGuard.isActive) {
@@ -406,19 +416,45 @@ class _YandexPropertyMapState extends State<YandexPropertyMap>
       );
       return;
     }
-    final position = map.cameraPositionForGeometry(
-      mapkit.Geometry.fromBoundingBox(
-        mapkit.BoundingBox(_point(bounds.southWest), _point(bounds.northEast)),
-      ),
+
+    mapkit.CameraPosition? targetPosition;
+    final mapWindow = _mapWindow;
+    final hasValidViewport =
+        mapWindow != null &&
+        mapWindow.isValid() &&
+        mapWindow.width() > 0 &&
+        mapWindow.height() > 0;
+
+    if (hasValidViewport) {
+      try {
+        final safeBounds = _normalizeBoundsForGeometry(bounds);
+        final position = map.cameraPositionForGeometry(
+          mapkit.Geometry.fromBoundingBox(
+            mapkit.BoundingBox(
+              _point(safeBounds.southWest),
+              _point(safeBounds.northEast),
+            ),
+          ),
+        );
+        final paddingZoom = (padding / 96).clamp(0.25, 1.5);
+        targetPosition = mapkit.CameraPosition(
+          position.target,
+          zoom: position.zoom - paddingZoom,
+          azimuth: position.azimuth,
+          tilt: position.tilt,
+        );
+      } on Object {
+        targetPosition = null;
+      }
+    }
+
+    targetPosition ??= _fallbackCameraPositionForBounds(
+      bounds,
+      padding: padding,
     );
-    final paddingZoom = (padding / 96).clamp(0.25, 1.5);
+
     map.move(
-      mapkit.CameraPosition(
-        position.target,
-        zoom: position.zoom - paddingZoom,
-        azimuth: position.azimuth,
-        tilt: position.tilt,
-      ),
+      targetPosition,
       animation: const mapkit.Animation(
         type: mapkit.AnimationType.Smooth,
         duration: 0.3,
@@ -536,6 +572,43 @@ class _InputListener implements mapkit.MapInputListener {
 
   @override
   void onMapLongTap(mapkit.Map map, mapkit.Point point) {}
+}
+
+PropertyMapBounds _normalizeBoundsForGeometry(PropertyMapBounds bounds) {
+  var swLat = bounds.southWest.latitude;
+  var swLon = bounds.southWest.longitude;
+  var neLat = bounds.northEast.latitude;
+  var neLon = bounds.northEast.longitude;
+
+  if ((neLat - swLat).abs() < 0.0001) {
+    swLat = (swLat - 0.0005).clamp(-90.0, 90.0);
+    neLat = (neLat + 0.0005).clamp(-90.0, 90.0);
+  }
+  if ((neLon - swLon).abs() < 0.0001) {
+    swLon = (swLon - 0.0005).clamp(-180.0, 180.0);
+    neLon = (neLon + 0.0005).clamp(-180.0, 180.0);
+  }
+
+  return PropertyMapBounds(
+    southWest: PropertyMapCoordinate(latitude: swLat, longitude: swLon),
+    northEast: PropertyMapCoordinate(latitude: neLat, longitude: neLon),
+  );
+}
+
+mapkit.CameraPosition _fallbackCameraPositionForBounds(
+  PropertyMapBounds bounds, {
+  double padding = 48,
+}) {
+  final center = bounds.center;
+  final latSpan = (bounds.northEast.latitude - bounds.southWest.latitude).abs();
+  final lonSpan = (bounds.northEast.longitude - bounds.southWest.longitude)
+      .abs();
+  final maxSpan = max(lonSpan, latSpan * 1.4);
+  final zoom = maxSpan <= 0.00001
+      ? 15.0
+      : (log(360.0 / maxSpan) / ln2 - (padding / 48.0) * 0.5).clamp(1.0, 18.0);
+
+  return mapkit.CameraPosition(_point(center), zoom: zoom, azimuth: 0, tilt: 0);
 }
 
 mapkit.Point _point(PropertyMapCoordinate coordinate) => mapkit.Point(
