@@ -1,9 +1,12 @@
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:ideal_mobile/presentation/map/data/datasources/map_config_remote_data_source.dart';
 import 'package:ideal_mobile/presentation/map/domain/entities/map_config.dart';
 import 'package:ideal_mobile/presentation/map/domain/property_map_models.dart';
 import 'package:ideal_mobile/presentation/map/domain/repositories/map_config_repository.dart';
 import 'package:ideal_mobile/services/secure_storage_service.dart';
+import 'package:ideal_mobile/utils/app_environment.dart';
+import 'package:ideal_mobile/utils/app_flavor_env.dart';
 import 'package:ideal_mobile/utils/map_token_obfuscator.dart';
 
 class MapConfigRepositoryImpl implements MapConfigRepository {
@@ -41,9 +44,60 @@ class MapConfigRepositoryImpl implements MapConfigRepository {
 
     try {
       final remote = await _remoteDataSource.getMapConfig();
-      final deobfuscatedToken = remote.token.isNotEmpty
-          ? MapTokenObfuscator.deobfuscate(remote.token, secret: secret)
-          : '';
+      String deobfuscatedToken = '';
+      if (remote.token.isNotEmpty) {
+        try {
+          final effectiveSecret = secret ?? AppConfig.mapObfuscationSecret;
+          deobfuscatedToken = MapTokenObfuscator.deobfuscate(
+            remote.token,
+            secret: effectiveSecret,
+          );
+          if (deobfuscatedToken.isEmpty) {
+            debugPrint(
+              '[MapConfig] Deobfuscated token empty provider=${remote.provider.name} secretPresent=${effectiveSecret.isNotEmpty} flavor=${AppConfig.appFlavor.name}',
+            );
+            if (!AppEnvironment.isTestEnvironment && !kIsWeb) {
+              try {
+                FirebaseCrashlytics.instance.log(
+                  '[MapConfig] empty after deobfuscate provider=${remote.provider.name} secretLen=${effectiveSecret.length} flavor=${AppConfig.appFlavor.name}',
+                );
+              } catch (_) {}
+            }
+          } else {
+            debugPrint(
+              '[MapConfig] Fetched provider=${remote.provider.name} tokenLen=${deobfuscatedToken.length} flavor=${AppConfig.appFlavor.name}',
+            );
+          }
+        } on FormatException catch (error, stackTrace) {
+          debugPrint(
+            '[MapConfig] Token deobfuscation failed provider=${remote.provider.name} tokenLen=${remote.token.length} secretLen=${(secret ?? AppConfig.mapObfuscationSecret).length} flavor=${AppConfig.appFlavor.name}: $error\n$stackTrace',
+          );
+          if (!AppEnvironment.isTestEnvironment && !kIsWeb) {
+            try {
+              FirebaseCrashlytics.instance.recordError(
+                error,
+                stackTrace,
+                reason:
+                    'Map token deobfuscate FormatException provider=${remote.provider.name} flavor=${AppConfig.appFlavor.name}',
+                fatal: false,
+              );
+            } catch (_) {}
+          }
+          // Keep token empty so selector will try fallback; still cache provider for diagnostics
+          deobfuscatedToken = '';
+        }
+      } else {
+        debugPrint(
+          '[MapConfig] Remote token empty provider=${remote.provider.name} flavor=${AppConfig.appFlavor.name}',
+        );
+        if (!AppEnvironment.isTestEnvironment && !kIsWeb) {
+          try {
+            FirebaseCrashlytics.instance.log(
+              '[MapConfig] remote token empty provider=${remote.provider.name} flavor=${AppConfig.appFlavor.name}',
+            );
+          } catch (_) {}
+        }
+      }
 
       final now = DateTime.now();
       final config = PropertyMapConfig(
@@ -59,6 +113,16 @@ class MapConfigRepositoryImpl implements MapConfigRepository {
       return config;
     } catch (error, stackTrace) {
       debugPrint('[MapConfig] Remote fetch failed: $error\n$stackTrace');
+      if (!AppEnvironment.isTestEnvironment && !kIsWeb) {
+        try {
+          FirebaseCrashlytics.instance.recordError(
+            error,
+            stackTrace,
+            reason: 'MapConfig remote fetch failed flavor=${AppConfig.appFlavor.name}',
+            fatal: false,
+          );
+        } catch (_) {}
+      }
 
       final fromStorage = await _loadFromStorage();
       if (fromStorage != null && fromStorage.token.isNotEmpty) {

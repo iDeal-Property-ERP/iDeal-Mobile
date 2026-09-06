@@ -105,6 +105,36 @@ if [[ "$CLEAN" == true ]]; then
   run_or_echo flutter clean
 fi
 
+# ── Ensure GoogleMaps.xcconfig exists (generated from .env or env var) ──────
+GOOGLE_XCCONFIG="$REPO_ROOT/ios/Flutter/GoogleMaps.xcconfig"
+if [[ ! -f "$GOOGLE_XCCONFIG" ]]; then
+  GOOGLE_KEY=""
+  if [[ -f "$REPO_ROOT/.env" ]]; then
+    GOOGLE_KEY="$(grep -E '^GOOGLE_MAPS_API_KEY=' "$REPO_ROOT/.env" | head -n1 | cut -d= -f2- | sed -e "s/^[ '\"]*//" -e "s/[ '\"]*$//" | xargs 2>/dev/null || true)"
+  fi
+  if [[ -n "${GOOGLE_MAPS_API_KEY:-}" ]]; then
+    GOOGLE_KEY="$GOOGLE_MAPS_API_KEY"
+  fi
+  if is_dry_run; then
+    log "+ would generate $GOOGLE_XCCONFIG (keyLen=${#GOOGLE_KEY})"
+  else
+    # shellcheck disable=SC2129
+    printf '%s\n' "GOOGLE_MAPS_API_KEY=$GOOGLE_KEY" > "$GOOGLE_XCCONFIG"
+    if [[ -n "$GOOGLE_KEY" ]]; then
+      info "Generated GoogleMaps.xcconfig (keyLen=${#GOOGLE_KEY})"
+    else
+      warn "Generated GoogleMaps.xcconfig with empty GOOGLE_MAPS_API_KEY — Google fallback disabled. Set GOOGLE_MAPS_API_KEY in .env or env."
+    fi
+  fi
+else
+  EXISTING_KEY="$(grep -E '^GOOGLE_MAPS_API_KEY=' "$GOOGLE_XCCONFIG" 2>/dev/null | cut -d= -f2- | sed -e "s/^[ '\"]*//" -e "s/[ '\"]*$//" | xargs 2>/dev/null || true)"
+  if [[ -z "$EXISTING_KEY" ]]; then
+    warn "Existing GoogleMaps.xcconfig has empty GOOGLE_MAPS_API_KEY — Google fallback disabled (TestFlight Yandex failure will show Map Unavailable)."
+  else
+    info "GoogleMaps.xcconfig present (keyLen=${#EXISTING_KEY})"
+  fi
+fi
+
 info "Building archive and exporting IPA..."
 run_or_echo flutter build ipa \
   --flavor "$FLAVOR" \

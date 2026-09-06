@@ -51,7 +51,14 @@ class PropertyMapProviderSelector {
       candidates: [
         PropertyMapProviderCandidate(
           provider: PropertyMapProvider.yandex,
-          probe: () => yandex.initialize(),
+          probe: () {
+            final staticKey = AppConfig.yandexMapKitApiKey.trim();
+            if (staticKey.isNotEmpty) {
+              return yandex.initialize(apiKey: staticKey);
+            }
+            // Legacy fallback without key (relies on prior init) — kept for tests
+            return yandex.initialize();
+          },
         ),
         PropertyMapProviderCandidate(
           provider: PropertyMapProvider.google,
@@ -84,8 +91,25 @@ class PropertyMapProviderSelector {
             final config = await loadConfig();
             if (config.provider == PropertyMapProvider.yandex &&
                 config.token.trim().isNotEmpty) {
-              return mapkitService.initialize(apiKey: config.token.trim());
+              final ok = await mapkitService.initialize(
+                apiKey: config.token.trim(),
+              );
+              if (!ok) {
+                debugPrint(
+                  '[Map] Yandex probe: remote token present but init failed (likely bundle restriction) provider=${config.provider.name} tokenLen=${config.token.length}',
+                );
+              }
+              return ok;
             }
+            // Fallback to static env key when backend token missing but env has key (defense in depth)
+            final staticYandex = AppConfig.yandexMapKitApiKey.trim();
+            if (staticYandex.isNotEmpty) {
+              debugPrint('[Map] Yandex probe: trying static env key len=${staticYandex.length}');
+              return mapkitService.initialize(apiKey: staticYandex);
+            }
+            debugPrint(
+              '[Map] Yandex probe: no usable token provider=${config.provider.name} tokenEmpty=${config.token.trim().isEmpty} flavor=${AppConfig.appFlavor.name}',
+            );
             return false;
           },
         ),
@@ -95,8 +119,19 @@ class PropertyMapProviderSelector {
             final config = await loadConfig();
             if (config.provider == PropertyMapProvider.google &&
                 config.token.trim().isNotEmpty) {
+              debugPrint('[Map] Google probe: using backend token');
               return true;
             }
+            // Fallback to static Google key — enables graceful degradation
+            // when Yandex fails due to bundle restriction or backend misconfig.
+            final staticGoogle = readGoogleApiKey().trim();
+            if (staticGoogle.isNotEmpty) {
+              debugPrint('[Map] Google probe: using static key len=${staticGoogle.length} as fallback');
+              return true;
+            }
+            debugPrint(
+              '[Map] Google probe: no usable token provider=${config.provider.name} fallbackEmpty=${staticGoogle.isEmpty}',
+            );
             return false;
           },
         ),
@@ -123,10 +158,17 @@ class PropertyMapProviderSelector {
   Future<PropertyMapProvider?> _select(
     Set<PropertyMapProvider> excluding,
   ) async {
+    debugPrint('[Map] Selecting provider excluding=$excluding flavor=${AppConfig.appFlavor.name}');
     for (final candidate in candidates) {
-      if (excluding.contains(candidate.provider)) continue;
+      if (excluding.contains(candidate.provider)) {
+        debugPrint('[Map] Skipping ${candidate.provider.name} (excluded)');
+        continue;
+      }
       try {
-        if (await candidate.probe().timeout(probeTimeout)) {
+        final ok = await candidate.probe().timeout(probeTimeout);
+        debugPrint('[Map] Probe ${candidate.provider.name} -> $ok');
+        if (ok) {
+          debugPrint('[Map] Selected ${candidate.provider.name}');
           return candidate.provider;
         }
       } on TimeoutException catch (error, stackTrace) {
@@ -141,6 +183,7 @@ class PropertyMapProviderSelector {
         );
       }
     }
+    debugPrint('[Map] No provider selected (will show unavailable)');
     return null;
   }
 }

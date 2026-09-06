@@ -47,6 +47,7 @@ class AppConfig {
   }
 
   static String get baseUrl {
+    if (!dotenv.isInitialized) return '';
     switch (appFlavor) {
       case AppFlavor.local:
         return dotenv.env['LOCAL_API_BASE_URL'] ?? '';
@@ -58,6 +59,7 @@ class AppConfig {
   }
 
   static String get frontendBaseUrl {
+    if (!dotenv.isInitialized) return '';
     switch (appFlavor) {
       case AppFlavor.local:
         return dotenv.env['LOCAL_FRONTEND_BASE_URL'] ?? '';
@@ -68,26 +70,41 @@ class AppConfig {
     }
   }
 
-  static String get supportTelegramUrl =>
-      dotenv.env['SUPPORT_TELEGRAM_URL']?.trim() ?? '';
+  static String get supportTelegramUrl => dotenv.isInitialized
+      ? dotenv.env['SUPPORT_TELEGRAM_URL']?.trim() ?? ''
+      : '';
 
-  static String get supportWhatsAppUrl =>
-      dotenv.env['SUPPORT_WHATSAPP_URL']?.trim() ?? '';
+  static String get supportWhatsAppUrl => dotenv.isInitialized
+      ? dotenv.env['SUPPORT_WHATSAPP_URL']?.trim() ?? ''
+      : '';
+
+  static String _stripEnvQuotes(String value) {
+    var v = value.trim();
+    if (v.length >= 2) {
+      final first = v[0];
+      final last = v[v.length - 1];
+      if ((first == "'" && last == "'") || (first == '"' && last == '"')) {
+        v = v.substring(1, v.length - 1).trim();
+      }
+    }
+    return v;
+  }
 
   static String get yandexMapKitApiKey => dotenv.isInitialized
-      ? dotenv.env['YANDEX_MAPKIT_API_KEY']?.trim() ?? ''
+      ? _stripEnvQuotes(dotenv.env['YANDEX_MAPKIT_API_KEY'] ?? '')
       : '';
 
   static String get googleMapsApiKey => dotenv.isInitialized
-      ? dotenv.env['GOOGLE_MAPS_API_KEY']?.trim() ?? ''
+      ? _stripEnvQuotes(dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '')
       : '';
 
   static String get mapObfuscationSecret {
     if (!dotenv.isInitialized) return '';
-    return dotenv.env['MAP_OBFUSCATION_SECRET']?.trim() ?? '';
+    return _stripEnvQuotes(dotenv.env['MAP_OBFUSCATION_SECRET'] ?? '');
   }
 
   static String getClarityProjectId() {
+    if (!dotenv.isInitialized) return '';
     switch (appFlavor) {
       case AppFlavor.local:
         return '';

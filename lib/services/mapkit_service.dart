@@ -1,5 +1,7 @@
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:ideal_mobile/utils/app_environment.dart';
+import 'package:ideal_mobile/utils/app_flavor_env.dart';
 import 'package:yandex_maps_mapkit/init.dart' as init;
 import 'package:yandex_maps_mapkit/mapkit_factory.dart' as mapkit_factory;
 
@@ -54,14 +56,44 @@ class MapkitService implements YandexMapLifecycle {
 
   Future<bool> _initialize(String apiKey) async {
     if (AppEnvironment.isTestEnvironment || kIsWeb || apiKey.isEmpty) {
+      debugPrint(
+        '[MapKit] Skip init: test=${AppEnvironment.isTestEnvironment} web=$kIsWeb empty=${apiKey.isEmpty} flavor=${AppConfig.appFlavor.name}',
+      );
+      if (!AppEnvironment.isTestEnvironment && !kIsWeb && apiKey.isEmpty) {
+        try {
+          FirebaseCrashlytics.instance.log(
+            '[MapKit] init skipped: empty apiKey flavor=${AppConfig.appFlavor.name}',
+          );
+        } catch (_) {}
+      }
       return false;
     }
 
     try {
+      debugPrint(
+        '[MapKit] Initializing flavor=${AppConfig.appFlavor.name} keyLen=${apiKey.length} prefix=${apiKey.substring(0, apiKey.length > 8 ? 8 : apiKey.length)}',
+      );
       await init.initMapkit(apiKey: apiKey);
       _available = true;
+      if (!AppEnvironment.isTestEnvironment && !kIsWeb) {
+        FirebaseCrashlytics.instance.log(
+          '[MapKit] init success flavor=${AppConfig.appFlavor.name}',
+        );
+      }
+      debugPrint('[MapKit] Initialization success flavor=${AppConfig.appFlavor.name}');
     } on Object catch (error, stackTrace) {
       debugPrint('[MapKit] Initialization error: $error\n$stackTrace');
+      if (!AppEnvironment.isTestEnvironment && !kIsWeb) {
+        try {
+          FirebaseCrashlytics.instance.recordError(
+            error,
+            stackTrace,
+            reason:
+                'MapKit init failed flavor=${AppConfig.appFlavor.name} keyLen=${apiKey.length}',
+            fatal: false,
+          );
+        } catch (_) {}
+      }
       _available = false;
       _initialization = null;
     }

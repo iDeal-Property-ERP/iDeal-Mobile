@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:get_it/get_it.dart';
@@ -10,6 +12,8 @@ import 'package:ideal_mobile/presentation/map/services/property_map_provider_sel
 import 'package:ideal_mobile/presentation/map/widgets/providers/google_property_map.dart';
 import 'package:ideal_mobile/presentation/map/widgets/providers/yandex_property_map.dart';
 import 'package:ideal_mobile/services/mapkit_service.dart';
+import 'package:ideal_mobile/utils/app_environment.dart';
+import 'package:ideal_mobile/utils/app_flavor_env.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 
 export 'package:ideal_mobile/presentation/map/domain/property_map_models.dart';
@@ -196,6 +200,7 @@ class _PropertyMapViewState extends State<PropertyMapView> {
     _providerStartupTimer?.cancel();
     _activeProvider = null;
     final generation = ++_selectionGeneration;
+    debugPrint('[MapView] Selecting provider gen=$generation failed=$_failedProviders flavor=${AppConfig.appFlavor.name}');
     final selection = _providerSelector.select(excluding: _failedProviders);
     unawaited(
       selection.then((provider) {
@@ -203,10 +208,30 @@ class _PropertyMapViewState extends State<PropertyMapView> {
         _activeProvider = provider;
         _providerStartupTimer?.cancel();
         if (provider != null) {
+          debugPrint('[MapView] Provider selected $provider gen=$generation');
           _providerStartupTimer = Timer(
             widget.providerStartupTimeout,
-            () => _handleProviderFailed(provider),
+            () {
+              debugPrint('[MapView] Provider $provider startup timeout after ${widget.providerStartupTimeout}');
+              if (!AppEnvironment.isTestEnvironment && !kIsWeb) {
+                try {
+                  FirebaseCrashlytics.instance.log(
+                    '[MapView] startup timeout provider=${provider.name} flavor=${AppConfig.appFlavor.name}',
+                  );
+                } catch (_) {}
+              }
+              _handleProviderFailed(provider);
+            },
           );
+        } else {
+          debugPrint('[MapView] No provider available gen=$generation failed=$_failedProviders');
+          if (!AppEnvironment.isTestEnvironment && !kIsWeb) {
+            try {
+              FirebaseCrashlytics.instance.log(
+                '[MapView] no provider available failed=$_failedProviders flavor=${AppConfig.appFlavor.name}',
+              );
+            } catch (_) {}
+          }
         }
       }),
     );
@@ -215,6 +240,7 @@ class _PropertyMapViewState extends State<PropertyMapView> {
 
   void _handleProviderReady(PropertyMapProvider provider) {
     if (_activeProvider != provider) return;
+    debugPrint('[MapView] Provider $provider ready');
     _providerStartupTimer?.cancel();
     widget.onProviderReady?.call(provider);
   }
@@ -224,6 +250,14 @@ class _PropertyMapViewState extends State<PropertyMapView> {
         _activeProvider != provider ||
         _failedProviders.contains(provider)) {
       return;
+    }
+    debugPrint('[MapView] Provider $provider failed, will retry excluding it');
+    if (!AppEnvironment.isTestEnvironment && !kIsWeb) {
+      try {
+        FirebaseCrashlytics.instance.log(
+          '[MapView] provider failed ${provider.name} flavor=${AppConfig.appFlavor.name} failedBefore=$_failedProviders',
+        );
+      } catch (_) {}
     }
     _providerStartupTimer?.cancel();
     setState(() {

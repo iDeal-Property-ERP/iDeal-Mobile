@@ -4,11 +4,15 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ideal_mobile/presentation/map/domain/property_map_models.dart';
 import 'package:ideal_mobile/presentation/map/services/property_map_attachment_guard.dart';
 import 'package:ideal_mobile/presentation/map/widgets/property_map_pin.dart';
 import 'package:ideal_mobile/services/mapkit_service.dart';
+import 'package:ideal_mobile/utils/app_environment.dart';
+import 'package:ideal_mobile/utils/app_flavor_env.dart';
 import 'package:ideal_mobile/utils/theme/extension/theme_extension.dart';
 import 'package:yandex_maps_mapkit/mapkit.dart' as mapkit;
 import 'package:yandex_maps_mapkit/ui_view.dart';
@@ -176,6 +180,7 @@ class _YandexPropertyMapState extends State<YandexPropertyMap>
     }
 
     try {
+      debugPrint('[YandexMap] onMapCreated success markers=${widget.markers.length} flavor=${AppConfig.appFlavor.name}');
       _mapWindow = mapWindow;
       _map = map;
       map.addCameraListener(_cameraListener);
@@ -200,7 +205,18 @@ class _YandexPropertyMapState extends State<YandexPropertyMap>
       if (mounted && _attachmentGuard.isActive) {
         widget.onMapReady?.call(PropertyMapProvider.yandex);
       }
-    } on Object {
+    } on Object catch (error, stackTrace) {
+      debugPrint('[YandexMap] onMapCreated failed: $error\n$stackTrace flavor=${AppConfig.appFlavor.name}');
+      if (!AppEnvironment.isTestEnvironment && !kIsWeb) {
+        try {
+          FirebaseCrashlytics.instance.recordError(
+            error,
+            stackTrace,
+            reason: 'Yandex onMapCreated failed flavor=${AppConfig.appFlavor.name} markers=${widget.markers.length}',
+            fatal: false,
+          );
+        } catch (_) {}
+      }
       _releaseMap(
         map,
         cameraListenerAttached: _cameraListenerAttached,

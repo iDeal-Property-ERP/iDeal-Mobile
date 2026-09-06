@@ -1066,9 +1066,19 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = v0.1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-all_load",
+					"-u _yandex_maps_flutter_is_init",
+					"-u _yandex_maps_flutter_dart_init",
+					"-u _yandex_maps_flutter_attach_engine_to_current_isolate",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.ideal.mobile;
 				PRODUCT_NAME = "iDeal Mobile";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				STRIP_INSTALLED_PRODUCT = NO;
+				STRIP_STYLE = debugging;
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -1241,9 +1251,19 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = v0.1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-all_load",
+					"-u _yandex_maps_flutter_is_init",
+					"-u _yandex_maps_flutter_dart_init",
+					"-u _yandex_maps_flutter_attach_engine_to_current_isolate",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.ideal.mobile;
 				PRODUCT_NAME = "iDeal Mobile";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				STRIP_INSTALLED_PRODUCT = NO;
+				STRIP_STYLE = debugging;
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -1415,9 +1435,19 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = v0.1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-all_load",
+					"-u _yandex_maps_flutter_is_init",
+					"-u _yandex_maps_flutter_dart_init",
+					"-u _yandex_maps_flutter_attach_engine_to_current_isolate",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.ideal.mobile.dev;
 				PRODUCT_NAME = "iDeal Mobile Dev";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				STRIP_INSTALLED_PRODUCT = NO;
+				STRIP_STYLE = debugging;
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -1500,9 +1530,19 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = v0.1.0;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-ObjC",
+					"-all_load",
+					"-u _yandex_maps_flutter_is_init",
+					"-u _yandex_maps_flutter_dart_init",
+					"-u _yandex_maps_flutter_attach_engine_to_current_isolate",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.ideal.mobile.dev;
 				PRODUCT_NAME = "iDeal Mobile Dev";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				STRIP_INSTALLED_PRODUCT = NO;
+				STRIP_STYLE = debugging;
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";

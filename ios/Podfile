@@ -99,6 +99,71 @@ post_install do |installer|
               ## dart: PermissionGroup.assistant
               'PERMISSION_ASSISTANT=0',
       ]
+      # Fix yandex_maps_mapkit FFI symbol stripping in Release (TestFlight).
+      # The Dart code looks up `yandex_maps_flutter_is_init` via
+      # DynamicLibrary.process() -> dlsym(RTLD_DEFAULT). In Release the linker
+      # strips it as dead code because it is only referenced via string.
+      # Keep the symbols via -u (undefined symbol) instead of disabling all stripping
+      # (which pulls in mock symbols and fails).
+      if target.name == 'yandex_maps_mapkit'
+        other = config.build_settings['OTHER_LDFLAGS']
+        other = [other] if other.is_a?(String)
+        other ||= ['$(inherited)']
+        %w[_yandex_maps_flutter_is_init _yandex_maps_flutter_dart_init _yandex_maps_flutter_attach_engine_to_current_isolate].each do |sym|
+          flag = "-u #{sym}"
+          other << flag unless other.include?(flag)
+        end
+        config.build_settings['OTHER_LDFLAGS'] = other
+      end
     end
+  end
+
+  # Patch Runner target to keep FFI symbols — this is the actual TestFlight fix.
+  # Instead of disabling dead-code stripping (which pulls mock symbols and breaks link),
+  # use -u to force the linker to keep the 3 FFI symbols looked up via dlsym.
+  begin
+    require 'xcodeproj'
+    runner_path = File.join(__dir__, 'Runner.xcodeproj')
+    if File.exist?(runner_path)
+      project = Xcodeproj::Project.open(runner_path)
+      project.targets.each do |target|
+        next unless target.name == 'Runner'
+        target.build_configurations.each do |config|
+          if config.name.include?('Release') || config.name.include?('Profile')
+            # Remove DEAD_CODE stripping override (it pulls mock symbols) but keep
+            # stripping off so dlsym can find the FFI symbols in Release.
+            config.build_settings.delete('DEAD_CODE_STRIPPING')
+            config.build_settings['STRIP_INSTALLED_PRODUCT'] = 'NO'
+            config.build_settings['STRIP_STYLE'] = 'debugging'
+            other_ldflags = config.build_settings['OTHER_LDFLAGS']
+            if other_ldflags.nil?
+              other_ldflags = ['$(inherited)']
+            elsif other_ldflags.is_a?(String)
+              other_ldflags = [other_ldflags]
+            end
+            # Clean stale entries from previous attempt
+            other_ldflags.reject! { |f| f.to_s.include?('yandex_maps_mapkit') && f.to_s.include?('force_load') }
+            other_ldflags << '-ObjC' unless other_ldflags.include?('-ObjC')
+            other_ldflags << '-all_load' unless other_ldflags.include?('-all_load')
+            %w[_yandex_maps_flutter_is_init _yandex_maps_flutter_dart_init _yandex_maps_flutter_attach_engine_to_current_isolate].each do |sym|
+              flag = "-u #{sym}"
+              other_ldflags << flag unless other_ldflags.include?(flag)
+            end
+            config.build_settings['OTHER_LDFLAGS'] = other_ldflags
+          else
+            # Also clean Debug configs if they were polluted
+            other_ldflags = config.build_settings['OTHER_LDFLAGS']
+            if other_ldflags.is_a?(Array)
+              other_ldflags.reject! { |f| f.to_s.include?('yandex_maps_mapkit') && f.to_s.include?('force_load') }
+              config.build_settings['OTHER_LDFLAGS'] = other_ldflags
+            end
+          end
+        end
+      end
+      project.save
+      puts "Patched Runner.xcodeproj to keep yandex FFI symbols (-u) for Release"
+    end
+  rescue => e
+    puts "Warning: Could not patch Runner.xcodeproj for yandex: #{e.message}"
   end
 end
