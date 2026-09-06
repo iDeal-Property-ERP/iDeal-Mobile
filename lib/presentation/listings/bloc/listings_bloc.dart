@@ -8,6 +8,7 @@ import 'package:ideal_mobile/presentation/listings/bloc/listings_event.dart';
 import 'package:ideal_mobile/presentation/listings/bloc/listings_state.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_card.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filters.dart';
+import 'package:ideal_mobile/presentation/listings/domain/usecases/get_home_banners.dart';
 import 'package:ideal_mobile/presentation/listings/domain/usecases/get_listing_filter_options.dart';
 import 'package:ideal_mobile/presentation/listings/domain/usecases/get_listing_filter_options_cached.dart';
 import 'package:ideal_mobile/presentation/listings/domain/usecases/get_listings.dart';
@@ -28,6 +29,7 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
     GetListingsCached? getListingsCached,
     GetListingFilterOptionsCached? getFilterOptionsCached,
     GetRecommendedListings? getRecommendedListings,
+    GetHomeBanners? getHomeBanners,
     RecordSearchActivity? recordSearchActivity,
     SetListingFavorite? setListingFavorite,
     FavoritesSyncService? favoritesSyncService,
@@ -53,6 +55,9 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
            (sl.isRegistered<GetRecommendedListings>()
                ? sl<GetRecommendedListings>()
                : null),
+       _getHomeBanners =
+           getHomeBanners ??
+           (sl.isRegistered<GetHomeBanners>() ? sl<GetHomeBanners>() : null),
        _recordSearchActivity =
            recordSearchActivity ??
            (sl.isRegistered<RecordSearchActivity>()
@@ -86,6 +91,7 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
   final GetListingsCached? _getListingsCached;
   final GetListingFilterOptionsCached? _getFilterOptionsCached;
   final GetRecommendedListings? _getRecommendedListings;
+  final GetHomeBanners? _getHomeBanners;
   final RecordSearchActivity? _recordSearchActivity;
   final SetListingFavorite _setListingFavorite;
   final FavoritesSyncService _favoritesSyncService;
@@ -107,6 +113,7 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
     on<ClearListingFiltersEvent>(_onClearListingFiltersEvent);
     on<LoadFilterOptionsEvent>(_onLoadFilterOptionsEvent);
     on<LoadHomeRecommendationsEvent>(_onLoadHomeRecommendationsEvent);
+    on<LoadHomeBannersEvent>(_onLoadHomeBannersEvent);
     on<LoadHomeRailsEvent>(_onLoadHomeRailsEvent);
     on<ToggleFavoriteEvent>(_onToggleFavoriteEvent);
     on<ClearFavoriteFeedbackEvent>(_onClearFavoriteFeedbackEvent);
@@ -126,6 +133,7 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
   ) {
     _searchDebounce?.cancel();
     add(const LoadHomeRecommendationsEvent());
+    add(const LoadHomeBannersEvent());
     return _loadListings(
       filters: state.filters,
       page: 1,
@@ -323,6 +331,17 @@ class ListingsBloc extends Bloc<ListingsEvent, ListingsState> {
         );
       },
     );
+  }
+
+  Future<void> _onLoadHomeBannersEvent(
+    LoadHomeBannersEvent event,
+    Emitter<ListingsState> emit,
+  ) async {
+    if (_getHomeBanners == null) return;
+    final result = await _getHomeBanners();
+    result.fold((_) {}, (banners) {
+      emit(ListingsLoadedState(state.copyWith(banners: banners)));
+    });
   }
 
   Future<void> _onToggleFavoriteEvent(

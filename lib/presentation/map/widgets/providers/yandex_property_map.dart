@@ -213,7 +213,6 @@ class _YandexPropertyMapState extends State<YandexPropertyMap>
             error,
             stackTrace,
             reason: 'Yandex onMapCreated failed flavor=${AppConfig.appFlavor.name} markers=${widget.markers.length}',
-            fatal: false,
           );
         } catch (_) {}
       }

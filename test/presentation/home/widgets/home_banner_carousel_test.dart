@@ -228,5 +228,30 @@ void main() {
       expect(find.byKey(keys.homePage.bannerCarouselKey), findsNothing);
       expect(find.byKey(keys.homePage.bannerIndicatorKey), findsNothing);
     });
+
+    testWidgets('renders dynamic backend banners with custom tag', (
+      tester,
+    ) async {
+      final customBanners = [
+        const HomeBannerItem(
+          id: 10,
+          title: 'Special Promotion',
+          description: 'Special description for test.',
+          icon: TablerIcons.sparkles,
+          tag: 'Hot Deal',
+        ),
+      ];
+
+      await tester.runWidgetTest(
+        child: Scaffold(body: HomeBannerCarousel(banners: customBanners)),
+      );
+
+      expect(find.text('Special Promotion'), findsOneWidget);
+      expect(find.text('Special description for test.'), findsOneWidget);
+      expect(find.text('Hot Deal'), findsOneWidget);
+      expect(find.byIcon(TablerIcons.sparkles), findsWidgets);
+      // Single banner -> no indicator dots
+      expect(find.byKey(keys.homePage.bannerIndicatorKey), findsNothing);
+    });
   });
 }

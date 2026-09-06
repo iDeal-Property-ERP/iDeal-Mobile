@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ideal_mobile/core/errors/failure.dart';
 import 'package:ideal_mobile/presentation/favorites/domain/usecases/set_listing_favorite.dart';
@@ -19,6 +20,8 @@ import 'package:ideal_mobile/shared_pref/pref_keys.dart';
 import 'package:ideal_mobile/shared_pref/prefs.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
+import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 
 class MockGetListings extends Mock implements GetListings {}
 
@@ -86,6 +89,10 @@ void main() {
   });
 
   setUp(() {
+    FlutterSecureStorage.setMockInitialValues({});
+    SharedPreferencesAsyncPlatform.instance =
+        InMemorySharedPreferencesAsync.empty();
+    Prefs.init();
     SharedPreferences.setMockInitialValues({});
     mockGetListings = MockGetListings();
     mockGetFilterOptions = MockGetFilterOptions();

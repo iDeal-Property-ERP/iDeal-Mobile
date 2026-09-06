@@ -105,3 +105,10 @@ class SyncFavoriteStatusEvent extends ListingsEvent {
   @override
   List<Object> get props => [listingId, isFavorite];
 }
+
+class LoadHomeBannersEvent extends ListingsEvent {
+  const LoadHomeBannersEvent();
+
+  @override
+  List<Object> get props => [];
+}

@@ -15,13 +15,38 @@ class HomeBannerItem {
     required this.title,
     required this.description,
     required this.icon,
+    this.id,
     this.tag,
+    this.sortOrder,
   });
 
+  final int? id;
   final String title;
   final String description;
   final IconData icon;
   final String? tag;
+  final int? sortOrder;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is HomeBannerItem &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          title == other.title &&
+          description == other.description &&
+          icon == other.icon &&
+          tag == other.tag &&
+          sortOrder == other.sortOrder;
+
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      title.hashCode ^
+      description.hashCode ^
+      icon.hashCode ^
+      tag.hashCode ^
+      sortOrder.hashCode;
 }
 
 /// Horizontally scrollable banner carousel placed directly below search bar.
@@ -252,7 +277,7 @@ class _BannerCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (item.tag != null) ...[
+                if (item.tag != null && item.tag!.trim().isNotEmpty) ...[
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 8,
@@ -301,7 +326,9 @@ class _BannerCard extends StatelessWidget {
                     fontSize: 13,
                     height: 1.35,
                   ),
-                  maxLines: 3,
+                  maxLines: item.tag != null && item.tag!.trim().isNotEmpty
+                      ? 2
+                      : 3,
                   overflow: TextOverflow.ellipsis,
                 ),
               ],

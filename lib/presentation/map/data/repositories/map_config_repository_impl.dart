@@ -79,7 +79,6 @@ class MapConfigRepositoryImpl implements MapConfigRepository {
                 stackTrace,
                 reason:
                     'Map token deobfuscate FormatException provider=${remote.provider.name} flavor=${AppConfig.appFlavor.name}',
-                fatal: false,
               );
             } catch (_) {}
           }
@@ -119,7 +118,6 @@ class MapConfigRepositoryImpl implements MapConfigRepository {
             error,
             stackTrace,
             reason: 'MapConfig remote fetch failed flavor=${AppConfig.appFlavor.name}',
-            fatal: false,
           );
         } catch (_) {}
       }

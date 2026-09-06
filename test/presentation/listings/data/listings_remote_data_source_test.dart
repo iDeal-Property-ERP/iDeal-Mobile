@@ -296,4 +296,33 @@ void main() {
     expect(results.first.data.tariffs.single.value, 'apartment');
     expect(results.last.data.tariffs.single.value, 'house');
   });
+
+  test('parses a successful home banners response', () async {
+    when(
+      () => dio.get('/mobile/home/banners/', options: any(named: 'options')),
+    ).thenAnswer(
+      (_) async => response('/mobile/home/banners/', 200, {
+        'success': true,
+        'data': {
+          'items': [
+            {
+              'id': 1,
+              'title': '100% Actual Listings',
+              'description': 'Whatever you see is available.',
+              'icon': 'circle_check',
+              'tag': 'iDeal Guarantee',
+              'sort_order': 1,
+            },
+          ],
+        },
+      }),
+    );
+
+    final banners = await dataSource.getHomeBanners();
+
+    expect(banners.length, 1);
+    expect(banners.first.id, 1);
+    expect(banners.first.title, '100% Actual Listings');
+    expect(banners.first.tag, 'iDeal Guarantee');
+  });
 }

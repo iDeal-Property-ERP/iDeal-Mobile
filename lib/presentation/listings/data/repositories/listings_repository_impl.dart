@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:ideal_mobile/core/errors/exceptions.dart';
 import 'package:ideal_mobile/core/errors/failure.dart';
+import 'package:ideal_mobile/presentation/home/widgets/home_banner_carousel.dart';
 import 'package:ideal_mobile/presentation/listings/data/datasources/listings_remote_data_source.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_card.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filter_options.dart';
@@ -78,6 +79,15 @@ class ListingsRepositoryImpl implements ListingsRepository {
   ResultFuture<List<ListingCard>> getRecommendedListings() async {
     try {
       return Right(await _remoteDataSource.getRecommendedListings());
+    } on APIException catch (error) {
+      return Left(APIFailure.fromException(error));
+    }
+  }
+
+  @override
+  ResultFuture<List<HomeBannerItem>> getHomeBanners() async {
+    try {
+      return Right(await _remoteDataSource.getHomeBanners());
     } on APIException catch (error) {
       return Left(APIFailure.fromException(error));
     }

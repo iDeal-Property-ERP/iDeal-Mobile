@@ -22,6 +22,7 @@ import 'package:ideal_mobile/presentation/listing_map/domain/repositories/listin
 import 'package:ideal_mobile/presentation/listings/data/datasources/listings_remote_data_source.dart';
 import 'package:ideal_mobile/presentation/listings/data/repositories/listings_repository_impl.dart';
 import 'package:ideal_mobile/presentation/listings/domain/repositories/listings_repository.dart';
+import 'package:ideal_mobile/presentation/listings/domain/usecases/get_home_banners.dart';
 import 'package:ideal_mobile/presentation/listings/domain/usecases/get_listing_filter_options.dart';
 import 'package:ideal_mobile/presentation/listings/domain/usecases/get_listing_filter_options_cached.dart';
 import 'package:ideal_mobile/presentation/listings/domain/usecases/get_listings.dart';
@@ -134,6 +135,7 @@ Future<void> configureDependencies({Dio? dio}) async {
     ..registerLazySingleton(
       () => GetRecommendedListings(sl<ListingsRepository>()),
     )
+    ..registerLazySingleton(() => GetHomeBanners(sl<ListingsRepository>()))
     ..registerLazySingleton(
       () => RecordSearchActivity(sl<ListingsRepository>()),
     )

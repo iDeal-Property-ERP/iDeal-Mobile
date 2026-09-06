@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 import 'package:ideal_mobile/core/errors/exceptions.dart';
+import 'package:ideal_mobile/presentation/listings/data/models/home_banner_model.dart';
 import 'package:ideal_mobile/presentation/listings/data/models/listing_card_model.dart';
 import 'package:ideal_mobile/presentation/listings/data/models/listing_filter_options_model.dart';
 import 'package:ideal_mobile/presentation/listings/data/models/listings_page_model.dart';
@@ -27,6 +28,8 @@ abstract class ListingsRemoteDataSource {
 
   Future<List<ListingCardModel>> getRecommendedListings();
 
+  Future<List<HomeBannerModel>> getHomeBanners();
+
   Future<void> recordSearchActivity({
     String? query,
     Map<String, dynamic>? filters,
@@ -41,6 +44,7 @@ class ListingsRemoteDataSourceImpl implements ListingsRemoteDataSource {
   static const _listingsPath = '/mobile/home/listings/';
   static const _filtersPath = '/mobile/home/filters/';
   static const _recommendedPath = '/mobile/home/listings/recommended/';
+  static const _bannersPath = '/mobile/home/banners/';
 
   final Dio _dio;
   final CacheManager _cacheManager;
@@ -168,6 +172,38 @@ class ListingsRemoteDataSourceImpl implements ListingsRemoteDataSource {
       return items
           .map(
             (item) => ListingCardModel.fromJson(
+              Map<String, dynamic>.from(item as Map),
+            ),
+          )
+          .toList();
+    } on FormatException catch (error) {
+      throw APIException(
+        message: error.message,
+        statusCode: response.statusCode ?? 500,
+      );
+    }
+  }
+
+  @override
+  Future<List<HomeBannerModel>> getHomeBanners() async {
+    final response = await _request(
+      () => _dio.get(
+        _bannersPath,
+        options: _cacheManager.noCacheOptions().toOptions(),
+      ),
+    );
+    final data = _dataFromResponse(
+      response,
+      missingDataMessage: 'Home banners were not returned.',
+    );
+    final items = data['items'];
+    if (items is! List) {
+      return const [];
+    }
+    try {
+      return items
+          .map(
+            (item) => HomeBannerModel.fromJson(
               Map<String, dynamic>.from(item as Map),
             ),
           )

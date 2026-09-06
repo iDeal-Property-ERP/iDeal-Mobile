@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
+import 'package:ideal_mobile/presentation/home/widgets/home_banner_carousel.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_card.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filter_options.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filters.dart';
@@ -25,6 +26,7 @@ class ListingsState with EquatableMixin {
     this.favoriteMutationErrorMessage,
     this.recommendedListings = const [],
     this.isRecommendationsLoading = false,
+    this.banners = const [],
   });
 
   ListingsState.initial() : this();
@@ -47,7 +49,8 @@ class ListingsState with EquatableMixin {
       listingRefreshError = state.listingRefreshError,
       favoriteMutationErrorMessage = state.favoriteMutationErrorMessage,
       recommendedListings = state.recommendedListings,
-      isRecommendationsLoading = state.isRecommendationsLoading;
+      isRecommendationsLoading = state.isRecommendationsLoading,
+      banners = state.banners;
 
   final List<ListingCard> items;
   final ListingFilters filters;
@@ -67,6 +70,7 @@ class ListingsState with EquatableMixin {
   final String? favoriteMutationErrorMessage;
   final List<ListingCard> recommendedListings;
   final bool isRecommendationsLoading;
+  final List<HomeBannerItem> banners;
 
   bool get isBaseline =>
       searchQuery.trim().isEmpty &&
@@ -92,6 +96,7 @@ class ListingsState with EquatableMixin {
     String? favoriteMutationErrorMessage,
     List<ListingCard>? recommendedListings,
     bool? isRecommendationsLoading,
+    List<HomeBannerItem>? banners,
     bool clearErrorMessage = false,
     bool clearListingRefreshError = false,
     bool clearFavoriteMutationErrorMessage = false,
@@ -122,6 +127,7 @@ class ListingsState with EquatableMixin {
       recommendedListings: recommendedListings ?? this.recommendedListings,
       isRecommendationsLoading:
           isRecommendationsLoading ?? this.isRecommendationsLoading,
+      banners: banners ?? this.banners,
     );
   }
 
@@ -145,6 +151,7 @@ class ListingsState with EquatableMixin {
     this.favoriteMutationErrorMessage,
     List<ListingCard>? recommendedListings,
     this.isRecommendationsLoading = false,
+    List<HomeBannerItem>? banners,
   }) : items = items ?? const [],
        filters = filters ?? const ListingFilters(sort: 'score_desc'),
        searchQuery = searchQuery ?? '',
@@ -156,7 +163,8 @@ class ListingsState with EquatableMixin {
        isListingsLoading = isListingsLoading ?? false,
        hasLoadedListings = hasLoadedListings ?? false,
        filterOptions = filterOptions ?? const ListingFilterOptions.empty(),
-       recommendedListings = recommendedListings ?? const [];
+       recommendedListings = recommendedListings ?? const [],
+       banners = banners ?? const [];
 
   @override
   List<Object?> get props => [
@@ -178,6 +186,7 @@ class ListingsState with EquatableMixin {
     favoriteMutationErrorMessage,
     recommendedListings,
     isRecommendationsLoading,
+    banners,
   ];
 }
 

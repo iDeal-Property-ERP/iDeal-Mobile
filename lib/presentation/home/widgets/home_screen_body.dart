@@ -137,12 +137,14 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
                                     String query,
                                     ListingFilters filters,
                                     ListingFilterOptions filterOptions,
+                                    List<HomeBannerItem> banners,
                                   })
                                 >(
                                   selector: (state) => (
                                     query: state.searchQuery,
                                     filters: state.filters,
                                     filterOptions: state.filterOptions,
+                                    banners: state.banners,
                                   ),
                                   builder: (context, value) {
                                     return Column(
@@ -156,7 +158,11 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
                                               .add(SearchListingsEvent(query)),
                                         ),
                                         const SizedBox(height: 14),
-                                        const HomeBannerCarousel(),
+                                        HomeBannerCarousel(
+                                          banners: value.banners.isNotEmpty
+                                              ? value.banners
+                                              : null,
+                                        ),
                                         const SizedBox(height: 14),
                                         Row(
                                           children: [

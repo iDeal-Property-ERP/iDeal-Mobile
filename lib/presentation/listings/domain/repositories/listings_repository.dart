@@ -1,3 +1,4 @@
+import 'package:ideal_mobile/presentation/home/widgets/home_banner_carousel.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_card.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filter_options.dart';
 import 'package:ideal_mobile/presentation/listings/domain/entities/listing_filters.dart';
@@ -24,6 +25,8 @@ abstract class ListingsRepository {
   getFilterOptionsCached();
 
   ResultFuture<List<ListingCard>> getRecommendedListings();
+
+  ResultFuture<List<HomeBannerItem>> getHomeBanners();
 
   ResultFuture<void> recordSearchActivity({
     String? query,

@@ -90,7 +90,6 @@ class MapkitService implements YandexMapLifecycle {
             stackTrace,
             reason:
                 'MapKit init failed flavor=${AppConfig.appFlavor.name} keyLen=${apiKey.length}',
-            fatal: false,
           );
         } catch (_) {}
       }
