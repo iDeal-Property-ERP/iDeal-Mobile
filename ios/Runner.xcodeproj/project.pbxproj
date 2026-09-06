@@ -73,6 +73,12 @@
 		D774C5437ED471137B9BDD18 /* Pods-Runner.release-prod.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release-prod.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release-prod.xcconfig"; sourceTree = "<group>"; };
 		DB8B3EEBB0DC489F590395B2 /* Pods-Runner-RunnerUITests.profile-dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner-RunnerUITests.profile-dev.xcconfig"; path = "Target Support Files/Pods-Runner-RunnerUITests/Pods-Runner-RunnerUITests.profile-dev.xcconfig"; sourceTree = "<group>"; };
 		DD258197160B22D504A9BA0B /* Pods-Runner.profile-dev.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile-dev.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile-dev.xcconfig"; sourceTree = "<group>"; };
+		E00000012E00000100000001 /* Debug-dev.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = "Debug-dev.xcconfig"; path = "Flutter/Debug-dev.xcconfig"; sourceTree = "<group>"; };
+		E00000022E00000100000002 /* Release-dev.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = "Release-dev.xcconfig"; path = "Flutter/Release-dev.xcconfig"; sourceTree = "<group>"; };
+		E00000032E00000100000003 /* Profile-dev.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = "Profile-dev.xcconfig"; path = "Flutter/Profile-dev.xcconfig"; sourceTree = "<group>"; };
+		E00000042E00000100000004 /* Debug-prod.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = "Debug-prod.xcconfig"; path = "Flutter/Debug-prod.xcconfig"; sourceTree = "<group>"; };
+		E00000052E00000100000005 /* Release-prod.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = "Release-prod.xcconfig"; path = "Flutter/Release-prod.xcconfig"; sourceTree = "<group>"; };
+		E00000062E00000100000006 /* Profile-prod.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = "Profile-prod.xcconfig"; path = "Flutter/Profile-prod.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -140,6 +146,12 @@
 				9740EEB21CF90195004384FC /* Debug.xcconfig */,
 				7AFA3C8E1D35360C0083082E /* Release.xcconfig */,
 				9740EEB31CF90195004384FC /* Generated.xcconfig */,
+				E00000012E00000100000001 /* Debug-dev.xcconfig */,
+				E00000022E00000100000002 /* Release-dev.xcconfig */,
+				E00000032E00000100000003 /* Profile-dev.xcconfig */,
+				E00000042E00000100000004 /* Debug-prod.xcconfig */,
+				E00000052E00000100000005 /* Release-prod.xcconfig */,
+				E00000062E00000100000006 /* Profile-prod.xcconfig */,
 			);
 			name = Flutter;
 			sourceTree = "<group>";
@@ -573,7 +585,7 @@
 /* Begin XCBuildConfiguration section */
 		1882AC2D2E59864A00C05F59 /* Debug-prod */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9740EEB21CF90195004384FC /* Debug.xcconfig */;
+			baseConfigurationReference = E00000042E00000100000004 /* Debug-prod.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -645,7 +657,7 @@
 		};
 		1882AC2F2E59864A00C05F59 /* Debug-dev */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9740EEB21CF90195004384FC /* Debug.xcconfig */;
+			baseConfigurationReference = E00000012E00000100000001 /* Debug-dev.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -717,7 +729,7 @@
 		};
 		1882AC302E59864A00C05F59 /* Release-prod */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
+			baseConfigurationReference = E00000052E00000100000005 /* Release-prod.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -783,7 +795,7 @@
 		};
 		1882AC322E59864A00C05F59 /* Release-dev */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
+			baseConfigurationReference = E00000022E00000100000002 /* Release-dev.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -849,7 +861,7 @@
 		};
 		1882AC332E59864A00C05F59 /* Profile-prod */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
+			baseConfigurationReference = E00000062E00000100000006 /* Profile-prod.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -915,7 +927,7 @@
 		};
 		1882AC352E59864A00C05F59 /* Profile-dev */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
+			baseConfigurationReference = E00000032E00000100000003 /* Profile-dev.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -1033,7 +1045,7 @@
 		};
 		249021D4217E4FDB00AE95B9 /* Profile-prod */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
+			baseConfigurationReference = E00000062E00000100000006 /* Profile-prod.xcconfig */;
 			buildSettings = {
 				APP_DISPLAY_NAME = "iDeal Mobile";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -1176,7 +1188,7 @@
 		};
 		97C147061CF9000F007C117D /* Debug-prod */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9740EEB21CF90195004384FC /* Debug.xcconfig */;
+			baseConfigurationReference = E00000042E00000100000004 /* Debug-prod.xcconfig */;
 			buildSettings = {
 				APP_DISPLAY_NAME = "iDeal Mobile";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -1209,7 +1221,7 @@
 		};
 		97C147071CF9000F007C117D /* Release-prod */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
+			baseConfigurationReference = E00000052E00000100000005 /* Release-prod.xcconfig */;
 			buildSettings = {
 				APP_DISPLAY_NAME = "iDeal Mobile";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -1297,7 +1309,7 @@
 		};
 		D2B12FF02E0E63C600A9D6A6 /* Debug-dev */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9740EEB21CF90195004384FC /* Debug.xcconfig */;
+			baseConfigurationReference = E00000012E00000100000001 /* Debug-dev.xcconfig */;
 			buildSettings = {
 				APP_DISPLAY_NAME = "iDeal Mobile Dev";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconDev;
@@ -1382,7 +1394,7 @@
 		};
 		D2B12FF22E0E63CF00A9D6A6 /* Profile-dev */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
+			baseConfigurationReference = E00000032E00000100000003 /* Profile-dev.xcconfig */;
 			buildSettings = {
 				APP_DISPLAY_NAME = "iDeal Mobile Dev";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconDev;
@@ -1468,7 +1480,7 @@
 		};
 		D2B12FF42E0E63DA00A9D6A6 /* Release-dev */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
+			baseConfigurationReference = E00000022E00000100000002 /* Release-dev.xcconfig */;
 			buildSettings = {
 				APP_DISPLAY_NAME = "iDeal Mobile Dev";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIconDev;
