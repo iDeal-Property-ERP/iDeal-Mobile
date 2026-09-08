@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:auto_route/auto_route.dart';
 import 'package:clarity_flutter/clarity_flutter.dart';
 import 'package:country_picker/country_picker.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -42,7 +43,11 @@ void main() {
     },
     (error, stack) {
       if (!AppEnvironment.isTestEnvironment && !kIsWeb) {
-        FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+        try {
+          if (Firebase.apps.isNotEmpty) {
+            FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+          }
+        } catch (_) {}
       }
     },
   );

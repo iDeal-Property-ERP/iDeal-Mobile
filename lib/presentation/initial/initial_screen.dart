@@ -33,7 +33,11 @@ class _InitialScreenState extends State<InitialScreen> {
   bool _hasRedirected = false;
 
   Future<void> _waitForStartupAndRoute(Future<void> startupFuture) async {
-    await startupFuture;
+    try {
+      await startupFuture;
+    } catch (e, stack) {
+      debugPrint('[InitialScreen] Startup initialization failed: $e\n$stack');
+    }
 
     if (!mounted) return;
 
