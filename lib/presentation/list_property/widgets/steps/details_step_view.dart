@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ideal_mobile/common/theme/text_style/app_text_styles.dart';
-import 'package:ideal_mobile/i18n/localization.dart';
 import 'package:ideal_mobile/presentation/list_property/bloc/list_property_wizard_bloc.dart';
 import 'package:ideal_mobile/presentation/list_property/bloc/list_property_wizard_event.dart';
 import 'package:ideal_mobile/presentation/list_property/bloc/list_property_wizard_state.dart';
@@ -20,7 +19,6 @@ class _DetailsStepViewState extends State<DetailsStepView> {
   late final TextEditingController _floorController;
   late final TextEditingController _totalFloorsController;
   late final TextEditingController _areaController;
-  late final TextEditingController _landmarkController;
 
   @override
   void initState() {
@@ -35,7 +33,6 @@ class _DetailsStepViewState extends State<DetailsStepView> {
     _areaController = TextEditingController(
       text: state.areaSqm?.toString() ?? '',
     );
-    _landmarkController = TextEditingController(text: state.landmark ?? '');
   }
 
   @override
@@ -43,7 +40,6 @@ class _DetailsStepViewState extends State<DetailsStepView> {
     _floorController.dispose();
     _totalFloorsController.dispose();
     _areaController.dispose();
-    _landmarkController.dispose();
     super.dispose();
   }
 
@@ -55,7 +51,6 @@ class _DetailsStepViewState extends State<DetailsStepView> {
         final showError = state.showValidationErrors;
 
         final isTypeMissing = showError && state.propertyType == null;
-        final isDistrictMissing = showError && state.districtId == null;
         final isRoomsMissing = showError && state.rooms == null;
         final isFloorMissing = showError && state.floor == null;
         final isFloorOutOfBounds =
@@ -90,72 +85,6 @@ class _DetailsStepViewState extends State<DetailsStepView> {
             ),
             if (isTypeMissing)
               const _FieldErrorText(text: 'Please select a property type'),
-            const SizedBox(height: 16),
-
-            // District Dropdown
-            _FieldLabel(label: 'District *', hasError: isDistrictMissing),
-            WizardDropdown<int>(
-              value: state.districtId,
-              title: 'District',
-              hintText: 'Select District',
-              hasError: isDistrictMissing,
-              options: (config?.districts ?? []).map((d) {
-                return WizardDropdownOption<int>(value: d.id, label: d.name);
-              }).toList(),
-              onChanged: (val) {
-                context.read<ListPropertyWizardBloc>().add(
-                  ListPropertyDetailsUpdated(districtId: val),
-                );
-              },
-            ),
-            if (isDistrictMissing)
-              const _FieldErrorText(text: 'Please select a district'),
-            const SizedBox(height: 16),
-
-            // Landmark
-            Builder(
-              builder: (context) {
-                final isLandmarkWordsExceeded =
-                    state.landmark != null &&
-                    state.landmark!
-                            .trim()
-                            .split(RegExp(r'\s+'))
-                            .where((w) => w.isNotEmpty)
-                            .length >
-                        5;
-                final isLandmarkLengthExceeded =
-                    state.landmark != null &&
-                    state.landmark!.trim().length > 100;
-                final hasLandmarkError =
-                    isLandmarkWordsExceeded || isLandmarkLengthExceeded;
-
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _FieldLabel(
-                      label: context.localization.list_property_landmark,
-                      hasError: hasLandmarkError,
-                    ),
-                    _CustomTextField(
-                      controller: _landmarkController,
-                      hintText:
-                          context.localization.list_property_landmark_hint,
-                      maxLength: 100,
-                      hasError: hasLandmarkError,
-                      onChanged: (val) => context
-                          .read<ListPropertyWizardBloc>()
-                          .add(ListPropertyDetailsUpdated(landmark: val)),
-                    ),
-                    if (isLandmarkWordsExceeded)
-                      _FieldErrorText(
-                        text: context
-                            .localization
-                            .list_property_landmark_words_error,
-                      ),
-                  ],
-                );
-              },
-            ),
             const SizedBox(height: 16),
 
             // Rooms Dropdown
@@ -360,7 +289,6 @@ class _CustomTextField extends StatelessWidget {
     required this.controller,
     this.hintText,
     this.keyboardType,
-    this.maxLength,
     this.hasError = false,
     this.onChanged,
   });
@@ -368,7 +296,6 @@ class _CustomTextField extends StatelessWidget {
   final TextEditingController controller;
   final String? hintText;
   final TextInputType? keyboardType;
-  final int? maxLength;
   final bool hasError;
   final ValueChanged<String>? onChanged;
 
@@ -388,7 +315,6 @@ class _CustomTextField extends StatelessWidget {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
-      maxLength: maxLength,
       onChanged: onChanged,
       style: AppTextStyles.p3Medium.copyWith(color: theme.textNeutralPrimary),
       decoration: InputDecoration(

@@ -12,6 +12,7 @@ import 'package:ideal_mobile/presentation/list_property/domain/usecases/submit_p
 import 'package:ideal_mobile/presentation/list_property/widgets/list_property_onboarding_view.dart';
 import 'package:ideal_mobile/presentation/list_property/widgets/steps/contact_step_view.dart';
 import 'package:ideal_mobile/presentation/list_property/widgets/steps/details_step_view.dart';
+import 'package:ideal_mobile/presentation/list_property/widgets/steps/location_step_view.dart';
 import 'package:ideal_mobile/presentation/list_property/widgets/steps/photos_step_view.dart';
 import 'package:ideal_mobile/presentation/list_property/widgets/steps/pricing_step_view.dart';
 import 'package:ideal_mobile/presentation/list_property/widgets/steps/review_step_view.dart';
@@ -62,6 +63,7 @@ class _ListPropertyWizardView extends StatelessWidget {
 
   static const _stepTitles = [
     'Property Details',
+    'Location & Map',
     'Photos & Media',
     'Pricing & Terms',
     'Contact Information',
@@ -69,11 +71,12 @@ class _ListPropertyWizardView extends StatelessWidget {
   ];
 
   static const _stepSubtitles = [
-    'Step 1 of 5 — the basics renters search by.',
-    'Step 2 of 5 — show the place at its best.',
-    'Step 3 of 5 — set your rent, deposit and terms.',
-    'Step 4 of 5 — contact info for inquiries.',
-    'Step 5 of 5 — review and submit for verification.',
+    'Step 1 of 6 — the basics renters search by.',
+    'Step 2 of 6 — pin your property on the map.',
+    'Step 3 of 6 — show the place at its best.',
+    'Step 4 of 6 — set your rent, deposit and terms.',
+    'Step 5 of 6 — contact info for inquiries.',
+    'Step 6 of 6 — review and submit for verification.',
   ];
 
   @override
@@ -90,7 +93,7 @@ class _ListPropertyWizardView extends StatelessWidget {
       },
       builder: (context, state) {
         final currentStep = state.currentStep;
-        final isSuccess = currentStep == 5;
+        final isSuccess = currentStep == 6;
 
         return Scaffold(
           backgroundColor: theme.bgSurfaceBase,
@@ -163,7 +166,7 @@ class _ListPropertyWizardView extends StatelessWidget {
                         Expanded(
                           flex: currentStep > 0 ? 2 : 1,
                           child: AppButton(
-                            label: currentStep == 4
+                            label: currentStep == 5
                                 ? 'Submit Listing'
                                 : 'Continue',
                             size: AppButtonSize.large,
@@ -188,7 +191,7 @@ class _ListPropertyWizardView extends StatelessWidget {
                     children: [
                       WizardStepHeader(
                         currentStep: currentStep,
-                        totalSteps: 5,
+                        totalSteps: 6,
                         title: _stepTitles[currentStep],
                         subtitle: _stepSubtitles[currentStep],
                       ),
@@ -196,10 +199,11 @@ class _ListPropertyWizardView extends StatelessWidget {
                       Expanded(
                         child: switch (currentStep) {
                           0 => const DetailsStepView(),
-                          1 => const PhotosStepView(),
-                          2 => const PricingStepView(),
-                          3 => const ContactStepView(),
-                          4 => const ReviewStepView(),
+                          1 => const LocationStepView(),
+                          2 => const PhotosStepView(),
+                          3 => const PricingStepView(),
+                          4 => const ContactStepView(),
+                          5 => const ReviewStepView(),
                           _ => const SizedBox.shrink(),
                         },
                       ),

@@ -70,6 +70,8 @@ void main() {
       name: 'Nice Apartment',
       propertyType: 'apartment',
       districtId: 1,
+      latitude: 41.311081,
+      longitude: 69.240562,
       rooms: 2,
       floor: 3,
       areaSqm: 65,

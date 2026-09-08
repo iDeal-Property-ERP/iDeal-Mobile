@@ -3148,6 +3148,78 @@ abstract class AppLocalizations {
   /// **'Cannot exceed 5 words'**
   String get list_property_landmark_words_error;
 
+  /// No description provided for @list_property_step_location_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Location & Map'**
+  String get list_property_step_location_title;
+
+  /// No description provided for @list_property_step_location_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Step 2 of 6 — pin your property on the map.'**
+  String get list_property_step_location_subtitle;
+
+  /// No description provided for @list_property_select_on_map.
+  ///
+  /// In en, this message translates to:
+  /// **'Select on map'**
+  String get list_property_select_on_map;
+
+  /// No description provided for @list_property_change_location.
+  ///
+  /// In en, this message translates to:
+  /// **'Change location'**
+  String get list_property_change_location;
+
+  /// No description provided for @list_property_confirm_location.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Location'**
+  String get list_property_confirm_location;
+
+  /// No description provided for @list_property_location_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select the property location on the map.'**
+  String get list_property_location_required;
+
+  /// No description provided for @list_property_address.
+  ///
+  /// In en, this message translates to:
+  /// **'Street Address'**
+  String get list_property_address;
+
+  /// No description provided for @list_property_address_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., Amir Temur Avenue 15'**
+  String get list_property_address_hint;
+
+  /// No description provided for @list_property_map_location.
+  ///
+  /// In en, this message translates to:
+  /// **'Map Location'**
+  String get list_property_map_location;
+
+  /// No description provided for @list_property_map_location_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to choose location on map'**
+  String get list_property_map_location_hint;
+
+  /// No description provided for @list_property_drag_map_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Move the map to place the pin precisely'**
+  String get list_property_drag_map_hint;
+
+  /// No description provided for @list_property_pick_location_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick Property Location'**
+  String get list_property_pick_location_title;
+
   /// No description provided for @listing_detail_trust_heading.
   ///
   /// In en, this message translates to:

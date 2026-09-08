@@ -18,7 +18,10 @@ class ListPropertyWizardState extends Equatable {
     this.propertyType,
     this.name,
     this.districtId,
+    this.address,
     this.landmark,
+    this.latitude,
+    this.longitude,
     this.rooms,
     this.floor,
     this.totalFloors,
@@ -49,8 +52,6 @@ class ListPropertyWizardState extends Equatable {
   // Details Step (No defaults - all start null)
   final String? propertyType;
   final String? name;
-  final int? districtId;
-  final String? landmark;
   final int? rooms;
   final int? floor;
   final int? totalFloors;
@@ -58,6 +59,13 @@ class ListPropertyWizardState extends Equatable {
   final String? furnishing;
   final String? description;
   final Set<String> amenities;
+
+  // Location Step
+  final int? districtId;
+  final String? address;
+  final String? landmark;
+  final double? latitude;
+  final double? longitude;
 
   // Photos Step
   final List<String> imagePaths;
@@ -83,18 +91,19 @@ class ListPropertyWizardState extends Equatable {
   final String? errorMessage;
   final int? createdListingId;
 
+  bool get isLandmarkValid =>
+      landmark == null ||
+      (landmark!
+                  .trim()
+                  .split(RegExp(r'\s+'))
+                  .where((w) => w.isNotEmpty)
+                  .length <=
+              5 &&
+          landmark!.trim().length <= 100);
+
   bool get isDetailsValid =>
       propertyType != null &&
       propertyType!.isNotEmpty &&
-      districtId != null &&
-      (landmark == null ||
-          (landmark!
-                      .trim()
-                      .split(RegExp(r'\s+'))
-                      .where((w) => w.isNotEmpty)
-                      .length <=
-                  5 &&
-              landmark!.trim().length <= 100)) &&
       rooms != null &&
       rooms! > 0 &&
       floor != null &&
@@ -104,6 +113,12 @@ class ListPropertyWizardState extends Equatable {
       areaSqm! > 0 &&
       furnishing != null &&
       furnishing!.isNotEmpty;
+
+  bool get isLocationValid =>
+      districtId != null &&
+      latitude != null &&
+      longitude != null &&
+      isLandmarkValid;
 
   bool get isPhotosValid => imagePaths.length >= 5;
 
@@ -123,7 +138,10 @@ class ListPropertyWizardState extends Equatable {
     String? propertyType,
     String? name,
     int? districtId,
+    String? address,
     String? landmark,
+    double? latitude,
+    double? longitude,
     int? rooms,
     int? floor,
     int? totalFloors,
@@ -154,7 +172,10 @@ class ListPropertyWizardState extends Equatable {
       propertyType: propertyType ?? this.propertyType,
       name: name ?? this.name,
       districtId: districtId ?? this.districtId,
+      address: address ?? this.address,
       landmark: landmark ?? this.landmark,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
       rooms: rooms ?? this.rooms,
       floor: floor ?? this.floor,
       totalFloors: totalFloors ?? this.totalFloors,
@@ -189,7 +210,10 @@ class ListPropertyWizardState extends Equatable {
     propertyType,
     name,
     districtId,
+    address,
     landmark,
+    latitude,
+    longitude,
     rooms,
     floor,
     totalFloors,

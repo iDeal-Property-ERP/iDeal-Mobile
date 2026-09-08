@@ -24,39 +24,64 @@ class ListPropertyDetailsUpdated extends ListPropertyWizardEvent {
   const ListPropertyDetailsUpdated({
     this.propertyType,
     this.name,
-    this.districtId,
-    this.landmark,
     this.rooms,
     this.floor,
     this.totalFloors,
     this.areaSqm,
     this.furnishing,
     this.description,
+    this.districtId,
+    this.landmark,
   });
 
   final String? propertyType;
   final String? name;
-  final int? districtId;
-  final String? landmark;
   final int? rooms;
   final int? floor;
   final int? totalFloors;
   final int? areaSqm;
   final String? furnishing;
   final String? description;
+  final int? districtId;
+  final String? landmark;
 
   @override
   List<Object?> get props => [
     propertyType,
     name,
-    districtId,
-    landmark,
     rooms,
     floor,
     totalFloors,
     areaSqm,
     furnishing,
     description,
+    districtId,
+    landmark,
+  ];
+}
+
+class ListPropertyLocationUpdated extends ListPropertyWizardEvent {
+  const ListPropertyLocationUpdated({
+    this.districtId,
+    this.address,
+    this.landmark,
+    this.latitude,
+    this.longitude,
+  });
+
+  final int? districtId;
+  final String? address;
+  final String? landmark;
+  final double? latitude;
+  final double? longitude;
+
+  @override
+  List<Object?> get props => [
+    districtId,
+    address,
+    landmark,
+    latitude,
+    longitude,
   ];
 }
 

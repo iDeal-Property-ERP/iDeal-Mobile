@@ -69,12 +69,6 @@ class ReviewStepView extends StatelessWidget {
                       .replaceAll('_', ' ')
                       .toUpperCase(),
                 ),
-                _SummaryRow(label: 'District', value: districtName),
-                if (state.landmark != null && state.landmark!.trim().isNotEmpty)
-                  _SummaryRow(
-                    label: context.localization.list_property_landmark,
-                    value: state.landmark!.trim(),
-                  ),
                 _SummaryRow(
                   label: 'Rooms / Floor',
                   value: [
@@ -99,12 +93,42 @@ class ReviewStepView extends StatelessWidget {
             ),
             const SizedBox(height: 14),
 
+            // Location Summary Card
+            _SummaryCard(
+              title: context.localization.list_property_step_location_title,
+              icon: TablerIcons.map_pin,
+              onEdit: () => context.read<ListPropertyWizardBloc>().add(
+                const ListPropertyStepChanged(1),
+              ),
+              children: [
+                _SummaryRow(label: 'District', value: districtName),
+                if (state.address != null && state.address!.trim().isNotEmpty)
+                  _SummaryRow(
+                    label: context.localization.list_property_address,
+                    value: state.address!.trim(),
+                  ),
+                if (state.landmark != null && state.landmark!.trim().isNotEmpty)
+                  _SummaryRow(
+                    label: context.localization.list_property_landmark,
+                    value: state.landmark!.trim(),
+                  ),
+                if (state.latitude != null && state.longitude != null)
+                  _SummaryRow(
+                    label: 'Coordinates',
+                    value:
+                        '${state.latitude!.toStringAsFixed(5)}, '
+                        '${state.longitude!.toStringAsFixed(5)}',
+                  ),
+              ],
+            ),
+            const SizedBox(height: 14),
+
             // Photos Summary Card
             _SummaryCard(
               title: 'Photos (${state.imagePaths.length})',
               icon: TablerIcons.photo,
               onEdit: () => context.read<ListPropertyWizardBloc>().add(
-                const ListPropertyStepChanged(1),
+                const ListPropertyStepChanged(2),
               ),
               children: [
                 SizedBox(
@@ -135,7 +159,7 @@ class ReviewStepView extends StatelessWidget {
               title: 'Pricing',
               icon: TablerIcons.coin,
               onEdit: () => context.read<ListPropertyWizardBloc>().add(
-                const ListPropertyStepChanged(2),
+                const ListPropertyStepChanged(3),
               ),
               children: [
                 _SummaryRow(
@@ -158,7 +182,7 @@ class ReviewStepView extends StatelessWidget {
               title: 'Contact Info',
               icon: TablerIcons.user,
               onEdit: () => context.read<ListPropertyWizardBloc>().add(
-                const ListPropertyStepChanged(3),
+                const ListPropertyStepChanged(4),
               ),
               children: [
                 _SummaryRow(

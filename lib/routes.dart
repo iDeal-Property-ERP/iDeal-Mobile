@@ -43,6 +43,7 @@ class AppRouter extends RootStackRouter {
 
       // List Property Wizard
       ListPropertyWizardRoute.page,
+      LocationPickerRoute.page,
 
       //Change Theme
       ChangeThemeRoute.page,

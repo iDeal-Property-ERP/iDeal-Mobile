@@ -70,6 +70,8 @@ void main() {
     expect(bloc.state.currentStep, 0);
     expect(bloc.state.propertyType, isNull);
     expect(bloc.state.districtId, isNull);
+    expect(bloc.state.latitude, isNull);
+    expect(bloc.state.longitude, isNull);
     expect(bloc.state.rooms, isNull);
     expect(bloc.state.floor, isNull);
     expect(bloc.state.areaSqm, isNull);
@@ -101,22 +103,51 @@ void main() {
   );
 
   blocTest<ListPropertyWizardBloc, ListPropertyWizardState>(
-    'updates details including landmark',
+    'updates details correctly',
     build: () => bloc,
     act: (b) {
       b.add(
         const ListPropertyDetailsUpdated(
           propertyType: 'apartment',
-          districtId: 1,
-          landmark: 'Near Grand Mir Hotel',
+          rooms: 2,
+          floor: 3,
+          areaSqm: 65,
+          furnishing: 'furnished',
         ),
       );
     },
     expect: () => [
       const ListPropertyWizardState(
         propertyType: 'apartment',
+        rooms: 2,
+        floor: 3,
+        areaSqm: 65,
+        furnishing: 'furnished',
+      ),
+    ],
+  );
+
+  blocTest<ListPropertyWizardBloc, ListPropertyWizardState>(
+    'updates location including coordinates, address, landmark, and district',
+    build: () => bloc,
+    act: (b) {
+      b.add(
+        const ListPropertyLocationUpdated(
+          districtId: 1,
+          address: 'Amir Temur 10',
+          landmark: 'Near Grand Mir Hotel',
+          latitude: 41.311081,
+          longitude: 69.240562,
+        ),
+      );
+    },
+    expect: () => [
+      const ListPropertyWizardState(
         districtId: 1,
+        address: 'Amir Temur 10',
         landmark: 'Near Grand Mir Hotel',
+        latitude: 41.311081,
+        longitude: 69.240562,
       ),
     ],
   );
@@ -172,11 +203,10 @@ void main() {
   );
 
   blocTest<ListPropertyWizardBloc, ListPropertyWizardState>(
-    'advances step when details valid',
+    'advances from Step 0 to Step 1 when details valid',
     build: () => bloc,
     seed: () => const ListPropertyWizardState(
       propertyType: 'apartment',
-      districtId: 1,
       rooms: 2,
       floor: 3,
       areaSqm: 65,
@@ -186,7 +216,6 @@ void main() {
     expect: () => [
       const ListPropertyWizardState(
         propertyType: 'apartment',
-        districtId: 1,
         rooms: 2,
         floor: 3,
         areaSqm: 65,
@@ -197,7 +226,67 @@ void main() {
   );
 
   blocTest<ListPropertyWizardBloc, ListPropertyWizardState>(
-    'submits successfully with only raw specs (no title/description)',
+    'shows validation errors when advancing from Step 1 without location '
+    'coordinates',
+    build: () => bloc,
+    seed: () => const ListPropertyWizardState(
+      currentStep: 1,
+      propertyType: 'apartment',
+      rooms: 2,
+      floor: 3,
+      areaSqm: 65,
+      furnishing: 'furnished',
+      districtId: 1,
+      // latitude and longitude are null
+    ),
+    act: (b) => b.add(const ListPropertyStepAdvanceRequested()),
+    expect: () => [
+      const ListPropertyWizardState(
+        currentStep: 1,
+        propertyType: 'apartment',
+        rooms: 2,
+        floor: 3,
+        areaSqm: 65,
+        furnishing: 'furnished',
+        districtId: 1,
+        showValidationErrors: true,
+        errorMessage: 'Please select district and map coordinates.',
+      ),
+    ],
+  );
+
+  blocTest<ListPropertyWizardBloc, ListPropertyWizardState>(
+    'advances from Step 1 to Step 2 when location valid',
+    build: () => bloc,
+    seed: () => const ListPropertyWizardState(
+      currentStep: 1,
+      propertyType: 'apartment',
+      rooms: 2,
+      floor: 3,
+      areaSqm: 65,
+      furnishing: 'furnished',
+      districtId: 1,
+      latitude: 41.311081,
+      longitude: 69.240562,
+    ),
+    act: (b) => b.add(const ListPropertyStepAdvanceRequested()),
+    expect: () => [
+      const ListPropertyWizardState(
+        currentStep: 2,
+        propertyType: 'apartment',
+        rooms: 2,
+        floor: 3,
+        areaSqm: 65,
+        furnishing: 'furnished',
+        districtId: 1,
+        latitude: 41.311081,
+        longitude: 69.240562,
+      ),
+    ],
+  );
+
+  blocTest<ListPropertyWizardBloc, ListPropertyWizardState>(
+    'submits successfully with specs and coordinates',
     build: () {
       when(() => mockSubmit(any())).thenAnswer(
         (_) async => const Right(
@@ -212,9 +301,12 @@ void main() {
       return bloc;
     },
     seed: () => const ListPropertyWizardState(
-      currentStep: 4,
+      currentStep: 5,
       propertyType: 'apartment',
       districtId: 1,
+      latitude: 41.311081,
+      longitude: 69.240562,
+      address: 'Amir Temur 10',
       rooms: 2,
       floor: 2,
       areaSqm: 70,
@@ -228,10 +320,13 @@ void main() {
     act: (b) => b.add(const ListPropertySubmitted()),
     expect: () => [
       const ListPropertyWizardState(
-        currentStep: 4,
+        currentStep: 5,
         status: WizardStatus.submitting,
         propertyType: 'apartment',
         districtId: 1,
+        latitude: 41.311081,
+        longitude: 69.240562,
+        address: 'Amir Temur 10',
         rooms: 2,
         floor: 2,
         areaSqm: 70,
@@ -243,11 +338,14 @@ void main() {
         acceptOffer: true,
       ),
       const ListPropertyWizardState(
-        currentStep: 5,
+        currentStep: 6,
         status: WizardStatus.submitted,
         createdListingId: 42,
         propertyType: 'apartment',
         districtId: 1,
+        latitude: 41.311081,
+        longitude: 69.240562,
+        address: 'Amir Temur 10',
         rooms: 2,
         floor: 2,
         areaSqm: 70,

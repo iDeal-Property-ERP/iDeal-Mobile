@@ -30,7 +30,10 @@ class PropertyUploadPayload extends Equatable {
     this.contentLocale,
     required this.propertyType,
     required this.districtId,
+    this.address,
     this.landmark,
+    required this.latitude,
+    required this.longitude,
     required this.rooms,
     required this.floor,
     this.totalFloors,
@@ -52,7 +55,10 @@ class PropertyUploadPayload extends Equatable {
   final String? contentLocale;
   final String propertyType;
   final int districtId;
+  final String? address;
   final String? landmark;
+  final double latitude;
+  final double longitude;
   final int rooms;
   final int floor;
   final int? totalFloors;
@@ -75,7 +81,10 @@ class PropertyUploadPayload extends Equatable {
       'content_locale': contentLocale,
     'property_type': propertyType,
     'district_id': districtId,
+    if (address != null && address!.isNotEmpty) 'address': address,
     if (landmark != null && landmark!.isNotEmpty) 'landmark': landmark,
+    'map_lat': latitude,
+    'map_lon': longitude,
     'rooms': rooms,
     'floor': floor,
     if (totalFloors != null) 'total_floors': totalFloors,
@@ -99,7 +108,10 @@ class PropertyUploadPayload extends Equatable {
     contentLocale,
     propertyType,
     districtId,
+    address,
     landmark,
+    latitude,
+    longitude,
     rooms,
     floor,
     totalFloors,

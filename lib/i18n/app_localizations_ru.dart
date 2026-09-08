@@ -1711,6 +1711,47 @@ class AppLocalizationsRu extends AppLocalizations {
   String get list_property_landmark_words_error => 'Не более 5 слов';
 
   @override
+  String get list_property_step_location_title => 'Расположение и карта';
+
+  @override
+  String get list_property_step_location_subtitle =>
+      'Шаг 2 из 6 — отметьте ваш объект на карте.';
+
+  @override
+  String get list_property_select_on_map => 'Выбрать на карте';
+
+  @override
+  String get list_property_change_location => 'Изменить расположение';
+
+  @override
+  String get list_property_confirm_location => 'Подтвердить расположение';
+
+  @override
+  String get list_property_location_required =>
+      'Пожалуйста, укажите расположение объекта на карте.';
+
+  @override
+  String get list_property_address => 'Улица и дом';
+
+  @override
+  String get list_property_address_hint =>
+      'например, проспект Амира Темура, 15';
+
+  @override
+  String get list_property_map_location => 'Расположение на карте';
+
+  @override
+  String get list_property_map_location_hint =>
+      'Нажмите, чтобы выбрать на карте';
+
+  @override
+  String get list_property_drag_map_hint =>
+      'Перемещайте карту для точной установки маркера';
+
+  @override
+  String get list_property_pick_location_title => 'Выберите расположение';
+
+  @override
   String get listing_detail_trust_heading =>
       'Проверено iDeal и подкреплено договором';
 

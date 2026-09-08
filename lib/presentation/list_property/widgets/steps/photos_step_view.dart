@@ -319,7 +319,7 @@ class _BannerColors {
   final Color subtitle;
   final Color icon;
 
-  static _BannerColors resolve({
+  factory _BannerColors.resolve({
     required bool isDark,
     required bool hasMinPhotos,
     required bool showError,

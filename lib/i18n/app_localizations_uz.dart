@@ -1709,6 +1709,47 @@ class AppLocalizationsUz extends AppLocalizations {
       '5 tagacha so‘z kiritish mumkin';
 
   @override
+  String get list_property_step_location_title => 'Joylashuv va xarita';
+
+  @override
+  String get list_property_step_location_subtitle =>
+      '2-qadam / 6 — mulkingizni xaritada belgilang.';
+
+  @override
+  String get list_property_select_on_map => 'Xaritadan tanlash';
+
+  @override
+  String get list_property_change_location => 'Joylashuvni o‘zgartirish';
+
+  @override
+  String get list_property_confirm_location => 'Joylashuvni tasdiqlash';
+
+  @override
+  String get list_property_location_required =>
+      'Iltimos, mulk joylashuvini xaritada belgilang.';
+
+  @override
+  String get list_property_address => 'Ko‘cha manzili';
+
+  @override
+  String get list_property_address_hint =>
+      'masalan, Amir Temur shox ko‘chasi 15';
+
+  @override
+  String get list_property_map_location => 'Xaritadagi joylashuv';
+
+  @override
+  String get list_property_map_location_hint =>
+      'Xaritadan joylashuvni tanlash uchun bosing';
+
+  @override
+  String get list_property_drag_map_hint =>
+      'Xaritani siljitib markerdan foydalaning';
+
+  @override
+  String get list_property_pick_location_title => 'Mulk joylashuvini tanlang';
+
+  @override
   String get listing_detail_trust_heading =>
       'iDeal tomonidan tekshirilgan va shartnoma bilan kafolatlangan';
 

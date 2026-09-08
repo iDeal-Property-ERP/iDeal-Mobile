@@ -1681,6 +1681,45 @@ class AppLocalizationsEn extends AppLocalizations {
   String get list_property_landmark_words_error => 'Cannot exceed 5 words';
 
   @override
+  String get list_property_step_location_title => 'Location & Map';
+
+  @override
+  String get list_property_step_location_subtitle =>
+      'Step 2 of 6 — pin your property on the map.';
+
+  @override
+  String get list_property_select_on_map => 'Select on map';
+
+  @override
+  String get list_property_change_location => 'Change location';
+
+  @override
+  String get list_property_confirm_location => 'Confirm Location';
+
+  @override
+  String get list_property_location_required =>
+      'Please select the property location on the map.';
+
+  @override
+  String get list_property_address => 'Street Address';
+
+  @override
+  String get list_property_address_hint => 'e.g., Amir Temur Avenue 15';
+
+  @override
+  String get list_property_map_location => 'Map Location';
+
+  @override
+  String get list_property_map_location_hint => 'Tap to choose location on map';
+
+  @override
+  String get list_property_drag_map_hint =>
+      'Move the map to place the pin precisely';
+
+  @override
+  String get list_property_pick_location_title => 'Pick Property Location';
+
+  @override
   String get listing_detail_trust_heading =>
       'Verified & contract-backed by iDeal';
 

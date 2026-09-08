@@ -17,6 +17,7 @@ class ListPropertyWizardBloc
     on<ListPropertyWizardStarted>(_onStarted);
     on<ListPropertyStepChanged>(_onStepChanged);
     on<ListPropertyDetailsUpdated>(_onDetailsUpdated);
+    on<ListPropertyLocationUpdated>(_onLocationUpdated);
     on<ListPropertyAmenityToggled>(_onAmenityToggled);
     on<ListPropertyPhotosAdded>(_onPhotosAdded);
     on<ListPropertyPhotoRemoved>(_onPhotoRemoved);
@@ -84,14 +85,30 @@ class ListPropertyWizardBloc
       state.copyWith(
         propertyType: event.propertyType ?? state.propertyType,
         name: event.name ?? state.name,
-        districtId: event.districtId ?? state.districtId,
-        landmark: event.landmark ?? state.landmark,
         rooms: event.rooms ?? state.rooms,
         floor: event.floor ?? state.floor,
         totalFloors: event.totalFloors ?? state.totalFloors,
         areaSqm: event.areaSqm ?? state.areaSqm,
         furnishing: event.furnishing ?? state.furnishing,
         description: event.description ?? state.description,
+        districtId: event.districtId ?? state.districtId,
+        landmark: event.landmark ?? state.landmark,
+        clearErrorMessage: true,
+      ),
+    );
+  }
+
+  void _onLocationUpdated(
+    ListPropertyLocationUpdated event,
+    Emitter<ListPropertyWizardState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        districtId: event.districtId ?? state.districtId,
+        address: event.address ?? state.address,
+        landmark: event.landmark ?? state.landmark,
+        latitude: event.latitude ?? state.latitude,
+        longitude: event.longitude ?? state.longitude,
         clearErrorMessage: true,
       ),
     );
@@ -216,11 +233,11 @@ class ListPropertyWizardBloc
           ),
         );
       case 1:
-        if (!state.isPhotosValid) {
+        if (!state.isLocationValid) {
           emit(
             state.copyWith(
               showValidationErrors: true,
-              errorMessage: 'At least 5 photos are required to continue.',
+              errorMessage: 'Please select district and map coordinates.',
             ),
           );
           return;
@@ -233,11 +250,11 @@ class ListPropertyWizardBloc
           ),
         );
       case 2:
-        if (!state.isPricingValid) {
+        if (!state.isPhotosValid) {
           emit(
             state.copyWith(
               showValidationErrors: true,
-              errorMessage: 'Please specify monthly rent price.',
+              errorMessage: 'At least 5 photos are required to continue.',
             ),
           );
           return;
@@ -250,11 +267,11 @@ class ListPropertyWizardBloc
           ),
         );
       case 3:
-        if (!state.isContactValid) {
+        if (!state.isPricingValid) {
           emit(
             state.copyWith(
               showValidationErrors: true,
-              errorMessage: 'Please provide your name and contact info.',
+              errorMessage: 'Please specify monthly rent price.',
             ),
           );
           return;
@@ -267,6 +284,23 @@ class ListPropertyWizardBloc
           ),
         );
       case 4:
+        if (!state.isContactValid) {
+          emit(
+            state.copyWith(
+              showValidationErrors: true,
+              errorMessage: 'Please provide your name and contact info.',
+            ),
+          );
+          return;
+        }
+        emit(
+          state.copyWith(
+            currentStep: 5,
+            showValidationErrors: false,
+            clearErrorMessage: true,
+          ),
+        );
+      case 5:
         add(const ListPropertySubmitted());
       default:
         break;
@@ -295,7 +329,10 @@ class ListPropertyWizardBloc
       );
       return;
     }
-    if (!state.isDetailsValid || !state.isPricingValid) {
+    if (!state.isDetailsValid ||
+        !state.isLocationValid ||
+        !state.isPricingValid ||
+        !state.isContactValid) {
       emit(
         state.copyWith(
           showValidationErrors: true,
@@ -314,7 +351,10 @@ class ListPropertyWizardBloc
       contentLocale: LocaleService.locale.value?.languageCode ?? 'uz',
       propertyType: state.propertyType!,
       districtId: state.districtId!,
+      address: state.address?.trim(),
       landmark: state.landmark?.trim(),
+      latitude: state.latitude!,
+      longitude: state.longitude!,
       rooms: state.rooms!,
       floor: state.floor!,
       totalFloors: state.totalFloors,
@@ -348,7 +388,7 @@ class ListPropertyWizardBloc
       (res) => emit(
         state.copyWith(
           status: WizardStatus.submitted,
-          currentStep: 5,
+          currentStep: 6,
           createdListingId: res.id,
           showValidationErrors: false,
           clearErrorMessage: true,
